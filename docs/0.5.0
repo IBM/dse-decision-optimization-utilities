@@ -1,0 +1,31 @@
+Collecting sphinx
+  Using cached https://files.pythonhosted.org/packages/75/25/905f901fb749e45cb201f1d946e82f59d84730c430287ea7980b0bcbd2dc/Sphinx-1.8.4-py2.py3-none-any.whl
+Collecting recommonmark
+  Using cached https://files.pythonhosted.org/packages/9b/3d/92ea48401622510e57b4bdaa74dc9db2fb9e9e892324b48f9c02d716a93a/recommonmark-0.5.0-py2.py3-none-any.whl
+Requirement already up-to-date: docutils>=0.11 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: snowballstemmer>=1.1 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: alabaster<0.8,>=0.7 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: packaging in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: sphinxcontrib-websupport in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: Pygments>=2.0 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: six>=1.5 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: imagesize in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: typing; python_version < "3.5" in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: colorama>=0.3.5; sys_platform == "win32" in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: Jinja2>=2.3 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: setuptools in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Requirement already up-to-date: requests>=2.0.0 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from sphinx)
+Collecting babel!=2.0,>=1.3 (from sphinx)
+  Using cached https://files.pythonhosted.org/packages/b8/ad/c6f60602d3ee3d92fbed87675b6fb6a6f9a38c223343ababdb44ba201f10/Babel-2.6.0-py2.py3-none-any.whl
+Collecting commonmark>=0.7.3 (from recommonmark)
+  Using cached https://files.pythonhosted.org/packages/ab/ca/439c88039583a29564a0043186875258e9a4f041fb5c422cd387b8e10175/commonmark-0.8.1-py2.py3-none-any.whl
+Requirement already up-to-date: pyparsing>=2.0.2 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from packaging->sphinx)
+Requirement already up-to-date: MarkupSafe>=0.23 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from Jinja2>=2.3->sphinx)
+Requirement already up-to-date: urllib3<1.25,>=1.21.1 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from requests>=2.0.0->sphinx)
+Requirement already up-to-date: idna<2.9,>=2.5 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from requests>=2.0.0->sphinx)
+Requirement already up-to-date: chardet<3.1.0,>=3.0.2 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from requests>=2.0.0->sphinx)
+Requirement already up-to-date: certifi>=2017.4.17 in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from requests>=2.0.0->sphinx)
+Requirement already up-to-date: pytz>=0a in c:\users\victorterpstra\anaconda3\envs\python2\lib\site-packages (from babel!=2.0,>=1.3->sphinx)
+Collecting future (from commonmark>=0.7.3->recommonmark)
+Installing collected packages: babel, sphinx, future, commonmark, recommonmark
+  Found existing installation: babel 2.5.0

@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils.deployeddomodel &mdash; DSE DO Utils 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils.deployeddomodel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dse_do_utils.deployeddomodel</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<div class="viewcode-block" id="DeployedDOModel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel">[docs]</a><span class="k">class</span> <span class="nc">DeployedDOModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Major steps:</span>
+<span class="sd">    1. Create an instance of a DeployedDOModel, configuring parameters (e.g. the URL and access token)</span>
+
+<span class="sd">    Internally, the processes uses GETs to communicate with the deployed model:</span>
+
+<span class="sd">    1. Get configuration data from the service (:meth:`~DeployedDOModel.retrieve_solve_configuration`). This will give a URL to start a job. (`self.solve_config_json`)</span>
+<span class="sd">    2. Start the solve job. Returns info/urls to monitor the running job. (`self.job_config_json`)</span>
+<span class="sd">    3. Monitor the running solve job. Runs in a loop, updates the current state. (`self.execution_status_json`)</span>
+<span class="sd">    4. Once the job completes, get the optimization result.</span>
+<span class="sd">    5. Clean-up the resources</span>
+
+
+<span class="sd">    In the code::</span>
+
+<span class="sd">        mdl.solve():</span>
+<span class="sd">            self.retrieve_solve_configuration()</span>
+<span class="sd">            self.set_output_settings_in_solve_configuration()</span>
+<span class="sd">            self.execute_model()</span>
+<span class="sd">            self.monitor_execution()</span>
+<span class="sd">            self.retrieve_debug_materials()</span>
+<span class="sd">            self.cleanup()</span>
+
+
+<span class="sd">    Note on InsecureRequestWarning</span>
+<span class="sd">    If the option `verify=False` is being used for REST calls, the following warning is generated (for each REST API call):</span>
+<span class="sd">    ```</span>
+<span class="sd">    InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings</span>
+<span class="sd">    InsecureRequestWarning)</span>
+<span class="sd">    ```</span>
+<span class="sd">    With the option suppress_warnings=True, all warnings in the mdl.solve() API are suppressed/ignored</span>
+
+<span class="sd">    TODOs:</span>
+
+<span class="sd">    1. Turning the option to False doesn&#39;t work, i.e. skipping parameter `oaas.dumpZipName` will result in no attachments!</span>
+<span class="sd">    Work-around for now is to always add this option, let the server generate the dump and log file, but not download the zip and log files if debug = False</span>
+<span class="sd">    And always cleanup after.</span>
+<span class="sd">    3. Test kill and stop methods</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">service_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attachment_type</span><span class="o">=</span><span class="s1">&#39;CONTAINER&#39;</span><span class="p">,</span> <span class="n">suppress_warnings</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug_file_dir</span><span class="o">=</span><span class="s1">&#39;../datasets&#39;</span><span class="p">,</span> <span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;log.txt&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the interface object.</span>
+
+<span class="sd">        Usage::</span>
+
+<span class="sd">            # Specifying url in parts (do not specify the `url`):</span>
+<span class="sd">            mdl = DeployedDOModel(token=token, inputs=inputs, server=server, route=route, service_name=service_name, model_name=model_name, attachment_type=attachment_type, debug=debug, debug_file_dir=debug_file_dir, log_file_name=log_file_name)</span>
+<span class="sd">            # Specifying url in one string (do not specify the `server`, `route`, etc):</span>
+<span class="sd">            mdl = DeployedDOModel(url=url, token=token, inputs=inputs, attachment_type=attachment_type, debug=debug, debug_file_dir=debug_file_dir, log_file_name=log_file_name)</span>
+<span class="sd">            # Simplest, using all default options:</span>
+<span class="sd">            mdl = DeployedDOModel(url=url, token=token, inputs=inputs)</span>
+<span class="sd">            mdl.solve()</span>
+<span class="sd">            print(&quot;Solve status: {}&quot;.format(mdl.get_solve_status()))</span>
+<span class="sd">            print(&quot;Objective: {}&quot;.format(mdl.get_objective()))</span>
+<span class="sd">            print(&quot;Output tables: {}&quot;.format(mdl.outputs.keys()))</span>
+<span class="sd">            print(&quot;Debug file name: {}&quot;.format(mdl.get_debug_dump_name_and_url()[0]))</span>
+<span class="sd">            print(&quot;Log file name: {}&quot;.format(mdl.get_log_file_name_and_url()[0]))</span>
+
+
+<span class="sd">        Either provide the full url, or all of server, route, service_name and model_name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str): full URL of the execution service. If specified, the values for server, route, service_name and model_name are ignored.</span>
+<span class="sd">            server (str): name of server</span>
+<span class="sd">            route (str): route</span>
+<span class="sd">            service_name (str): name of service</span>
+<span class="sd">            model_name (str): name of deployed model</span>
+<span class="sd">            token (str): deployment token</span>
+<span class="sd">            inputs (dict of DataFrames): input tables</span>
+<span class="sd">            attachment_type (str): &#39;CONTAINER&#39; or &#39;INLINE_TABLE&#39;, default = &#39;CONTAINER&#39;</span>
+<span class="sd">            suppress_warnings (bool): if True, all warnings, in particular the InsecureRequestWarning will be suppressed</span>
+<span class="sd">            debug (bool): if True, will fetch the dump&lt;&gt;.zip file and write into the datasets folder. (Currently the option `False` is not working and causes no output!)</span>
+<span class="sd">            debug_file_dir (str): Path for `dump&lt;&gt;.zip` file and the `log.txt` file</span>
+<span class="sd">            log_file_name (str): Name of log file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">route</span> <span class="o">=</span> <span class="n">route</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span> <span class="o">=</span> <span class="n">service_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span> <span class="o">=</span> <span class="n">attachment_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suppress_warnings</span> <span class="o">=</span> <span class="n">suppress_warnings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_file_dir</span> <span class="o">=</span> <span class="n">debug_file_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file_name</span> <span class="o">=</span> <span class="n">log_file_name</span>
+
+        <span class="c1"># State:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_configuration_json</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Available after `retrieve_solve_configuration`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_config_json</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Will be manipulated and used as input for job execution</span>
+        <span class="c1"># self.job_configuration_json = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Available after `execute_model`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Available after `monitor_execution` has been able to get the first update from the running job. Will be updated while the job is running.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Available after `monitor_execution`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_state</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Retrieved after successful run, from execution_status_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_details</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Retrieved after successful run, from execution_status_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_json</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Will contain the solution json, if the model run was successful</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">##################################################################################################</span>
+    <span class="c1"># Getters</span>
+    <span class="c1">##################################################################################################</span>
+<div class="viewcode-block" id="DeployedDOModel.get_headers"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_headers">[docs]</a>    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_token</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_execution_service_model_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_service_model_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_execution_service_model_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL for the first call to the optimization service. Retrieves the service_configuration_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">execution_service_model_url</span> <span class="o">=</span> <span class="s2">&quot;https://</span><span class="si">{}</span><span class="s2">/dsvc/v1/</span><span class="si">{}</span><span class="s2">/domodel/</span><span class="si">{}</span><span class="s2">/model/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">route</span><span class="p">,</span>
+                                                                                             <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span><span class="p">,</span>
+                                                                                             <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">execution_service_model_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span>
+        <span class="k">return</span> <span class="n">execution_service_model_url</span></div>
+
+    <span class="c1">#     def get_execution_service_url(self):</span>
+    <span class="c1">#         return &quot;https://{}/dsvc/v1/{}/domodel/{}&quot;.format(self.server, self.route, self.service_name)</span>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_solve_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL to start the execution of the solve job.</span>
+<span class="sd">        Can only be called after the call to `retrieve_solve_configuration`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_config_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;uri&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_config_json</span><span class="p">[</span><span class="s1">&#39;deploymentDescription&#39;</span><span class="p">][</span><span class="s1">&#39;links&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;solve&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_config"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_solve_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the current solve_config.</span>
+<span class="sd">        Note that the self.solve_config will e first set after the `retrieve_solve_configuration`.</span>
+<span class="sd">        Next, it will be manipulated to add debugging information.</span>
+<span class="sd">        Can only be called after the call to `retrieve_solve_configuration`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#         solve_config = None</span>
+        <span class="c1">#         if self.solve_config_json is not None:</span>
+        <span class="c1">#             solve_config = self.solve_config_json[&#39;deploymentDescription&#39;][&#39;solveConfig&#39;]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_job_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL of the running job.</span>
+<span class="sd">        Will be called repeatedly while monitoring the execution of the job.</span>
+<span class="sd">        Can only be called after the call to `execute_model`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span><span class="p">[</span><span class="s1">&#39;links&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;rel&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;self&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_stop_job_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_stop_job_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_stop_job_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL to stop a running job.</span>
+<span class="sd">        TODO: test</span>
+<span class="sd">        Can only be called after the call to `execute_model`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span><span class="p">[</span><span class="s1">&#39;links&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;rel&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;stop&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_kill_job_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_kill_job_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_kill_job_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL to kill a running job.</span>
+<span class="sd">        TODO: test</span>
+<span class="sd">        Can only be called after the call to `execute_model`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span><span class="p">[</span><span class="s1">&#39;links&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;rel&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;kill&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_debug_file_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_file_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_file_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL of the debug file.</span>
+<span class="sd">        To be used to retrieve the debug&lt;&gt;.zip file.</span>
+<span class="sd">        Also used to clean-up the remote debug file.</span>
+<span class="sd">        Is the self.debug_file_data_url minus the `/data` at the end</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">debug_file_url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">zip_name</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_debug_dump_name_and_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">debug_file_url</span> <span class="o">=</span> <span class="n">url</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># strip the &#39;/data&#39; from the end</span>
+        <span class="k">return</span> <span class="n">debug_file_url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_log_file_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_log_file_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the URL of the log file.</span>
+<span class="sd">        To be used to retrieve the log file.</span>
+<span class="sd">        Also used to clean-up the remote log file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_name</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_file_name_and_url</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_execution_status"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_execution_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;solveState&#39;</span><span class="p">][</span><span class="s1">&#39;executionStatus&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">status</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_objective"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_objective">[docs]</a>    <span class="k">def</span> <span class="nf">get_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Available after post process (both CONTAINER and INLINE_TABLE)&quot;&quot;&quot;</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution_json</span><span class="p">[</span><span class="s1">&#39;CPLEXSolution&#39;</span><span class="p">][</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;objectiveValue&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">objective</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_status"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_solve_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Available during and after the job monitoring. String with values &#39;NOT_STARTED&#39;, &#39;RUNNING&#39;, &quot;PROCESSED&quot;, &quot;FAILED&quot;, &quot;INTERRUPTED&quot;, more? &quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_state</span><span class="p">[</span><span class="s1">&#39;solveStatus&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">status</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solution_name_and_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solution_name_and_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_solution_name_and_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the name (&#39;solution.json&#39;) and the URL of the solution data.</span>
+<span class="sd">        This applies to both `CONTAINER` and `INLINE_TABLE` modes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solution_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;outputAttachments&#39;</span><span class="p">]:</span>
+                <span class="n">attachment_name</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">attachment_name</span> <span class="o">==</span> <span class="s1">&#39;solution.json&#39;</span><span class="p">:</span>
+                    <span class="n">solution_name</span> <span class="o">=</span> <span class="n">attachment_name</span>
+                    <span class="n">url</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">solution_name</span><span class="p">,</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_debug_dump_name_and_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_dump_name_and_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_dump_name_and_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the name of the dump&lt;&gt;.zip file and the url to the data of the dump&lt;&gt;.zip file.</span>
+<span class="sd">        Can be called after the first time the job monitor has retrieved the self.execution_status_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">zip_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;outputAttachments&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s2">&quot;dump_&quot;</span> <span class="ow">in</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
+                    <span class="n">zip_name</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="n">url</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">zip_name</span><span class="p">,</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_log_file_name_and_url"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_name_and_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_log_file_name_and_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the name of the log.txt file and the url to the data.</span>
+<span class="sd">        Can be called after the first time the job monitor has retrieved the self.execution_status_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;outputAttachments&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_name</span> <span class="o">==</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
+                    <span class="n">log_name</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="n">url</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">log_name</span><span class="p">,</span> <span class="n">url</span></div>
+
+    <span class="c1">##################################################################################################</span>
+    <span class="c1"># Main solve steps</span>
+    <span class="c1">##################################################################################################</span>
+
+<div class="viewcode-block" id="DeployedDOModel.solve"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</span>
+
+<span class="sd">        Calls the following methods (in order)::</span>
+
+<span class="sd">            self.retrieve_solve_configuration()</span>
+<span class="sd">            self.set_output_settings_in_solve_configuration()</span>
+<span class="sd">            self.execute_model()</span>
+<span class="sd">            self.monitor_execution()</span>
+<span class="sd">            self.retrieve_debug_materials()</span>
+<span class="sd">            self.cleanup()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="c1"># TODO: turn-off the ignore warning is NOT working</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suppress_warnings</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Give a little time for the job to start</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>  <span class="c1"># Make sure to run this to get any debug_file_url. Should be run independently of how the job was terminated</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="kn">import</span> <span class="nn">traceback</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.retrieve_solve_configuration"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solve_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_solve_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to GET the solve configuration. Result in self.solve_config_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_execution_service_model_url</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_config_json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.set_output_settings_in_solve_configuration"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.set_output_settings_in_solve_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">set_output_settings_in_solve_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the self.solve_config to define the required output and debug results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_config_json</span><span class="p">[</span><span class="s1">&#39;deploymentDescription&#39;</span><span class="p">][</span><span class="s1">&#39;solveConfig&#39;</span><span class="p">]</span>
+
+        <span class="c1"># TODO: what will the option `&quot;oaas.logStreaming&quot;:&quot;false&quot;` do in solveParameters? Create a log file?</span>
+        <span class="c1"># TODO: if we can create a log file, we probably need to add it as an attachment?</span>
+        <span class="c1"># Note: simply adding `&quot;oaas.logStreaming&quot;:&quot;false&quot;` does NOT add an attachment.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span><span class="p">[</span><span class="s1">&#39;solveParameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;oaas.dumpZipName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;oaas.logAttachmentName&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_name</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO/Bug: not adding the parameter `oaas.dumpZipName` will result in no attachments!</span>
+            <span class="c1"># Work-around for now is to always add this option, but not download if debug = False</span>
+            <span class="c1"># self.solve_config[&#39;solveParameters&#39;] = {}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span><span class="p">[</span><span class="s1">&#39;solveParameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;oaas.dumpZipName&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                    <span class="s2">&quot;oaas.logAttachmentName&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file_name</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span> <span class="o">==</span> <span class="s1">&#39;CONTAINER&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span><span class="p">[</span><span class="s1">&#39;attachments&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;CONTAINER&#39;</span><span class="p">,</span> <span class="s1">&#39;containerId&#39;</span><span class="p">:</span> <span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;.*</span><span class="se">\\</span><span class="s1">.zip&#39;</span><span class="p">})</span>  <span class="c1"># Notebook</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span> <span class="o">==</span> <span class="s1">&#39;INLINE_TABLE&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_config</span><span class="p">[</span><span class="s1">&#39;attachments&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;INLINE_TABLE&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;.*&#39;</span><span class="p">,</span> <span class="p">})</span>  <span class="c1"># Alain</span></div>
+
+            <span class="c1">#     print(self.get_solve_config())</span>
+
+<div class="viewcode-block" id="DeployedDOModel.execute_model"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model">[docs]</a>    <span class="k">def</span> <span class="nf">execute_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to start the solve of the model. Returns the execution data in self.execution_result.</span>
+<span class="sd">        Contains urls to monitor, stop or kill the job</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_solve_url</span><span class="p">(),</span> <span class="n">files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_input_files</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_config_json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.stop_job"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.stop_job">[docs]</a>    <span class="k">def</span> <span class="nf">stop_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to stop the solve of the model.</span>
+<span class="sd">        TODO: test</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_stop_job_url</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="c1"># Note: the r has no json! Do not try r.json().</span>
+
+<div class="viewcode-block" id="DeployedDOModel.kill_job"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.kill_job">[docs]</a>    <span class="k">def</span> <span class="nf">kill_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to kill the solve of the model.</span>
+<span class="sd">        TODO: test</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kill_job_url</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="c1"># Note: the r has no json! Do not try r.json().</span>
+
+<div class="viewcode-block" id="DeployedDOModel.get_input_files"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_input_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the inputs for submission to the job execution run.</span>
+
+<span class="sd">        Challenge: the solve_config should be the first element in the self.files dict.</span>
+<span class="sd">        Work-around: use an OrderedDict. Not sure of this always works, i.e. if the</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">collections</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">files</span><span class="p">[</span><span class="s1">&#39;solveconfig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_solve_config</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
+            <span class="n">files</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.monitor_execution"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution">[docs]</a>    <span class="k">def</span> <span class="nf">monitor_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Monitor the model execution by periodically calling REST API to get the current execution status.</span>
+<span class="sd">        Result stored in self.execution_status_json and self.execution_status.</span>
+
+<span class="sd">        TODO: what are all possible values for execution_status? Are we stopping under the right conditions?</span>
+<span class="sd">        TODO: stop if we get an unknown status?</span>
+<span class="sd">        TODO: Time-out?</span>
+<span class="sd">        TODO: control the loop delay?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_job_url</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_execution_status</span><span class="p">()</span>  <span class="c1"># Gets the status from self.execution_status_json</span>
+            <span class="c1">#         status = self.execution_status_json[&#39;solveState&#39;][&#39;executionStatus&#39;]</span>
+            <span class="c1">#         self.status = status</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Execution status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span> <span class="o">==</span> <span class="s2">&quot;PROCESSED&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">post_process_processed</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">post_process_failed</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status</span> <span class="o">==</span> <span class="s2">&quot;INTERRUPTED&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">post_process_interrupted</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_processed"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_processed">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_processed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Post-process the succesfully completed solve job.</span>
+<span class="sd">        Called when execution reached status &#39;PROCESSED&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#     print(self.execution_status_json.keys())</span>
+
+        <span class="c1"># solveState and solveDetails json is the same for types CONTAINER and INLINE_TABLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;solveState&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;solveDetails&#39;</span><span class="p">]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Example of a solve_state:</span>
+<span class="sd">        {u&#39;workerVersionUsed&#39;: u&#39;1.0-ws-v1.2.3.0-b33&#39;, u&#39;updatedAt&#39;: 1551221728881, u&#39;solveStatus&#39;: u&#39;OPTIMAL_SOLUTION&#39;, </span>
+<span class="sd">        u&#39;details&#39;: {u&#39;PROGRESS_BEST_OBJECTIVE&#39;: u&#39;10750.0&#39;, u&#39;MODEL_DETAIL_KPIS&#39;: u&#39;[&quot;Production Cost&quot;, &quot;Backlog Cost&quot;]&#39;, </span>
+<span class="sd">        u&#39;MODEL_DETAIL_CONSTRAINTS&#39;: u&#39;13&#39;, u&#39;MODEL_DETAIL_INTEGER_VARS&#39;: u&#39;36&#39;, u&#39;PROGRESS_CURRENT_OBJECTIVE.history&#39;: </span>
+<span class="sd">        u&#39;[[1551221728.67, 10750]]&#39;, u&#39;MODEL_DETAIL_BOOLEAN_VARS&#39;: u&#39;0&#39;, u&#39;MODEL_DETAIL_TYPE&#39;: u&#39;MILP&#39;, u&#39;MODEL_DETAIL_CONTINUOUS_VARS&#39;: u&#39;0&#39;, </span>
+<span class="sd">        u&#39;PROGRESS_CURRENT_OBJECTIVE&#39;: u&#39;10750&#39;, u&#39;PROGRESS_GAP&#39;: u&#39;0.0&#39;, u&#39;MODEL_DETAIL_NONZEROS&#39;: u&#39;72&#39;, u&#39;KPI.Backlog Cost&#39;: u&#39;1000&#39;, </span>
+<span class="sd">        u&#39;KPI.Production Cost&#39;: u&#39;9750&#39;}, u&#39;executionStatus&#39;: u&#39;PROCESSED&#39;}</span>
+
+<span class="sd">        Example of a solve_details:</span>
+<span class="sd">        {u&#39;submittedAt&#39;: 1551221727825, u&#39;endedAt&#39;: 1551221728881, u&#39;endReportedAt&#39;: 1551221728918, u&#39;systemDetails&#39;: </span>
+<span class="sd">        {u&#39;worker.cores.total&#39;: u&#39;4&#39;, u&#39;worker.process.cpu.set&#39;: u&#39;0-15&#39;, u&#39;worker.process.peak.memory&#39;: u&#39;120212&#39;, u&#39;worker.cores.default&#39;: u&#39;1&#39;, </span>
+<span class="sd">        u&#39;worker.data.write.bytes&#39;: u&#39;4266&#39;, u&#39;worker.process.peak.swap&#39;: u&#39;0&#39;, u&#39;worker.processing.duration&#39;: u&#39;943&#39;, u&#39;worker.jms.write.chars&#39;: u&#39;6439&#39;, </span>
+<span class="sd">        u&#39;worker.heap.max&#39;: u&#39;524288&#39;, u&#39;worker.data.read.bytes&#39;: u&#39;71234&#39;, u&#39;worker.jms.write.duration&#39;: u&#39;10&#39;, u&#39;worker.data.read.duration&#39;: u&#39;21&#39;, </span>
+<span class="sd">        u&#39;worker.setup.duration&#39;: u&#39;1&#39;, u&#39;worker.log.write.duration&#39;: u&#39;4&#39;, u&#39;worker.data.write.duration&#39;: u&#39;47&#39;, u&#39;worker.log.write.chars&#39;: u&#39;1300&#39;, </span>
+<span class="sd">        u&#39;worker.heap.used&#39;: u&#39;127181&#39;, u&#39;worker.process.processing.duration&#39;: u&#39;722&#39;, u&#39;worker.process.max.memory&#39;: u&#39;524288&#39;}, </span>
+<span class="sd">        u&#39;processorId&#39;: u&#39;testdeploy2-domodel-prodplanningtrial2-55d9c8d7c8-89j25&#39;, u&#39;startedAt&#39;: 1551221727914}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#     print(&quot;---solve details---&quot;)</span>
+        <span class="c1">#     print(self.execution_status_json[&#39;solveDetails&#39;])</span>
+        <span class="c1">#     print(&quot;---solve state---&quot;)</span>
+        <span class="c1">#     print(self.execution_status_json[&#39;solveState&#39;])</span>
+
+        <span class="c1"># Retrieve the solution.json:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solution</span><span class="p">()</span>
+
+        <span class="c1"># Get the output tables:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span> <span class="o">==</span> <span class="s1">&#39;CONTAINER&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">post_process_container</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_type</span> <span class="o">==</span> <span class="s1">&#39;INLINE_TABLE&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">post_process_inline_table</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_container"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_container</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Post-process &#39;CONTAINER&#39; type job.</span>
+<span class="sd">        Called when execution reached status &#39;PROCESSED&#39; and attachment_type=&#39;CONTAINER&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#     print(&quot;post_process_container&quot;)</span>
+        <span class="c1">#     print(self.execution_status_json.keys())</span>
+        <span class="c1">#     for o in self.execution_status_json[&#39;outputAttachments&#39;]:</span>
+        <span class="c1">#             print o[&#39;name&#39;] + &#39;  &#39; + o[&#39;url&#39;]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;outputAttachments&#39;</span><span class="p">]:</span>
+            <span class="n">attachment_name</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">data_url</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">attachment_name</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+                <span class="n">table_name</span> <span class="o">=</span> <span class="n">attachment_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+                <span class="c1">#             print(table_name)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_process_container_get_dataframe</span><span class="p">(</span><span class="n">data_url</span><span class="p">)</span></div>
+            <span class="c1"># elif attachment_name == &#39;solution.json&#39;:</span>
+            <span class="c1">#      self.post_process_retrieve_solution(data_url)</span>
+            <span class="c1"># elif &quot;dump_&quot; in attachment_name:</span>
+            <span class="c1">#     #         elif attachment_name[-4:] == &#39;.zip&#39;:</span>
+            <span class="c1">#     self.retrieve_file(attachment_name, data_url)</span>
+            <span class="c1"># elif self.log_file_name == attachment_name:</span>
+            <span class="c1">#     self.retrieve_file(attachment_name, data_url)</span>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_inline_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_inline_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Post-process &#39;INLINE_TABLE&#39; type job.</span>
+<span class="sd">        when execution reached status &#39;PROCESSED&#39; and attachment_type=&#39;INLINE_TABLE&#39;.</span>
+
+<span class="sd">        In &#39;INLINE_TABLE&#39; all output table data is already in the execution_status_json.</span>
+<span class="sd">        This data is in the form of json (not in csv format like the &#39;CONTAINER&#39; type).</span>
+<span class="sd">        The solution data is not included and needs to be retrieved via a URL, just like with the &#39;CONTAINER&#39; type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#     print(self.execution_status_json.keys())</span>
+
+        <span class="c1">#     print(&quot;post_process_inline_table&quot;)</span>
+        <span class="c1">#     print(self.execution_status_json.keys())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;outputAttachments&#39;</span><span class="p">]:</span>
+            <span class="n">attachment_name</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+            <span class="n">attachment_type</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="c1">#         print(attachment_type)</span>
+            <span class="c1">#         print(category)</span>
+            <span class="c1">#         print(attachment_name)</span>
+            <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="s1">&#39;output&#39;</span> <span class="ow">and</span> <span class="n">attachment_type</span> <span class="o">==</span> <span class="s1">&#39;INLINE_TABLE&#39;</span><span class="p">:</span>
+                <span class="n">table</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span>
+                <span class="c1">#             print(attachment_name)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">attachment_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_process_inline_table_get_dataframe</span><span class="p">(</span><span class="n">table</span><span class="p">)</span></div>
+            <span class="c1"># elif attachment_name == &#39;solution.json&#39;:</span>
+            <span class="c1">#     # Note: the attachment_type == &#39;REST&#39;, which means the contents is a URL to get the solution, not the solution itself.</span>
+            <span class="c1">#     data_url = o[&#39;url&#39;]</span>
+            <span class="c1">#     self.post_process_retrieve_solution(data_url)</span>
+            <span class="c1">#     #         elif attachment_name[-4:] == &#39;.zip&#39;:</span>
+            <span class="c1"># elif &quot;dump_&quot; in attachment_name:</span>
+            <span class="c1">#     data_url = o[&#39;url&#39;]</span>
+            <span class="c1">#     self.retrieve_file(attachment_name, data_url)</span>
+            <span class="c1">#     pass</span>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_container_get_dataframe"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container_get_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_container_get_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to GET the data from a table attachment and load into a DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">StringIO</span> <span class="k">import</span> <span class="n">StringIO</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_inline_table_get_dataframe"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table_get_dataframe">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">post_process_inline_table_get_dataframe</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Converts the &#39;table&#39; to a DataFrame.</span>
+<span class="sd">        Applies to &#39;INLINE_TABLE&#39; attachment type.</span>
+
+<span class="sd">        table is a dict with 2 keys:</span>
+<span class="sd">        1. name: string</span>
+<span class="sd">        2. rows: list of dicts with 1 key: `values`: list of strings/integers/floats</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Example of a table:</span>
+<span class="sd">        {u&#39;name&#39;: u&#39;kpis&#39;, </span>
+<span class="sd">         u&#39;rows&#39;: [{u&#39;values&#39;: [u&#39;&quot;NAME&quot;&#39;, u&#39;&quot;VALUE&quot;&#39;]},</span>
+<span class="sd">        {u&#39;values&#39;: [u&#39;&quot;Production Cost&quot;&#39;, u&#39;&quot;9750&quot;&#39;]},</span>
+<span class="sd">        {u&#39;values&#39;: [u&#39;&quot;Backlog Cost&quot;&#39;, u&#39;&quot;1000&quot;&#39;]}]}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">StringIO</span> <span class="k">import</span> <span class="n">StringIO</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+
+        <span class="n">csv</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">[</span><span class="s1">&#39;rows&#39;</span><span class="p">]:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span>
+                <span class="s1">&#39;values&#39;</span><span class="p">])</span>  <span class="c1"># Note: need to convert each value in the values row to a string, otherwise the join doesn&#39;t work</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1">#         print(&quot;line = {}&quot;.format(line))</span>
+        <span class="n">csv</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Returns the pointer to the start of the file. If not, &#39;reading&#39; the file will start at the end and return nothing.</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.retrieve_solution"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solution">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to retrieve the solution.json.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solution_json</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">solution_name</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solution_name_and_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">solution_json</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">return</span> <span class="n">solution_json</span></div>
+
+    <span class="c1"># def post_process_retrieve_solution(self, data_url):</span>
+    <span class="c1">#     &quot;&quot;&quot;Call REST API to GET the solution data.</span>
+    <span class="c1">#     Called when execution reached status &#39;PROCESSED&#39; and attachment_type=&#39;CONTAINER&#39; or &#39;INLINE_TABLE&#39;</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     r = requests.get(data_url, headers=self.get_headers(), verify=False)</span>
+    <span class="c1">#     obj = r.json()</span>
+    <span class="c1">#     self.solution_json = obj</span>
+    <span class="c1">#     #     self.objective = obj[&#39;CPLEXSolution&#39;][&#39;header&#39;][&#39;objectiveValue&#39;]</span>
+    <span class="c1">#     #     print(&quot;Solution&quot;)</span>
+    <span class="c1">#     #     print(obj)</span>
+    <span class="c1">#     #     print(&#39;----------&#39;)</span>
+    <span class="c1">#     #     print(obj[&#39;CPLEXSolution&#39;][&#39;header&#39;].keys())</span>
+    <span class="c1">#     print(&quot;Objective = {}&quot;.format(obj[&#39;CPLEXSolution&#39;][&#39;header&#39;][&#39;objectiveValue&#39;]))</span>
+
+<div class="viewcode-block" id="DeployedDOModel.retrieve_debug_materials"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_debug_materials">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_debug_materials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The dump zip and log files is saved in the self.debug_file_dir folder.</span>
+<span class="sd">        This dump zip file can be used to create a new scenario. (Using the right-hand-side panel in the Model Builder, &#39;Create Scenario From file&#39;.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Do not download the files if not in debug mode</span>
+        <span class="c1"># This is a work-around for the bug that we always need to generate the dump file on the server, otherwise there are no output attachments.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">zip_name</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_debug_dump_name_and_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">zip_name</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="n">log_name</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_file_name_and_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_file</span><span class="p">(</span><span class="n">log_name</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.retrieve_file"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_file">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to GET the data of the file</span>
+<span class="sd">        The file is saved in de debug folder.</span>
+
+<span class="sd">        Can be used for the dump&lt;&gt;.zip file or the log.txt file</span>
+<span class="sd">        This dump zip file can be used to create a new scenario (Using the right-hand-side panel in the Model Builder, &#39;Create Scenario From file&#39;)</span>
+
+<span class="sd">        Note that if we get here, there exists a log or dump file on the deployed service. Make sure this gets cleaned up.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">debug_file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+        <span class="c1"># f = open(&#39;../datasets/&#39; + zip_name, &#39;wb&#39;)</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">z</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">512</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+    <span class="c1"># def retreive_debug_dump_zip(self, zip_name, url):</span>
+    <span class="c1">#     &quot;&quot;&quot;Call REST API to GET the data of the dump&lt;&gt;.zip file</span>
+    <span class="c1">#     The dump zip file is saved in notebook folder.</span>
+    <span class="c1">#     This dump zip file can be used to create a new scenario (Using the right-hand-side panel in the Model Builder, &#39;Create Scenario From file&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Make sure this is always run to get any debug file url (if it was generated), so we can clean it up.</span>
+    <span class="c1">#     TODO: allow for configuration of whether debug file is retrieved.</span>
+    <span class="c1">#     Note that if we get here, there exists a dump file on the deployed service. Make sure this gets cleaned up. Cleanup will happen if the self.debug_file_data_url is set.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # Store the url so we can clean it up later</span>
+    <span class="c1">#     #     self.debug_file_data_url = url</span>
+    <span class="c1">#</span>
+    <span class="c1">#     #     print(&#39;zipName = {}&#39;.format(zip_name))</span>
+    <span class="c1">#     #     print(&#39;Debug Data URL = {}&#39;.format(url))</span>
+    <span class="c1">#     z = requests.get(url, headers=self.get_headers(), stream=True, verify=False)</span>
+    <span class="c1">#     f = open(&#39;../datasets/&#39; + zip_name, &#39;wb&#39;)</span>
+    <span class="c1">#     for chunk in z.iter_content(chunk_size=512 * 1024):</span>
+    <span class="c1">#         if chunk:</span>
+    <span class="c1">#             f.write(chunk)</span>
+    <span class="c1">#         f.close()</span>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_failed"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_failed">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when execution reached status &#39;FAILED&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failure message: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;solveState&#39;</span><span class="p">][</span><span class="s1">&#39;failureInfo&#39;</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.post_process_interrupted"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_interrupted">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_interrupted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when execution reached status &#39;INTERRUPTED&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interruption status: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_status_json</span><span class="p">[</span><span class="s1">&#39;solveState&#39;</span><span class="p">][</span><span class="s1">&#39;interruptionStatus&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.cleanup"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call REST API to clean-up the job and, if applicable, the debug file.</span>
+<span class="sd">        Delete the job from the execution service as well as the debug file from the &quot;debug&quot; container, to free space on the cluster.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Clean-up the job:</span>
+        <span class="n">job_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">job_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">job_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Clean-up the dump file:</span>
+        <span class="n">debug_file_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_debug_file_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">debug_file_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">debug_file_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Clean-up the log file</span>
+        <span class="n">log_file_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log_file_url</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">log_file_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">log_file_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(),</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

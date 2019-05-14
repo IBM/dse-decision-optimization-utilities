@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils.optimizationengine &mdash; DSE DO Utils 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils.optimizationengine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dse_do_utils.optimizationengine</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># OptimizationEngine</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">docplex.mp.conflict_refiner</span> <span class="k">import</span> <span class="n">ConflictRefiner</span>
+<span class="kn">from</span> <span class="nn">docplex.mp.progress</span> <span class="k">import</span> <span class="n">SolutionListener</span>
+<span class="kn">from</span> <span class="nn">docplex.mp.model</span> <span class="k">import</span> <span class="n">Model</span>
+
+<span class="c1"># from dse_do_utils import ScenarioManager</span>
+<span class="c1"># Note that when in a package, we need to import from another modules in this package slightly differently:</span>
+<span class="kn">from</span> <span class="nn">.scenariomanager</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
+
+
+<div class="viewcode-block" id="OptimizationEngine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine">[docs]</a><span class="k">class</span> <span class="nc">OptimizationEngine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MyOptimizationEngine&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">data_manager</span>
+
+<div class="viewcode-block" id="OptimizationEngine.integer_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">integer_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.</span>
+<span class="sd">        Result can be assigned to a column of the df.</span>
+<span class="sd">        Usage:</span>
+<span class="sd">        df[&#39;xDVar&#39;] = mdl.integer_var_series(df, name = &#39;xDVar&#39;)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            self (docplex.mp.model): CPLEX Model</span>
+<span class="sd">            df (DataFrame): dataframe</span>
+<span class="sd">            **kargs: arguments passed to mdl.integer_var_list method. E.g. &#39;name&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (pandas.Series) with integer dvars, index matches index of df</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We are re-using the index from the DF index:</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">integer_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+        <span class="c1"># return pd.Series(self.mdl.integer_var_list(df.index, **kargs), index = df.index)</span>
+
+<div class="viewcode-block" id="OptimizationEngine.continuous_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">continuous_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">continuous_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+        <span class="c1"># return pd.Series(self.mdl.continuous_var_list(df.index, **kargs), index = df.index)</span>
+
+<div class="viewcode-block" id="OptimizationEngine.binary_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">binary_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">binary_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+        <span class="c1"># return pd.Series(self.mdl.binary_var_list(df.index, **kargs), index = df.index)</span>
+
+<div class="viewcode-block" id="OptimizationEngine.integer_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">integer_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">integer_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.continuous_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">continuous_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">continuous_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.binary_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">binary_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">binary_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.solve"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refine_conflict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">msol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># log_output=True</span>
+        <span class="k">if</span> <span class="n">msol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found a solution&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">print_solution</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No solution&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">refine_conflict</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Conflict Refiner:&#39;</span><span class="p">)</span>
+                <span class="n">crefiner</span> <span class="o">=</span> <span class="n">ConflictRefiner</span><span class="p">()</span>  <span class="c1"># Create an instance of the ConflictRefiner</span>
+                <span class="n">conflicts</span> <span class="o">=</span> <span class="n">crefiner</span><span class="o">.</span><span class="n">refine_conflict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">)</span>  <span class="c1"># Run the conflict refiner</span>
+                <span class="c1"># ConflictRefiner.display_conflicts(conflicts) #Display the results</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conflicts</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="n">c</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>  <span class="c1"># Display conflict result in a little more compact format than ConflictRefiner.display_conflicts</span>
+        <span class="k">return</span> <span class="n">msol</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.get_kpi_output_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_kpi_output_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_kpis</span> <span class="o">=</span> <span class="p">[(</span><span class="n">kp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">kp</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span> <span class="k">for</span> <span class="n">kp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">iter_kpis</span><span class="p">()]</span>
+        <span class="n">df_kpis</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_kpis</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kpi&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">df_kpis</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.export_as_lp"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_lp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export .lp file of model in the &#39;DSX_PROJECT_DIR.datasets&#39; folder.</span>
+<span class="sd">        Convenience method.</span>
+<span class="sd">        It can write a copy as a .csv file, so it can be exported to a local machine.</span>
+<span class="sd">        If not in DSX, it will write to the local file system in the &#39;local_root/datasets&#39; directory.</span>
+<span class="sd">        Lp-filename is based on the mdl.name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            local_dir (str): name of local directory. Will write .lp file here, if not in DSX</span>
+<span class="sd">            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str) path to lp file</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError if root directory can&#39;t be established.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">export_as_lp_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="n">copy_to_csv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.export_as_cpo"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_cpo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export .cpo file of model in the &#39;DSX_PROJECT_DIR.datasets&#39; folder.</span>
+<span class="sd">        It can write a copy as a .csv file, so it can be exported to a local machine.</span>
+<span class="sd">        If not in DSX, it will write to the local file system in the &#39;local_root/datasets&#39; directory.</span>
+<span class="sd">        Convenience method.</span>
+<span class="sd">        Cpo-filename is based on the mdl.name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            local_dir (str): name of local directory. Will write .lp file here, if not in DSX</span>
+<span class="sd">            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str) path to cpo file</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError if root directory can&#39;t be established.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">export_as_cpo_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="n">copy_to_csv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.export_as_lp_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">export_as_lp_s</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export .lp file of model in the &#39;DSX_PROJECT_DIR.datasets&#39; folder.</span>
+<span class="sd">        It can write a copy as a .csv file, so it can be exported to a local machine.</span>
+<span class="sd">        If not in WSL, it will write to the local file system in the &#39;local_root/datasets&#39; directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (docplex.mp.model): The CPLEX model to be exported</span>
+<span class="sd">            model_name (str): name of .lp file. If none specified, will use the model.name.</span>
+<span class="sd">                Specify if the model.name is not a valid file-name.</span>
+<span class="sd">            local_root (str): name of local directory. Will write .lp file here, if not in WSL</span>
+<span class="sd">            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str) path to lp file</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError if root directory can&#39;t be established.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get model name:</span>
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># Get root directory:</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">)</span>  <span class="c1"># Just to call the get_root_directory()</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="c1"># Write regular lp-file:</span>
+        <span class="n">lp_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_name_1</span><span class="p">)</span>  <span class="c1"># Writes the .lp file</span>
+        <span class="c1"># Copy to csv:</span>
+        <span class="k">if</span> <span class="n">copy_to_csv</span><span class="p">:</span>
+            <span class="n">lp_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.lp&#39;</span><span class="p">)</span>
+            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_lp.csv&#39;</span><span class="p">)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_name_2</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">lp_file_name_2</span><span class="p">,</span> <span class="n">csv_file_name_2</span><span class="p">)</span>
+        <span class="c1"># Return</span>
+        <span class="k">return</span> <span class="n">lp_file_name_1</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.export_as_cpo_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">export_as_cpo_s</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export .cpo file of model in the &#39;DSX_PROJECT_DIR.datasets&#39; folder.</span>
+<span class="sd">        It can write a copy as a .csv file, so it can be exported to a local machine.</span>
+<span class="sd">        If not in DSX, it will write to the local file system in the &#39;local_root/datasets&#39; directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (docplex.cp.model): The CPLEX model to be exported</span>
+<span class="sd">            model_name (str): name of .lp file. If none specified, will use the model.name.</span>
+<span class="sd">                Specify if the model.name is not a valid file-name.</span>
+<span class="sd">            local_root (str): name of local directory. Will write .lp file here, if not in DSX</span>
+<span class="sd">            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.</span>
+<span class="sd">            **kwargs: Passed to model.export_model</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str) path to cpo file</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError if root directory can&#39;t be established.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get model name:</span>
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># Get root directory:</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">)</span>  <span class="c1"># Just to call the get_root_directory()</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="c1"># Write regular cpo-file:</span>
+        <span class="n">cpo_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.cpo&#39;</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">export_model</span><span class="p">(</span><span class="n">cpo_file_name_1</span><span class="p">)</span>  <span class="c1"># Writes the .cpo file</span>
+        <span class="c1"># Copy to csv</span>
+        <span class="k">if</span> <span class="n">copy_to_csv</span><span class="p">:</span>
+            <span class="n">cpo_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.cpo&#39;</span><span class="p">)</span>
+            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_cpo.csv&#39;</span><span class="p">)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">cpo_file_name_2</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">cpo_file_name_2</span><span class="p">,</span> <span class="n">csv_file_name_2</span><span class="p">)</span>
+        <span class="c1"># Return</span>
+        <span class="k">return</span> <span class="n">cpo_file_name_1</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.add_mip_progress_kpis"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis">[docs]</a>    <span class="k">def</span> <span class="nf">add_mip_progress_kpis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mip_gap_kpi_name</span><span class="o">=</span><span class="s2">&quot;Gap&quot;</span><span class="p">,</span> <span class="n">solve_time_kpi_name</span><span class="o">=</span><span class="s2">&quot;Solve Time&quot;</span><span class="p">,</span>
+                              <span class="n">best_bound_kpi_name</span><span class="o">=</span><span class="s2">&quot;Best Bound&quot;</span><span class="p">,</span> <span class="n">solution_count_kpi_name</span><span class="o">=</span><span class="s2">&quot;Solution Count&quot;</span><span class="p">,</span>
+                              <span class="n">solve_phase_kpi_name</span><span class="o">=</span><span class="s2">&quot;Solve Phase&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds 5 KPIs to the self.mdl: &#39;Gap&#39;, &#39;Solve Time&#39;, &#39;Best Bound&#39;, &#39;Solution Count&#39;, &#39;Solve Phase&#39;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mip_gap_kpi_name (str):</span>
+<span class="sd">            solve_time_kpi_name (str):</span>
+<span class="sd">            best_bound_kpi_name (str):</span>
+<span class="sd">            solution_count_kpi_name (str):</span>
+<span class="sd">            solve_phase_kpi_name (str):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mdl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span>
+        <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span> <span class="o">=</span> <span class="n">MyProgressListener</span><span class="p">(</span><span class="n">mdl</span><span class="p">)</span>
+        <span class="n">mdl</span><span class="o">.</span><span class="n">add_progress_listener</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mip_gap_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">mip_gap</span><span class="p">,</span> <span class="n">mip_gap_kpi_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solve_time_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solve_time</span><span class="p">,</span> <span class="n">solve_time_kpi_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">best_bound_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">best_bound</span><span class="p">,</span> <span class="n">best_bound_kpi_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solution_count_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solution_count</span><span class="p">,</span> <span class="n">solution_count_kpi_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solve_phase_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solve_phase</span><span class="p">,</span> <span class="n">solve_phase_kpi_name</span><span class="p">)</span></div></div>
+
+
+    <span class="c1">################################################</span>
+    <span class="c1"># MyProgress Listener</span>
+    <span class="c1">################################################</span>
+
+
+<div class="viewcode-block" id="MyProgressListener"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.MyProgressListener">[docs]</a><span class="k">class</span> <span class="nc">MyProgressListener</span><span class="p">(</span><span class="n">SolutionListener</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdl</span><span class="p">):</span>
+        <span class="n">SolutionListener</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mip_gap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_bound</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_phase</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_model</span> <span class="o">=</span> <span class="n">mdl</span>
+
+<div class="viewcode-block" id="MyProgressListener.notify_progress"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.MyProgressListener.notify_progress">[docs]</a>    <span class="k">def</span> <span class="nf">notify_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress_data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_bound</span> <span class="o">=</span> <span class="n">progress_data</span><span class="o">.</span><span class="n">best_bound</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mip_gap</span> <span class="o">=</span> <span class="n">progress_data</span><span class="o">.</span><span class="n">mip_gap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_time</span> <span class="o">=</span> <span class="n">progress_data</span><span class="o">.</span><span class="n">time</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_model</span><span class="o">.</span><span class="n">solve_phase</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
+        <span class="c1"># self.my_model.outputs = self.post_process()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

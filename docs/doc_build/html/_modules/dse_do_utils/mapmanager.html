@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils.mapmanager &mdash; DSE DO Utils 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils.mapmanager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dse_do_utils.mapmanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># MapManager</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="MapManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager">[docs]</a><span class="k">class</span> <span class="nc">MapManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for building Folium map visualization.</span>
+
+<span class="sd">    Currently, the functionality is limited, but may be extended in the future.</span>
+
+<span class="sd">    Work-around for multi-line in popup:</span>
+<span class="sd">    https://github.com/python-visualization/folium/issues/469</span>
+
+<span class="sd">    Popup work-around::</span>
+
+<span class="sd">        popup = (</span>
+<span class="sd">            &quot;Time: {time}&lt;br&gt;&quot;</span>
+<span class="sd">            &quot;Speed: {speed} km/h&lt;br&gt;&quot;</span>
+<span class="sd">        ).format(time=row.name.strftime(&#39;%H:%M&#39;),</span>
+<span class="sd">                 speed=str(round(row[&#39;spd&#39;],2))</span>
+
+
+<span class="sd">    Tooltip doesn&#39;t yet work in 0.50.0:&lt;br&gt;</span>
+<span class="sd">    https://github.com/python-visualization/folium/issues/785</span>
+<span class="sd">    Update: in 0.6.0 (WSL1.2.3) it does seem to work!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">kansas_city_coord</span> <span class="o">=</span> <span class="p">[</span><span class="mf">39.085594</span><span class="p">,</span> <span class="o">-</span><span class="mf">94.585241</span><span class="p">]</span>  <span class="c1"># Kansas City, roughly the geographic center of the USA</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zoom_start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span>
+                 <span class="n">layer_control_position</span><span class="o">=</span><span class="s1">&#39;topleft&#39;</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">folium</span>  <span class="c1"># Import here so that you only do the import if you are actually using this class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">data_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom_start</span> <span class="o">=</span> <span class="n">zoom_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_control_position</span> <span class="o">=</span> <span class="n">layer_control_position</span>
+
+<div class="viewcode-block" id="MapManager.create_blank_map"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.create_blank_map">[docs]</a>    <span class="k">def</span> <span class="nf">create_blank_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">folium</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">zoom_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">zoom_start</span><span class="p">,</span> <span class="n">tiles</span><span class="o">=</span><span class="s1">&#39;cartodbpositron&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                       <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">m</span></div>
+
+<div class="viewcode-block" id="MapManager.add_layer_control"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_layer_control">[docs]</a>    <span class="k">def</span> <span class="nf">add_layer_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">folium</span>
+        <span class="c1"># Typical value = `topleft`</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_control_position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">folium</span><span class="o">.</span><span class="n">LayerControl</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_control_position</span><span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MapManager.add_full_screen"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_full_screen">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_full_screen</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a full-screen button in the top-left corner of the map.</span>
+<span class="sd">        Unfortunately, the full-screen doesn&#39;t work in a Jupyter cell.</span>
+<span class="sd">        Seems to work ok here: http://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Plugins.ipynb&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">folium</span> <span class="k">import</span> <span class="n">plugins</span>
+        <span class="n">plugins</span><span class="o">.</span><span class="n">Fullscreen</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s1">&#39;topleft&#39;</span><span class="p">,</span>
+                           <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Expand me&#39;</span><span class="p">,</span>
+                           <span class="n">title_cancel</span><span class="o">=</span><span class="s1">&#39;Exit me&#39;</span><span class="p">,</span>
+                           <span class="n">force_separate_button</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div>
+
+
+    <span class="c1">#---------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Arrows</span>
+    <span class="c1">#---------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="MapManager.get_bearing"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_bearing">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_bearing</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns compass bearing from p1 to p2</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        p1 : namedtuple with lat lon</span>
+<span class="sd">        p2 : namedtuple with lat lon</span>
+
+<span class="sd">        Return</span>
+<span class="sd">        compass bearing of type float</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        Based on https://gist.github.com/jeromer/2005586</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">long_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">lon</span> <span class="o">-</span> <span class="n">p1</span><span class="o">.</span><span class="n">lon</span><span class="p">)</span>
+
+        <span class="n">lat1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">lat2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">long_diff</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat2</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat2</span><span class="p">)</span>
+             <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">long_diff</span><span class="p">)))</span>
+
+        <span class="n">bearing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+        <span class="c1"># adjusting for compass bearing</span>
+        <span class="k">if</span> <span class="n">bearing</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bearing</span> <span class="o">+</span> <span class="mi">360</span>
+        <span class="k">return</span> <span class="n">bearing</span></div>
+
+<div class="viewcode-block" id="MapManager.get_arrows"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_arrows">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_arrows</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_arrows</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">add_to</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add arrows to a hypothetical line between the first 2 locations in the locations list.</span>
+<span class="sd">        Get a list of correctly placed and rotated arrows/markers to be plotted.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            locations : List of lists of lat lon that represent the</span>
+<span class="sd">                        start and end of the line.</span>
+<span class="sd">                        eg [[41.1132, -96.1993],[41.3810, -95.8021]]</span>
+<span class="sd">                        The locations is a list so that it matches the input for the folium.PolyLine.</span>
+<span class="sd">            color : Whatever folium can use.  Default is &#39;blue&#39;</span>
+<span class="sd">            size : Size of arrow. Default is 6</span>
+<span class="sd">            n_arrows : Number of arrows to create.  Default is 3.</span>
+<span class="sd">            add_to: map or FeatureGroup the arrows are added to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of arrows/markers</span>
+
+<span class="sd">        Based on: https://medium.com/@bobhaffner/folium-lines-with-arrows-25a0fe88e4e</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: generalize so that locations can be any length &gt;=2, i.e. a PolyLine with more than 1 section.</span>
+
+        <span class="kn">import</span> <span class="nn">folium</span>
+        <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">Point</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+
+        <span class="c1"># creating point from our Point named tuple</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">locations</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">locations</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># getting the rotation needed for our marker.</span>
+        <span class="c1"># Subtracting 90 to account for the marker&#39;s orientation</span>
+        <span class="c1"># of due East(get_bearing returns North)</span>
+        <span class="n">rotation</span> <span class="o">=</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_bearing</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">90</span>
+
+        <span class="c1"># get an evenly space list of lats and lons for our arrows</span>
+        <span class="c1"># note that I&#39;m discarding the first and last for aesthetics</span>
+        <span class="c1"># as I&#39;m using markers to denote the start and end</span>
+        <span class="n">arrow_lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="n">n_arrows</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="n">n_arrows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">arrow_lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">n_arrows</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="n">n_arrows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">arrows</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># creating each &quot;arrow&quot; and appending them to our arrows list</span>
+        <span class="k">for</span> <span class="n">points</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">arrow_lats</span><span class="p">,</span> <span class="n">arrow_lons</span><span class="p">):</span>
+            <span class="n">arrows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">folium</span><span class="o">.</span><span class="n">RegularPolygonMarker</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                                                      <span class="n">fill_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">number_of_sides</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                                                      <span class="n">radius</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">add_to</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">arrows</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def get_arrows_2(from_location, to_location, color=&#39;blue&#39;, size=6, n_arrows=3, add_to=None):</span>
+    <span class="c1">#     &quot;&quot;&quot;Add arrows to a hypothetical line between the locations.</span>
+    <span class="c1">#     Get a list of correctly placed and rotated arrows/markers to be plotted.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         from_location (lat,lon): from location as a tuple or list with lat and lon, e.g. [41.1132, -96.1993]</span>
+    <span class="c1">#         to_location (lat,lon): from location as a tuple or list with lat and lon, e.g. [41.3810, -95.8021]</span>
+    <span class="c1">#         color : Whatever folium can use.  Default is &#39;blue&#39;</span>
+    <span class="c1">#         size : Size of arrow. Default is 6</span>
+    <span class="c1">#         n_arrows : Number of arrows to create.  Default is 3.</span>
+    <span class="c1">#         add_to: map or FeatureGroup the arrows are added to.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         list of arrows/markers</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     from collections import namedtuple</span>
+    <span class="c1">#     import numpy as np</span>
+    <span class="c1">#     Point = namedtuple(&#39;Point&#39;, field_names=[&#39;lat&#39;, &#39;lon&#39;])</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # creating point from our Point named tuple</span>
+    <span class="c1">#     p1 = Point(from_location[0], from_location[1])</span>
+    <span class="c1">#     p2 = Point(to_location[0], to_location[1])</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # getting the rotation needed for our marker.</span>
+    <span class="c1">#     # Subtracting 90 to account for the marker&#39;s orientation</span>
+    <span class="c1">#     # of due East(get_bearing returns North)</span>
+    <span class="c1">#     rotation = MapManager.get_bearing(p1, p2) - 90</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # get an evenly space list of lats and lons for our arrows</span>
+    <span class="c1">#     # note that I&#39;m discarding the first and last for aesthetics</span>
+    <span class="c1">#     # as I&#39;m using markers to denote the start and end</span>
+    <span class="c1">#     arrow_lats = np.linspace(p1.lat, p2.lat, n_arrows + 2)[1:n_arrows + 1]</span>
+    <span class="c1">#     arrow_lons = np.linspace(p1.lon, p2.lon, n_arrows + 2)[1:n_arrows + 1]</span>
+    <span class="c1">#</span>
+    <span class="c1">#     arrows = []</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # creating each &quot;arrow&quot; and appending them to our arrows list</span>
+    <span class="c1">#     for points in zip(arrow_lats, arrow_lons):</span>
+    <span class="c1">#         arrows.append(folium.RegularPolygonMarker(location=points,</span>
+    <span class="c1">#                                                   fill_color=color, number_of_sides=3,</span>
+    <span class="c1">#                                                   radius=size, rotation=rotation).add_to(add_to))</span>
+    <span class="c1">#     return arrows</span>
+
+<div class="viewcode-block" id="MapManager.get_html_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_html_table">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates 2 column html table for use in popups.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            rows: List of sequences. Each sequence should have 2 string entries, one for each column</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            html: a HTML formatted table of two columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">table_html_pattern</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;table style=&quot;width:100%&quot;&gt;</span><span class="si">{}</span><span class="s2">&lt;/table&gt;&quot;&quot;&quot;</span>
+        <span class="c1"># row_html_pattern = &quot;&quot;&quot;&lt;tr&gt;&lt;td&gt;{}:&amp;nbsp&lt;/td&gt;&lt;td&gt;{}&lt;/td&gt;&lt;/tr&gt;&quot;&quot;&quot;</span>
+        <span class="n">row_html_pattern</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;tr&gt;&lt;td&gt;</span><span class="si">{}</span><span class="s2">&amp;nbsp&lt;/td&gt;&lt;td&gt;</span><span class="si">{}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;&quot;&quot;</span>
+        <span class="n">rows_html</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">rows_html</span> <span class="o">=</span> <span class="n">rows_html</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">row_html_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">table_html_pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rows_html</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">html</span></div>
+
+<div class="viewcode-block" id="MapManager.get_popup_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_popup_table">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_popup_table</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a popup table to add as a popup/child to a folium element.</span>
+
+<span class="sd">        Usage::</span>
+
+<span class="sd">            popup_table = [</span>
+<span class="sd">            ]</span>
+<span class="sd">            popup = MapManager.get_popup_table(popup_table)</span>
+
+<span class="sd">        Next, the popup object can be used in a popup argument of a Marker::</span>
+
+<span class="sd">            marker = folium.Marker(coord,</span>
+<span class="sd">                               popup=popup,</span>
+<span class="sd">                               icon=icon</span>
+<span class="sd">                               )</span>
+
+<span class="sd">        Or added as a child::</span>
+
+<span class="sd">            county.add_child(popup)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rows: List of sequences. Each sequence should have 2 string entries, one for each column.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            popup (folium.Popup)</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        Beware that a quote in the texts causes a problem (no map shows).</span>
+<span class="sd">        This can be avoided by replacing the &quot;\&#39;&quot; with something else.</span>
+<span class="sd">        Unfortunately the option `parse_html=True` does not prevent the problem.</span>
+<span class="sd">        Despite the suggestion in https://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Popups.ipynb</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">folium</span>
+        <span class="n">html_text</span> <span class="o">=</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Html</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">popup</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Popup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">parse_html</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_width</span><span class="o">=</span><span class="mi">2650</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">popup</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

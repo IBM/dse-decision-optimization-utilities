@@ -1,0 +1,1662 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="dse_do_utils" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dse_do_utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.scenariopicker">dse_do_utils.scenariopicker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.utilities">dse_do_utils.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.version">dse_do_utils.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dse_do_utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dse-do-utils-package">
+<h1>dse_do_utils package<a class="headerlink" href="#dse-do-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dse_do_utils.datamanager">
+<span id="dse-do-utils-datamanager-module"></span><h2>dse_do_utils.datamanager module<a class="headerlink" href="#module-dse_do_utils.datamanager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.datamanager.DataManager">
+<em class="property">class </em><code class="descclassname">dse_do_utils.datamanager.</code><code class="descname">DataManager</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A DataManager is a container of original scenario and intermediate data.</p>
+<p>It typically contains the input and output dictionaries with DataFrames come from
+or will be inserted into a DO scenario.
+In addition it will hold any intermediate data.
+It holds methods that operate on and convert the data.
+When used in combination with an optimization engine, it should not contain the
+docplex code that creates or interacts with the docplex Model. (That is the task of the OptimizationEngine.)</p>
+<p>One of the reasons to separate the DataManager from the OptimizationEngine is to re-use the DataManager,
+e.g. for output visualization notebooks.</p>
+<dl class="docutils">
+<dt>A typical DataManager:</dt>
+<dd><ul class="first last simple">
+<li>Prepares the input DataFrames (like selecting and renaming columns and indexing) and assigns them to a direct attribute.</li>
+<li>Contains a set of methods that create intermediate data (‘pre-processing’). Intermediate data will also be assigned as a direct member property.</li>
+</ul>
+</dd>
+</dl>
+<dl class="staticmethod">
+<dt id="dse_do_utils.datamanager.DataManager.apply_and_concat">
+<em class="property">static </em><code class="descname">apply_and_concat</code><span class="sig-paren">(</span><em>dataframe</em>, <em>field</em>, <em>func</em>, <em>column_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.apply_and_concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.apply_and_concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds multiple columns in one lambda apply function call.</p>
+<p>Based on <a class="reference external" href="https://stackoverflow.com/questions/23690284/pandas-apply-function-that-returns-multiple-values-to-rows-in-pandas-dataframe">https://stackoverflow.com/questions/23690284/pandas-apply-function-that-returns-multiple-values-to-rows-in-pandas-dataframe</a></p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">my_input_value</span><span class="p">):</span>
+    <span class="n">my_output_value_1</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">my_output_value_2</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">my_output_value1</span><span class="p">,</span> <span class="n">my_output_value_2</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">apply_and_concat</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;my_input_column_name&#39;</span><span class="p">,</span> <span class="n">my_function</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;my_output_column_name_1&#39;</span><span class="p">,</span><span class="s1">&#39;my_output_column_name_2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>df should have the column ‘my_input_column_name’.
+Result is that df will have 2 new columns: ‘my_output_column_name_1’ and ‘my_output_column_name_2’</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataframe</strong> (<em>DataFrame</em>) – The DataFrame that the function is applied to</li>
+<li><strong>field</strong> (<em>str</em>) – the name of the input data column of dataframe</li>
+<li><strong>func</strong> – the function that will be applied. Should have one input argument and return a tuple with N elements.</li>
+<li><strong>column_names</strong> (<em>list of str</em>) – The names of the N output columns. Should match the number of values in the function return tuple.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">modified dataframe with N new columns</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.datamanager.DataManager.df_crossjoin_ai">
+<em class="property">static </em><code class="descname">df_crossjoin_ai</code><span class="sig-paren">(</span><em>df1</em>, <em>df2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.df_crossjoin_ai"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.df_crossjoin_ai" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cross-join ‘Any Index’
+Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
+Accepts dataframes that are single or multi-indexed with named and un-named indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df1</strong> (<em>DataFrame</em>) – </li>
+<li><strong>df2</strong> (<em>DataFrame</em>) – </li>
+<li><strong>keyword arguments that will be passed to pd.merge</strong><strong>(</strong><strong>)</strong> (<em>kwargs</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(DataFrame) cross join of df1 and df2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.datamanager.DataManager.df_crossjoin_mi">
+<em class="property">static </em><code class="descname">df_crossjoin_mi</code><span class="sig-paren">(</span><em>df1</em>, <em>df2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.df_crossjoin_mi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.df_crossjoin_mi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
+Assumes both input dataframes have a (single or multi) index.
+Returns a dataframe with a MultiIndex that is the cartesian product of the indices of the input dataframes.
+Creates a named MultiIndex if both input dataframes have their indices named.
+Otherwise will return an unnamed multi-index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df1</strong> (<em>DataFrame</em>) – </li>
+<li><strong>df2</strong> (<em>DataFrame</em>) – </li>
+<li><strong>keyword arguments that will be passed to pd.merge</strong><strong>(</strong><strong>)</strong> (<em>kwargs</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(DataFrame) cross join of df1 and df2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.datamanager.DataManager.df_crossjoin_si">
+<em class="property">static </em><code class="descname">df_crossjoin_si</code><span class="sig-paren">(</span><em>df1</em>, <em>df2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.df_crossjoin_si"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.df_crossjoin_si" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
+Assumes both input dataframes have a single index column.
+Returns a dataframe with a MultiIndex that is the cartesian product of the indices of the input dataframes.
+See: <a class="reference external" href="https://github.com/pydata/pandas/issues/5401">https://github.com/pydata/pandas/issues/5401</a>
+See <a class="reference external" href="https://mkonrad.net/2016/04/16/cross-join--cartesian-product-between-pandas-dataframes.html">https://mkonrad.net/2016/04/16/cross-join–cartesian-product-between-pandas-dataframes.html</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df1</strong> (<em>DataFrame</em>) – dataframe 1</li>
+<li><strong>df2</strong> (<em>DataFrame</em>) – dataframe 2</li>
+<li><strong>keyword arguments that will be passed to pd.merge</strong><strong>(</strong><strong>)</strong> (<em>kwargs</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(DataFrame) cross join of df1 and df2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.datamanager.DataManager.get_parameter_value">
+<em class="property">static </em><code class="descname">get_parameter_value</code><span class="sig-paren">(</span><em>params</em>, <em>param_name</em>, <em>param_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.get_parameter_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.get_parameter_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get value of parameter from the parameter table (DataFrame).
+Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
+parameter depending on what other values are used in other rows.
+This requires the explicit conversion to the expected data type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> (<em>indexed DataFrame with parameters</em>) – Index = ‘param’, value in ‘value’ column.</li>
+<li><strong>param_name</strong> (<em>str</em>) – Name of parameter.</li>
+<li><strong>param_type</strong> (<em>str</em>) – Type of parameter. Valid param_type values are int, float, str, bool.</li>
+<li><strong>default_value</strong> – Value if param_name not in index.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.datamanager.DataManager.pp_parameters">
+<code class="descname">pp_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.pp_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.pp_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated
+Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.datamanager.DataManager.prep_parameters">
+<code class="descname">prep_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.prep_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.prep_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process the Parameter(s) input table.
+Assumes the inputs contains a table named <cite>Parameter</cite> or <cite>Parameters</cite> with key <cite>param</cite> and column <cite>value</cite>.
+Otherwise, creates a blank DataFrame instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.datamanager.DataManager.print_hello">
+<code class="descname">print_hello</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.print_hello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.print_hello" title="Permalink to this definition">¶</a></dt>
+<dd><p>FOR TESTING: Print some hello string.</p>
+<p>Prints some message. To test reloading of the package from a notebook.
+Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">In</span> <span class="n">notebook</span> <span class="n">cell</span> <span class="c1">#1)</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span>
+<span class="n">dm</span> <span class="o">=</span> <span class="n">DataManager</span><span class="p">()</span>
+<span class="p">(</span><span class="n">In</span> <span class="n">cell</span> <span class="c1">#2)</span>
+<span class="n">dm</span><span class="o">.</span><span class="n">print_hello</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Change the test of the string. Upload the module to WSL.
+If testing autoreload, rerun the second cell only. Verify it prints the updated string.
+If testing imp.reload, rerun the notebook from the start.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.deployeddomodel">
+<span id="dse-do-utils-deployeddomodel-module"></span><h2>dse_do_utils.deployeddomodel module<a class="headerlink" href="#module-dse_do_utils.deployeddomodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel">
+<em class="property">class </em><code class="descclassname">dse_do_utils.deployeddomodel.</code><code class="descname">DeployedDOModel</code><span class="sig-paren">(</span><em>url=None</em>, <em>server=None</em>, <em>route=None</em>, <em>service_name=None</em>, <em>model_name=None</em>, <em>token=None</em>, <em>inputs=None</em>, <em>attachment_type='CONTAINER'</em>, <em>suppress_warnings=True</em>, <em>debug=False</em>, <em>debug_file_dir='../datasets'</em>, <em>log_file_name='log.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Major steps:
+1. Create an instance of a DeployedDOModel, configuring parameters (e.g. the URL and access token)</p>
+<p>Internally, the processes uses GETs to communicate with the deployed model:</p>
+<ol class="arabic simple">
+<li>Get configuration data from the service (<a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solve_configuration" title="dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solve_configuration"><code class="xref py py-meth docutils literal"><span class="pre">retrieve_solve_configuration()</span></code></a>). This will give a URL to start a job. (<cite>self.solve_config_json</cite>)</li>
+<li>Start the solve job. Returns info/urls to monitor the running job. (<cite>self.job_config_json</cite>)</li>
+<li>Monitor the running solve job. Runs in a loop, updates the current state. (<cite>self.execution_status_json</cite>)</li>
+<li>Once the job completes, get the optimization result.</li>
+<li>Clean-up the resources</li>
+</ol>
+<p>In the code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">():</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note on InsecureRequestWarning
+If the option <cite>verify=False</cite> is being used for REST calls, the following warning is generated (for each REST API call):
+<code class="docutils literal"><span class="pre">`</span>
+<span class="pre">InsecureRequestWarning:</span> <span class="pre">Unverified</span> <span class="pre">HTTPS</span> <span class="pre">request</span> <span class="pre">is</span> <span class="pre">being</span> <span class="pre">made.</span> <span class="pre">Adding</span> <span class="pre">certificate</span> <span class="pre">verification</span> <span class="pre">is</span> <span class="pre">strongly</span> <span class="pre">advised.</span> <span class="pre">See:</span> <span class="pre">https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings</span>
+<span class="pre">InsecureRequestWarning)</span>
+<span class="pre">`</span></code>
+With the option suppress_warnings=True, all warnings in the mdl.solve() API are suppressed/ignored</p>
+<p>TODOs:</p>
+<p>1. Turning the option to False doesn’t work, i.e. skipping parameter <cite>oaas.dumpZipName</cite> will result in no attachments!
+Work-around for now is to always add this option, let the server generate the dump and log file, but not download the zip and log files if debug = False
+And always cleanup after.
+3. Test kill and stop methods</p>
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.cleanup">
+<code class="descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to clean-up the job and, if applicable, the debug file.
+Delete the job from the execution service as well as the debug file from the “debug” container, to free space on the cluster.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.execute_model">
+<code class="descname">execute_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.execute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to start the solve of the model. Returns the execution data in self.execution_result.
+Contains urls to monitor, stop or kill the job</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_dump_name_and_url">
+<code class="descname">get_debug_dump_name_and_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_debug_dump_name_and_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_dump_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the dump&lt;&gt;.zip file and the url to the data of the dump&lt;&gt;.zip file.
+Can be called after the first time the job monitor has retrieved the self.execution_status_json</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_file_url">
+<code class="descname">get_debug_file_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_debug_file_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_file_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the debug file.
+To be used to retrieve the debug&lt;&gt;.zip file.
+Also used to clean-up the remote debug file.
+Is the self.debug_file_data_url minus the <cite>/data</cite> at the end</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_service_model_url">
+<code class="descname">get_execution_service_model_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_execution_service_model_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_service_model_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL for the first call to the optimization service. Retrieves the service_configuration_json</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_status">
+<code class="descname">get_execution_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_execution_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_execution_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_headers">
+<code class="descname">get_headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_input_files">
+<code class="descname">get_input_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_input_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_input_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inputs for submission to the job execution run.</p>
+<p>Challenge: the solve_config should be the first element in the self.files dict.
+Work-around: use an OrderedDict. Not sure of this always works, i.e. if the</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_job_url">
+<code class="descname">get_job_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_job_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the running job.
+Will be called repeatedly while monitoring the execution of the job.
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_kill_job_url">
+<code class="descname">get_kill_job_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_kill_job_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_kill_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to kill a running job.
+TODO: test
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_name_and_url">
+<code class="descname">get_log_file_name_and_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_log_file_name_and_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the log.txt file and the url to the data.
+Can be called after the first time the job monitor has retrieved the self.execution_status_json</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_url">
+<code class="descname">get_log_file_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_log_file_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the log file.
+To be used to retrieve the log file.
+Also used to clean-up the remote log file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_objective">
+<code class="descname">get_objective</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_objective"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_objective" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available after post process (both CONTAINER and INLINE_TABLE)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solution_name_and_url">
+<code class="descname">get_solution_name_and_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solution_name_and_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solution_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name (‘solution.json’) and the URL of the solution data.
+This applies to both <cite>CONTAINER</cite> and <cite>INLINE_TABLE</cite> modes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_config">
+<code class="descname">get_solve_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current solve_config.
+Note that the self.solve_config will e first set after the <cite>retrieve_solve_configuration</cite>.
+Next, it will be manipulated to add debugging information.
+Can only be called after the call to <cite>retrieve_solve_configuration</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status">
+<code class="descname">get_solve_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available during and after the job monitoring. String with values ‘NOT_STARTED’, ‘RUNNING’, “PROCESSED”, “FAILED”, “INTERRUPTED”, more?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_url">
+<code class="descname">get_solve_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to start the execution of the solve job.
+Can only be called after the call to <cite>retrieve_solve_configuration</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_stop_job_url">
+<code class="descname">get_stop_job_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_stop_job_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_stop_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to stop a running job.
+TODO: test
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.kill_job">
+<code class="descname">kill_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.kill_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.kill_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to kill the solve of the model.
+TODO: test</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution">
+<code class="descname">monitor_execution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.monitor_execution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor the model execution by periodically calling REST API to get the current execution status.
+Result stored in self.execution_status_json and self.execution_status.</p>
+<p>TODO: what are all possible values for execution_status? Are we stopping under the right conditions?
+TODO: stop if we get an unknown status?
+TODO: Time-out?
+TODO: control the loop delay?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container">
+<code class="descname">post_process_container</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_container"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process ‘CONTAINER’ type job.
+Called when execution reached status ‘PROCESSED’ and attachment_type=’CONTAINER’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container_get_dataframe">
+<code class="descname">post_process_container_get_dataframe</code><span class="sig-paren">(</span><em>data_url</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_container_get_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_container_get_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the data from a table attachment and load into a DataFrame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_failed">
+<code class="descname">post_process_failed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_failed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when execution reached status ‘FAILED’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table">
+<code class="descname">post_process_inline_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_inline_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process ‘INLINE_TABLE’ type job.
+when execution reached status ‘PROCESSED’ and attachment_type=’INLINE_TABLE’.</p>
+<p>In ‘INLINE_TABLE’ all output table data is already in the execution_status_json.
+This data is in the form of json (not in csv format like the ‘CONTAINER’ type).
+The solution data is not included and needs to be retrieved via a URL, just like with the ‘CONTAINER’ type.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table_get_dataframe">
+<em class="property">static </em><code class="descname">post_process_inline_table_get_dataframe</code><span class="sig-paren">(</span><em>table</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_inline_table_get_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_inline_table_get_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the ‘table’ to a DataFrame.
+Applies to ‘INLINE_TABLE’ attachment type.</p>
+<p>table is a dict with 2 keys:
+1. name: string
+2. rows: list of dicts with 1 key: <cite>values</cite>: list of strings/integers/floats</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_interrupted">
+<code class="descname">post_process_interrupted</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_interrupted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_interrupted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when execution reached status ‘INTERRUPTED’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.post_process_processed">
+<code class="descname">post_process_processed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.post_process_processed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.post_process_processed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process the succesfully completed solve job.
+Called when execution reached status ‘PROCESSED’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_debug_materials">
+<code class="descname">retrieve_debug_materials</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.retrieve_debug_materials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_debug_materials" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dump zip and log files is saved in the self.debug_file_dir folder.
+This dump zip file can be used to create a new scenario. (Using the right-hand-side panel in the Model Builder, ‘Create Scenario From file’.)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_file">
+<code class="descname">retrieve_file</code><span class="sig-paren">(</span><em>file_name</em>, <em>url</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.retrieve_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the data of the file
+The file is saved in de debug folder.</p>
+<p>Can be used for the dump&lt;&gt;.zip file or the log.txt file
+This dump zip file can be used to create a new scenario (Using the right-hand-side panel in the Model Builder, ‘Create Scenario From file’)</p>
+<p>Note that if we get here, there exists a log or dump file on the deployed service. Make sure this gets cleaned up.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solution">
+<code class="descname">retrieve_solution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.retrieve_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to retrieve the solution.json.</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solve_configuration">
+<code class="descname">retrieve_solve_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.retrieve_solve_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.retrieve_solve_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the solve configuration. Result in self.solve_config_json</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.set_output_settings_in_solve_configuration">
+<code class="descname">set_output_settings_in_solve_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.set_output_settings_in_solve_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.set_output_settings_in_solve_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the self.solve_config to define the required output and debug results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</p>
+<p>Calls the following methods (in order):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.stop_job">
+<code class="descname">stop_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.stop_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.stop_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to stop the solve of the model.
+TODO: test</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.mapmanager">
+<span id="dse-do-utils-mapmanager-module"></span><h2>dse_do_utils.mapmanager module<a class="headerlink" href="#module-dse_do_utils.mapmanager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.mapmanager.MapManager">
+<em class="property">class </em><code class="descclassname">dse_do_utils.mapmanager.</code><code class="descname">MapManager</code><span class="sig-paren">(</span><em>data_manager=None</em>, <em>location=None</em>, <em>zoom_start=1</em>, <em>width='100%'</em>, <em>height='100%'</em>, <em>layer_control_position='topleft'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Base class for building Folium map visualization.</p>
+<p>Currently, the functionality is limited, but may be extended in the future.</p>
+<p>Work-around for multi-line in popup:
+<a class="reference external" href="https://github.com/python-visualization/folium/issues/469">https://github.com/python-visualization/folium/issues/469</a></p>
+<p>Popup work-around:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">popup</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Time: </span><span class="si">{time}</span><span class="s2">&lt;br&gt;&quot;</span>
+    <span class="s2">&quot;Speed: </span><span class="si">{speed}</span><span class="s2"> km/h&lt;br&gt;&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">),</span>
+         <span class="n">speed</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;spd&#39;</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Tooltip doesn’t yet work in 0.50.0:&lt;br&gt;
+<a class="reference external" href="https://github.com/python-visualization/folium/issues/785">https://github.com/python-visualization/folium/issues/785</a>
+Update: in 0.6.0 (WSL1.2.3) it does seem to work!</p>
+<dl class="staticmethod">
+<dt id="dse_do_utils.mapmanager.MapManager.add_full_screen">
+<em class="property">static </em><code class="descname">add_full_screen</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.add_full_screen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.add_full_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a full-screen button in the top-left corner of the map.
+Unfortunately, the full-screen doesn’t work in a Jupyter cell.
+Seems to work ok here: <a class="reference external" href="http://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Plugins.ipynb">http://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Plugins.ipynb</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.mapmanager.MapManager.add_layer_control">
+<code class="descname">add_layer_control</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.add_layer_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.add_layer_control" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.mapmanager.MapManager.create_blank_map">
+<code class="descname">create_blank_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.create_blank_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.create_blank_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.mapmanager.MapManager.get_arrows">
+<em class="property">static </em><code class="descname">get_arrows</code><span class="sig-paren">(</span><em>locations</em>, <em>color='blue'</em>, <em>size=6</em>, <em>n_arrows=3</em>, <em>add_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.get_arrows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.get_arrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add arrows to a hypothetical line between the first 2 locations in the locations list.
+Get a list of correctly placed and rotated arrows/markers to be plotted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>locations</strong> – List of lists of lat lon that represent the
+start and end of the line.
+eg [[41.1132, -96.1993],[41.3810, -95.8021]]
+The locations is a list so that it matches the input for the folium.PolyLine.</li>
+<li><strong>color</strong> – Whatever folium can use.  Default is ‘blue’</li>
+<li><strong>size</strong> – Size of arrow. Default is 6</li>
+<li><strong>n_arrows</strong> – Number of arrows to create.  Default is 3.</li>
+<li><strong>add_to</strong> – map or FeatureGroup the arrows are added to.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of arrows/markers</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Based on: <a class="reference external" href="https://medium.com/&#64;bobhaffner/folium-lines-with-arrows-25a0fe88e4e">https://medium.com/&#64;bobhaffner/folium-lines-with-arrows-25a0fe88e4e</a></p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.mapmanager.MapManager.get_bearing">
+<em class="property">static </em><code class="descname">get_bearing</code><span class="sig-paren">(</span><em>p1</em>, <em>p2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.get_bearing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.get_bearing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns compass bearing from p1 to p2</p>
+<p>Parameters
+p1 : namedtuple with lat lon
+p2 : namedtuple with lat lon</p>
+<p>Return
+compass bearing of type float</p>
+<p>Notes
+Based on <a class="reference external" href="https://gist.github.com/jeromer/2005586">https://gist.github.com/jeromer/2005586</a></p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.mapmanager.MapManager.get_html_table">
+<em class="property">static </em><code class="descname">get_html_table</code><span class="sig-paren">(</span><em>rows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.get_html_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.get_html_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates 2 column html table for use in popups.
+:param rows: List of sequences. Each sequence should have 2 string entries, one for each column</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a HTML formatted table of two columns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">html</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.mapmanager.MapManager.get_popup_table">
+<em class="property">static </em><code class="descname">get_popup_table</code><span class="sig-paren">(</span><em>rows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.get_popup_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.get_popup_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a popup table to add as a popup/child to a folium element.</p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">popup_table</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">]</span>
+<span class="n">popup</span> <span class="o">=</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_popup_table</span><span class="p">(</span><span class="n">popup_table</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, the popup object can be used in a popup argument of a Marker:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">marker</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Marker</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span>
+                   <span class="n">popup</span><span class="o">=</span><span class="n">popup</span><span class="p">,</span>
+                   <span class="n">icon</span><span class="o">=</span><span class="n">icon</span>
+                   <span class="p">)</span>
+</pre></div>
+</div>
+<p>Or added as a child:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">county</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">popup</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rows</strong> – List of sequences. Each sequence should have 2 string entries, one for each column.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">popup (folium.Popup)</td>
+</tr>
+</tbody>
+</table>
+<p>Notes
+Beware that a quote in the texts causes a problem (no map shows).
+This can be avoided by replacing the “’” with something else.
+Unfortunately the option <cite>parse_html=True</cite> does not prevent the problem.
+Despite the suggestion in <a class="reference external" href="https://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Popups.ipynb">https://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Popups.ipynb</a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dse_do_utils.mapmanager.MapManager.kansas_city_coord">
+<code class="descname">kansas_city_coord</code><em class="property"> = [39.085594, -94.585241]</em><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.kansas_city_coord" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.optimizationengine">
+<span id="dse-do-utils-optimizationengine-module"></span><h2>dse_do_utils.optimizationengine module<a class="headerlink" href="#module-dse_do_utils.optimizationengine" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.optimizationengine.MyProgressListener">
+<em class="property">class </em><code class="descclassname">dse_do_utils.optimizationengine.</code><code class="descname">MyProgressListener</code><span class="sig-paren">(</span><em>mdl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#MyProgressListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.MyProgressListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">docplex.mp.progress.SolutionListener</span></code></p>
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.MyProgressListener.notify_progress">
+<code class="descname">notify_progress</code><span class="sig-paren">(</span><em>progress_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#MyProgressListener.notify_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.MyProgressListener.notify_progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine">
+<em class="property">class </em><code class="descclassname">dse_do_utils.optimizationengine.</code><code class="descname">OptimizationEngine</code><span class="sig-paren">(</span><em>data_manager=None</em>, <em>name='MyOptimizationEngine'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis">
+<code class="descname">add_mip_progress_kpis</code><span class="sig-paren">(</span><em>mip_gap_kpi_name='Gap'</em>, <em>solve_time_kpi_name='Solve Time'</em>, <em>best_bound_kpi_name='Best Bound'</em>, <em>solution_count_kpi_name='Solution Count'</em>, <em>solve_phase_kpi_name='Solve Phase'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.add_mip_progress_kpis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds 5 KPIs to the self.mdl: ‘Gap’, ‘Solve Time’, ‘Best Bound’, ‘Solution Count’, ‘Solve Phase’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mip_gap_kpi_name</strong> (<em>str</em>) – </li>
+<li><strong>solve_time_kpi_name</strong> (<em>str</em>) – </li>
+<li><strong>best_bound_kpi_name</strong> (<em>str</em>) – </li>
+<li><strong>solution_count_kpi_name</strong> (<em>str</em>) – </li>
+<li><strong>solve_phase_kpi_name</strong> (<em>str</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series">
+<code class="descname">binary_var_series</code><span class="sig-paren">(</span><em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.binary_var_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series_s">
+<em class="property">static </em><code class="descname">binary_var_series_s</code><span class="sig-paren">(</span><em>mdl</em>, <em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.binary_var_series_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series">
+<code class="descname">continuous_var_series</code><span class="sig-paren">(</span><em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.continuous_var_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s">
+<em class="property">static </em><code class="descname">continuous_var_series_s</code><span class="sig-paren">(</span><em>mdl</em>, <em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.continuous_var_series_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo">
+<code class="descname">export_as_cpo</code><span class="sig-paren">(</span><em>local_root=None</em>, <em>copy_to_csv=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.export_as_cpo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export .cpo file of model in the ‘DSX_PROJECT_DIR.datasets’ folder.
+It can write a copy as a .csv file, so it can be exported to a local machine.
+If not in DSX, it will write to the local file system in the ‘local_root/datasets’ directory.
+Convenience method.
+Cpo-filename is based on the mdl.name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>local_dir</strong> (<em>str</em>) – name of local directory. Will write .lp file here, if not in DSX</li>
+<li><strong>copy_to_csv</strong> (<em>bool</em>) – If true, will create a copy of the file with the extension <cite>.csv</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">path (str) path to cpo file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if root directory can’t be established.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo_s">
+<em class="property">static </em><code class="descname">export_as_cpo_s</code><span class="sig-paren">(</span><em>model</em>, <em>model_name=None</em>, <em>local_root=None</em>, <em>copy_to_csv=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.export_as_cpo_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export .cpo file of model in the ‘DSX_PROJECT_DIR.datasets’ folder.
+It can write a copy as a .csv file, so it can be exported to a local machine.
+If not in DSX, it will write to the local file system in the ‘local_root/datasets’ directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<em>docplex.cp.model</em>) – The CPLEX model to be exported</li>
+<li><strong>model_name</strong> (<em>str</em>) – name of .lp file. If none specified, will use the model.name.
+Specify if the model.name is not a valid file-name.</li>
+<li><strong>local_root</strong> (<em>str</em>) – name of local directory. Will write .lp file here, if not in DSX</li>
+<li><strong>copy_to_csv</strong> (<em>bool</em>) – If true, will create a copy of the file with the extension <cite>.csv</cite>.</li>
+<li><strong>**kwargs</strong> – Passed to model.export_model</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">path (str) path to cpo file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if root directory can’t be established.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp">
+<code class="descname">export_as_lp</code><span class="sig-paren">(</span><em>local_root=None</em>, <em>copy_to_csv=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.export_as_lp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export .lp file of model in the ‘DSX_PROJECT_DIR.datasets’ folder.
+Convenience method.
+It can write a copy as a .csv file, so it can be exported to a local machine.
+If not in DSX, it will write to the local file system in the ‘local_root/datasets’ directory.
+Lp-filename is based on the mdl.name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>local_dir</strong> (<em>str</em>) – name of local directory. Will write .lp file here, if not in DSX</li>
+<li><strong>copy_to_csv</strong> (<em>bool</em>) – If true, will create a copy of the file with the extension <cite>.csv</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">path (str) path to lp file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if root directory can’t be established.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_s">
+<em class="property">static </em><code class="descname">export_as_lp_s</code><span class="sig-paren">(</span><em>model</em>, <em>model_name=None</em>, <em>local_root=None</em>, <em>copy_to_csv=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.export_as_lp_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export .lp file of model in the ‘DSX_PROJECT_DIR.datasets’ folder.
+It can write a copy as a .csv file, so it can be exported to a local machine.
+If not in WSL, it will write to the local file system in the ‘local_root/datasets’ directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<em>docplex.mp.model</em>) – The CPLEX model to be exported</li>
+<li><strong>model_name</strong> (<em>str</em>) – name of .lp file. If none specified, will use the model.name.
+Specify if the model.name is not a valid file-name.</li>
+<li><strong>local_root</strong> (<em>str</em>) – name of local directory. Will write .lp file here, if not in WSL</li>
+<li><strong>copy_to_csv</strong> (<em>bool</em>) – If true, will create a copy of the file with the extension <cite>.csv</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">path (str) path to lp file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if root directory can’t be established.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table">
+<code class="descname">get_kpi_output_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.get_kpi_output_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series">
+<code class="descname">integer_var_series</code><span class="sig-paren">(</span><em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.integer_var_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.
+Result can be assigned to a column of the df.
+Usage:
+df[‘xDVar’] = mdl.integer_var_series(df, name = ‘xDVar’)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>self</strong> (<em>docplex.mp.model</em>) – CPLEX Model</li>
+<li><strong>df</strong> (<em>DataFrame</em>) – dataframe</li>
+<li><strong>**kargs</strong> – arguments passed to mdl.integer_var_list method. E.g. ‘name’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(pandas.Series) with integer dvars, index matches index of df</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series_s">
+<em class="property">static </em><code class="descname">integer_var_series_s</code><span class="sig-paren">(</span><em>mdl</em>, <em>df</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.integer_var_series_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.optimizationengine.OptimizationEngine.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>refine_conflict=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.scenariomanager">
+<span id="dse-do-utils-scenariomanager-module"></span><h2>dse_do_utils.scenariomanager module<a class="headerlink" href="#module-dse_do_utils.scenariomanager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager">
+<em class="property">class </em><code class="descclassname">dse_do_utils.scenariomanager.</code><code class="descname">ScenarioManager</code><span class="sig-paren">(</span><em>model_name=None</em>, <em>scenario_name=None</em>, <em>local_root=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.
+The data can be loaded from and stored into:
+* A DO scenario
+* An Excel spreadsheet</p>
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario">
+<code class="descname">add_data_into_scenario</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_into_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds data to a DO scenario. If table exists, does an overwrite/replace.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s">
+<em class="property">static </em><code class="descname">add_data_into_scenario_s</code><span class="sig-paren">(</span><em>model_name</em>, <em>scenario_name</em>, <em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_into_scenario_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds tables in existing scenario.</p>
+<p>Replaces table, if table exists.
+Assumes scenario exists. Does not explicitly clear existing tables.
+Could be used in post-processing.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data">
+<em class="property">static </em><code class="descname">clear_scenario_data</code><span class="sig-paren">(</span><em>client</em>, <em>scenario</em>, <em>category=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.clear_scenario_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears all input and output tables from a scenario.</p>
+<p>Current API requires the client.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>client</strong> – </li>
+<li><strong>scenario</strong> – </li>
+<li><strong>category</strong> (<em>string</em><em> [</em><em>'input'</em><em>,</em><em>'output'</em><em>]</em>) – If None, clears all tables.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.create_new_scenario">
+<em class="property">static </em><code class="descname">create_new_scenario</code><span class="sig-paren">(</span><em>client</em>, <em>model_builder</em>, <em>new_scenario_name</em>, <em>template_scenario_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.create_new_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.create_new_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new scenario from a template. The template is found either from the template_scenario_name,
+or if this is None, from the new_scenario_name. If a scenario with the new name already exists,
+all input and output tables are cleared. Thereby keeping the solve code.
+Creates a new blank scenario if a scenario with this name doesn’t exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>client</strong> (<em>dd_scenario.Client</em>) – Client managing the DO model</li>
+<li><strong>model_builder</strong> (<em>dd_scenario.ModelBuilder</em>) – The DO model</li>
+<li><strong>new_scenario_name</strong> (<em>str</em>) – Name for the new scenario</li>
+<li><strong>template_scenario_name</strong> (<em>str</em>) – Name of an existing scenario</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dd_scenario.Container of type scenario</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – new_scenario_name is None</li>
+<li><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – new_scenario_name is the same as template_scenario_name</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx">
+<em class="property">static </em><code class="descname">env_is_dsx</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_dsx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if environment is DSX</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario">
+<em class="property">static </em><code class="descname">get_do_scenario</code><span class="sig-paren">(</span><em>model_name</em>, <em>scenario_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.get_do_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DO scenario.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model_name</strong> (<em>str</em>) – the name of the DO model</li>
+<li><strong>scenario_name</strong> (<em>str</em>) – the name of the scenario</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dd-scenario.Container of type <cite>scenario</cite></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – When either the model_name or the scenario_name doesn’t match an existing entity.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe">
+<em class="property">static </em><code class="descname">get_kpis_table_as_dataframe</code><span class="sig-paren">(</span><em>mdl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.get_kpis_table_as_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a DataFrame with the KPI names and values in the mdl.
+This table is compatible with the representation in DO4WS and can be updated in the scenario.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mdl</strong> (<em>docplex.mp.model</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the KPIs in the mdl</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pd.DataFrame with columns NAME and VALUE</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">
+<code class="descname">get_root_directory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.get_root_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root directory of the file system.
+If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
+:raises: ValueError if root directory doesn’t exist.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data">
+<code class="descname">load_data</code><span class="sig-paren">(</span><em>load_from_excel=False</em>, <em>excel_file_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from either the DO scenario, or an Excel spreadsheet.
+The Excel spreadsheet is expected to be in the <cite>datasets</cite> folder, either in WS or local.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the inputs and outputs dictionary of DataFrames</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">inputs, outputs (tuple of dicts)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv">
+<code class="descname">load_data_from_csv</code><span class="sig-paren">(</span><em>csv_directory</em>, <em>input_csv_name_pattern='*.csv'</em>, <em>output_csv_name_pattern=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from matching csv files in a directory.
+Uses glob.glob() to pattern-match files in the csv_directory.
+If you want to load one file, specify the full name including the <cite>.csv</cite> extension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>csv_directory</strong> (<em>str</em>) – Relative directory from the root</li>
+<li><strong>input_csv_name_pattern</strong> (<em>str</em>) – name pattern to find matching csv files for inputs</li>
+<li><strong>output_csv_name_pattern</strong> (<em>str</em>) – name pattern to find matching csv files for outputs</li>
+<li><strong>**kwargs</strong> – Set of optional arguments for the pd.read_csv() function</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv_s">
+<em class="property">static </em><code class="descname">load_data_from_csv_s</code><span class="sig-paren">(</span><em>csv_directory</em>, <em>csv_name_pattern='*.csv'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_csv_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from all matching .csv files in a directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>csv_directory</strong> (<em>str</em>) – the full path of a directory containing one or more .csv files.</li>
+<li><strong>csv_name_pattern</strong> (<em>str</em>) – name pattern to find matching csv files</li>
+<li><strong>**kwargs</strong> – Set of optional arguments for the pd.read_csv() function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict of DataFrames. Keys are the .csv file names.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel">
+<code class="descname">load_data_from_excel</code><span class="sig-paren">(</span><em>excel_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_excel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from an Excel file located in the <cite>datasets</cite> folder of the root directory.
+Convenience method.
+If run not on WS, requires the <cite>root_dir</cite> property passed in the ScenarioManager constructor</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel_s">
+<em class="property">static </em><code class="descname">load_data_from_excel_s</code><span class="sig-paren">(</span><em>xl</em>, <em>table_index_sheet='_table_index_'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_excel_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create dataFrames from the sheets of the Excel file.
+Store in dictionary df_dict with table_name as key.
+The table_name is either the name of the sheet, or the table_name as defined in the table_index_sheet.
+TODO: Test allow for distinction between input and output via the index-sheet</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xl</strong> (<em>pandas.ExcelFile</em>) – Excel file</li>
+<li><strong>table_index_sheet</strong> (<em>str</em>) – Name of table index sheet</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>A tuple of inputs and outputs dictionaries of DataFrames,</dt>
+<dd><p class="first last">one df per sheet</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(Dict[str,DataFrame], Dict[str,DataFrame])</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario">
+<code class="descname">load_data_from_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the data from a DO scenario</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s">
+<em class="property">static </em><code class="descname">load_data_from_scenario_s</code><span class="sig-paren">(</span><em>model_name</em>, <em>scenario_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_scenario_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the data from a DO scenario</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.print_table_names">
+<code class="descname">print_table_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.print_table_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.print_table_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the names of the input and output tables. For development and debugging.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.replace_data_in_scenario">
+<code class="descname">replace_data_in_scenario</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.replace_data_in_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.replace_data_in_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces all input, output or both.
+Note: you will need to specify the inputs or outputs you want to replace explicitly as input arguments.
+It will NOT get them from self.inputs or self.outputs!
+In this way, you can control which to update. E.g. after a solve, only update the outputs, not the inputs.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s">
+<em class="property">static </em><code class="descname">replace_data_into_scenario_s</code><span class="sig-paren">(</span><em>model_name</em>, <em>scenario_name</em>, <em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.replace_data_into_scenario_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces all input, output or both.</p>
+<p>If input/output are not None, clears inputs/outputs first
+Assumes scenario exists. Does explicitly clear all existing input/output tables.
+TODO: test. Not sure this actually works</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.update_solve_output_into_scenario">
+<code class="descname">update_solve_output_into_scenario</code><span class="sig-paren">(</span><em>mdl</em>, <em>outputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.update_solve_output_into_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.update_solve_output_into_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces all output and KPIs table in the scenario.</p>
+<p>Assumes the scenario exists.
+Will not change the inputs of the scenario.
+Generates the KPI table.</p>
+<dl class="docutils">
+<dt>Limitations:</dt>
+<dd><ul class="first last simple">
+<li>Does NOT update the objective</li>
+<li>Does NOT update the log</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mdl</strong> (<em>docplex.mp.model</em>) – the model that has been solved</li>
+<li><strong>outputs</strong> (<em>Dict</em>) – dictionary of DataFrames</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario">
+<code class="descname">write_data_into_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_into_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the data into a DO scenario. Create new scenario and write data.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s">
+<em class="property">static </em><code class="descname">write_data_into_scenario_s</code><span class="sig-paren">(</span><em>model_name</em>, <em>scenario_name</em>, <em>inputs=None</em>, <em>outputs=None</em>, <em>template_scenario_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_into_scenario_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new scenario and write data.</p>
+<p>If scenario exists: clears all existing data.
+If scenario doesn’t exists: create new one. If template_scenario_name is specified, use that as template.
+If the existing scenario has a model, it keeps the model.
+If there is no existing scenario, the user needs to add a model manually in DO.
+Tested: works reliably.</p>
+<p>TODO: one small issue: if scenario exists and has been solved before, it clears all inputs and outputs
+(including the KPIs), but not the objective value. The DO UI shows as if the model has been solved.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv">
+<code class="descname">write_data_to_csv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write inputs and/or outputs to .csv files in the root/datasets folder.</p>
+<p>Args: None
+Returns: None</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s">
+<em class="property">static </em><code class="descname">write_data_to_csv_s</code><span class="sig-paren">(</span><em>csv_directory</em>, <em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_csv_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to .csv files in a directory. Name as name of DataFrame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>csv_directory</strong> (<em>str</em>) – the full path of a directory for the .csv files.</li>
+<li><strong>inputs</strong> (<em>Dict of DataFrames</em>) – inputs</li>
+<li><strong>outputs</strong> (<em>Dict of DataFrames</em>) – outputs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">
+<code class="descname">write_data_to_excel</code><span class="sig-paren">(</span><em>excel_file_name=None</em>, <em>copy_to_csv=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_excel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write inputs and/or outputs to an Excel file in datasets.
+The inputs and outputs as in the attributes <cite>self.inputs</cite> and <cite>self.outputs</cite> of the ScenarioManager</p>
+<p>The copy_to_csv is a work-around for the WS limitation of not being able to download a file from datasets that is not a csv file.
+Creates a copy of the Excel file as a file named <cite>&lt;excel_file_name&gt;_xlxs.csv</cite> in the datasets folder. This is <em>not</em> a csv file!
+Download this file to your local computer and rename to <cite>&lt;excel_file_name&gt;.xlxs</cite></p>
+<p>If the excel_file_name is None, it will be generated from the model_name and scenario_name: MODEL_NAME + “_” + SCENARIO_NAME + “_output”</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>excel_file_name</strong> (<em>str</em>) – The file name for the Excel file.</li>
+<li><strong>copy_to_csv</strong> (<em>bool</em>) – If true, will create a copy of the file with the extension <cite>.csv</cite>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel_s">
+<em class="property">static </em><code class="descname">write_data_to_excel_s</code><span class="sig-paren">(</span><em>writer</em>, <em>inputs=None</em>, <em>outputs=None</em>, <em>table_index_sheet='_table_index_'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_excel_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes all dataframes in the inputs and outputs to the Excel writer, with sheet-names based on
+the keys of the inputs/outputs. Due to the Excel limitation of maximum 31 characters for the sheet-name,
+tables names longer than the 31 characters will be abbreviated with a unique name. The mapping between
+the original table-name and abbreviated name is recorded in a separate sheet named by the table_index_sheet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>writer</strong> (<em>pandas.ExcelWriter</em>) – The Excel writer to write the file</li>
+<li><strong>inputs</strong> (<em>Dict of DataFrames</em>) – inputs</li>
+<li><strong>outputs</strong> (<em>Dict of DataFrames</em>) – outputs</li>
+<li><strong>table_index_sheet</strong> (<em>str</em>) – name for the index sheet</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.scenariopicker">
+<span id="dse-do-utils-scenariopicker-module"></span><h2>dse_do_utils.scenariopicker module<a class="headerlink" href="#module-dse_do_utils.scenariopicker" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker">
+<em class="property">class </em><code class="descclassname">dse_do_utils.scenariopicker.</code><code class="descname">ScenarioPicker</code><span class="sig-paren">(</span><em>model_name=None</em>, <em>scenario_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Notebook widget to interactively select a scenario from the dd_scenario.Client.</p>
+<p>Usage</p>
+<p>Cell 1:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sp</span> <span class="o">=</span> <span class="n">ScenarioPicker</span><span class="p">(</span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;My_DO_Model&#39;</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">get_scenario_picker_ui</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Cell 2:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_selected_scenario_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Create a ScenarioPicker and pass the model name.
+The API <cite>get_scenario_picker_ui()</cite> returns a widget with a drop-down box with the available scenarios.
+In addition, there is a Refresh button that will run all cells below this cell.
+The next cell should reload the scenario data.
+The API <cite>load_selected_scenario_data()</cite> is a convenience method that internally uses a ScenarioManager to load
+the data from the DO scenario.</p>
+<p>The selection of the scenario is maintained in the class variable ScenarioPicker.default_scenario.
+Therefore, a re-run of the cell keeps the last selected value.
+By adding:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ScenarioPicker</span><span class="o">.</span><span class="n">default_scenario</span> <span class="o">=</span> <span class="s1">&#39;my_default_scenario&#39;</span>
+</pre></div>
+</div>
+<p>before the creation of the scenario picker, one can force the default scenario to an initial value.</p>
+<dl class="class">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.ScenarioRefreshButton">
+<em class="property">class </em><code class="descname">ScenarioRefreshButton</code><span class="sig-paren">(</span><em>scenario_picker</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.ScenarioRefreshButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.ScenarioRefreshButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">ipywidgets.widgets.widget_button.Button</span></code></p>
+<p>A widget Refresh button that will refresh all cells below.
+Inner class of ScenarioPicker since it is only applicable in the context of the ScenarioPicker.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.default_scenario">
+<code class="descname">default_scenario</code><em class="property"> = None</em><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.default_scenario" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_picker_ui">
+<code class="descname">get_scenario_picker_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.get_scenario_picker_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_picker_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a combination of both the drop-down and the refresh button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_refresh_button">
+<code class="descname">get_scenario_refresh_button</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.get_scenario_refresh_button"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_refresh_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an instance of the Refresh button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_select_drop_down">
+<code class="descname">get_scenario_select_drop_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.get_scenario_select_drop_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_select_drop_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the drop-down button.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.get_selected_scenario">
+<code class="descname">get_selected_scenario</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.get_selected_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.get_selected_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the selected scenario</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.load_selected_scenario_data">
+<code class="descname">load_selected_scenario_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariopicker.html#ScenarioPicker.load_selected_scenario_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.load_selected_scenario_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method. Creates a ScenarioManager and loads input and output data from the scenario
+selected by the picker.
+:returns: A tuple with the (inputs, outputs) data</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.utilities">
+<span id="dse-do-utils-utilities-module"></span><h2>dse_do_utils.utilities module<a class="headerlink" href="#module-dse_do_utils.utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dse_do_utils.utilities.add_sys_path">
+<code class="descclassname">dse_do_utils.utilities.</code><code class="descname">add_sys_path</code><span class="sig-paren">(</span><em>new_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/utilities.html#add_sys_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.utilities.add_sys_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a directory to Python’s sys.path</p>
+<p>Does not add the directory if it does not exist or if it’s already on
+sys.path. Returns 1 if OK, -1 if new_path does not exist, 0 if it was
+already on sys.path.
+Based on: <a class="reference external" href="https://www.oreilly.com/library/view/python-cookbook/0596001673/ch04s23.html">https://www.oreilly.com/library/view/python-cookbook/0596001673/ch04s23.html</a></p>
+<p>Challenge: in order to use this function, we need to import the dse_do_utils package
+and thus we need to add it’s location it to sys.path!
+This will work better once we can do a pip install dse-do_utils.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dse_do_utils.utilities.list_file_hierarchy">
+<code class="descclassname">dse_do_utils.utilities.</code><code class="descname">list_file_hierarchy</code><span class="sig-paren">(</span><em>startpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/utilities.html#list_file_hierarchy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.utilities.list_file_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hierarchically print the contents of the folder tree, starting with the <cite>startpath</cite>.</p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">parent_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="n">parent_dir_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="n">list_file_hierarchy</span><span class="p">(</span><span class="n">parent_dir_2</span><span class="p">)</span> <span class="c1">#List tree starting at the grand-parent of the current directory</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>startpath</strong> (<em>str</em>) – Root of the tree</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.version">
+<span id="dse-do-utils-version-module"></span><h2>dse_do_utils.version module<a class="headerlink" href="#module-dse_do_utils.version" title="Permalink to this headline">¶</a></h2>
+<p>Versions: beware to keep the version in <cite>setup.py</cite> in sync with the version in <cite>dse_do_utils.version.py</cite></p>
+<p>Best practice to keep version here, in a separate file
+See <a class="reference external" href="https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package">https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package</a></p>
+</div>
+<div class="section" id="module-dse_do_utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dse_do_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dse_do_utils.module_reload">
+<code class="descclassname">dse_do_utils.</code><code class="descname">module_reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils.html#module_reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.module_reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reloads all component modules. Use when you want to force a reload of this module with imp.reload().</p>
+<p>This avoids having to code somewhat complex reloading logic in the notebook that is using this module.</p>
+<p>Challenge with imp.reload of dse-do_utils. The following is NOT (!) sufficient:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">dse_do_utils</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The package dse_do_utils internally contains a number of sub modules that each contain a part of the code.
+This keeps development easier and more organized. But to make importing easier, the classes are exposed
+in the top level <cite>init.py</cite>, which allows for a simple import statement like from dse_do_utils import ScenarioManager.
+Unfortunately, reloading the top-level module dse_do_utils doesn’t force a reload of the internal modules.</p>
+<p>In case of subclassing, reloading needs to be done in the right order, i.e. first the parent classes.</p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">dse_do_utils</span>  <span class="c1"># You have to do the import, otherwise not possible to do the next 2 steps</span>
+<span class="n">dse_do_utils</span><span class="o">.</span><span class="n">module_reload</span><span class="p">()</span>  <span class="c1">#This function</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># Necessary to ensure all following expressions `from dse_do_utils import class` are using the updated classes</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
+</pre></div>
+</div>
+<p>Note that this function assumes that the set of classes and component modules is not part of the update.
+If it is, you may need to add another reload:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">dse_do_utils</span>  <span class="c1"># You have to do the import, otherwise not possible to do the next 2 steps</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># To reload this function</span>
+<span class="n">dse_do_utils</span><span class="o">.</span><span class="n">module_reload</span><span class="p">()</span>  <span class="c1">#This function</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># Necessary to ensure all future expressions `from dse_do_utils import class` are using the updated classes</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
+</pre></div>
+</div>
+<p>If not using this function, in the notebook you would need to do the following (or the relevant parts of it):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">dse_do_utils</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">datamanager</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">optimizationengine</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">scenariomanager</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">scenariopicker</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">deployeddomodel</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">mapmanager</span><span class="p">)</span>
+<span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="dse_do_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
