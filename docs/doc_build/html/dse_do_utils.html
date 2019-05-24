@@ -222,6 +222,13 @@ e.g. for output visualization notebooks.</p>
 </div>
 <p>df should have the column ‘my_input_column_name’.
 Result is that df will have 2 new columns: ‘my_output_column_name_1’ and ‘my_output_column_name_2’</p>
+<div class="deprecated">
+<p><span class="versionmodified">Deprecated since version 0.2.2: </span>Same can be done with plain Pandas.</p>
+</div>
+<p>Alternative oin plain Pandas:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;my_output_column_name_1&#39;</span><span class="p">,</span><span class="s1">&#39;my_output_column_name_2&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span> <span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">my_function</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">my_input_column_name</span><span class="p">)),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1508,6 +1515,11 @@ Inner class of ScenarioPicker since it is only applicable in the context of the 
 selected by the picker.
 :returns: A tuple with the (inputs, outputs) data</p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="dse_do_utils.scenariopicker.ScenarioPicker.widgets">
+<code class="descname">widgets</code><em class="property"> = &lt;module 'ipywidgets.widgets' from 'C:\Users\VictorTerpstra\Anaconda3\envs\python2\lib\site-packages\ipywidgets\widgets\__init__.pyc'&gt;</em><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.widgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

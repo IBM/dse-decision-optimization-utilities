@@ -224,7 +224,7 @@
 <span class="sd">        Returns:</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prep_parameters</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep_parameters</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataManager.prep_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prep_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Pre-process the Parameter(s) input table.</span>
@@ -385,6 +385,14 @@
 <span class="sd">        df should have the column &#39;my_input_column_name&#39;.</span>
 <span class="sd">        Result is that df will have 2 new columns: &#39;my_output_column_name_1&#39; and &#39;my_output_column_name_2&#39;</span>
 
+<span class="sd">        .. deprecated:: 0.2.2</span>
+<span class="sd">            Same can be done with plain Pandas.</span>
+
+<span class="sd">        Alternative oin plain Pandas::</span>
+
+<span class="sd">            df[[&#39;my_output_column_name_1&#39;,&#39;my_output_column_name_2&#39;]] = df.apply(lambda row : pd.Series(my_function(row.my_input_column_name)), axis = 1)</span>
+
+
 <span class="sd">        Args:</span>
 <span class="sd">            dataframe (DataFrame): The DataFrame that the function is applied to</span>
 <span class="sd">            field (str): the name of the input data column of dataframe</span>
@@ -398,6 +406,33 @@
             <span class="n">dataframe</span><span class="p">,</span>
             <span class="n">dataframe</span><span class="p">[</span><span class="n">field</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">cell</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">cell</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">column_names</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def apply_and_concat_row(dataframe, func, column_names, **kwargs):</span>
+    <span class="c1">#     &quot;&quot;&quot;Generic function that adds multiple columns to the dataframe, based on the call to `func(row, **kwargs)` returning multiple values.</span>
+    <span class="c1">#     **kwargs are added as arguments to the function, in addition to the row.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Usage::</span>
+    <span class="c1">#</span>
+    <span class="c1">#         def my_function(row, arg1=1):</span>
+    <span class="c1">#             return (1 * arg1, 2 * arg1)</span>
+    <span class="c1">#</span>
+    <span class="c1">#         df = apply_and_concat_row(df, my_function, [&#39;col1&#39;,&#39;col2&#39;], arg1=7)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     .. deprecated:: 0.2.2</span>
+    <span class="c1">#         Same can be done with plain Pandas::</span>
+    <span class="c1">#             df[[&#39;my_output_column_name_1&#39;,&#39;my_output_column_name_2&#39;]] = df.apply(lambda row : pd.Series(my_function(row.my_input_column_name)), axis = 1)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         dataframe (DataFrame): The DataFrame that the function is applied to</span>
+    <span class="c1">#         func: the function that will be applied. Should have one input argument for the row, optionally a set of named input arguments and return a tuple with N elements.</span>
+    <span class="c1">#         column_names (list of str): The names of the N output columns. Should match the number of values in the function return tuple.</span>
+    <span class="c1">#         **kwargs (Optional): named arguments passed to the func</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return pd.concat((</span>
+    <span class="c1">#         dataframe,</span>
+    <span class="c1">#         dataframe.apply(</span>
+    <span class="c1">#             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)</span>
 </pre></div>
 
            </div>

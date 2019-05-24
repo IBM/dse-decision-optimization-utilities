@@ -222,6 +222,14 @@ class DataManager(object):
         df should have the column 'my_input_column_name'.
         Result is that df will have 2 new columns: 'my_output_column_name_1' and 'my_output_column_name_2'
 
+        .. deprecated:: 0.2.2
+            Same can be done with plain Pandas.
+
+        Alternative in plain Pandas::
+
+            df[['my_output_column_name_1','my_output_column_name_2']] = df.apply(lambda row : pd.Series(my_function(row.my_input_column_name)), axis = 1)
+
+
         Args:
             dataframe (DataFrame): The DataFrame that the function is applied to
             field (str): the name of the input data column of dataframe
@@ -236,25 +244,29 @@ class DataManager(object):
             dataframe[field].apply(
                 lambda cell: pd.Series(func(cell), index=column_names))), axis=1)
 
-    @staticmethod
-    def apply_and_concat_row(dataframe, func, column_names, **kwargs):
-        """Generic function that adds multiple columns to the dataframe, based on the call to `func(row, **kwargs)` returning multiple values.
-        **kwargs are added as arguments to the function, in addition to the row.
-
-        Usage::
-
-            def my_function(row, arg1=1):
-                return (1 * arg1, 2 * arg1)
-
-            df = apply_and_concat_row(df, my_function, ['col1','col2'], arg1=7)
-
-        Args:
-            dataframe (DataFrame): The DataFrame that the function is applied to
-            func: the function that will be applied. Should have one input argument for the row, optionally a set of named input arguments and return a tuple with N elements.
-            column_names (list of str): The names of the N output columns. Should match the number of values in the function return tuple.
-            **kwargs (Optional): named arguments passed to the func
-        """
-        return pd.concat((
-            dataframe,
-            dataframe.apply(
-                lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)
+    # @staticmethod
+    # def apply_and_concat_row(dataframe, func, column_names, **kwargs):
+    #     """Generic function that adds multiple columns to the dataframe, based on the call to `func(row, **kwargs)` returning multiple values.
+    #     **kwargs are added as arguments to the function, in addition to the row.
+    #
+    #     Usage::
+    #
+    #         def my_function(row, arg1=1):
+    #             return (1 * arg1, 2 * arg1)
+    #
+    #         df = apply_and_concat_row(df, my_function, ['col1','col2'], arg1=7)
+    #
+    #     .. deprecated:: 0.2.2
+    #         Same can be done with plain Pandas::
+    #             df[['my_output_column_name_1','my_output_column_name_2']] = df.apply(lambda row : pd.Series(my_function(row.my_input_column_name)), axis = 1)
+    #
+    #     Args:
+    #         dataframe (DataFrame): The DataFrame that the function is applied to
+    #         func: the function that will be applied. Should have one input argument for the row, optionally a set of named input arguments and return a tuple with N elements.
+    #         column_names (list of str): The names of the N output columns. Should match the number of values in the function return tuple.
+    #         **kwargs (Optional): named arguments passed to the func
+    #     """
+    #     return pd.concat((
+    #         dataframe,
+    #         dataframe.apply(
+    #             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)

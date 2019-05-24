@@ -36,7 +36,7 @@ Need to test
 import dse_do_utils
 setuptools.setup(
     name="dse_do_utils",
-    # version="0.2.1b",
+    # version="0.2.2",
     version=dse_do_utils.__version__,
     author="Victor Terpstra",
     author_email="vterpstra@us.ibm.com",

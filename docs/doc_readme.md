@@ -3,7 +3,7 @@ Victor Terpstra - 23 Feb 2019
 
 # Generate documentation - short version
 To update the documentation:
-1. Open a command terminal in `./docs`
+1. Open a command terminal in `./docs` (PyCharm->View->Tool Windows->Terminal)
 2. If you have added/removed classes, run:
 ```
 sphinx-apidoc -f -o source/ ../dse_do_utils/
@@ -140,7 +140,7 @@ Note that I first tried `recommonmark` (see https://www.sphinx-doc.org/en/master
 
 ## Issue with dd_scenario:
 Sphinx will parse the Python code and run into trouble when it encounters a `import dd_scenario`.
-Since dd_scenario only exists in WSL and cannot be installed an your local workstation, this implies Sphinx can generate the docs.
+Since dd_scenario only exists in WSL and cannot be installed an your local workstation, this implies Sphinx can't generate the docs.
 A work-around is to add a dummy dd_scenario module and add it to the Python path.
 This is the purpose of the dd_scenario.py module in the docs folder.
 

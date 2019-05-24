@@ -169,8 +169,8 @@
 <span class="c1"># ScenarioPicker</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
-<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">widgets</span>
+<span class="c1"># from IPython.display import Javascript, display</span>
+<span class="c1"># from ipywidgets import widgets</span>
 
 <span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
 
@@ -207,6 +207,8 @@
 
     <span class="n">default_scenario</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class variable to store the latest scenario selected</span>
 
+    <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">widgets</span>
+
 <div class="viewcode-block" id="ScenarioPicker.ScenarioRefreshButton"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.ScenarioRefreshButton">[docs]</a>    <span class="k">class</span> <span class="nc">ScenarioRefreshButton</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">Button</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A widget Refresh button that will refresh all cells below.</span>
 <span class="sd">        Inner class of ScenarioPicker since it is only applicable in the context of the ScenarioPicker.&quot;&quot;&quot;</span>
@@ -228,6 +230,7 @@
         <span class="k">def</span> <span class="nf">_refresh_cells_below</span><span class="p">():</span>
             <span class="sd">&quot;&quot;&quot;Executes all cells below the current. Triggered by Refresh button.&quot;&quot;&quot;</span>
             <span class="c1">#             display(Javascript(&#39;IPython.notebook.execute_cell_range(IPython.notebook.get_selected_index()+1, IPython.notebook.ncells())&#39;)) #Runs all cells below the cell with the refresh button</span>
+            <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
             <span class="n">display</span><span class="p">(</span>
                 <span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;IPython.notebook.execute_cells_below()&#39;</span><span class="p">))</span>  <span class="c1"># Will also run the cell with the refresh button</span></div>
 
