@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath('../..')) #To get the package `dse_do_utils` 
 # `'../..'` is the same as 'C:/Projects/DSX-DO-common-utils/DSE_DO_Utils_GitHub/dse_do_utils'
 # sys.path.insert(0, 'C:/Projects/DSX-DO-common-utils/DSE_DO_Utils_GitHub/dse_do_utils')
 sys.path.insert(0, os.path.abspath('../../misc_modules'))
-
+import dse_do_utils
 # import dse_do_utils
 
 
@@ -66,7 +66,7 @@ author = u'Victor Terpstra'
 # built documents.
 #
 # The short X.Y version.
-version = u'0.2.2'
+version = dse_do_utils.__version__  #u'0.2.2'
 # The full version, including alpha/beta/rc tags.
 release = version
 
