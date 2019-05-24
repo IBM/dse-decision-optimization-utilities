@@ -1,7 +1,7 @@
 # How to release a new version?
 
 Steps:
-1. Change the versions in the file `dse_do_utils.version.py` and in `setup.py` to something like `0.2.0`
+1. Change the versions in the files `dse_do_utils.version.py` and in `/docs/source/conf.py` to something like `0.2.0`. (`setup.py` automatically gets it from `version.py`)`
 2. Regenerate the documentation with `make-html` (see `docs/doc_readme.md`)
 3. Commit and push to GitHub
 4. In GitHub, create a new release with a tag like `v0.2.0`
