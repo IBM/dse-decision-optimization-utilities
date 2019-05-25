@@ -46,7 +46,7 @@ setuptools.setup(
     url="https://github.ibm.com/vterpstra/DSE_DO_Utils",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 2.7",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
