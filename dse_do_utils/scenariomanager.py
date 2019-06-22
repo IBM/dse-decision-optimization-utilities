@@ -18,8 +18,45 @@ class ScenarioManager(object):
     """
     A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.
     The data can be loaded from and stored into:
-    * A DO scenario
-    * An Excel spreadsheet
+
+        * A DO scenario
+        * An Excel spreadsheet
+        * A set of csv files
+
+    Excel. Stores one DataFrame per sheet. Creates a `__index__` sheet that keeps track which DataFrame
+    is input or output, and it restores table names that longer than the maximum of 31 in Excel.
+
+    Usage 1 - Load data from Excel and store into DO scenario.
+    Assumes DO model `MyModel` and an Excel file `datasets/MyExcelFile.xlsx` exists.
+    The scenario will be created if it doesn't exist or otherwise gets overwritten::
+
+        sm = ScenarioManager(model_name='MyModel, scenario_name='Scenario_1)
+        inputs, outputs = sm.load_data_from_excel('MyExcelFile')
+        sm.write_data_into_scenario()
+
+    Usage 2 - Load data from DO scenario.
+    Assumes DO model `MyModel` and scenario exists. Typical use in a `#dd-ignore` cell in a solves notebook::
+
+        sm = ScenarioManager(model_name='MyModel, scenario_name='Scenario_1)
+        inputs, outputs = sm.load_data_from_scenario()
+
+    Usage 3 - Load data from all csv files in datasets into Excel.<br>
+    Stores into `/datasets/excel_test.xlsx`.::
+
+        excel_output_file_name = 'excel_test'
+        csv_directory = os.path.join(os.environ['DSX_PROJECT_DIR'], 'datasets')
+        sm = ScenarioManager()
+        inputs, outputs = sm.load_data_from_csv(csv_directory)
+        sm.write_data_to_excel(excel_output_file_name)
+
+    Usage 4 - Load data from Excel and store into Excel.
+    Assumes Excel file `datasets/MyExcelFile.xlsx` exists.
+    Will create a file `datasets/MyExcelFileOutput.xlsx`.::
+
+        sm = ScenarioManager()
+        inputs, outputs = sm.load_data_from_excel('MyExcelFile')
+        # Do something with the inputs or outputs
+        sm.write_data_to_excel('MyExcelFileOutput')
 
     """
 

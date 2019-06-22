@@ -190,7 +190,7 @@
 <em class="property">class </em><code class="descclassname">dse_do_utils.datamanager.</code><code class="descname">DataManager</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>A DataManager is a container of original scenario and intermediate data.</p>
-<p>It typically contains the input and output dictionaries with DataFrames come from
+<p>It typically contains the input and output dictionaries with DataFrames that came from
 or will be inserted into a DO scenario.
 In addition it will hold any intermediate data.
 It holds methods that operate on and convert the data.
@@ -346,13 +346,6 @@ This requires the explicit conversion to the expected data type.</p>
 </tbody>
 </table>
 <p>Returns:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="dse_do_utils.datamanager.DataManager.pp_parameters">
-<code class="descname">pp_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.pp_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.pp_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deprecated
-Returns:</p>
 </dd></dl>
 
 <dl class="method">
@@ -1051,7 +1044,33 @@ df[‘xDVar’] = mdl.integer_var_series(df, name = ‘xDVar’)</p>
 <p>A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.
 The data can be loaded from and stored into:
 * A DO scenario
-* An Excel spreadsheet</p>
+* An Excel spreadsheet
+* A set of csv files</p>
+<p>Excel. Stores one DataFrame per sheet. Creates a <cite>__index__</cite> sheet that keeps track which DataFrame
+is input or output, and it restores table names that longer than the maximum of 31 in Excel.</p>
+<p>Usage 1 - Load data from Excel and store into DO scenario.&lt;br&gt;
+Assumes DO model <cite>MyModel</cite> and an Excel file ‘datasets/MyExcelFile.xlsx’ exists.
+The scenario will be created if it doesn’t exist or otherwise gets overwritten:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;MyModel, scenario_name=&#39;</span><span class="n">Scenario_1</span><span class="p">)</span>
+<span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_excel</span><span class="p">(</span><span class="s1">&#39;MyExcelFile&#39;</span><span class="p">)</span>
+<span class="n">sm</span><span class="o">.</span><span class="n">write_data_into_scenario</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Usage 2 - Load data from DO scenario.&lt;br&gt;
+Assumes DO model <cite>MyModel</cite> and scenario exists. Typical use in a <cite>#dd-ignore</cite> cell in a solves notebook:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;MyModel, scenario_name=&#39;</span><span class="n">Scenario_1</span><span class="p">)</span>
+<span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_scenario</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Usage 3 - Load data from all csv files in datasets into Excel.&lt;br&gt;
+Stores into <cite>/datasets/excel_test.xlsx</cite>.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">excel_output_file_name</span> <span class="o">=</span> <span class="s1">&#39;excel_test&#39;</span>
+<span class="n">csv_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DSX_PROJECT_DIR&#39;</span><span class="p">],</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+<span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">()</span>
+<span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_csv</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">)</span>
+<span class="n">sm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">(</span><span class="n">excel_output_file_name</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario">
 <code class="descname">add_data_into_scenario</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_into_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario" title="Permalink to this definition">¶</a></dt>

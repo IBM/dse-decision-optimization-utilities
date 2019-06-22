@@ -180,7 +180,7 @@
 <div class="viewcode-block" id="DataManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager">[docs]</a><span class="k">class</span> <span class="nc">DataManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A DataManager is a container of original scenario and intermediate data.</span>
 
-<span class="sd">    It typically contains the input and output dictionaries with DataFrames come from</span>
+<span class="sd">    It typically contains the input and output dictionaries with DataFrames that came from</span>
 <span class="sd">    or will be inserted into a DO scenario.</span>
 <span class="sd">    In addition it will hold any intermediate data.</span>
 <span class="sd">    It holds methods that operate on and convert the data.</span>
@@ -218,13 +218,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello world #1&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataManager.pp_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.pp_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">pp_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Deprecated</span>
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep_parameters</span><span class="p">()</span></div>
+    <span class="c1"># def pp_parameters(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Deprecated</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return self.prep_parameters()</span>
 
 <div class="viewcode-block" id="DataManager.prep_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prep_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Pre-process the Parameter(s) input table.</span>
