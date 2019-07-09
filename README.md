@@ -2,7 +2,7 @@
 Decision Optimization utilities for IBM Watson Studio Local and ICPd projects.
 
 [Source (GitHub)](https://github.com/IBM/dse-decision-optimization-utilities)<br>
-[Documentation (GitHubPages](https://ibm.github.io/dse-decision-optimization-utilities/)
+[Documentation (GitHubPages)](https://ibm.github.io/dse-decision-optimization-utilities/)
 
 This repository contains the package `dse_do_utils`. This can be installed using pip.
 

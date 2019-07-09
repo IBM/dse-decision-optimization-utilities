@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils package &mdash; DSE DO Utils 0.2.3b documentation</title>
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.2.2.2 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.3b',
+              VERSION:'0.2.2.2',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.2.3b
+                0.2.2.2
               </div>
             
           
@@ -1042,21 +1042,25 @@ df[‘xDVar’] = mdl.integer_var_series(df, name = ‘xDVar’)</p>
 <em class="property">class </em><code class="descclassname">dse_do_utils.scenariomanager.</code><code class="descname">ScenarioManager</code><span class="sig-paren">(</span><em>model_name=None</em>, <em>scenario_name=None</em>, <em>local_root=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.
-The data can be loaded from and stored into:
-* A DO scenario
-* An Excel spreadsheet
-* A set of csv files</p>
+The data can be loaded from and stored into:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A DO scenario</li>
+<li>An Excel spreadsheet</li>
+<li>A set of csv files</li>
+</ul>
+</div></blockquote>
 <p>Excel. Stores one DataFrame per sheet. Creates a <cite>__index__</cite> sheet that keeps track which DataFrame
 is input or output, and it restores table names that longer than the maximum of 31 in Excel.</p>
-<p>Usage 1 - Load data from Excel and store into DO scenario.&lt;br&gt;
-Assumes DO model <cite>MyModel</cite> and an Excel file ‘datasets/MyExcelFile.xlsx’ exists.
+<p>Usage 1 - Load data from Excel and store into DO scenario.
+Assumes DO model <cite>MyModel</cite> and an Excel file <cite>datasets/MyExcelFile.xlsx</cite> exists.
 The scenario will be created if it doesn’t exist or otherwise gets overwritten:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;MyModel, scenario_name=&#39;</span><span class="n">Scenario_1</span><span class="p">)</span>
 <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_excel</span><span class="p">(</span><span class="s1">&#39;MyExcelFile&#39;</span><span class="p">)</span>
 <span class="n">sm</span><span class="o">.</span><span class="n">write_data_into_scenario</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Usage 2 - Load data from DO scenario.&lt;br&gt;
+<p>Usage 2 - Load data from DO scenario.
 Assumes DO model <cite>MyModel</cite> and scenario exists. Typical use in a <cite>#dd-ignore</cite> cell in a solves notebook:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;MyModel, scenario_name=&#39;</span><span class="n">Scenario_1</span><span class="p">)</span>
 <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_scenario</span><span class="p">()</span>
@@ -1069,6 +1073,15 @@ Stores into <cite>/datasets/excel_test.xlsx</cite>.:</p>
 <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">()</span>
 <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_csv</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">)</span>
 <span class="n">sm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">(</span><span class="n">excel_output_file_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Usage 4 - Load data from Excel and store into Excel.
+Assumes Excel file <cite>datasets/MyExcelFile.xlsx</cite> exists.
+Will create a file <cite>datasets/MyExcelFileOutput.xlsx</cite>.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">()</span>
+<span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_excel</span><span class="p">(</span><span class="s1">&#39;MyExcelFile&#39;</span><span class="p">)</span>
+<span class="c1"># Do something with the inputs or outputs</span>
+<span class="n">sm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">(</span><span class="s1">&#39;MyExcelFileOutput&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -1584,8 +1597,9 @@ This will work better once we can do a pip install dse-do_utils.</p>
 </div>
 <div class="section" id="module-dse_do_utils.version">
 <span id="dse-do-utils-version-module"></span><h2>dse_do_utils.version module<a class="headerlink" href="#module-dse_do_utils.version" title="Permalink to this headline">¶</a></h2>
-<p>Versions: beware to keep the version in <cite>setup.py</cite> in sync with the version in <cite>dse_do_utils.version.py</cite></p>
-<p>Best practice to keep version here, in a separate file
+<p>Source of truth for the dse_do_utils version.
+The versions in <cite>setup.py</cite> and <cite>/docs/source/conf.py</cite> are automatically populated from here.</p>
+<p>Best practice to keep version here, in a separate file.
 See <a class="reference external" href="https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package">https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package</a></p>
 </div>
 <div class="section" id="module-dse_do_utils">

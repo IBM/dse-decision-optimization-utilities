@@ -5,16 +5,18 @@ Steps:
 (`setup.py` and `/docs/source/conf.py` now automatically gets it from `version.py`)`
 
 2. Regenerate the documentation with `make-html` (see `docs/doc_readme.md`). 
-Open Terminal, `cd docs`, run <br>
+Open Terminal (Alt+F12), `cd docs`, run <br>
 `make html` 
 
 3. For PyPI, build the wheel file.
 a. Delete all files in `./dist`
 b. Open Terminal, from root, run <br>
-`setup.py sdist bdist_wheel`
+`python setup.py sdist bdist_wheel`
 
-4. Upload to TestPyPI (from PyCharm terminal):<br>
-`twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`
+4. Upload to PyPI (from PyCharm terminal run):<br>
+`twine upload dist/*  --verbose`
+Enter username and password when prompted.
+(For TestPyPI use: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`)
 
 5. For JFrog, run `setup.py` with the following arguments:<br>
 `python setup.py sdist bdist_wheel upload -r local`<br>
