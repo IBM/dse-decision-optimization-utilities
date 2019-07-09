@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read me &mdash; DSE DO Utils 0.2.2.1 documentation</title>
+  <title>Read me &mdash; DSE DO Utils 0.2.2.2 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.2.1',
+              VERSION:'0.2.2.2',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.2.2.1
+                0.2.2.2
               </div>
             
           
@@ -96,7 +96,13 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Read me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#dse-do-utils">DSE_DO_Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-classes">Main classes:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import">Import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 </ul>
 
@@ -167,13 +173,59 @@
 </div>
 <div class="section" id="dse-do-utils">
 <h1>DSE_DO_Utils<a class="headerlink" href="#dse-do-utils" title="Permalink to this headline">¶</a></h1>
-<p>Decision Optimization utilities for IBM Watson Studio projects.</p>
-<p><a class="reference external" href="https://github.com/IBM/dse-decision-optimization-utilities">Source in GitHub</a>
-<a class="reference external" href="https://ibm.github.io/dse-decision-optimization-utilities/doc_build/html/index.html">Documentation</a></p>
-<p>This repository contains:</p>
+<p>Decision Optimization utilities for IBM Watson Studio Local and ICPd projects.</p>
+<p><a class="reference external" href="https://github.com/IBM/dse-decision-optimization-utilities">Source (GitHub)</a><span class="raw-html-m2r"><br></span>
+<a class="reference external" href="https://ibm.github.io/dse-decision-optimization-utilities/">Documentation (GitHubPages)</a></p>
+<p>This repository contains the package <code class="docutils literal"><span class="pre">dse_do_utils</span></code>. This can be installed using pip.</p>
+<div class="section" id="main-classes">
+<h2>Main classes:<a class="headerlink" href="#main-classes" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>A package <code class="docutils literal"><span class="pre">dse_do_utils</span></code>. This can be installed using pip.</li>
+<li>ScenarioManager. Reads and writes table data from and to all combinations of csv-files, Excel spreadhseet and DO scenario.</li>
+<li>DataManager. A DataManager is mostly a container for data and functions for pre- and post-processing.
+Can be subclassed and stored in a script to be able to share code between multiple notebooks.
+Also contains some utilities for data manipulation, like the crossjoin.</li>
+<li>OptimizationEngine. Also mostly a container for functions around creating an optimization model and using the docplex APIs.
+Can be subclassed and stored in a script to be able to share code between multiple notebooks.
+Also contains some functions to create dvars and export .lp files.</li>
+<li>ScenarioPicker. Interactively pick an existing scenario from a drop-down menu in a notebook. Typically used in visualization notebooks.</li>
+<li>MapManager. For creating map visualizations using Folium.</li>
+<li>DeployedDOModel. Interfacing from Python to a deployed DO model.</li>
 </ol>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Recommend to install in the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder by running the following in a notebook cell:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="o">-</span><span class="nv">i</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">test</span>.<span class="nv">pypi</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">simple</span><span class="o">/</span><span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>See also <a class="reference external" href="https://medium.com/&#64;vjterpstracom/installing-packages-and-modules-for-decision-optimization-projects-in-watson-studio-local-69abc934ef32">Installing packages and modules for Decision Optimization projects in Watson Studio Local</a></p>
+</div>
+<div class="section" id="import">
+<h2>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h2>
+<p>Import the <code class="docutils literal"><span class="pre">dse_do_utils</span></code> from the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder.<span class="raw-html-m2r"><br></span>
+First add the folder to the Python path:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;packages/python&#39;</span><span class="p">,</span> <span class="s1">&#39;scripts&#39;</span><span class="p">]:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DSX_PROJECT_DIR&#39;</span><span class="p">],</span> <span class="n">folder</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then import the required classes from the package:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">DataManager</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>This package requires:</p>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://pages.github.ibm.com/IBMDecisionOptimization/dd-scenario-api/dd-scenario-client-python/doc/build/html/">dd-scenario</a>. This package provides an interface to the DO scenarios.
+This package is only available within WSL and ICPd. It cannot be pip installed in other environments.</li>
+<li><a class="reference external" href="http://ibmdecisionoptimization.github.io/docplex-doc/mp/index.html">docplex</a>. This package interfaces with the CPLEX and CP Optimizer optimization engines.</li>
+<li><a class="reference external" href="https://github.com/python-visualization/folium">folium</a>. Map visualization. Only for the MapManager.</li>
+</ol>
+</div>
 </div>
 
 

@@ -17,7 +17,7 @@ import pandas as pd
 class DataManager(object):
     """A DataManager is a container of original scenario and intermediate data.
 
-    It typically contains the input and output dictionaries with DataFrames come from
+    It typically contains the input and output dictionaries with DataFrames that came from
     or will be inserted into a DO scenario.
     In addition it will hold any intermediate data.
     It holds methods that operate on and convert the data.
@@ -55,13 +55,13 @@ class DataManager(object):
         """
         print("Hello world #1")
 
-    def pp_parameters(self):
-        """
-        Deprecated
-        Returns:
-
-        """
-        return self.prep_parameters()
+    # def pp_parameters(self):
+    #     """
+    #     Deprecated
+    #     Returns:
+    #
+    #     """
+    #     return self.prep_parameters()
 
     def prep_parameters(self):
         """Pre-process the Parameter(s) input table.

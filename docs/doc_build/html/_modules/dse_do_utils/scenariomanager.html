@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.2.2.1 documentation</title>
+  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.2.2.2 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.2.2.1',
+              VERSION:'0.2.2.2',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.2.1
+                0.2.2.2
               </div>
             
           
@@ -181,8 +181,45 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.</span>
 <span class="sd">    The data can be loaded from and stored into:</span>
-<span class="sd">    * A DO scenario</span>
-<span class="sd">    * An Excel spreadsheet</span>
+
+<span class="sd">        * A DO scenario</span>
+<span class="sd">        * An Excel spreadsheet</span>
+<span class="sd">        * A set of csv files</span>
+
+<span class="sd">    Excel. Stores one DataFrame per sheet. Creates a `__index__` sheet that keeps track which DataFrame</span>
+<span class="sd">    is input or output, and it restores table names that longer than the maximum of 31 in Excel.</span>
+
+<span class="sd">    Usage 1 - Load data from Excel and store into DO scenario.</span>
+<span class="sd">    Assumes DO model `MyModel` and an Excel file `datasets/MyExcelFile.xlsx` exists.</span>
+<span class="sd">    The scenario will be created if it doesn&#39;t exist or otherwise gets overwritten::</span>
+
+<span class="sd">        sm = ScenarioManager(model_name=&#39;MyModel, scenario_name=&#39;Scenario_1)</span>
+<span class="sd">        inputs, outputs = sm.load_data_from_excel(&#39;MyExcelFile&#39;)</span>
+<span class="sd">        sm.write_data_into_scenario()</span>
+
+<span class="sd">    Usage 2 - Load data from DO scenario.</span>
+<span class="sd">    Assumes DO model `MyModel` and scenario exists. Typical use in a `#dd-ignore` cell in a solves notebook::</span>
+
+<span class="sd">        sm = ScenarioManager(model_name=&#39;MyModel, scenario_name=&#39;Scenario_1)</span>
+<span class="sd">        inputs, outputs = sm.load_data_from_scenario()</span>
+
+<span class="sd">    Usage 3 - Load data from all csv files in datasets into Excel.&lt;br&gt;</span>
+<span class="sd">    Stores into `/datasets/excel_test.xlsx`.::</span>
+
+<span class="sd">        excel_output_file_name = &#39;excel_test&#39;</span>
+<span class="sd">        csv_directory = os.path.join(os.environ[&#39;DSX_PROJECT_DIR&#39;], &#39;datasets&#39;)</span>
+<span class="sd">        sm = ScenarioManager()</span>
+<span class="sd">        inputs, outputs = sm.load_data_from_csv(csv_directory)</span>
+<span class="sd">        sm.write_data_to_excel(excel_output_file_name)</span>
+
+<span class="sd">    Usage 4 - Load data from Excel and store into Excel.</span>
+<span class="sd">    Assumes Excel file `datasets/MyExcelFile.xlsx` exists.</span>
+<span class="sd">    Will create a file `datasets/MyExcelFileOutput.xlsx`.::</span>
+
+<span class="sd">        sm = ScenarioManager()</span>
+<span class="sd">        inputs, outputs = sm.load_data_from_excel(&#39;MyExcelFile&#39;)</span>
+<span class="sd">        # Do something with the inputs or outputs</span>
+<span class="sd">        sm.write_data_to_excel(&#39;MyExcelFileOutput&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

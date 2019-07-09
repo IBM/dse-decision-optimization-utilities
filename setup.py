@@ -43,13 +43,18 @@ setuptools.setup(
     description="Decision Optimization utilities for IBM Watson Studio projects",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.ibm.com/vterpstra/DSE_DO_Utils",
+    url="https://github.com/IBM/dse-decision-optimization-utilities",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 2.7",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
+        "Topic :: Documentation :: Sphinx"
     ],
+    project_urls={  # Optional
+        'Source': 'https://github.com/IBM/dse-decision-optimization-utilities',
+        'Documentation': 'https://ibm.github.io/dse-decision-optimization-utilities/',
+        'IBM Decision Optimization': 'https://www.ibm.com/analytics/decision-optimization',
+    },
 )
