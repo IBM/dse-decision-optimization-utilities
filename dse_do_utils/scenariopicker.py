@@ -11,7 +11,6 @@
 
 from dse_do_utils import ScenarioManager
 
-
 class ScenarioPicker(object):
     """Notebook widget to interactively select a scenario from the dd_scenario.Client.
 
@@ -88,6 +87,7 @@ class ScenarioPicker(object):
 
     def get_scenario_select_drop_down(self):
         """Return the drop-down button."""
+        from ipywidgets import widgets
         self.drop_down = widgets.Dropdown(
             options=self._get_scenario_names(),
             value=self._get_default_scenario(),  # None, #DEFAULT_SCENARIO, #the default selected value
@@ -119,6 +119,7 @@ class ScenarioPicker(object):
 
     def get_scenario_picker_ui(self):
         """Return a combination of both the drop-down and the refresh button."""
+        from ipywidgets import widgets
         tab = widgets.HBox(children=[self.get_scenario_select_drop_down(), self.get_scenario_refresh_button()])
         return tab
 
