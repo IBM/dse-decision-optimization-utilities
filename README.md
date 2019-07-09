@@ -18,12 +18,6 @@ Also contains some functions to create dvars and export .lp files.
 5. MapManager. For creating map visualizations using Folium.
 6. DeployedDOModel. Interfacing from Python to a deployed DO model.
 
-## Target environments
-To be used within:
-1. Watson Studio Local v1.2.3 (which requires Python 2.7).
-2. ICPd 1.2 or 2.1 (which requires Python 3.6)
-Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.
-
 ## Installation
 Recommend to install in the `../packages/python` folder by running the following in a notebook cell: <br>
 Regular install:
@@ -59,6 +53,12 @@ Then import the required classes from the package:
 ```
 from dse_do_utils import ScenarioManager, DataManager
 ```
+
+## Target environments
+To be used within:
+1. Watson Studio Local v1.2.3 (which requires Python 2.7).
+2. ICPd 1.2 or 2.1 (which requires Python 3.6)
+Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.
 
 ## Requirements
 This package requires:
