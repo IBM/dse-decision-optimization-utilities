@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read me &mdash; DSE DO Utils 0.2.2.2 documentation</title>
+  <title>Read me &mdash; DSE DO Utils 0.2.2.3 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.2.2',
+              VERSION:'0.2.2.3',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.2.2.2
+                0.2.2.3
               </div>
             
           
@@ -100,6 +100,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#main-classes">Main classes:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#import">Import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#target-environments">Target environments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -194,7 +195,20 @@ Also contains some functions to create dvars and export .lp files.</li>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Recommend to install in the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder by running the following in a notebook cell:</p>
+<p>Recommend to install in the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder by running the following in a notebook cell: <span class="raw-html-m2r"><br></span>
+Regular install:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>Force a released version to ensure compatibility (advised):</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span><span class="o">==</span><span class="mi">0</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">1</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>Force a clean re-install of a released version:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="o">--</span><span class="nv">force</span><span class="o">-</span><span class="nv">reinstall</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span><span class="o">==</span><span class="mi">0</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">1</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span> <span class="o">--</span><span class="nv">upgrade</span>
+</pre></div>
+</div>
+<p>Install from TestPyPI (deprecated, version on TestPyPI is not updated):</p>
 <div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="o">-</span><span class="nv">i</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">test</span>.<span class="nv">pypi</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">simple</span><span class="o">/</span><span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
 </pre></div>
 </div>
@@ -215,6 +229,15 @@ First add the folder to the Python path:</p>
 <div class="highlight-guess"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">DataManager</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="target-environments">
+<h2>Target environments<a class="headerlink" href="#target-environments" title="Permalink to this headline">¶</a></h2>
+<p>To be used within:</p>
+<ol class="arabic simple">
+<li>Watson Studio Local v1.2.3 (which requires Python 2.7).</li>
+<li>ICPd 1.2 or 2.1 (which requires Python 3.6)
+Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.</li>
+</ol>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
