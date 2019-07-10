@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.datamanager &mdash; DSE DO Utils 0.2.2.2 documentation</title>
+  <title>dse_do_utils.datamanager &mdash; DSE DO Utils 0.2.2.3 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.2.2.2',
+              VERSION:'0.2.2.3',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.2.2
+                0.2.2.3
               </div>
             
           
@@ -241,7 +241,7 @@
         <span class="k">return</span> <span class="n">params</span></div>
 
 <div class="viewcode-block" id="DataManager.get_parameter_value"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_parameter_value">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get value of parameter from the parameter table (DataFrame).</span>
 <span class="sd">        Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a</span>
@@ -251,14 +251,15 @@
 <span class="sd">        Args:</span>
 <span class="sd">            params (indexed DataFrame with parameters): Index = &#39;param&#39;, value in &#39;value&#39; column.</span>
 <span class="sd">            param_name (str): Name of parameter.</span>
-<span class="sd">            param_type (str): Type of parameter. Valid param_type values are int, float, str, bool.</span>
+<span class="sd">            param_type (str): Type of parameter. Valid param_type values are int, float, str, bool, datetime.</span>
 <span class="sd">            default_value: Value if param_name not in index.</span>
+<span class="sd">            value_format (str): Format for datetime conversion.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
         <span class="c1"># assert &#39;param&#39; in params.index #Not absolutely necessary, as long as single index</span>
         <span class="k">assert</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">columns</span>
-        <span class="n">param</span> <span class="o">=</span> <span class="n">default_value</span>
         <span class="k">if</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
             <span class="n">raw_param</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
             <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
@@ -273,10 +274,18 @@
                 <span class="c1"># (see http://joergdietrich.github.io/python-numpy-bool-types.html)</span>
                 <span class="c1"># param = (str(raw_param) == &#39;True&#39;)</span>
                 <span class="n">param</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;datetime&#39;</span><span class="p">:</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">raw_param</span><span class="p">,</span> <span class="n">value_format</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">param</span> <span class="o">=</span> <span class="n">raw_param</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: </span><span class="si">{}</span><span class="s1"> not in Parameters&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param_name</span><span class="p">))</span>
+            <span class="c1"># If datetime, the default value can be a string</span>
+            <span class="kn">import</span> <span class="nn">six</span>  <span class="c1"># For Python 2 and 3 compatibility of testing string instance</span>
+            <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;datetime&#39;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">value_format</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">default_value</span>
         <span class="k">return</span> <span class="n">param</span></div>
 
 <div class="viewcode-block" id="DataManager.df_crossjoin_si"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_si">[docs]</a>    <span class="nd">@staticmethod</span>

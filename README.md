@@ -18,13 +18,27 @@ Also contains some functions to create dvars and export .lp files.
 5. MapManager. For creating map visualizations using Folium.
 6. DeployedDOModel. Interfacing from Python to a deployed DO model.
 
-
 ## Installation
-Recommend to install in the `../packages/python` folder by running the following in a notebook cell: 
+Recommend to install in the `../packages/python` folder by running the following in a notebook cell: <br>
+Regular install:
+```
+!pip install dse-do-utils --target='../packages/python'
+```
+Force a released version to ensure compatibility (advised):
+```
+!pip install dse-do-utils==0.2.2.1 --target='../packages/python'
+```
+Force a clean re-install of a released version:
+```
+!pip install --force-reinstall dse-do-utils==0.2.2.1 --target='../packages/python' --upgrade
+```
+
+Install from TestPyPI (deprecated, version on TestPyPI is not updated):
 ```
 !pip install -i https://test.pypi.org/simple/dse-do-utils --target='../packages/python'
 ```
 See also [Installing packages and modules for Decision Optimization projects in Watson Studio Local](https://medium.com/@vjterpstracom/installing-packages-and-modules-for-decision-optimization-projects-in-watson-studio-local-69abc934ef32)
+
 ## Import
 Import the `dse_do_utils` from the `../packages/python` folder.<br>
 First add the folder to the Python path:
@@ -39,6 +53,12 @@ Then import the required classes from the package:
 ```
 from dse_do_utils import ScenarioManager, DataManager
 ```
+
+## Target environments
+To be used within:
+1. Watson Studio Local v1.2.3 (which requires Python 2.7).
+2. ICPd 1.2 or 2.1 (which requires Python 3.6)
+Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.
 
 ## Requirements
 This package requires:
