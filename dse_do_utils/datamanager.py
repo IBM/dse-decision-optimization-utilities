@@ -78,7 +78,7 @@ class DataManager(object):
         return params
 
     @staticmethod
-    def get_parameter_value(params, param_name, param_type=None, default_value=None):
+    def get_parameter_value(params, param_name, param_type=None, default_value=None, value_format='%Y-%m-%d %H:%M'):
         """
         Get value of parameter from the parameter table (DataFrame).
         Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
@@ -88,14 +88,15 @@ class DataManager(object):
         Args:
             params (indexed DataFrame with parameters): Index = 'param', value in 'value' column.
             param_name (str): Name of parameter.
-            param_type (str): Type of parameter. Valid param_type values are int, float, str, bool.
+            param_type (str): Type of parameter. Valid param_type values are int, float, str, bool, datetime.
             default_value: Value if param_name not in index.
+            value_format (str): Format for datetime conversion.
 
         Returns:
         """
+        from datetime import datetime
         # assert 'param' in params.index #Not absolutely necessary, as long as single index
         assert 'value' in params.columns
-        param = default_value
         if param_name in params.index:
             raw_param = params.loc[param_name].value
             if param_type == 'int':
@@ -110,10 +111,18 @@ class DataManager(object):
                 # (see http://joergdietrich.github.io/python-numpy-bool-types.html)
                 # param = (str(raw_param) == 'True')
                 param = (str(raw_param).lower() in ['true', 'yes', 'y', 't', '1', '1.0'])
+            elif param_type == 'datetime':
+                param = datetime.strptime(raw_param, value_format)
             else:
                 param = raw_param
         else:
             print('Warning: {} not in Parameters'.format(param_name))
+            # If datetime, the default value can be a string
+            import six  # For Python 2 and 3 compatibility of testing string instance
+            if param_type == 'datetime' and isinstance(default_value, six.string_types):
+                param = datetime.strptime(default_value, value_format)
+            else:
+                param = default_value
         return param
 
     @staticmethod

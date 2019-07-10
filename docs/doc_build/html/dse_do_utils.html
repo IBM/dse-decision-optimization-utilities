@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils package &mdash; DSE DO Utils 0.2.2.2 documentation</title>
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.2.2.3 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.2.2',
+              VERSION:'0.2.2.3',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.2.2.2
+                0.2.2.3
               </div>
             
           
@@ -326,7 +326,7 @@ See <a class="reference external" href="https://mkonrad.net/2016/04/16/cross-joi
 
 <dl class="staticmethod">
 <dt id="dse_do_utils.datamanager.DataManager.get_parameter_value">
-<em class="property">static </em><code class="descname">get_parameter_value</code><span class="sig-paren">(</span><em>params</em>, <em>param_name</em>, <em>param_type=None</em>, <em>default_value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.get_parameter_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.get_parameter_value" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">get_parameter_value</code><span class="sig-paren">(</span><em>params</em>, <em>param_name</em>, <em>param_type=None</em>, <em>default_value=None</em>, <em>value_format='%Y-%m-%d %H:%M'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.get_parameter_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.get_parameter_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get value of parameter from the parameter table (DataFrame).
 Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
 parameter depending on what other values are used in other rows.
@@ -338,8 +338,9 @@ This requires the explicit conversion to the expected data type.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>params</strong> (<em>indexed DataFrame with parameters</em>) – Index = ‘param’, value in ‘value’ column.</li>
 <li><strong>param_name</strong> (<em>str</em>) – Name of parameter.</li>
-<li><strong>param_type</strong> (<em>str</em>) – Type of parameter. Valid param_type values are int, float, str, bool.</li>
+<li><strong>param_type</strong> (<em>str</em>) – Type of parameter. Valid param_type values are int, float, str, bool, datetime.</li>
 <li><strong>default_value</strong> – Value if param_name not in index.</li>
+<li><strong>value_format</strong> (<em>str</em>) – Format for datetime conversion.</li>
 </ul>
 </td>
 </tr>

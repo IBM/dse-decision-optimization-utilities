@@ -22,7 +22,10 @@ Enter username and password when prompted.
 `python setup.py sdist bdist_wheel upload -r local`<br>
 (This is in the saved PyCharm run configuration `setup_egg_wheel_artifactory`)
 
-6. From GitGui, commit and push into git repo.
+6. From GitGui, commit into beta branch and push into git repo.
+Then either:
+    1. In GitHub do a pull-request from the beta into the master, or
+    2. In GitGui, switch to master and merge from beta branch. Then push into GitHub. (In case we need to resolve conflicts.)
 
 7. In GitHub, create a new release with a tag like v0.2.0
 
