@@ -142,14 +142,18 @@ class OptimizationEngine(object):
             model_name = model.name
         # Get root directory:
         sm = ScenarioManager(local_root=local_root)  # Just to call the get_root_directory()
-        root_dir = sm.get_root_directory()
+        # root_dir = sm.get_root_directory()
+        datasets_dir = sm.get_data_directory()
         # Write regular lp-file:
-        lp_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.lp')
+        # lp_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.lp')
+        lp_file_name_1 = os.path.join(datasets_dir, model_name + '.lp')
         model.export_as_lp(lp_file_name_1)  # Writes the .lp file
         # Copy to csv:
         if copy_to_csv:
-            lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
-            csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
+            # lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
+            # csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
+            lp_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.lp')
+            csv_file_name_2 = os.path.join(datasets_dir, model_name + '_lp.csv')
             model.export_as_lp(lp_file_name_2)
             os.rename(lp_file_name_2, csv_file_name_2)
         # Return
@@ -178,14 +182,15 @@ class OptimizationEngine(object):
             model_name = model.name
         # Get root directory:
         sm = ScenarioManager(local_root=local_root)  # Just to call the get_root_directory()
-        root_dir = sm.get_root_directory()
+        # root_dir = sm.get_root_directory()
+        datasets_dir = sm.get_data_directory()
         # Write regular cpo-file:
-        cpo_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.cpo')
+        cpo_file_name_1 = os.path.join(datasets_dir, model_name + '.cpo')
         model.export_model(cpo_file_name_1)  # Writes the .cpo file
         # Copy to csv
         if copy_to_csv:
-            cpo_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.cpo')
-            csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_cpo.csv')
+            cpo_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.cpo')
+            csv_file_name_2 = os.path.join(datasets_dir, model_name + '_cpo.csv')
             model.export_as_lp(cpo_file_name_2)
             os.rename(cpo_file_name_2, csv_file_name_2)
         # Return

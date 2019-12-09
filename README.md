@@ -57,8 +57,9 @@ from dse_do_utils import ScenarioManager, DataManager
 ## Target environments
 To be used within:
 1. Watson Studio Local v1.2.3 (which requires Python 2.7).
-2. ICPd 1.2 or 2.1 (which requires Python 3.6)
-Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.
+2. ICPd 1.2 or 2.1 (which require Python 3.6).
+
+Currently, the dse_do_utils is maintained WSLv1.2.3 in Python 2.7 and tested against ICPd with Python 3.6.
 
 ## Requirements
 This package requires:

@@ -98,6 +98,13 @@ class ScenarioManager(object):
     #         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)
 
 
+    def get_data_directory(self):
+        """Returns the path to the datasets folder.
+
+        :return: path to the datasets folder
+        """
+        return os.path.join(self.get_root_directory(), 'datasets')  # Do we need to add an empty string at the end?
+
     def get_root_directory(self):
         """Return the root directory of the file system.
         If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
@@ -366,8 +373,9 @@ class ScenarioManager(object):
         Convenience method.
         If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor
         """
-        root_dir = self.get_root_directory()
-        excel_file_path = os.path.join(root_dir, 'datasets', excel_file_name + '.xlsx')
+        # root_dir = self.get_root_directory()
+        datasets_dir = self.get_data_directory()
+        excel_file_path = os.path.join(datasets_dir, excel_file_name + '.xlsx')
         xl = pd.ExcelFile(excel_file_path)
         # Read data from Excel
         self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
@@ -568,8 +576,9 @@ class ScenarioManager(object):
         Args: None
         Returns: None
         """
-        root_dir = self.get_root_directory()
-        csv_directory = os.path.join(root_dir, 'datasets')
+        # root_dir = self.get_root_directory()
+        # csv_directory = os.path.join(root_dir, 'datasets')
+        csv_directory = self.get_data_directory()
         ScenarioManager.write_data_to_csv_s(csv_directory, inputs=self.inputs, outputs=self.outputs)
 
     @staticmethod

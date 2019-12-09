@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2.4b] - 2019-12-09
+- Preparing code for migration to CPD v2.5
+
 ## [0.2.2.3] - 2019-07-10
 ### Added
 - DataManager.get_parameter_value supports datetime
