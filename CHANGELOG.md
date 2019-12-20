@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0.0b] - 2019-12-20
+- Only for Python 3.6 and CPD v2.5
+- Adding try-except to import dse_do_utils modules to support DO Model Builder adding modules as additional files.
+
 ## [0.2.2.4b] - 2019-12-09
 - Preparing code for migration to CPD v2.5
 
