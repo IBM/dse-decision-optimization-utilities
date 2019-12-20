@@ -103,7 +103,14 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
-        return os.path.join(self.get_root_directory(), 'datasets')  # Do we need to add an empty string at the end?
+        if ScenarioManager.env_is_cpd25():
+            # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
+            data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
+        elif ScenarioManager.env_is_dsx():
+            data_dir = os.path.join(self.get_root_directory(), 'datasets')  # Do we need to add an empty string at the end?
+        else:  # Local file system
+            data_dir = os.path.join(self.get_root_directory(), 'datasets')
+        return data_dir
 
     def get_root_directory(self):
         """Return the root directory of the file system.
@@ -111,11 +118,13 @@ class ScenarioManager(object):
         Raises:
             ValueError if root directory doesn't exist.
         """
-        if ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
+        if ScenarioManager.env_is_cpd25():
+            root_dir = ''
+        elif ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
             root_dir = os.environ['DSX_PROJECT_DIR']
         else:
             if self.local_root is None:
-                raise ValueError('The local_root should be specified if loading from an Excel file outside of WS')
+                raise ValueError('The local_root should be specified if loading from a file from outside of WS')
             root_dir = self.local_root
         # Assert that root_dir actually exists
         if not os.path.isdir(root_dir):
@@ -402,16 +411,17 @@ class ScenarioManager(object):
             else:
                 raise ValueError("The argument excel_file_name can only be 'None' if both the model_name '{}' and the scenario_name '{}' have been specified.".format(self.model_name, self.scenario_name))
 
-        root_dir = self.get_root_directory()
+        # root_dir = self.get_root_directory()
         # Save the regular Excel file:
-        excel_file_path_1 = os.path.join(root_dir, 'datasets', excel_file_name + '.xlsx')
+        data_dir = self.get_data_directory()
+        excel_file_path_1 = os.path.join(data_dir, excel_file_name + '.xlsx')
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
         # Save the csv copy:
         if copy_to_csv:
-            excel_file_path_2 = os.path.join(root_dir, 'datasets', excel_file_name + 'to_csv.xlsx')
-            csv_excel_file_path_2 = os.path.join(root_dir, 'datasets', excel_file_name + '_xlsx.csv')
+            excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
+            csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
             writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
             ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
             writer_2.save()
@@ -611,6 +621,11 @@ class ScenarioManager(object):
     def env_is_dsx():
         """Return true if environment is DSX"""
         return 'DSX_PROJECT_DIR' in os.environ
+
+    @staticmethod
+    def env_is_cpd25():
+        """Return true if environment is CPDv2.5"""
+        return 'PWD' in os.environ
 
     @staticmethod
     def _get_dd_client():
