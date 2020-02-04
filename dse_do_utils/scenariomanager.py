@@ -12,6 +12,7 @@ from __future__ import print_function
 import os
 import glob
 import pandas as pd
+from project_lib import Project
 
 
 class ScenarioManager(object):
@@ -97,7 +98,6 @@ class ScenarioManager(object):
     #     else:
     #         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)
 
-
     def get_data_directory(self):
         """Returns the path to the datasets folder.
 
@@ -130,6 +130,24 @@ class ScenarioManager(object):
         if not os.path.isdir(root_dir):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
+
+    @staticmethod
+    def add_data_file_to_project_s(file_path: str, file_name: str = None):
+        """Add a data file to the Watson Studio project.
+        Applies to CP4Dv2.5.
+        Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            project = Project.access()
+            project.save_data(file_name=file_name, data=f, overwrite=True)
 
     # -----------------------------------------------------------------
     # Read and write from/to DO scenario - value-added
@@ -418,8 +436,10 @@ class ScenarioManager(object):
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        # Save the csv copy:
-        if copy_to_csv:
+        if ScenarioManager.env_is_cpd25():
+            ScenarioManager.add_data_file_to_project_s(excel_file_path_1, excel_file_name + '.xlsx')
+        # Save the csv copy (no longer supported in CPD25 because not necessary)
+        elif copy_to_csv:
             excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
             csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
             writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
@@ -607,11 +627,15 @@ class ScenarioManager(object):
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
+                if ScenarioManager.env_is_cpd25():
+                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
+                if ScenarioManager.env_is_cpd25():
+                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
 
     # -----------------------------------------------------------------
     # Utils

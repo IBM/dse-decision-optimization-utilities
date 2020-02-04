@@ -16,8 +16,14 @@ from docplex.mp.progress import SolutionListener
 from docplex.mp.model import Model
 
 # from dse_do_utils import ScenarioManager
-# Note that when in a package, we need to import from another modules in this package slightly differently:
-from .scenariomanager import ScenarioManager
+# Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)
+# Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module
+try:
+    # Import as part of package
+    from .scenariomanager import ScenarioManager
+except:
+    # import as part of DO Model Builder
+    from scenariomanager import ScenarioManager
 
 
 class OptimizationEngine(object):
@@ -148,8 +154,11 @@ class OptimizationEngine(object):
         # lp_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.lp')
         lp_file_name_1 = os.path.join(datasets_dir, model_name + '.lp')
         model.export_as_lp(lp_file_name_1)  # Writes the .lp file
-        # Copy to csv:
-        if copy_to_csv:
+
+        if ScenarioManager.env_is_cpd25():
+            ScenarioManager.add_data_file_to_project_s(lp_file_name_1, model_name + '.lp')
+        # Copy to csv (Not supported in CPD25. Not necessary.):
+        elif copy_to_csv:
             # lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
             # csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
             lp_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.lp')
