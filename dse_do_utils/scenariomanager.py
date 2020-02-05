@@ -12,7 +12,6 @@ from __future__ import print_function
 import os
 import glob
 import pandas as pd
-from project_lib import Project
 
 
 class ScenarioManager(object):
@@ -146,6 +145,7 @@ class ScenarioManager(object):
         if file_name is None:
             file_name = os.path.basename(file_path)
         with open(file_path, 'rb') as f:
+            from project_lib import Project
             project = Project.access()
             project.save_data(file_name=file_name, data=f, overwrite=True)
 
