@@ -18,48 +18,56 @@ Also contains some functions to create dvars and export .lp files.
 5. MapManager. For creating map visualizations using Folium.
 6. DeployedDOModel. Interfacing from Python to a deployed DO model.
 
-## Installation
-Recommend to install in the `../packages/python` folder by running the following in a notebook cell: <br>
-Regular install:
+## Installation (CPDv2.5)
+(For Cloud Pak for Data v2.5)
+
+CPDv2.5 is very different from the previous versions and it has a significant impact on how the dse-do-utils can be installed and used.
+
+Options:
+1. Install using pip in a customized environment. This applies to both Jupyter and JupyterLab.
+2. Install as a package in JupyterLab.
+3. Install as modules in Jupyter
+4. Install/use as modules in the DO Model Builder
+
+### Install in customized environment
+CPDv2.5 allows for easy customization of environments.
+Add the following to the customization configuration:
 ```
-!pip install dse-do-utils --target='../packages/python'
+- pip:
+    - dse-do-utils=0.3.0.0
 ```
-Force a released version to ensure compatibility (advised):
+This automatically downloads dse-do-utils from PyPI and installs the package.
+
+For air-gapped systems that have no access to PyPI:
+1. Download the package from PyPI/Conda from an internet connected system as a wheel/zip file
+2. Upload the wheel/zip as a data asset
+3. Install package from wheel/zip
+
+This downloads the package as a wheel/zip and puts it in the data assets
 ```
-!pip install dse-do-utils==0.2.2.1 --target='../packages/python'
+!pip download dse-do-utils -d /project_data/data_asset/
 ```
-Force a clean re-install of a released version:
+Then move the wheel/zip to the Data Assets (see the `InstallationReadMe.md` for more details) 
+Next, set the environment customization to:
 ```
-!pip install --force-reinstall dse-do-utils==0.2.2.1 --target='../packages/python' --upgrade
+- pip:
+    - dse-do-utils --no-index --find-links=/project_data/data_asset/dse_do_utils-0.3.0.0.tar.gz
 ```
 
-Install from TestPyPI (deprecated, version on TestPyPI is not updated):
-```
-!pip install -i https://test.pypi.org/simple/dse-do-utils --target='../packages/python'
-```
-See also [Installing packages and modules for Decision Optimization projects in Watson Studio Local](https://medium.com/@vjterpstracom/installing-packages-and-modules-for-decision-optimization-projects-in-watson-studio-local-69abc934ef32)
+See the `InstallationReadMe.md` for many more details on installation and usage in other cases.
 
 ## Import
-Import the `dse_do_utils` from the `../packages/python` folder.<br>
-First add the folder to the Python path:
-```
-import sys, os
-for folder in ['packages/python', 'scripts']:
-    path = os.path.join(os.environ['DSX_PROJECT_DIR'], folder)
-    if path not in sys.path:
-        sys.path.insert(0, path)
-```
-Then import the required classes from the package:
+Then import the required classes from  `dse_do_utils`:
 ```
 from dse_do_utils import ScenarioManager, DataManager
 ```
+This is the basics. For many ore details on other usage, see `InstallationReadMe.md` 
 
 ## Target environments
 To be used within:
-1. Watson Studio Local v1.2.3 (which requires Python 2.7).
-2. ICPd 1.2 or 2.1 (which require Python 3.6).
-
-Currently, the dse_do_utils is maintained WSLv1.2.3 in Python 2.7 and tested against ICPd with Python 3.6.
+1. CPDv2.1 (version 0.2.2.3 is preferred. But version 0.3.0.0 should be backwards compatible.)
+2. CPDv2.5 (version 0.3.0.0 and up)
+3. WSLv1.2.3 with Python 2.7 (version 0.2.2.3 only)
 
 ## Requirements
 This package requires:
