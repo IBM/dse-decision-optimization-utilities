@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0.0b] - 2019-12-20
 - Only for Python 3.6 and CPD v2.5
 - Adding try-except to import dse_do_utils modules to support DO Model Builder adding modules as additional files.
-- Added writing output as Data Asset in CPD2.5
+- Added writing output as Data Asset in CPD v2.5
 
 ## [0.2.2.4b] - 2019-12-09
 - Preparing code for migration to CPD v2.5
 
 ## [0.2.2.3] - 2019-07-10
-- Most stable version for CPDv2.1
+- Most stable version for CPD v2.1
 ### Added
 - DataManager.get_parameter_value supports datetime
 

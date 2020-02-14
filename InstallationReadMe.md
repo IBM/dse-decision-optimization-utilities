@@ -88,6 +88,16 @@ f = open(asset_name, 'wb')
 f.write(my_module.read())
 ```
 
+### Install from GitHub
+To install from a branch in GitHub (that is not published in PyPI)
+```
+repo = 'git+https://github.com/IBM/dse-decision-optimization-utilities.git@v0.2.2.3b#egg=dse_do_utils' #Specified branch
+```
+```
+!pip install $repo --upgrade --force-reinstall
+!pip download $repo -d /project_data/data_asset/
+```
+
 ### Import from the dse_do_utils package
 The `__init__.py` maps definitions from the various internal modules to the package level.<br>
 This allows import directly from the package. For instance:
@@ -134,7 +144,6 @@ except:
     from datamanager import DataManager
     from optimizationengine import OptimizationEngine
 ```
-
 
 # Installation (CPDv2.1, WSLv1.2.3)
 (For Cloud Pak for Data v2.1 or Watson Studio Local v 1.2.3)
