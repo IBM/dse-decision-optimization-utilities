@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.2.2.3 documentation</title>
+  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.3.0.0 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.2.2.3',
+              VERSION:'0.3.0.0',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.2.3
+                0.3.0.0
               </div>
             
           
@@ -260,6 +260,19 @@
     <span class="c1">#     else:</span>
     <span class="c1">#         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)</span>
 
+<div class="viewcode-block" id="ScenarioManager.get_data_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_data_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the path to the datasets folder.</span>
+
+<span class="sd">        :return: path to the datasets folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="c1"># Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset&#39;</span>  <span class="c1"># Do NOT use the os.path.join!</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>  <span class="c1"># Do we need to add an empty string at the end?</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Local file system</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_dir</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.get_root_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_root_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the root directory of the file system.</span>
@@ -267,16 +280,37 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError if root directory doesn&#39;t exist.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>  <span class="c1"># Note that this is False in DO! So don&#39;t run in DO</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="n">root_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>  <span class="c1"># Note that this is False in DO! So don&#39;t run in DO</span>
             <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DSX_PROJECT_DIR&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The local_root should be specified if loading from an Excel file outside of WS&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The local_root should be specified if loading from a file from outside of WS&#39;</span><span class="p">)</span>
             <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span>
         <span class="c1"># Assert that root_dir actually exists</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Root directory `</span><span class="si">{}</span><span class="s2">` does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_dir</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">root_dir</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.add_data_file_to_project_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
+<span class="sd">        Applies to CP4Dv2.5.</span>
+<span class="sd">        Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.</span>
+<span class="sd">        Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path (str): full file path, including the file name and extension</span>
+<span class="sd">            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add to Project</span>
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="k">import</span> <span class="n">Project</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to DO scenario - value-added</span>
@@ -529,8 +563,9 @@
 <span class="sd">        Convenience method.</span>
 <span class="sd">        If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
-        <span class="n">excel_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="c1"># root_dir = self.get_root_directory()</span>
+        <span class="n">datasets_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
+        <span class="n">excel_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
         <span class="n">xl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">excel_file_path</span><span class="p">)</span>
         <span class="c1"># Read data from Excel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">)</span>
@@ -557,16 +592,19 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The argument excel_file_name can only be &#39;None&#39; if both the model_name &#39;</span><span class="si">{}</span><span class="s2">&#39; and the scenario_name &#39;</span><span class="si">{}</span><span class="s2">&#39; have been specified.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">))</span>
 
-        <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="c1"># root_dir = self.get_root_directory()</span>
         <span class="c1"># Save the regular Excel file:</span>
-        <span class="n">excel_file_path_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
+        <span class="n">excel_file_path_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
         <span class="n">writer_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_1</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
         <span class="n">writer_1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-        <span class="c1"># Save the csv copy:</span>
-        <span class="k">if</span> <span class="n">copy_to_csv</span><span class="p">:</span>
-            <span class="n">excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;to_csv.xlsx&#39;</span><span class="p">)</span>
-            <span class="n">csv_excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;_xlsx.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="c1"># Save the csv copy (no longer supported in CPD25 because not necessary)</span>
+        <span class="k">elif</span> <span class="n">copy_to_csv</span><span class="p">:</span>
+            <span class="n">excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;to_csv.xlsx&#39;</span><span class="p">)</span>
+            <span class="n">csv_excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;_xlsx.csv&#39;</span><span class="p">)</span>
             <span class="n">writer_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path_2</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
             <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_2</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
             <span class="n">writer_2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -731,8 +769,9 @@
 <span class="sd">        Args: None</span>
 <span class="sd">        Returns: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
-        <span class="n">csv_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+        <span class="c1"># root_dir = self.get_root_directory()</span>
+        <span class="c1"># csv_directory = os.path.join(root_dir, &#39;datasets&#39;)</span>
+        <span class="n">csv_directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.write_data_to_csv_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -751,11 +790,15 @@
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
-                <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
@@ -765,6 +808,11 @@
     <span class="k">def</span> <span class="nf">env_is_dsx</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Return true if environment is DSX&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;DSX_PROJECT_DIR&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.env_is_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">env_is_cpd25</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return true if environment is CPDv2.5&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;PWD&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_dd_client</span><span class="p">():</span>

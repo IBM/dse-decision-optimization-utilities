@@ -41,8 +41,8 @@ setuptools.setup(
     author="Victor Terpstra",
     author_email="vterpstra@us.ibm.com",
     description="Decision Optimization utilities for IBM Watson Studio projects",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
+    # long_description=long_description,
+    # long_description_content_type="text/markdown",
     url="https://github.com/IBM/dse-decision-optimization-utilities",
     packages=setuptools.find_packages(),
     classifiers=[
