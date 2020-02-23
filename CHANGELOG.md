@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0.0] - 2020-02-22
+### Changed
+- Support for CPD2.5
+- Writing files and add them as Data Asset
+- Imports so that can use as set of modules
+
 ## [0.2.2.3] - 2019-07-10
 ### Added
 - DataManager.get_parameter_value supports datetime

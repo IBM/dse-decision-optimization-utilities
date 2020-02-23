@@ -1,16 +1,8 @@
-# from setuptools import setup
-#
-# setup(name='dse_do_utils',
-#       version='0.1',
-#       description='Decision Optimization utilities for IBM Watson Studio projects',
-#       url='https://github.ibm.com/vterpstra/DSE_DO_Utils',
-#       author='Victor Terpstra',
-#       author_email='vterpstra@us.ibm.com',
-#       license='MIT',
-#       packages=['dse_do_utils'],
-#       zip_safe=False)
+# Copyright IBM All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
 
 import setuptools
+import dse_do_utils
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -29,11 +21,10 @@ setuptools.setup(
 )
 This may NOT work, because when setup runs, the package is not available and cannot be imported?
 Work around is to read the version.py file
-Although in https://packaging.python.org/guides/single-sourcing-package-version/ this is one ofthe suggestions.
-Need to test
+Although in https://packaging.python.org/guides/single-sourcing-package-version/ this is one of the suggestions.
+VT-20200222: Seems to work fine
 """
 
-import dse_do_utils
 setuptools.setup(
     name="dse_do_utils",
     # version="0.2.2",
@@ -47,7 +38,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
-        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Topic :: Documentation :: Sphinx"
