@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.optimizationengine &mdash; DSE DO Utils 0.2.2.3 documentation</title>
+  <title>dse_do_utils.optimizationengine &mdash; DSE DO Utils 0.3.0.0 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.2.2.3',
+              VERSION:'0.3.0.0',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.2.2.3
+                0.3.0.0
               </div>
             
           
@@ -179,8 +179,14 @@
 <span class="kn">from</span> <span class="nn">docplex.mp.model</span> <span class="k">import</span> <span class="n">Model</span>
 
 <span class="c1"># from dse_do_utils import ScenarioManager</span>
-<span class="c1"># Note that when in a package, we need to import from another modules in this package slightly differently:</span>
-<span class="kn">from</span> <span class="nn">.scenariomanager</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
+<span class="c1"># Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)</span>
+<span class="c1"># Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Import as part of package</span>
+    <span class="kn">from</span> <span class="nn">.scenariomanager</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># import as part of DO Model Builder</span>
+    <span class="kn">from</span> <span class="nn">scenariomanager</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
 
 
 <div class="viewcode-block" id="OptimizationEngine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine">[docs]</a><span class="k">class</span> <span class="nc">OptimizationEngine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -305,14 +311,21 @@
             <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span>
         <span class="c1"># Get root directory:</span>
         <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">)</span>  <span class="c1"># Just to call the get_root_directory()</span>
-        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="c1"># root_dir = sm.get_root_directory()</span>
+        <span class="n">datasets_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
         <span class="c1"># Write regular lp-file:</span>
-        <span class="n">lp_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span><span class="p">)</span>
+        <span class="c1"># lp_file_name_1 = os.path.join(root_dir, &#39;datasets&#39;, model_name + &#39;.lp&#39;)</span>
+        <span class="n">lp_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_name_1</span><span class="p">)</span>  <span class="c1"># Writes the .lp file</span>
-        <span class="c1"># Copy to csv:</span>
-        <span class="k">if</span> <span class="n">copy_to_csv</span><span class="p">:</span>
-            <span class="n">lp_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.lp&#39;</span><span class="p">)</span>
-            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_lp.csv&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">lp_file_name_1</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span><span class="p">)</span>
+        <span class="c1"># Copy to csv (Not supported in CPD25. Not necessary.):</span>
+        <span class="k">elif</span> <span class="n">copy_to_csv</span><span class="p">:</span>
+            <span class="c1"># lp_file_name_2 = os.path.join(root_dir, &#39;datasets&#39;, model_name + &#39;_to_csv.lp&#39;)</span>
+            <span class="c1"># csv_file_name_2 = os.path.join(root_dir, &#39;datasets&#39;, model_name + &#39;_lp.csv&#39;)</span>
+            <span class="n">lp_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.lp&#39;</span><span class="p">)</span>
+            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_lp.csv&#39;</span><span class="p">)</span>
             <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_name_2</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">lp_file_name_2</span><span class="p">,</span> <span class="n">csv_file_name_2</span><span class="p">)</span>
         <span class="c1"># Return</span>
@@ -341,14 +354,15 @@
             <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span>
         <span class="c1"># Get root directory:</span>
         <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">)</span>  <span class="c1"># Just to call the get_root_directory()</span>
-        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="c1"># root_dir = sm.get_root_directory()</span>
+        <span class="n">datasets_dir</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
         <span class="c1"># Write regular cpo-file:</span>
-        <span class="n">cpo_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.cpo&#39;</span><span class="p">)</span>
+        <span class="n">cpo_file_name_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.cpo&#39;</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">export_model</span><span class="p">(</span><span class="n">cpo_file_name_1</span><span class="p">)</span>  <span class="c1"># Writes the .cpo file</span>
         <span class="c1"># Copy to csv</span>
         <span class="k">if</span> <span class="n">copy_to_csv</span><span class="p">:</span>
-            <span class="n">cpo_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.cpo&#39;</span><span class="p">)</span>
-            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;datasets&#39;</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_cpo.csv&#39;</span><span class="p">)</span>
+            <span class="n">cpo_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_to_csv.cpo&#39;</span><span class="p">)</span>
+            <span class="n">csv_file_name_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;_cpo.csv&#39;</span><span class="p">)</span>
             <span class="n">model</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">cpo_file_name_2</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">cpo_file_name_2</span><span class="p">,</span> <span class="n">csv_file_name_2</span><span class="p">)</span>
         <span class="c1"># Return</span>

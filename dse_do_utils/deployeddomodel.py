@@ -9,6 +9,8 @@ import sys
 
 class DeployedDOModel(object):
     """
+    Note: the deployment in CPDv2.5 has completely changed. This class is NOT compatible with CPDv2.5.
+
     Major steps:
     1. Create an instance of a DeployedDOModel, configuring parameters (e.g. the URL and access token)
 

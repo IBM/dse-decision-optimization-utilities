@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read me &mdash; DSE DO Utils 0.2.2.3 documentation</title>
+  <title>Read me &mdash; DSE DO Utils 0.3.0.0 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.2.3',
+              VERSION:'0.3.0.0',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.2.2.3
+                0.3.0.0
               </div>
             
           
@@ -98,7 +98,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Read me</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#dse-do-utils">DSE_DO_Utils</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#main-classes">Main classes:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-cpdv2-5">Installation (CPDv2.5)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-in-customized-environment">Install in customized environment</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#import">Import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#target-environments">Target environments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
@@ -193,50 +196,60 @@ Also contains some functions to create dvars and export .lp files.</li>
 <li>DeployedDOModel. Interfacing from Python to a deployed DO model.</li>
 </ol>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Recommend to install in the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder by running the following in a notebook cell: <span class="raw-html-m2r"><br></span>
-Regular install:</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
+<div class="section" id="installation-cpdv2-5">
+<h2>Installation (CPDv2.5)<a class="headerlink" href="#installation-cpdv2-5" title="Permalink to this headline">¶</a></h2>
+<p>(For Cloud Pak for Data v2.5)</p>
+<p>CPDv2.5 is very different from the previous versions and it has a significant impact on how the dse-do-utils can be installed and used.</p>
+<p>Options:</p>
+<ol class="arabic simple">
+<li>Install using pip in a customized environment. This applies to both Jupyter and JupyterLab.</li>
+<li>Install as a package in JupyterLab.</li>
+<li>Install as modules in Jupyter</li>
+<li>Install/use as modules in the DO Model Builder</li>
+</ol>
+<div class="section" id="install-in-customized-environment">
+<h3>Install in customized environment<a class="headerlink" href="#install-in-customized-environment" title="Permalink to this headline">¶</a></h3>
+<p>CPDv2.5 allows for easy customization of environments.
+Add the following to the customization configuration:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span>- pip:
+    - dse-do-utils=0.3.0.0
 </pre></div>
 </div>
-<p>Force a released version to ensure compatibility (advised):</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span><span class="o">==</span><span class="mi">0</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">1</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
+<p>This automatically downloads dse-do-utils from PyPI and installs the package.</p>
+<p>For air-gapped systems that have no access to PyPI:</p>
+<ol class="arabic simple">
+<li>Download the package from PyPI/Conda from an internet connected system as a wheel/zip file</li>
+<li>Upload the wheel/zip as a data asset</li>
+<li>Install package from wheel/zip</li>
+</ol>
+<p>This downloads the package as a wheel/zip and puts it in the data assets</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="sx">!pip download dse-do-utils -d /project_data/data_asset/</span>
 </pre></div>
 </div>
-<p>Force a clean re-install of a released version:</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="o">--</span><span class="nv">force</span><span class="o">-</span><span class="nv">reinstall</span> <span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span><span class="o">==</span><span class="mi">0</span>.<span class="mi">2</span>.<span class="mi">2</span>.<span class="mi">1</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span> <span class="o">--</span><span class="nv">upgrade</span>
+<p>Then move the wheel/zip to the Data Assets (see the <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code> for more details)
+Next, set the environment customization to:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span>- pip:
+    - dse-do-utils --no-index --find-links=/project_data/data_asset/dse_do_utils-0.3.0.0.tar.gz
 </pre></div>
 </div>
-<p>Install from TestPyPI (deprecated, version on TestPyPI is not updated):</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">pip</span> <span class="nv">install</span> <span class="o">-</span><span class="nv">i</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">test</span>.<span class="nv">pypi</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">simple</span><span class="o">/</span><span class="nv">dse</span><span class="o">-</span><span class="k">do</span><span class="o">-</span><span class="nv">utils</span> <span class="o">--</span><span class="nv">target</span><span class="o">=</span><span class="s1">&#39;</span><span class="s">../packages/python</span><span class="s1">&#39;</span>
-</pre></div>
+<p>See the <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code> for many more details on installation and usage in other cases.</p>
 </div>
-<p>See also <a class="reference external" href="https://medium.com/&#64;vjterpstracom/installing-packages-and-modules-for-decision-optimization-projects-in-watson-studio-local-69abc934ef32">Installing packages and modules for Decision Optimization projects in Watson Studio Local</a></p>
 </div>
 <div class="section" id="import">
 <h2>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h2>
-<p>Import the <code class="docutils literal"><span class="pre">dse_do_utils</span></code> from the <code class="docutils literal"><span class="pre">../packages/python</span></code> folder.<span class="raw-html-m2r"><br></span>
-First add the folder to the Python path:</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;packages/python&#39;</span><span class="p">,</span> <span class="s1">&#39;scripts&#39;</span><span class="p">]:</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DSX_PROJECT_DIR&#39;</span><span class="p">],</span> <span class="n">folder</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Then import the required classes from the package:</p>
+<p>Then import the required classes from  <code class="docutils literal"><span class="pre">dse_do_utils</span></code>:</p>
 <div class="highlight-guess"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">DataManager</span>
 </pre></div>
 </div>
+<p>This is the basics. For many ore details on other usage, see <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code></p>
 </div>
 <div class="section" id="target-environments">
 <h2>Target environments<a class="headerlink" href="#target-environments" title="Permalink to this headline">¶</a></h2>
 <p>To be used within:</p>
 <ol class="arabic simple">
-<li>Watson Studio Local v1.2.3 (which requires Python 2.7).</li>
-<li>ICPd 1.2 or 2.1 (which requires Python 3.6)
-Currently the dse_do_utils is maintained WSLv1.2.3 in Python 2.7. and tested against ICPd with Python 3.6.</li>
+<li>CPDv2.1 (version 0.2.2.3 is preferred. But version 0.3.0.0 should be backwards compatible.)</li>
+<li>CPDv2.5 (version 0.3.0.0 and up)</li>
+<li>WSLv1.2.3 with Python 2.7 (version 0.2.2.3 only)</li>
 </ol>
 </div>
 <div class="section" id="requirements">

@@ -97,6 +97,19 @@ class ScenarioManager(object):
     #     else:
     #         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)
 
+    def get_data_directory(self):
+        """Returns the path to the datasets folder.
+
+        :return: path to the datasets folder
+        """
+        if ScenarioManager.env_is_cpd25():
+            # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
+            data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
+        elif ScenarioManager.env_is_dsx():
+            data_dir = os.path.join(self.get_root_directory(), 'datasets')  # Do we need to add an empty string at the end?
+        else:  # Local file system
+            data_dir = os.path.join(self.get_root_directory(), 'datasets')
+        return data_dir
 
     def get_root_directory(self):
         """Return the root directory of the file system.
@@ -104,16 +117,37 @@ class ScenarioManager(object):
         Raises:
             ValueError if root directory doesn't exist.
         """
-        if ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
+        if ScenarioManager.env_is_cpd25():
+            root_dir = ''
+        elif ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
             root_dir = os.environ['DSX_PROJECT_DIR']
         else:
             if self.local_root is None:
-                raise ValueError('The local_root should be specified if loading from an Excel file outside of WS')
+                raise ValueError('The local_root should be specified if loading from a file from outside of WS')
             root_dir = self.local_root
         # Assert that root_dir actually exists
         if not os.path.isdir(root_dir):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
+
+    @staticmethod
+    def add_data_file_to_project_s(file_path: str, file_name: str = None):
+        """Add a data file to the Watson Studio project.
+        Applies to CP4Dv2.5.
+        Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            from project_lib import Project
+            project = Project.access()
+            project.save_data(file_name=file_name, data=f, overwrite=True)
 
     # -----------------------------------------------------------------
     # Read and write from/to DO scenario - value-added
@@ -366,8 +400,9 @@ class ScenarioManager(object):
         Convenience method.
         If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor
         """
-        root_dir = self.get_root_directory()
-        excel_file_path = os.path.join(root_dir, 'datasets', excel_file_name + '.xlsx')
+        # root_dir = self.get_root_directory()
+        datasets_dir = self.get_data_directory()
+        excel_file_path = os.path.join(datasets_dir, excel_file_name + '.xlsx')
         xl = pd.ExcelFile(excel_file_path)
         # Read data from Excel
         self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
@@ -394,16 +429,19 @@ class ScenarioManager(object):
             else:
                 raise ValueError("The argument excel_file_name can only be 'None' if both the model_name '{}' and the scenario_name '{}' have been specified.".format(self.model_name, self.scenario_name))
 
-        root_dir = self.get_root_directory()
+        # root_dir = self.get_root_directory()
         # Save the regular Excel file:
-        excel_file_path_1 = os.path.join(root_dir, 'datasets', excel_file_name + '.xlsx')
+        data_dir = self.get_data_directory()
+        excel_file_path_1 = os.path.join(data_dir, excel_file_name + '.xlsx')
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        # Save the csv copy:
-        if copy_to_csv:
-            excel_file_path_2 = os.path.join(root_dir, 'datasets', excel_file_name + 'to_csv.xlsx')
-            csv_excel_file_path_2 = os.path.join(root_dir, 'datasets', excel_file_name + '_xlsx.csv')
+        if ScenarioManager.env_is_cpd25():
+            ScenarioManager.add_data_file_to_project_s(excel_file_path_1, excel_file_name + '.xlsx')
+        # Save the csv copy (no longer supported in CPD25 because not necessary)
+        elif copy_to_csv:
+            excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
+            csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
             writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
             ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
             writer_2.save()
@@ -568,8 +606,9 @@ class ScenarioManager(object):
         Args: None
         Returns: None
         """
-        root_dir = self.get_root_directory()
-        csv_directory = os.path.join(root_dir, 'datasets')
+        # root_dir = self.get_root_directory()
+        # csv_directory = os.path.join(root_dir, 'datasets')
+        csv_directory = self.get_data_directory()
         ScenarioManager.write_data_to_csv_s(csv_directory, inputs=self.inputs, outputs=self.outputs)
 
     @staticmethod
@@ -588,11 +627,15 @@ class ScenarioManager(object):
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
+                if ScenarioManager.env_is_cpd25():
+                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
+                if ScenarioManager.env_is_cpd25():
+                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
 
     # -----------------------------------------------------------------
     # Utils
@@ -602,6 +645,11 @@ class ScenarioManager(object):
     def env_is_dsx():
         """Return true if environment is DSX"""
         return 'DSX_PROJECT_DIR' in os.environ
+
+    @staticmethod
+    def env_is_cpd25():
+        """Return true if environment is CPDv2.5"""
+        return 'PWD' in os.environ
 
     @staticmethod
     def _get_dd_client():
