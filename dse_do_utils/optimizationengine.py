@@ -16,8 +16,14 @@ from docplex.mp.progress import SolutionListener
 from docplex.mp.model import Model
 
 # from dse_do_utils import ScenarioManager
-# Note that when in a package, we need to import from another modules in this package slightly differently:
-from .scenariomanager import ScenarioManager
+# Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)
+# Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module
+try:
+    # Import as part of package
+    from .scenariomanager import ScenarioManager
+except:
+    # import as part of DO Model Builder
+    from scenariomanager import ScenarioManager
 
 
 class OptimizationEngine(object):
@@ -142,14 +148,21 @@ class OptimizationEngine(object):
             model_name = model.name
         # Get root directory:
         sm = ScenarioManager(local_root=local_root)  # Just to call the get_root_directory()
-        root_dir = sm.get_root_directory()
+        # root_dir = sm.get_root_directory()
+        datasets_dir = sm.get_data_directory()
         # Write regular lp-file:
-        lp_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.lp')
+        # lp_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.lp')
+        lp_file_name_1 = os.path.join(datasets_dir, model_name + '.lp')
         model.export_as_lp(lp_file_name_1)  # Writes the .lp file
-        # Copy to csv:
-        if copy_to_csv:
-            lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
-            csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
+
+        if ScenarioManager.env_is_cpd25():
+            ScenarioManager.add_data_file_to_project_s(lp_file_name_1, model_name + '.lp')
+        # Copy to csv (Not supported in CPD25. Not necessary.):
+        elif copy_to_csv:
+            # lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
+            # csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
+            lp_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.lp')
+            csv_file_name_2 = os.path.join(datasets_dir, model_name + '_lp.csv')
             model.export_as_lp(lp_file_name_2)
             os.rename(lp_file_name_2, csv_file_name_2)
         # Return
@@ -178,14 +191,15 @@ class OptimizationEngine(object):
             model_name = model.name
         # Get root directory:
         sm = ScenarioManager(local_root=local_root)  # Just to call the get_root_directory()
-        root_dir = sm.get_root_directory()
+        # root_dir = sm.get_root_directory()
+        datasets_dir = sm.get_data_directory()
         # Write regular cpo-file:
-        cpo_file_name_1 = os.path.join(root_dir, 'datasets', model_name + '.cpo')
+        cpo_file_name_1 = os.path.join(datasets_dir, model_name + '.cpo')
         model.export_model(cpo_file_name_1)  # Writes the .cpo file
         # Copy to csv
         if copy_to_csv:
-            cpo_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.cpo')
-            csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_cpo.csv')
+            cpo_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.cpo')
+            csv_file_name_2 = os.path.join(datasets_dir, model_name + '_cpo.csv')
             model.export_as_lp(cpo_file_name_2)
             os.rename(cpo_file_name_2, csv_file_name_2)
         # Return

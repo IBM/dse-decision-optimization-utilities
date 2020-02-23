@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils package &mdash; DSE DO Utils 0.2.2.3 documentation</title>
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.3.0.0 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.2.2.3',
+              VERSION:'0.3.0.0',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.2.2.3
+                0.3.0.0
               </div>
             
           
@@ -384,6 +384,7 @@ If testing imp.reload, rerun the notebook from the start.</p>
 <dt id="dse_do_utils.deployeddomodel.DeployedDOModel">
 <em class="property">class </em><code class="descclassname">dse_do_utils.deployeddomodel.</code><code class="descname">DeployedDOModel</code><span class="sig-paren">(</span><em>url=None</em>, <em>server=None</em>, <em>route=None</em>, <em>service_name=None</em>, <em>model_name=None</em>, <em>token=None</em>, <em>inputs=None</em>, <em>attachment_type='CONTAINER'</em>, <em>suppress_warnings=True</em>, <em>debug=False</em>, <em>debug_file_dir='../datasets'</em>, <em>log_file_name='log.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Note: the deployment in CPDv2.5 has completely changed. This class is NOT compatible with CPDv2.5.</p>
 <p>Major steps:
 1. Create an instance of a DeployedDOModel, configuring parameters (e.g. the URL and access token)</p>
 <p>Internally, the processes uses GETs to communicate with the deployed model:</p>
@@ -1085,6 +1086,27 @@ Will create a file <cite>datasets/MyExcelFileOutput.xlsx</cite>.:</p>
 <span class="n">sm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">(</span><span class="s1">&#39;MyExcelFileOutput&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s">
+<em class="property">static </em><code class="descname">add_data_file_to_project_s</code><span class="sig-paren">(</span><em>file_path: str</em>, <em>file_name: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_to_project_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a data file to the Watson Studio project.
+Applies to CP4Dv2.5.
+Needs to be called after the file has been saved regularly in the file system in <cite>/project_data/data_asset/</cite>.
+Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_path</strong> (<em>str</em>) – full file path, including the file name and extension</li>
+<li><strong>file_name</strong> (<em>str</em>) – name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario">
 <code class="descname">add_data_into_scenario</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>outputs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_into_scenario"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario" title="Permalink to this definition">¶</a></dt>
@@ -1153,9 +1175,29 @@ Creates a new blank scenario if a scenario with this name doesn’t exist.</p>
 </dd></dl>
 
 <dl class="staticmethod">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25">
+<em class="property">static </em><code class="descname">env_is_cpd25</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_cpd25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if environment is CPDv2.5</p>
+</dd></dl>
+
+<dl class="staticmethod">
 <dt id="dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx">
 <em class="property">static </em><code class="descname">env_is_dsx</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_dsx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return true if environment is DSX</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.scenariomanager.ScenarioManager.get_data_directory">
+<code class="descname">get_data_directory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.get_data_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.get_data_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the path to the datasets folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">path to the datasets folder</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -1551,7 +1593,7 @@ selected by the picker.
 
 <dl class="attribute">
 <dt id="dse_do_utils.scenariopicker.ScenarioPicker.widgets">
-<code class="descname">widgets</code><em class="property"> = &lt;module 'ipywidgets.widgets' from 'C:\Users\VictorTerpstra\Anaconda3\envs\python2\lib\site-packages\ipywidgets\widgets\__init__.pyc'&gt;</em><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">widgets</code><em class="property"> = &lt;module 'ipywidgets.widgets' from 'C:\\Users\\VictorTerpstra\\Anaconda3\\lib\\site-packages\\ipywidgets\\widgets\\__init__.py'&gt;</em><a class="headerlink" href="#dse_do_utils.scenariopicker.ScenarioPicker.widgets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
