@@ -39,12 +39,20 @@ with open(file_path, 'rb') as f:
     project = Project.access()
     project.save_data(file_name=file_name, data=f, overwrite=True)
 ```
-Once it is in the data assets, the project can be exported and moved to the air-gapped system
+Once it is in the data assets, the project can be exported and moved to the air-gapped system.
 
-Next, set the environment customization to:
+In CPDv2.5 it is not possible to configure the environment customization so that it loads from a file in data assets.
+So, you need to run a pip install in a notebook. 
 ```
-- pip:
-    - dse-do-utils --no-index --find-links=/project_data/data_asset/dse_do_utils-0.3.0.0.tar.gz
+!pip install --target /project_data/data_asset/ /project_data/data_asset/dse_do_utils-0.3.0.0-py3-none-any.whl
+```
+By installing the package in `/project_data/data_asset/`, the installation will be permanent. 
+But you do need to add this folder to the Python path explicitly:
+```
+import sys
+for path in ['/project_data/data_asset/']:
+    if path not in sys.path:
+        sys.path.insert(0, path)
 ```
 
 ### Installation as package in JupyterLab

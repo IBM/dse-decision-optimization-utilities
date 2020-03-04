@@ -13,7 +13,8 @@ name = "dse_do_utils"
 
 
 def module_reload():
-    """Reloads all component modules. Use when you want to force a reload of this module with imp.reload().
+    """DEPRECATED. Requires updates to Python 3.6
+    Reloads all component modules. Use when you want to force a reload of this module with imp.reload().
 
     This avoids having to code somewhat complex reloading logic in the notebook that is using this module.
 

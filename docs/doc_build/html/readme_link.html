@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read me &mdash; DSE DO Utils 0.3.0.1 documentation</title>
+  <title>Read me &mdash; DSE DO Utils 0.3.0.2b documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.3.0.1',
+              VERSION:'0.3.0.2b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.3.0.1
+                0.3.0.2b
               </div>
             
           
@@ -193,7 +193,7 @@ Can be subclassed and stored in a script to be able to share code between multip
 Also contains some functions to create dvars and export .lp files.</li>
 <li>ScenarioPicker. Interactively pick an existing scenario from a drop-down menu in a notebook. Typically used in visualization notebooks.</li>
 <li>MapManager. For creating map visualizations using Folium.</li>
-<li>DeployedDOModel. Interfacing from Python to a deployed DO model.</li>
+<li>DOModelExporter. To export DO Models in CPDv2.5.</li>
 </ol>
 </div>
 <div class="section" id="installation-cpdv2-5">
@@ -226,13 +226,8 @@ Add the following to the customization configuration:</p>
 <div class="highlight-guess"><div class="highlight"><pre><span></span><span class="sx">!pip download dse-do-utils -d /project_data/data_asset/</span>
 </pre></div>
 </div>
-<p>Then move the wheel/zip to the Data Assets (see the <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code> for more details)
-Next, set the environment customization to:</p>
-<div class="highlight-guess"><div class="highlight"><pre><span></span><span class="err">- pip:</span>
-<span class="err">    - dse-do-utils --no-index --find-links=/project_data/data_asset/dse_do_utils-0.3.0.0.tar.gz</span>
-</pre></div>
-</div>
-<p>See the <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code> for many more details on installation and usage in other cases.</p>
+<p>Then move the wheel/zip to the Data Assets.
+See the <code class="docutils literal"><span class="pre">InstallationReadMe.md</span></code> for more details on installation and usage in other cases.</p>
 </div>
 </div>
 <div class="section" id="import">

@@ -165,11 +165,11 @@ This will re-create the html folder within `doc_build`
 ```
 <meta http-equiv="refresh" content="0; url=./doc_build/html/index.html" />
 ```
-GitHub Pages is looking for `docs/index.html`. This file redirects to the index.html in the genrated `doc_build/html` folder.
+GitHub Pages is looking for `docs/index.html`. This file redirects to the index.html in the generated `doc_build/html` folder.
 * Add en empty file called `.nojekyll` to `docs`. This will ensure the folders starting with an underscore in `doc_build/html` will not be ignored.
 * Commit and push project to GitHub 
 * In GitHub, go to settings. Scroll down to the section `GitHub Pages` and select the source to be `master branch/docs folder`. Then select `Save`.
-GitHubwill show the link, e.g. https://pages.github.ibm.com/vterpstra/DSE_DO_Utils/
+GitHub will show the link, e.g. https://pages.github.ibm.com/vterpstra/DSE_DO_Utils/
 
 Notes: these steps are not quite the same as others suggested on various internet resources.
 But this seems to me by far the simplest.

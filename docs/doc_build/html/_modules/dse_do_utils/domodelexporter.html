@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils.domodelexporter &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.3.0.2b',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.0.2b
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils.domodelexporter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dse_do_utils.domodelexporter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># DOModelExporter</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span>
+    <span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>  <span class="c1"># Supresses the &quot;InsecureRequestWarning: Unverified HTTPS request is being made&quot; you get when downloading from a CPD cluster.</span>
+
+
+<div class="viewcode-block" id="DOModelExporter"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter">[docs]</a><span class="k">class</span> <span class="nc">DOModelExporter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exports a DO model from CPD2.5 using curl/web-requests.</span>
+<span class="sd">    By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.</span>
+
+<span class="sd">    Can be used in 4 ways:</span>
+<span class="sd">    1. Typical: only specify a list of the DO Model names to export.</span>
+<span class="sd">    2. Export from another project in same cluster.</span>
+<span class="sd">    3. Export from another project in another cluster.</span>
+<span class="sd">    4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.</span>
+
+<span class="sd">    1. Typical use:</span>
+<span class="sd">        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()&#39;.</span>
+<span class="sd">        Must be run in the same project and cluster.</span>
+<span class="sd">        The DO Model export files are stored in the Data Assets of this project.::</span>
+<span class="sd">        Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip`</span>
+
+<span class="sd">            me = DOModelExporter(do_model_names = [&#39;Model1&#39;, &#39;Model2&#39;])</span>
+<span class="sd">            me.export_do_models()</span>
+
+<span class="sd">    2. Export from another project in same cluster:</span>
+<span class="sd">        Need to specify the `project_id`. See below for how to get the project_id.</span>
+<span class="sd">        Assumes current user is a collaborator on the other project (if not use the next use-case)::</span>
+
+<span class="sd">            me = DOModelExporter(do_model_names = [&#39;ProductionPlanning&#39;],</span>
+<span class="sd">                     project_id = &#39;ef365b2c-9f28-447a-a933-5de6560a1cfa&#39;)</span>
+<span class="sd">            me.export_do_models()</span>
+
+<span class="sd">    3. Export from another project in other cluster:</span>
+<span class="sd">        Specify access_toke=None, user_name, password and project_id.</span>
+<span class="sd">        Will retrieve the accessToken from the user-name and password::</span>
+
+<span class="sd">        me = DOModelExporter(cpd_cluster_host = &#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;,</span>
+<span class="sd">                     access_token = None,</span>
+<span class="sd">                     user_name = user_name,</span>
+<span class="sd">                     password = password,</span>
+<span class="sd">                     do_model_names = [&#39;ProductionPlanning&#39;],</span>
+<span class="sd">                     project_id = &#39;b7bf7fd8-aa50-4bd2-8364-02ea6d480895&#39;)</span>
+<span class="sd">        me.export_do_models()</span>
+
+<span class="sd">    4. Generate curl commands:</span>
+<span class="sd">        a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`</span>
+<span class="sd">        b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</span>
+<span class="sd">        b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</span>
+
+<span class="sd">        me = DOModelExporter(do_model_names=[],</span>
+<span class="sd">                     user_name = user_name,</span>
+<span class="sd">                     password = password)</span>
+<span class="sd">        me.get_access_token_curl()</span>
+<span class="sd">        access_token = &#39;xxxxxx&#39;  # Get value from running the above curl command</span>
+<span class="sd">        me.get_do_model_export_curl(&#39;ProductionPlanning&#39;, access_token)</span>
+
+<span class="sd">        Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</span>
+
+<span class="sd">    5. How to get the `project_id`:</span>
+<span class="sd">        a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ[&#39;PROJECT_ID&#39;]`.</span>
+<span class="sd">        b. Run the  `os.environ[&#39;PROJECT_ID&#39;]` in a notebook in the target project.</span>
+<span class="sd">        c. Parse the project_id from the Page Source of a web page in the target project.</span>
+<span class="sd">            i. Manually.</span>
+<span class="sd">                1. From any web-page of the CPD project, show the `Page Source`. (In Firefox: menu -&gt; Web Developer -&gt; Page Source)</span>
+<span class="sd">                2. Do a find-in-page of the name of the project (control-F).</span>
+<span class="sd">                3. Just before the first instance of the project name, there is a field `data_id`, e.g.: `data-id=&quot;21c8ac71-26c1-49a5-a567-d4c69a0d8158&quot;`. Copy the data_id value.</span>
+<span class="sd">                * Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.</span>
+<span class="sd">            ii. Using the method `DOModelExporter.get_project_id(project_name, page_source)`</span>
+
+<span class="sd">            page_source = &#39;the page source copied from Page Source&#39;</span>
+<span class="sd">            project_id = DOModelExporter.get_project_id(&#39;Full_Project_Name&#39;, page_source)</span>
+
+<span class="sd">    6. How to get the access_token:</span>
+<span class="sd">        a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ[&#39;USER_ACCESS_TOKEN&#39;]`.</span>
+<span class="sd">        b. Run the `os.environ[&#39;USER_ACCESS_TOKEN&#39;]` in a notebook in the target project.</span>
+<span class="sd">        c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!).</span>
+<span class="sd">        And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</span>
+
+<span class="sd">    7. How to get the cpd_cluster_host?</span>
+<span class="sd">        a. If not provided, the exporter will use the environment variable `os.environ[&#39;RUNTIME_ENV_APSX_URL&#39;]`</span>
+<span class="sd">        b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.&lt;br&gt;</span>
+<span class="sd">        When running this from the same cluster, use the &#39;original&#39; cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup the exporter with all the data required for the export.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            do_model_names (List[str]): names of DO models to be exported</span>
+<span class="sd">            cpd_cluster_host (str, Optional): name of the cluster, e.g. &#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;.Make sure to include the &#39;https://&#39;.</span>
+<span class="sd">            access_token (str, Optional): access token. If None, it will collect the access_token from the host using the user-name and password. Only applicable of retrieving DO model from remote host.</span>
+<span class="sd">            user_name (str, Optional): user-name. Required if access_token is None.</span>
+<span class="sd">            password (str, Optional): password. Required if access_token is None.</span>
+<span class="sd">            project_id (str, Optional): project ID (see else)</span>
+<span class="sd">            export_directory (str, Optional): name of directory to store file. If &#39;/project_data/data_asset/&#39;, it will also add as WS Data Asset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_model_names</span> <span class="o">=</span> <span class="n">do_model_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpd_cluster_host</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cpd_cluster_host&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RUNTIME_ENV_APSX_URL&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;project_id&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PROJECT_ID&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;access_token&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;USER_ACCESS_TOKEN&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># self.export_file_name = kwargs.get(&#39;export_file_name&#39;,</span>
+        <span class="c1">#                                    f&quot;{do_model_name}_export_{datetime.now().strftime(&#39;%Y%m%d_%H%M&#39;)}.zip&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_directory</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;export_directory&#39;</span><span class="p">,</span> <span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DOModelExporter.get_access_token_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the curl command to retreive the accessToken.</span>
+<span class="sd">        Based on the cluster_name, user_name and password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">curl_command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;curl -k -X GET </span><span class="se">\</span>
+<span class="s2">  </span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v1/preauth/validateAuth </span><span class="se">\</span>
+<span class="s2">  -H &#39;Accept: */*&#39; </span><span class="se">\</span>
+<span class="s2">  -H &#39;Accept-Encoding: gzip, deflate&#39; </span><span class="se">\</span>
+<span class="s2">  -u &#39;</span><span class="si">{self.user_name}</span><span class="s2">:</span><span class="si">{self.password}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">return</span> <span class="n">curl_command</span></div>
+
+<div class="viewcode-block" id="DOModelExporter.get_do_model_export_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the curl command to retreive the accessToken.</span>
+<span class="sd">        Based on the cluster_name, user_name and password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">export_file_name</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">)</span>
+        <span class="n">curl_command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;curl -k -v -X GET </span><span class="se">\</span>
+<span class="s2">  &#39;</span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v2/decisions/</span><span class="si">{do_model_name}</span><span class="s2">/archive?projectId=</span><span class="si">{self.project_id}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">  -H &#39;Accept: application/zip&#39; </span><span class="se">\</span>
+<span class="s2">  -H &#39;Authorization: Bearer </span><span class="si">{access_token}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">  --output </span><span class="si">{export_file_name}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">curl_command</span></div>
+
+<div class="viewcode-block" id="DOModelExporter.get_project_id"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_project_id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_project_id</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">page_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extracts the project ID from a page source.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_name (str): full name of the project</span>
+<span class="sd">            page_source (str): the page source of a page of the project in CPD</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            project_id (str)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_name_match</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&gt;</span><span class="si">{project_name}</span><span class="s2">&lt;/a&gt;&quot;</span>
+        <span class="n">project_name_start</span> <span class="o">=</span> <span class="n">page_source</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">project_name_match</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">project_name_start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find project using &#39;</span><span class="si">{project_name_match}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_project_id</span> <span class="o">=</span> <span class="n">page_source</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;data-id=&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">project_name_start</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span>
+            <span class="n">end_project_id</span> <span class="o">=</span> <span class="n">page_source</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="n">start_project_id</span><span class="p">)</span>
+            <span class="n">project_id</span> <span class="o">=</span> <span class="n">page_source</span><span class="p">[</span><span class="n">start_project_id</span><span class="p">:</span><span class="n">end_project_id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">project_id</span></div>
+
+<div class="viewcode-block" id="DOModelExporter.get_access_token_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_web</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs web request to get the personal access-token.</span>
+<span class="sd">        Based on the cluster_name, user_name and password.</span>
+<span class="sd">        Stores it in self.access_token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User-name and password need to be specified in order to retrieve accessToken&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;*/*&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Accept-Encoding&#39;</span><span class="p">:</span> <span class="s1">&#39;gzip, deflate&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{self.cpd_cluster_host}</span><span class="s1">/v1/preauth/validateAuth&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success retrieving accessToken.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;accessToken&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error retrieving accessToken: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;message&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error retrieving accessToken. Status code = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="DOModelExporter.get_do_model_export_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs web-request to get DO model export.</span>
+<span class="sd">        Based on the cluster_name, access_token, do_model_name.</span>
+<span class="sd">        Stores result as a Data Asset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;application/zip&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s1">&#39;projectId&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v2/decisions/</span><span class="si">{do_model_name}</span><span class="s2">/archive&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="c1"># Success</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success downloading DO Model. Writing to file.&quot;</span><span class="p">)</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_do_model_to_file</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exported DO model in </span><span class="si">{file_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error downloading DO Model: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;errors&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error downloading DO Model. Status code = </span><span class="si">{}</span><span class="s2">. Check project_id.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error downloading. Status code = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{do_model_name}</span><span class="s2">_export_{datetime.now().strftime(&#39;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M&#39;)}.zip&quot;</span>
+
+<div class="viewcode-block" id="DOModelExporter.write_do_model_to_file"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_do_model_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="n">export_file_name</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_directory</span><span class="p">,</span> <span class="n">export_file_name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="c1"># If CPD2.5 then also add as asset:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_directory</span> <span class="o">==</span> <span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Adding export file to Data Assets of this project.&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+                <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+                <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">export_file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_path</span></div>
+
+<div class="viewcode-block" id="DOModelExporter.export_do_models"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.export_do_models">[docs]</a>    <span class="k">def</span> <span class="nf">export_do_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;End-to-end run. Gets the access token and then the DO model export.&quot;&quot;&quot;</span>
+        <span class="c1"># If access_token is None, first retrieve it from the host using the un/pw. This should be the exception.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_access_token_web</span><span class="p">()</span>  <span class="c1"># Sets access_token internally</span>
+        <span class="c1"># Regular export DO model</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">do_model_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_model_names</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_do_model_export_web</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AccessToken is None, not possible to export DO models.&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
