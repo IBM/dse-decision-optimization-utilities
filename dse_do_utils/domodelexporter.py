@@ -28,10 +28,10 @@ class DOModelExporter(object):
     4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.
 
     1. Typical use:
-        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()'.
+        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()`.
         Must be run in the same project and cluster.
-        The DO Model export files are stored in the Data Assets of this project.::
-        Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip`
+        The DO Model export files are stored in the Data Assets of this project.
+        Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip`.::
 
             me = DOModelExporter(do_model_names = ['Model1', 'Model2'])
             me.export_do_models()
@@ -48,25 +48,27 @@ class DOModelExporter(object):
         Specify access_toke=None, user_name, password and project_id.
         Will retrieve the accessToken from the user-name and password::
 
-        me = DOModelExporter(cpd_cluster_host = 'https://dse-cp4d25-cluster4.cpolab.ibm.com',
-                     access_token = None,
-                     user_name = user_name,
-                     password = password,
-                     do_model_names = ['ProductionPlanning'],
-                     project_id = 'b7bf7fd8-aa50-4bd2-8364-02ea6d480895')
-        me.export_do_models()
+            me = DOModelExporter(cpd_cluster_host = 'https://dse-cp4d25-cluster4.cpolab.ibm.com',
+                         access_token = None,
+                         user_name = user_name,
+                         password = password,
+                         do_model_names = ['ProductionPlanning'],
+                         project_id = 'b7bf7fd8-aa50-4bd2-8364-02ea6d480895')
+            me.export_do_models()
 
     4. Generate curl commands:
         a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`
         b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
         b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).
 
-        me = DOModelExporter(do_model_names=[],
-                     user_name = user_name,
-                     password = password)
-        me.get_access_token_curl()
-        access_token = 'xxxxxx'  # Get value from running the above curl command
-        me.get_do_model_export_curl('ProductionPlanning', access_token)
+        Usage::
+
+            me = DOModelExporter(do_model_names=[],
+                         user_name = user_name,
+                         password = password)
+            me.get_access_token_curl()
+            access_token = 'xxxxxx'  # Get value from running the above curl command
+            me.get_do_model_export_curl('ProductionPlanning', access_token)
 
         Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.
 
@@ -81,8 +83,10 @@ class DOModelExporter(object):
                 * Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.
             ii. Using the method `DOModelExporter.get_project_id(project_name, page_source)`
 
-            page_source = 'the page source copied from Page Source'
-            project_id = DOModelExporter.get_project_id('Full_Project_Name', page_source)
+            Usage::
+
+                page_source = 'the page source copied from Page Source'
+                project_id = DOModelExporter.get_project_id('Full_Project_Name', page_source)
 
     6. How to get the access_token:
         a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ['USER_ACCESS_TOKEN']`.

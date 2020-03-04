@@ -191,10 +191,10 @@
 <span class="sd">    4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.</span>
 
 <span class="sd">    1. Typical use:</span>
-<span class="sd">        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()&#39;.</span>
+<span class="sd">        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()`.</span>
 <span class="sd">        Must be run in the same project and cluster.</span>
-<span class="sd">        The DO Model export files are stored in the Data Assets of this project.::</span>
-<span class="sd">        Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip`</span>
+<span class="sd">        The DO Model export files are stored in the Data Assets of this project.</span>
+<span class="sd">        Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip`.::</span>
 
 <span class="sd">            me = DOModelExporter(do_model_names = [&#39;Model1&#39;, &#39;Model2&#39;])</span>
 <span class="sd">            me.export_do_models()</span>
@@ -211,25 +211,27 @@
 <span class="sd">        Specify access_toke=None, user_name, password and project_id.</span>
 <span class="sd">        Will retrieve the accessToken from the user-name and password::</span>
 
-<span class="sd">        me = DOModelExporter(cpd_cluster_host = &#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;,</span>
-<span class="sd">                     access_token = None,</span>
-<span class="sd">                     user_name = user_name,</span>
-<span class="sd">                     password = password,</span>
-<span class="sd">                     do_model_names = [&#39;ProductionPlanning&#39;],</span>
-<span class="sd">                     project_id = &#39;b7bf7fd8-aa50-4bd2-8364-02ea6d480895&#39;)</span>
-<span class="sd">        me.export_do_models()</span>
+<span class="sd">            me = DOModelExporter(cpd_cluster_host = &#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;,</span>
+<span class="sd">                         access_token = None,</span>
+<span class="sd">                         user_name = user_name,</span>
+<span class="sd">                         password = password,</span>
+<span class="sd">                         do_model_names = [&#39;ProductionPlanning&#39;],</span>
+<span class="sd">                         project_id = &#39;b7bf7fd8-aa50-4bd2-8364-02ea6d480895&#39;)</span>
+<span class="sd">            me.export_do_models()</span>
 
 <span class="sd">    4. Generate curl commands:</span>
 <span class="sd">        a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`</span>
 <span class="sd">        b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</span>
 <span class="sd">        b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</span>
 
-<span class="sd">        me = DOModelExporter(do_model_names=[],</span>
-<span class="sd">                     user_name = user_name,</span>
-<span class="sd">                     password = password)</span>
-<span class="sd">        me.get_access_token_curl()</span>
-<span class="sd">        access_token = &#39;xxxxxx&#39;  # Get value from running the above curl command</span>
-<span class="sd">        me.get_do_model_export_curl(&#39;ProductionPlanning&#39;, access_token)</span>
+<span class="sd">        Usage::</span>
+
+<span class="sd">            me = DOModelExporter(do_model_names=[],</span>
+<span class="sd">                         user_name = user_name,</span>
+<span class="sd">                         password = password)</span>
+<span class="sd">            me.get_access_token_curl()</span>
+<span class="sd">            access_token = &#39;xxxxxx&#39;  # Get value from running the above curl command</span>
+<span class="sd">            me.get_do_model_export_curl(&#39;ProductionPlanning&#39;, access_token)</span>
 
 <span class="sd">        Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</span>
 
@@ -244,8 +246,10 @@
 <span class="sd">                * Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.</span>
 <span class="sd">            ii. Using the method `DOModelExporter.get_project_id(project_name, page_source)`</span>
 
-<span class="sd">            page_source = &#39;the page source copied from Page Source&#39;</span>
-<span class="sd">            project_id = DOModelExporter.get_project_id(&#39;Full_Project_Name&#39;, page_source)</span>
+<span class="sd">            Usage::</span>
+
+<span class="sd">                page_source = &#39;the page source copied from Page Source&#39;</span>
+<span class="sd">                project_id = DOModelExporter.get_project_id(&#39;Full_Project_Name&#39;, page_source)</span>
 
 <span class="sd">    6. How to get the access_token:</span>
 <span class="sd">        a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ[&#39;USER_ACCESS_TOKEN&#39;]`.</span>

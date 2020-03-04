@@ -767,14 +767,14 @@ By default, the export files are stored as datetime-stamped zip files in the Dat
 <ol class="arabic">
 <li><dl class="first docutils">
 <dt>Typical use:</dt>
-<dd><p class="first">Initialize the exporter with a list of DO Model names and call the method <cite>me.export_do_models()’.
+<dd><p class="first">Initialize the exporter with a list of DO Model names and call the method <cite>me.export_do_models()</cite>.
 Must be run in the same project and cluster.
-The DO Model export files are stored in the Data Assets of this project.::
-Uses naming pattern: `{do_model_name}_export_{YYYYMMDD_hhmm}.zip</cite></p>
-<blockquote class="last">
-<div><p>me = DOModelExporter(do_model_names = [‘Model1’, ‘Model2’])
-me.export_do_models()</p>
-</div></blockquote>
+The DO Model export files are stored in the Data Assets of this project.
+Uses naming pattern: <cite>{do_model_name}_export_{YYYYMMDD_hhmm}.zip</cite>.:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Model1&#39;</span><span class="p">,</span> <span class="s1">&#39;Model2&#39;</span><span class="p">])</span>
+<span class="n">me</span><span class="o">.</span><span class="n">export_do_models</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </li>
@@ -794,16 +794,15 @@ Assumes current user is a collaborator on the other project (if not use the next
 <dt>Export from another project in other cluster:</dt>
 <dd><p class="first">Specify access_toke=None, user_name, password and project_id.
 Will retrieve the accessToken from the user-name and password:</p>
-<dl class="docutils">
-<dt>me = DOModelExporter(cpd_cluster_host = ‘<a class="reference external" href="https://dse-cp4d25-cluster4.cpolab.ibm.com">https://dse-cp4d25-cluster4.cpolab.ibm.com</a>’,</dt>
-<dd><p class="first last">access_token = None,
-user_name = user_name,
-password = password,
-do_model_names = [‘ProductionPlanning’],
-project_id = ‘b7bf7fd8-aa50-4bd2-8364-02ea6d480895’)</p>
-</dd>
-</dl>
-<p class="last">me.export_do_models()</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">cpd_cluster_host</span> <span class="o">=</span> <span class="s1">&#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;</span><span class="p">,</span>
+             <span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">user_name</span> <span class="o">=</span> <span class="n">user_name</span><span class="p">,</span>
+             <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="p">,</span>
+             <span class="n">do_model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ProductionPlanning&#39;</span><span class="p">],</span>
+             <span class="n">project_id</span> <span class="o">=</span> <span class="s1">&#39;b7bf7fd8-aa50-4bd2-8364-02ea6d480895&#39;</span><span class="p">)</span>
+<span class="n">me</span><span class="o">.</span><span class="n">export_do_models</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </li>
@@ -814,15 +813,15 @@ project_id = ‘b7bf7fd8-aa50-4bd2-8364-02ea6d480895’)</p>
 </ol>
 <p>b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
 b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</p>
-<dl class="docutils">
-<dt>me = DOModelExporter(do_model_names=[],</dt>
-<dd><p class="first last">user_name = user_name,
-password = password)</p>
-</dd>
-</dl>
-<p>me.get_access_token_curl()
-access_token = ‘xxxxxx’  # Get value from running the above curl command
-me.get_do_model_export_curl(‘ProductionPlanning’, access_token)</p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span><span class="o">=</span><span class="p">[],</span>
+             <span class="n">user_name</span> <span class="o">=</span> <span class="n">user_name</span><span class="p">,</span>
+             <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="p">)</span>
+<span class="n">me</span><span class="o">.</span><span class="n">get_access_token_curl</span><span class="p">()</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="s1">&#39;xxxxxx&#39;</span>  <span class="c1"># Get value from running the above curl command</span>
+<span class="n">me</span><span class="o">.</span><span class="n">get_do_model_export_curl</span><span class="p">(</span><span class="s1">&#39;ProductionPlanning&#39;</span><span class="p">,</span> <span class="n">access_token</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="last">Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</p>
 </dd>
 </dl>
@@ -851,8 +850,11 @@ me.get_do_model_export_curl(‘ProductionPlanning’, access_token)</p>
 <li><p class="first">Using the method <cite>DOModelExporter.get_project_id(project_name, page_source)</cite></p>
 </li>
 </ol>
-<p class="last">page_source = ‘the page source copied from Page Source’
-project_id = DOModelExporter.get_project_id(‘Full_Project_Name’, page_source)</p>
+<p>Usage:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">page_source</span> <span class="o">=</span> <span class="s1">&#39;the page source copied from Page Source&#39;</span>
+<span class="n">project_id</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">get_project_id</span><span class="p">(</span><span class="s1">&#39;Full_Project_Name&#39;</span><span class="p">,</span> <span class="n">page_source</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </li>
