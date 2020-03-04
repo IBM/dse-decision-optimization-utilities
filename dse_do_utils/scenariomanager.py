@@ -118,7 +118,7 @@ class ScenarioManager(object):
             ValueError if root directory doesn't exist.
         """
         if ScenarioManager.env_is_cpd25():
-            root_dir = ''
+            root_dir = '.'
         elif ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
             root_dir = os.environ['DSX_PROJECT_DIR']
         else:

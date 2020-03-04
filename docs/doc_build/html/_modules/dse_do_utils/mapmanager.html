@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.mapmanager &mdash; DSE DO Utils 0.3.0.0 documentation</title>
+  <title>dse_do_utils.mapmanager &mdash; DSE DO Utils 0.3.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.0',
+              VERSION:'0.3.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.0
+                0.3.0.1
               </div>
             
           
@@ -195,7 +195,7 @@
 
     <span class="n">kansas_city_coord</span> <span class="o">=</span> <span class="p">[</span><span class="mf">39.085594</span><span class="p">,</span> <span class="o">-</span><span class="mf">94.585241</span><span class="p">]</span>  <span class="c1"># Kansas City, roughly the geographic center of the USA</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zoom_start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zoom_start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">,</span>
                  <span class="n">layer_control_position</span><span class="o">=</span><span class="s1">&#39;topleft&#39;</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">folium</span>  <span class="c1"># Import here so that you only do the import if you are actually using this class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">data_manager</span>
@@ -222,7 +222,7 @@
         <span class="sd">&quot;&quot;&quot;Adds a full-screen button in the top-left corner of the map.</span>
 <span class="sd">        Unfortunately, the full-screen doesn&#39;t work in a Jupyter cell.</span>
 <span class="sd">        Seems to work ok here: http://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Plugins.ipynb&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">folium</span> <span class="k">import</span> <span class="n">plugins</span>
+        <span class="kn">from</span> <span class="nn">folium</span> <span class="kn">import</span> <span class="n">plugins</span>
         <span class="n">plugins</span><span class="o">.</span><span class="n">Fullscreen</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="s1">&#39;topleft&#39;</span><span class="p">,</span>
                            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Expand me&#39;</span><span class="p">,</span>
                            <span class="n">title_cancel</span><span class="o">=</span><span class="s1">&#39;Exit me&#39;</span><span class="p">,</span>
@@ -288,7 +288,7 @@
         <span class="c1"># TODO: generalize so that locations can be any length &gt;=2, i.e. a PolyLine with more than 1 section.</span>
 
         <span class="kn">import</span> <span class="nn">folium</span>
-        <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+        <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
         <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
         <span class="n">Point</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>
 

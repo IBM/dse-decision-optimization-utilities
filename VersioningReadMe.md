@@ -16,7 +16,9 @@ b. Open Terminal, from root, run <br>
 4. Upload to PyPI (from PyCharm terminal run):<br>
 `twine upload dist/*  --verbose`
 Enter username and password when prompted.
-(For TestPyPI use: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`)
+(For TestPyPI use: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`)<br>
+Before the twine upload, you can check the distribution with:<br>
+`twine check dist/*`
 
 5. For JFrog, run `setup.py` with the following arguments:<br>
 `python setup.py sdist bdist_wheel upload -r local`<br>
