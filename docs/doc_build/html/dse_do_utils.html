@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils package &mdash; DSE DO Utils 0.3.0.0 documentation</title>
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.3.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.3.0.0',
+              VERSION:'0.3.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.3.0.0
+                0.3.0.1
               </div>
             
           
@@ -364,7 +364,7 @@ Otherwise, creates a blank DataFrame instance.</p>
 <p>Prints some message. To test reloading of the package from a notebook.
 Usage:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">In</span> <span class="n">notebook</span> <span class="n">cell</span> <span class="c1">#1)</span>
-<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">DataManager</span>
 <span class="n">dm</span> <span class="o">=</span> <span class="n">DataManager</span><span class="p">()</span>
 <span class="p">(</span><span class="n">In</span> <span class="n">cell</span> <span class="c1">#2)</span>
 <span class="n">dm</span><span class="o">.</span><span class="n">print_hello</span><span class="p">()</span>
@@ -1668,7 +1668,7 @@ Unfortunately, reloading the top-level module dse_do_utils doesn’t force a rel
 <span class="kn">import</span> <span class="nn">dse_do_utils</span>  <span class="c1"># You have to do the import, otherwise not possible to do the next 2 steps</span>
 <span class="n">dse_do_utils</span><span class="o">.</span><span class="n">module_reload</span><span class="p">()</span>  <span class="c1">#This function</span>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># Necessary to ensure all following expressions `from dse_do_utils import class` are using the updated classes</span>
-<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
 </pre></div>
 </div>
 <p>Note that this function assumes that the set of classes and component modules is not part of the update.
@@ -1678,7 +1678,7 @@ If it is, you may need to add another reload:</p>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># To reload this function</span>
 <span class="n">dse_do_utils</span><span class="o">.</span><span class="n">module_reload</span><span class="p">()</span>  <span class="c1">#This function</span>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>  <span class="c1"># Necessary to ensure all future expressions `from dse_do_utils import class` are using the updated classes</span>
-<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>  <span class="c1"># This needs to be done AFTER the reload to refresh the definitions</span>
 </pre></div>
 </div>
 <p>If not using this function, in the notebook you would need to do the following (or the relevant parts of it):</p>
@@ -1691,7 +1691,7 @@ If it is, you may need to add another reload:</p>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">deployeddomodel</span><span class="p">)</span>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="o">.</span><span class="n">mapmanager</span><span class="p">)</span>
 <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">dse_do_utils</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">DataManager</span><span class="p">,</span> <span class="n">OptimizationEngine</span><span class="p">,</span> <span class="n">ScenarioManager</span><span class="p">,</span> <span class="n">ScenarioPicker</span><span class="p">,</span> <span class="n">DeployedDOModel</span><span class="p">,</span> <span class="n">MapManager</span>
 </pre></div>
 </div>
 <p>Returns:</p>

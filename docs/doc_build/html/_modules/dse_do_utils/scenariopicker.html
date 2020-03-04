@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.scenariopicker &mdash; DSE DO Utils 0.3.0.0 documentation</title>
+  <title>dse_do_utils.scenariopicker &mdash; DSE DO Utils 0.3.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.0',
+              VERSION:'0.3.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.0
+                0.3.0.1
               </div>
             
           
@@ -172,7 +172,7 @@
 <span class="c1"># from IPython.display import Javascript, display</span>
 <span class="c1"># from ipywidgets import widgets</span>
 
-<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="k">import</span> <span class="n">ScenarioManager</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span>
 
 <div class="viewcode-block" id="ScenarioPicker"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker">[docs]</a><span class="k">class</span> <span class="nc">ScenarioPicker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Notebook widget to interactively select a scenario from the dd_scenario.Client.</span>
@@ -206,13 +206,13 @@
 
     <span class="n">default_scenario</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Class variable to store the latest scenario selected</span>
 
-    <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">widgets</span>
+    <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widgets</span>
 
 <div class="viewcode-block" id="ScenarioPicker.ScenarioRefreshButton"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.ScenarioRefreshButton">[docs]</a>    <span class="k">class</span> <span class="nc">ScenarioRefreshButton</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">Button</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A widget Refresh button that will refresh all cells below.</span>
 <span class="sd">        Inner class of ScenarioPicker since it is only applicable in the context of the ScenarioPicker.&quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_picker</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_picker</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">ScenarioPicker</span><span class="o">.</span><span class="n">ScenarioRefreshButton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Refresh&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scenario_picker</span> <span class="o">=</span> <span class="n">scenario_picker</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">ScenarioPicker</span><span class="o">.</span><span class="n">ScenarioRefreshButton</span><span class="o">.</span><span class="n">_on_click_callback</span><span class="p">)</span>
@@ -229,11 +229,11 @@
         <span class="k">def</span> <span class="nf">_refresh_cells_below</span><span class="p">():</span>
             <span class="sd">&quot;&quot;&quot;Executes all cells below the current. Triggered by Refresh button.&quot;&quot;&quot;</span>
             <span class="c1">#             display(Javascript(&#39;IPython.notebook.execute_cell_range(IPython.notebook.get_selected_index()+1, IPython.notebook.ncells())&#39;)) #Runs all cells below the cell with the refresh button</span>
-            <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
+            <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">display</span>
             <span class="n">display</span><span class="p">(</span>
                 <span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;IPython.notebook.execute_cells_below()&#39;</span><span class="p">))</span>  <span class="c1"># Will also run the cell with the refresh button</span></div>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">=</span> <span class="n">scenario_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_scenario</span> <span class="o">=</span> <span class="kc">None</span>
@@ -250,7 +250,7 @@
 
 <div class="viewcode-block" id="ScenarioPicker.get_scenario_select_drop_down"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_select_drop_down">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario_select_drop_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the drop-down button.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">widgets</span>
+        <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widgets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_down</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_names</span><span class="p">(),</span>
             <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_default_scenario</span><span class="p">(),</span>  <span class="c1"># None, #DEFAULT_SCENARIO, #the default selected value</span>
@@ -282,7 +282,7 @@
 
 <div class="viewcode-block" id="ScenarioPicker.get_scenario_picker_ui"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_picker_ui">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario_picker_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a combination of both the drop-down and the refresh button.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">widgets</span>
+        <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widgets</span>
         <span class="n">tab</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">HBox</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_scenario_select_drop_down</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenario_refresh_button</span><span class="p">()])</span>
         <span class="k">return</span> <span class="n">tab</span></div>
 
