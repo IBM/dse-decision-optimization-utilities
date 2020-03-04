@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0.1] - 2020-03-04
+## Added
+- DOModelExporter: export DO models in CPDv2.5
+- cpd25utilities: some data asset read and write functions
+
 ## [0.3.0.0] - 2020-02-22
 ### Changed
 - Support for CPD2.5
