@@ -67,19 +67,19 @@ def module_reload():
     Returns:
 
     """
-    import imp
+    import importlib
     import datamanager
     import optimizationengine
     import scenariomanager
     import scenariopicker
     import deployeddomodel
     import mapmanager
-    imp.reload(datamanager)
-    imp.reload(optimizationengine)
-    imp.reload(scenariomanager)
-    imp.reload(scenariopicker)
-    imp.reload(deployeddomodel)
-    imp.reload(mapmanager)
+    importlib.reload(datamanager)
+    importlib.reload(optimizationengine)
+    importlib.reload(scenariomanager)
+    importlib.reload(scenariopicker)
+    importlib.reload(deployeddomodel)
+    importlib.reload(mapmanager)
 
     # The imports below cannot be done here.
     # You need to redo the class imports from the notebook that is calling this function

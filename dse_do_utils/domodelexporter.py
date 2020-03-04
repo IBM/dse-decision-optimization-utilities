@@ -13,6 +13,7 @@ import os
 from datetime import datetime
 from typing import List
 
+
 urllib3.disable_warnings(
     urllib3.exceptions.InsecureRequestWarning)  # Supresses the "InsecureRequestWarning: Unverified HTTPS request is being made" you get when downloading from a CPD cluster.
 
@@ -122,7 +123,7 @@ class DOModelExporter(object):
         #                                    f"{do_model_name}_export_{datetime.now().strftime('%Y%m%d_%H%M')}.zip")
         self.export_directory = kwargs.get('export_directory', '/project_data/data_asset/')
 
-    def get_access_token_curl(self):
+    def get_access_token_curl(self) -> str:
         """Return the curl command to retreive the accessToken.
         Based on the cluster_name, user_name and password.
         """
@@ -133,7 +134,7 @@ class DOModelExporter(object):
   -u '{self.user_name}:{self.password}'"
         return curl_command
 
-    def get_do_model_export_curl(self, do_model_name: str, access_token: str):
+    def get_do_model_export_curl(self, do_model_name: str, access_token: str) -> str:
         """Return the curl command to retreive the accessToken.
         Based on the cluster_name, user_name and password.
         """
@@ -167,7 +168,7 @@ class DOModelExporter(object):
             project_id = page_source[start_project_id:end_project_id]
         return project_id
 
-    def get_access_token_web(self):
+    def get_access_token_web(self) -> requests.Response:
         """Runs web request to get the personal access-token.
         Based on the cluster_name, user_name and password.
         Stores it in self.access_token
@@ -193,7 +194,7 @@ class DOModelExporter(object):
             self.access_token = None
         return response
 
-    def get_do_model_export_web(self, do_model_name: str):
+    def get_do_model_export_web(self, do_model_name: str) -> requests.Response:
         """Runs web-request to get DO model export.
         Based on the cluster_name, access_token, do_model_name.
         Stores result as a Data Asset
@@ -225,10 +226,10 @@ class DOModelExporter(object):
         return response
 
     @staticmethod
-    def _get_export_file_name(do_model_name: str):
+    def _get_export_file_name(do_model_name: str) -> str:
         return f"{do_model_name}_export_{datetime.now().strftime('%Y%m%d_%H%M')}.zip"
 
-    def write_do_model_to_file(self, do_model_name: str, response):
+    def write_do_model_to_file(self, do_model_name: str, response: requests.Response) -> str:
         import os
         export_file_name = DOModelExporter._get_export_file_name(do_model_name)
         file_path = os.path.join(self.export_directory, export_file_name)
@@ -243,7 +244,7 @@ class DOModelExporter(object):
                 project.save_data(file_name=export_file_name, data=f, overwrite=True)
         return file_path
 
-    def export_do_models(self):
+    def export_do_models(self) -> None:
         """End-to-end run. Gets the access token and then the DO model export."""
         # If access_token is None, first retrieve it from the host using the un/pw. This should be the exception.
         if self.access_token is None:

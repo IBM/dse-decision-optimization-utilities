@@ -9,29 +9,35 @@
 # from __future__ import absolute_import
 # from __future__ import division
 # from __future__ import print_function
+import docplex
 import pandas as pd
 import os
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.progress import SolutionListener
 from docplex.mp.model import Model
+from typing import Sequence, List, Dict, Tuple, Optional
 
 # from dse_do_utils import ScenarioManager
 # Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)
 # Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module
+from docplex.mp.vartype import IntegerVarType, ContinuousVarType, BinaryVarType
+
 try:
     # Import as part of package
     from .scenariomanager import ScenarioManager
+    from .datamanager import DataManager
 except:
     # import as part of DO Model Builder
     from scenariomanager import ScenarioManager
+    from datamanager import DataManager
 
 
 class OptimizationEngine(object):
-    def __init__(self, data_manager=None, name="MyOptimizationEngine"):
-        self.mdl = Model(name=name)
+    def __init__(self, data_manager: Optional[DataManager] = None, name: str = "MyOptimizationEngine"):
+        self.mdl: Model = Model(name=name)
         self.dm = data_manager
 
-    def integer_var_series(self, df, **kargs):
+    def integer_var_series(self, df: pd.DataFrame, **kargs) -> pd.Series[IntegerVarType]:
         """Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.
         Result can be assigned to a column of the df.
         Usage:
@@ -49,27 +55,27 @@ class OptimizationEngine(object):
         return OptimizationEngine.integer_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.integer_var_list(df.index, **kargs), index = df.index)
 
-    def continuous_var_series(self, df, **kargs):
+    def continuous_var_series(self, df, **kargs) -> pd.Series[ContinuousVarType]:
         return OptimizationEngine.continuous_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.continuous_var_list(df.index, **kargs), index = df.index)
 
-    def binary_var_series(self, df, **kargs):
+    def binary_var_series(self, df, **kargs) -> pd.Series[BinaryVarType]:
         return OptimizationEngine.binary_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.binary_var_list(df.index, **kargs), index = df.index)
 
     @staticmethod
-    def integer_var_series_s(mdl, df, **kargs):
+    def integer_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[IntegerVarType]:
         return pd.Series(mdl.integer_var_list(df.index, **kargs), index=df.index)
 
     @staticmethod
-    def continuous_var_series_s(mdl, df, **kargs):
+    def continuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[ContinuousVarType]:
         return pd.Series(mdl.continuous_var_list(df.index, **kargs), index=df.index)
 
     @staticmethod
-    def binary_var_series_s(mdl, df, **kargs):
+    def binary_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[BinaryVarType]:
         return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index)
 
-    def solve(self, refine_conflict=False, **kwargs):
+    def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
         msol = self.mdl.solve(**kwargs)  # log_output=True
         if msol is not None:
             print('Found a solution')
@@ -87,12 +93,12 @@ class OptimizationEngine(object):
                         c.element)  # Display conflict result in a little more compact format than ConflictRefiner.display_conflicts
         return msol
 
-    def get_kpi_output_table(self):
+    def get_kpi_output_table(self) -> pd.DataFrame:
         all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.iter_kpis()]
         df_kpis = pd.DataFrame(all_kpis, columns=['kpi', 'value'])
         return df_kpis
 
-    def export_as_lp(self, local_root=None, copy_to_csv=False):
+    def export_as_lp(self, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
         """Export .lp file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         Convenience method.
         It can write a copy as a .csv file, so it can be exported to a local machine.
@@ -100,8 +106,8 @@ class OptimizationEngine(object):
         Lp-filename is based on the mdl.name.
 
         Args:
-            local_dir (str): name of local directory. Will write .lp file here, if not in DSX
-            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.
+            local_root (str): name of local directory. Will write .lp file here, if not in DSX
+            copy_to_csv (bool): DEPRECATED. If true, will create a copy of the file with the extension `.csv`.
         Returns:
             path (str) path to lp file
         Raises:
@@ -109,7 +115,7 @@ class OptimizationEngine(object):
         """
         return OptimizationEngine.export_as_lp_s(self.mdl, local_root=local_root, copy_to_csv=copy_to_csv)
 
-    def export_as_cpo(self, local_root=None, copy_to_csv=False):
+    def export_as_cpo(self, local_root: Optional[str] = None, copy_to_csv: bool = False):
         """Export .cpo file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in DSX, it will write to the local file system in the 'local_root/datasets' directory.
@@ -117,8 +123,8 @@ class OptimizationEngine(object):
         Cpo-filename is based on the mdl.name.
 
         Args:
-            local_dir (str): name of local directory. Will write .lp file here, if not in DSX
-            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.
+            local_root (str): name of local directory. Will write .lp file here, if not in DSX
+            copy_to_csv (bool):  DEPRECATED. If true, will create a copy of the file with the extension `.csv`.
         Returns:
             path (str) path to cpo file
         Raises:
@@ -127,7 +133,7 @@ class OptimizationEngine(object):
         return OptimizationEngine.export_as_cpo_s(self.mdl, local_root=local_root, copy_to_csv=copy_to_csv)
 
     @staticmethod
-    def export_as_lp_s(model, model_name=None, local_root=None, copy_to_csv=False):
+    def export_as_lp_s(model: docplex.mp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
         """Export .lp file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in WSL, it will write to the local file system in the 'local_root/datasets' directory.
@@ -137,7 +143,7 @@ class OptimizationEngine(object):
             model_name (str): name of .lp file. If none specified, will use the model.name.
                 Specify if the model.name is not a valid file-name.
             local_root (str): name of local directory. Will write .lp file here, if not in WSL
-            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.
+            copy_to_csv (bool): DEPRECATED. If true, will create a copy of the file with the extension `.csv`.
         Returns:
             path (str) path to lp file
         Raises:
@@ -169,7 +175,7 @@ class OptimizationEngine(object):
         return lp_file_name_1
 
     @staticmethod
-    def export_as_cpo_s(model, model_name=None, local_root=None, copy_to_csv=False, **kwargs):
+    def export_as_cpo_s(model: docplex.cp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False, **kwargs) -> str:
         """Export .cpo file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in DSX, it will write to the local file system in the 'local_root/datasets' directory.
@@ -241,7 +247,7 @@ class OptimizationEngine(object):
 
 
 class MyProgressListener(SolutionListener):
-    def __init__(self, mdl):
+    def __init__(self, mdl: docplex.mp.model):
         SolutionListener.__init__(self, mdl)
         self.solution_count = 0
         self.mip_gap = 0

@@ -41,7 +41,7 @@ def add_sys_path(new_path):
     return 1
 
 
-def list_file_hierarchy(startpath):
+def list_file_hierarchy(startpath: str) -> None:
     """Hierarchically print the contents of the folder tree, starting with the `startpath`.
 
     Usage::

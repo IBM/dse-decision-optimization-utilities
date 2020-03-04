@@ -12,6 +12,7 @@
 # from __future__ import print_function
 
 import pandas as pd
+from typing import List, Dict, Tuple, Optional
 
 
 class DataManager(object):
@@ -32,7 +33,7 @@ class DataManager(object):
         * Contains a set of methods that create intermediate data ('pre-processing'). Intermediate data will also be assigned as a direct member property.
     """
 
-    def __init__(self, inputs=None, outputs=None):
+    def __init__(self, inputs: Optional[Dict[pd.DataFrame]] = None, outputs: Optional[Dict[pd.DataFrame]] = None):
         self.inputs = inputs
         self.outputs = outputs
         return
@@ -63,7 +64,7 @@ class DataManager(object):
     #     """
     #     return self.prep_parameters()
 
-    def prep_parameters(self):
+    def prep_parameters(self) -> pd.DataFrame:
         """Pre-process the Parameter(s) input table.
         Assumes the inputs contains a table named `Parameter` or `Parameters` with key `param` and column `value`.
         Otherwise, creates a blank DataFrame instance.
@@ -78,7 +79,7 @@ class DataManager(object):
         return params
 
     @staticmethod
-    def get_parameter_value(params, param_name, param_type=None, default_value=None, value_format='%Y-%m-%d %H:%M'):
+    def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None, value_format: str = '%Y-%m-%d %H:%M'):
         """
         Get value of parameter from the parameter table (DataFrame).
         Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
@@ -126,7 +127,7 @@ class DataManager(object):
         return param
 
     @staticmethod
-    def df_crossjoin_si(df1, df2, **kwargs):
+    def df_crossjoin_si(df1: pd.DataFrame, df2: pd.DataFrame, **kwargs) -> pd.DataFrame:
         """
         Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
         Assumes both input dataframes have a single index column.
@@ -159,7 +160,7 @@ class DataManager(object):
 
     # Multi-index DFs:
     @staticmethod
-    def df_crossjoin_mi(df1, df2, **kwargs):
+    def df_crossjoin_mi(df1: pd.DataFrame, df2: pd.DataFrame, **kwargs) -> pd.DataFrame:
         """
         Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
         Assumes both input dataframes have a (single or multi) index.
@@ -195,7 +196,7 @@ class DataManager(object):
         return res
 
     @staticmethod
-    def df_crossjoin_ai(df1, df2, **kwargs):
+    def df_crossjoin_ai(df1: pd.DataFrame, df2: pd.DataFrame, **kwargs) -> pd.DataFrame:
         """
         Cross-join 'Any Index'
         Make a cross join (cartesian product) between two dataframes by using a constant temporary key.
