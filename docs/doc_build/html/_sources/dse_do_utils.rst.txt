@@ -4,6 +4,14 @@ dse\_do\_utils package
 Submodules
 ----------
 
+dse\_do\_utils\.cpd25utilities module
+-------------------------------------
+
+.. automodule:: dse_do_utils.cpd25utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 dse\_do\_utils\.datamanager module
 ----------------------------------
 
@@ -16,6 +24,14 @@ dse\_do\_utils\.deployeddomodel module
 --------------------------------------
 
 .. automodule:: dse_do_utils.deployeddomodel
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+dse\_do\_utils\.domodelexporter module
+--------------------------------------
+
+.. automodule:: dse_do_utils.domodelexporter
     :members:
     :undoc-members:
     :show-inheritance:

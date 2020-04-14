@@ -9,6 +9,7 @@
 
 import os
 
+
 def add_file_path_as_data_asset_cpd25(file_path: str, asset_name: str = None) -> None:
     """Add a data file to the Watson Studio project.
     Applies to CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.
@@ -42,8 +43,8 @@ def add_file_path_as_data_asset_cpd25(file_path: str, asset_name: str = None) ->
         project.save_data(file_name=asset_name, data=f, overwrite=True)
 
 
-def add_file_as_data_asset_cpd25(file_name: str):
-    """Adds a file located in '/project_data/data_asset/' as a Data Asset to the Watson Studio project.
+def add_file_as_data_asset_cpd25(file_name: str) -> None:
+    """Adds a file located in `/project_data/data_asset/` as a Data Asset to the Watson Studio project.
     So that it appears in the UI and can be exported.
     """
     file_path = os.path.join('/project_data/data_asset/', file_name)
@@ -56,7 +57,7 @@ def add_file_as_data_asset_cpd25(file_name: str):
 def write_data_asset_as_file_cpd25(asset_name: str, path: str = '/project_data/data_asset/') -> str:
     """Writes a named data asset to file.
     Assumes a data asset with `asset_name` exists.
-    Makes the file accessable for things like:
+    Makes the file accessible for things like:
     * Load from disk
     * Pip install
     * Module import

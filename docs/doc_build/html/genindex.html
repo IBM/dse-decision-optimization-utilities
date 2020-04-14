@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; DSE DO Utils 0.3.0.1 documentation</title>
+  <title>Index &mdash; DSE DO Utils 0.3.0.2b documentation</title>
   
 
   
@@ -24,7 +24,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.3.0.1',
+              VERSION:'0.3.0.2b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.3.0.1
+                0.3.0.2b
               </div>
             
           
@@ -191,10 +191,14 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s">add_data_into_scenario_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
-      <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_full_screen">add_full_screen() (dse_do_utils.mapmanager.MapManager static method)</a>
+      <li><a href="dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25">add_file_as_data_asset_cpd25() (in module dse_do_utils.cpd25utilities)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25">add_file_path_as_data_asset_cpd25() (in module dse_do_utils.cpd25utilities)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_full_screen">add_full_screen() (dse_do_utils.mapmanager.MapManager static method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_layer_control">add_layer_control() (dse_do_utils.mapmanager.MapManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis">add_mip_progress_kpis() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
@@ -253,13 +257,19 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_si">df_crossjoin_si() (dse_do_utils.datamanager.DataManager static method)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter">DOModelExporter (class in dse_do_utils.domodelexporter)</a>
+</li>
       <li><a href="dse_do_utils.html#module-dse_do_utils">dse_do_utils (module)</a>
+</li>
+      <li><a href="dse_do_utils.html#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#module-dse_do_utils.datamanager">dse_do_utils.datamanager (module)</a>
 </li>
       <li><a href="dse_do_utils.html#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel (module)</a>
+</li>
+      <li><a href="dse_do_utils.html#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter (module)</a>
 </li>
       <li><a href="dse_do_utils.html#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager (module)</a>
 </li>
@@ -285,15 +295,17 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model">execute_model() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo">export_as_cpo() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo_s">export_as_cpo_s() (dse_do_utils.optimizationengine.OptimizationEngine static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp">export_as_lp() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_s">export_as_lp_s() (dse_do_utils.optimizationengine.OptimizationEngine static method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.export_do_models">export_do_models() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -301,6 +313,10 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl">get_access_token_curl() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web">get_access_token_web() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_arrows">get_arrows() (dse_do_utils.mapmanager.MapManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_bearing">get_bearing() (dse_do_utils.mapmanager.MapManager static method)</a>
@@ -310,6 +326,10 @@
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_dump_name_and_url">get_debug_dump_name_and_url() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_debug_file_url">get_debug_file_url() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">get_do_model_export_curl() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web">get_do_model_export_web() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario">get_do_scenario() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
@@ -327,12 +347,12 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_kill_job_url">get_kill_job_url() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table">get_kpi_output_table() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe">get_kpis_table_as_dataframe() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_name_and_url">get_log_file_name_and_url() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_log_file_url">get_log_file_url() (dse_do_utils.deployeddomodel.DeployedDOModel method)</a>
@@ -342,6 +362,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_parameter_value">get_parameter_value() (dse_do_utils.datamanager.DataManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_popup_table">get_popup_table() (dse_do_utils.mapmanager.MapManager static method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_project_id">get_project_id() (dse_do_utils.domodelexporter.DOModelExporter static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">get_root_directory() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
@@ -533,6 +555,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.widgets">widgets (dse_do_utils.scenariopicker.ScenarioPicker attribute)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25">write_data_asset_as_file_cpd25() (in module dse_do_utils.cpd25utilities)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario">write_data_into_scenario() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s">write_data_into_scenario_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
@@ -546,6 +570,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">write_data_to_excel() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel_s">write_data_to_excel_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">write_do_model_to_file() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
 </li>
   </ul></td>
 </tr></table>

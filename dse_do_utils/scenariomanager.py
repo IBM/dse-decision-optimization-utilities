@@ -6,12 +6,20 @@
 # ScenarioManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+# from __future__ import absolute_import
+# from __future__ import division
+# from __future__ import print_function
 import os
 import glob
+
+import docplex
 import pandas as pd
+from typing import Sequence, List, Dict, Tuple, Optional
+
+#  Typing aliases
+Inputs = Dict[pd.DataFrame]
+Outputs = Dict[pd.DataFrame]
+InputsOutputs = Tuple[Inputs, Outputs]
 
 
 class ScenarioManager(object):
@@ -60,17 +68,11 @@ class ScenarioManager(object):
 
     """
 
-    # def __init__(self, model_name=None, scenario_name=None, load_from_excel=False, excel_input_file_name=None,
-    # write_to_excel=False, excel_output_file_name=None, local_root=None):
-    def __init__(self, model_name=None, scenario_name=None, local_root=None):
+    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
         self.model_name = model_name
         self.scenario_name = scenario_name
-        # self.load_from_excel = load_from_excel
-        # self.excel_input_file_name = excel_input_file_name
-        # self.write_to_excel = write_to_excel
-        # self.excel_output_file_name = excel_output_file_name
         self.local_root = local_root
-        self.inputs = None  # Or set the an empty dict?
+        self.inputs = None
         self.outputs = None
 
     def load_data(self, load_from_excel=False, excel_file_name=None):
@@ -87,17 +89,7 @@ class ScenarioManager(object):
                                                                                   scenario_name=self.scenario_name)
         return self.inputs, self.outputs
 
-    # def write_data(self, write_to_excel=False):
-    #     """"Write data to either the DO scenario or an Excel spreadsheet
-    #     TODO: Unlike with the load_data, allow for both writing to the scenario and to Excel. Use different APIs and pass the relevant arguments only to their specific APIs.
-    #     I.e. move some of the properties passed in the constructor to a dedicated write_to_scenario or write_to_excel API.
-    #     """
-    #     if write_to_excel:
-    #         ScenarioManager.write_data_to_excel(excel_file_name=self.excel_output_file_name, inputs=self.inputs, outputs=self.outputs, copy_to_csv=True)
-    #     else:
-    #         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)
-
-    def get_data_directory(self):
+    def get_data_directory(self) -> str:
         """Returns the path to the datasets folder.
 
         :return: path to the datasets folder
@@ -111,7 +103,7 @@ class ScenarioManager(object):
             data_dir = os.path.join(self.get_root_directory(), 'datasets')
         return data_dir
 
-    def get_root_directory(self):
+    def get_root_directory(self) -> str:
         """Return the root directory of the file system.
         If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
         Raises:
@@ -131,7 +123,7 @@ class ScenarioManager(object):
         return root_dir
 
     @staticmethod
-    def add_data_file_to_project_s(file_path: str, file_name: str = None):
+    def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project.
         Applies to CP4Dv2.5.
         Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
@@ -152,7 +144,7 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     # Read and write from/to DO scenario - value-added
     # -----------------------------------------------------------------
-    def load_data_from_scenario(self):
+    def load_data_from_scenario(self) -> InputsOutputs:
         """Loads the data from a DO scenario"""
         self.inputs, self.outputs = ScenarioManager.load_data_from_scenario_s(self.model_name, self.scenario_name)
         return self.inputs, self.outputs
@@ -220,8 +212,9 @@ class ScenarioManager(object):
         return scenario
 
     @staticmethod
-    def load_data_from_scenario_s(model_name, scenario_name):
-        """Loads the data from a DO scenario"""
+    def load_data_from_scenario_s(model_name: str, scenario_name: str) -> InputsOutputs:
+        """Loads the data from a DO scenario.
+        Returns empty dict if no tables."""
         scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)
         # Load all input data as a map { data_name: data_frame }
         inputs = scenario.get_tables_data(category='input')
@@ -229,7 +222,10 @@ class ScenarioManager(object):
         return (inputs, outputs)
 
     @staticmethod
-    def write_data_into_scenario_s(model_name, scenario_name, inputs=None, outputs=None, template_scenario_name=None):
+    def write_data_into_scenario_s(model_name: str, scenario_name: str,
+                                   inputs: Optional[Inputs] = None,
+                                   outputs: Optional[Outputs] = None,
+                                   template_scenario_name: Optional[str] = None) -> None:
         """Create new scenario and write data.
 
         If scenario exists: clears all existing data.
@@ -257,7 +253,9 @@ class ScenarioManager(object):
                 scenario.add_table_data(table, outputs[table], category='output')
 
     @staticmethod
-    def add_data_into_scenario_s(model_name, scenario_name, inputs=None, outputs=None):
+    def add_data_into_scenario_s(model_name: str, scenario_name: str,
+                                 inputs: Optional[Inputs] = None,
+                                 outputs: Optional[Outputs] = None) -> None:
         """Adds tables in existing scenario.
 
         Replaces table, if table exists.
@@ -273,7 +271,9 @@ class ScenarioManager(object):
                 scenario.add_table_data(table, outputs[table], category='output')
 
     @staticmethod
-    def replace_data_into_scenario_s(model_name, scenario_name, inputs=None, outputs=None):
+    def replace_data_into_scenario_s(model_name: str, scenario_name: str,
+                                     inputs: Optional[Inputs] = None,
+                                     outputs: Optional[Outputs] = None) -> None:
         """Replaces all input, output or both.
 
         If input/output are not None, clears inputs/outputs first
@@ -318,7 +318,7 @@ class ScenarioManager(object):
 
     # TODO: test
     @staticmethod
-    def create_new_scenario(client, model_builder, new_scenario_name, template_scenario_name=None):
+    def create_new_scenario(client, model_builder, new_scenario_name: str, template_scenario_name=None):
         """
         Creates a new scenario from a template. The template is found either from the template_scenario_name,
         or if this is None, from the new_scenario_name. If a scenario with the new name already exists,
@@ -368,7 +368,7 @@ class ScenarioManager(object):
         return scenario
 
     @staticmethod
-    def get_kpis_table_as_dataframe(mdl):
+    def get_kpis_table_as_dataframe(mdl: docplex.mp.model) -> pd.DataFrame:
         """Return a DataFrame with the KPI names and values in the mdl.
         This table is compatible with the representation in DO4WS and can be updated in the scenario.
 
@@ -395,7 +395,7 @@ class ScenarioManager(object):
     # Read and write from/to Excel - value added-functions
     # -----------------------------------------------------------------
 
-    def load_data_from_excel(self, excel_file_name):
+    def load_data_from_excel(self, excel_file_name: str) -> InputsOutputs:
         """Load data from an Excel file located in the `datasets` folder of the root directory.
         Convenience method.
         If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor
@@ -408,7 +408,7 @@ class ScenarioManager(object):
         self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
         return self.inputs, self.outputs
 
-    def write_data_to_excel(self, excel_file_name=None, copy_to_csv=False):
+    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> None:
         """Write inputs and/or outputs to an Excel file in datasets.
         The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager
 
@@ -451,7 +451,7 @@ class ScenarioManager(object):
     # Read and write from/to Excel - base functions
     # -----------------------------------------------------------------
     @staticmethod
-    def load_data_from_excel_s(xl, table_index_sheet='_table_index_'):
+    def load_data_from_excel_s(xl: pd.ExcelFile, table_index_sheet: str = '_table_index_') -> InputsOutputs:
         """
         Create dataFrames from the sheets of the Excel file.
         Store in dictionary df_dict with table_name as key.
@@ -493,13 +493,13 @@ class ScenarioManager(object):
         return inputs, outputs
 
     @staticmethod
-    def _create_truncted_post_fixed_name(long_name, max_length, index):
+    def _create_truncted_post_fixed_name(long_name: str, max_length: int, index: int) -> str:
         """Create a trunced name post-fixed with '_<index>' where the total length of the string <= max_length"""
         post_fix = '_' + str(index)
         return long_name[:max_length - len(post_fix)] + post_fix
 
     @staticmethod
-    def _create_unique_abbreviated_name(long_name, max_length, existing_names):
+    def _create_unique_abbreviated_name(long_name: str, max_length: int, existing_names: Sequence[str]) -> str:
         """Create a unique, abbreviated name such that it is not a member of the existing_names set.
         Name is made unique by post-fixing '_<index>' where index is an increasing integer, starting at 0
         """
@@ -514,7 +514,10 @@ class ScenarioManager(object):
         return name
 
     @staticmethod
-    def write_data_to_excel_s(writer, inputs=None, outputs=None, table_index_sheet='_table_index_'):
+    def write_data_to_excel_s(writer: pd.ExcelWriter,
+                              inputs: Optional[Inputs] = None,
+                              outputs: Optional[Outputs] = None,
+                              table_index_sheet: str = '_table_index_') -> None:
         """Writes all dataframes in the inputs and outputs to the Excel writer, with sheet-names based on
         the keys of the inputs/outputs. Due to the Excel limitation of maximum 31 characters for the sheet-name,
         tables names longer than the 31 characters will be abbreviated with a unique name. The mapping between
@@ -557,7 +560,9 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     # Load data from csv
     # -----------------------------------------------------------------
-    def load_data_from_csv(self, csv_directory, input_csv_name_pattern="*.csv", output_csv_name_pattern=None, **kwargs):
+    def load_data_from_csv(self, csv_directory: str,
+                           input_csv_name_pattern: str = "*.csv",
+                           output_csv_name_pattern: Optional[str] = None, **kwargs) -> InputsOutputs:
         """Load data from matching csv files in a directory.
         Uses glob.glob() to pattern-match files in the csv_directory.
         If you want to load one file, specify the full name including the `.csv` extension.
@@ -578,7 +583,7 @@ class ScenarioManager(object):
         return self.inputs, self.outputs
 
     @staticmethod
-    def load_data_from_csv_s(csv_directory, csv_name_pattern="*.csv", **kwargs):
+    def load_data_from_csv_s(csv_directory: str, csv_name_pattern: str = "*.csv", **kwargs) -> Dict[pd.DataFrame]:
         """Read data from all matching .csv files in a directory.
 
         Args:
@@ -600,7 +605,7 @@ class ScenarioManager(object):
             inputs[table_name] = df
         return inputs  # , outputs
 
-    def write_data_to_csv(self):
+    def write_data_to_csv(self) -> None:
         """Write inputs and/or outputs to .csv files in the root/datasets folder.
 
         Args: None
@@ -612,7 +617,9 @@ class ScenarioManager(object):
         ScenarioManager.write_data_to_csv_s(csv_directory, inputs=self.inputs, outputs=self.outputs)
 
     @staticmethod
-    def write_data_to_csv_s(csv_directory, inputs=None, outputs=None):
+    def write_data_to_csv_s(csv_directory: str,
+                            inputs: Optional[Inputs] = None,
+                            outputs: Optional[Outputs] = None) -> None:
         """Write data to .csv files in a directory. Name as name of DataFrame.
 
         Args:
@@ -642,12 +649,12 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
 
     @staticmethod
-    def env_is_dsx():
+    def env_is_dsx() -> bool:
         """Return true if environment is DSX"""
         return 'DSX_PROJECT_DIR' in os.environ
 
     @staticmethod
-    def env_is_cpd25():
+    def env_is_cpd25() -> bool:
         """Return true if environment is CPDv2.5"""
         return 'PWD' in os.environ
 
@@ -661,7 +668,7 @@ class ScenarioManager(object):
         from dd_scenario import Client
         return Client()
 
-    def print_table_names(self):
+    def print_table_names(self) -> None:
         """Print the names of the input and output tables. For development and debugging."""
         print("Input tables: {}".format(", ".join(self.inputs.keys())))
         print("Output tables: {}".format(", ".join(self.outputs.keys())))
