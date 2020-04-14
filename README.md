@@ -16,7 +16,7 @@ Can be subclassed and stored in a script to be able to share code between multip
 Also contains some functions to create dvars and export .lp files.
 4. ScenarioPicker. Interactively pick an existing scenario from a drop-down menu in a notebook. Typically used in visualization notebooks. 
 5. MapManager. For creating map visualizations using Folium.
-6. DeployedDOModel. Interfacing from Python to a deployed DO model.
+6. DOModelExporter. To export DO Models in CPDv2.5.
 
 ## Installation (CPDv2.5)
 (For Cloud Pak for Data v2.5)
@@ -47,14 +47,8 @@ This downloads the package as a wheel/zip and puts it in the data assets
 ```
 !pip download dse-do-utils -d /project_data/data_asset/
 ```
-Then move the wheel/zip to the Data Assets (see the `InstallationReadMe.md` for more details) 
-Next, set the environment customization to:
-```
-- pip:
-    - dse-do-utils --no-index --find-links=/project_data/data_asset/dse_do_utils-0.3.0.0.tar.gz
-```
-
-See the `InstallationReadMe.md` for many more details on installation and usage in other cases.
+Then move the wheel/zip to the Data Assets. 
+See the `InstallationReadMe.md` for more details on installation and usage in other cases.
 
 ## Import
 Then import the required classes from  `dse_do_utils`:

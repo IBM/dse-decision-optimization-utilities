@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dse_do_utils.cpd25utilities &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.3.0.2b',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.0.2b
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DSE DO Utils</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
+        
+      <li>dse_do_utils.cpd25utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dse_do_utils.cpd25utilities</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># Utility functions for CPD v2.5</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="add_file_path_as_data_asset_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25">[docs]</a><span class="k">def</span> <span class="nf">add_file_path_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
+<span class="sd">    Applies to CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.</span>
+<span class="sd">    Needs to be called after the file has been saved regularly in the file system.</span>
+<span class="sd">    Typically, that would be in `/project_data/data_asset/`.</span>
+<span class="sd">    Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (str): full file path, including the file name and extension</span>
+<span class="sd">        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.</span>
+
+<span class="sd">    Usage::</span>
+
+<span class="sd">        # Write some file as an example:</span>
+<span class="sd">        file_path = &#39;/project_data/data_asset/myfile.csv&#39;</span>
+<span class="sd">        with open(file_path, &#39;w+&#39;) as f:</span>
+<span class="sd">             f.write(&quot;Hello World&quot;)</span>
+<span class="sd">        # Add file as a data asset:</span>
+<span class="sd">        add_file_as_data_asset_cpd25(file_path)</span>
+
+<span class="sd">    Beware that the same data now exists in 2 different places:</span>
+<span class="sd">        * In the Cloud Object Storage (COS)</span>
+<span class="sd">        * As a file in `/project_data/data_asset/`</span>
+<span class="sd">    Changing any of the 2 independently can cause inconsistencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">asset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">asset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">asset_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_file_as_data_asset_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25">[docs]</a><span class="k">def</span> <span class="nf">add_file_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Adds a file located in &#39;/project_data/data_asset/&#39; as a Data Asset to the Watson Studio project.</span>
+<span class="sd">    So that it appears in the UI and can be exported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_data_asset_as_file_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25">[docs]</a><span class="k">def</span> <span class="nf">write_data_asset_as_file_cpd25</span><span class="p">(</span><span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Writes a named data asset to file.</span>
+<span class="sd">    Assumes a data asset with `asset_name` exists.</span>
+<span class="sd">    Makes the file accessable for things like:</span>
+<span class="sd">    * Load from disk</span>
+<span class="sd">    * Pip install</span>
+<span class="sd">    * Module import</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        asset_name (str): name of the asset</span>
+<span class="sd">        path (str, Optional): Default is &#39;/project_data/data_asset/&#39;. Use path=&#39;&#39; for current directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="n">asset_name</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Victor Terpstra
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

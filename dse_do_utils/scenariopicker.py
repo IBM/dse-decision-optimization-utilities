@@ -10,6 +10,7 @@
 # from ipywidgets import widgets
 
 from dse_do_utils import ScenarioManager
+from typing import Sequence, List, Dict, Tuple, Optional
 
 class ScenarioPicker(object):
     """Notebook widget to interactively select a scenario from the dd_scenario.Client.
@@ -70,13 +71,13 @@ class ScenarioPicker(object):
             display(
                 Javascript('IPython.notebook.execute_cells_below()'))  # Will also run the cell with the refresh button
 
-    def __init__(self, model_name=None, scenario_name=None):
+    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None):
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.selected_scenario = None
 
-    def _get_scenario_names(self):
-        '''Return a list of scenario names'''
+    def _get_scenario_names(self) -> List[str]:
+        """Return a list of scenario names"""
         client = ScenarioManager._get_dd_client()
         dd_model_builder = client.get_model_builder(name=self.model_name)
         if dd_model_builder is None:
@@ -85,7 +86,7 @@ class ScenarioPicker(object):
         scenario_names = [sc['name'] for sc in scenarios]  # Get only the name property of the scenario tuple
         return scenario_names
 
-    def get_scenario_select_drop_down(self):
+    def get_scenario_select_drop_down(self) -> widgets.Dropdown:
         """Return the drop-down button."""
         from ipywidgets import widgets
         self.drop_down = widgets.Dropdown(

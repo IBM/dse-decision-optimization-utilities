@@ -68,29 +68,10 @@ class ScenarioManager(object):
 
     """
 
-    # def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
-    #     self.model_name = model_name
-    #     self.scenario_name = scenario_name
-    #     self.local_root = local_root
-    #     self.inputs = None
-    #     self.outputs = None
-
-    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
-                 local_root: Optional[str] = None, project_id=Optional[str], project_access_token=Optional[str]):
-        """Create a ScenarioManager.
-
-        Args:
-            model_name (str):
-            scenario_name (str):
-            local_root (str): Path of root when running on a local computer
-            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
-            project_access_token (str): When running in WS Cloud, also requires a project_id
-        """
+    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.local_root = local_root
-        self.project_id = project_id
-        self.project_access_token = project_access_token
         self.inputs = None
         self.outputs = None
 
@@ -221,7 +202,6 @@ class ScenarioManager(object):
         Raises:
             ValueError: When either the model_name or the scenario_name doesn't match an existing entity.
         """
-        # client = self.get_dd_client()
         client = ScenarioManager._get_dd_client()
         dd_model_builder = client.get_model_builder(name=model_name)
         if dd_model_builder is None:
@@ -687,32 +667,6 @@ class ScenarioManager(object):
         """
         from dd_scenario import Client
         return Client()
-
-    def _get_dd_client():
-        """Return the Client managing the DO scenario.
-        Only reason for this separate API is to place the import Client in one place,
-        so that editing this code on a local laptop generates one error.
-        Returns: new dd_scenario.Client
-        """
-        from dd_scenario import Client
-        return Client()
-
-    def get_dd_client(self):
-        """Return the Client managing the DO scenario.
-        Returns: new dd_scenario.Client
-        """
-        from dd_scenario import Client
-        if self.project_id not None and self.project_access_token not None:
-            # When in WS Cloud:
-            from project_lib import Project
-            # The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.
-            project = Project(project_id=self.project_id,
-                              project_access_token=self.project_access_token)
-            pc = project.project_context
-            return Client(pc=pc)
-        else:
-            #  In WSL/CPD:
-            return Client()
 
     def print_table_names(self) -> None:
         """Print the names of the input and output tables. For development and debugging."""

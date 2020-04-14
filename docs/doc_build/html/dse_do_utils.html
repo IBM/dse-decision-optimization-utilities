@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils package &mdash; DSE DO Utils 0.3.0.1 documentation</title>
+  <title>dse_do_utils package &mdash; DSE DO Utils 0.3.0.2b documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.3.0.1',
+              VERSION:'0.3.0.2b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.3.0.1
+                0.3.0.2b
               </div>
             
           
@@ -99,8 +99,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">dse_do_utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
@@ -182,6 +184,79 @@
 <h1>dse_do_utils package<a class="headerlink" href="#dse-do-utils-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dse_do_utils.cpd25utilities">
+<span id="dse-do-utils-cpd25utilities-module"></span><h2>dse_do_utils.cpd25utilities module<a class="headerlink" href="#module-dse_do_utils.cpd25utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25">
+<code class="descclassname">dse_do_utils.cpd25utilities.</code><code class="descname">add_file_as_data_asset_cpd25</code><span class="sig-paren">(</span><em>file_name: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/cpd25utilities.html#add_file_as_data_asset_cpd25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a file located in ‘/project_data/data_asset/’ as a Data Asset to the Watson Studio project.
+So that it appears in the UI and can be exported.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25">
+<code class="descclassname">dse_do_utils.cpd25utilities.</code><code class="descname">add_file_path_as_data_asset_cpd25</code><span class="sig-paren">(</span><em>file_path: str</em>, <em>asset_name: str = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/dse_do_utils/cpd25utilities.html#add_file_path_as_data_asset_cpd25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a data file to the Watson Studio project.
+Applies to CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.
+Needs to be called after the file has been saved regularly in the file system.
+Typically, that would be in <cite>/project_data/data_asset/</cite>.
+Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_path</strong> (<em>str</em>) – full file path, including the file name and extension</li>
+<li><strong>asset_name</strong> (<em>str</em>) – name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Write some file as an example:</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset/myfile.csv&#39;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="c1"># Add file as a data asset:</span>
+<span class="n">add_file_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Beware that the same data now exists in 2 different places:</dt>
+<dd><ul class="first last simple">
+<li>In the Cloud Object Storage (COS)</li>
+<li>As a file in <cite>/project_data/data_asset/</cite></li>
+</ul>
+</dd>
+</dl>
+<p>Changing any of the 2 independently can cause inconsistencies.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25">
+<code class="descclassname">dse_do_utils.cpd25utilities.</code><code class="descname">write_data_asset_as_file_cpd25</code><span class="sig-paren">(</span><em>asset_name: str</em>, <em>path: str = '/project_data/data_asset/'</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/dse_do_utils/cpd25utilities.html#write_data_asset_as_file_cpd25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a named data asset to file.
+Assumes a data asset with <cite>asset_name</cite> exists.
+Makes the file accessable for things like:
+* Load from disk
+* Pip install
+* Module import</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>asset_name</strong> (<em>str</em>) – name of the asset</li>
+<li><strong>path</strong> (<em>str</em><em>, </em><em>Optional</em>) – Default is ‘/project_data/data_asset/’. Use path=’’ for current directory.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-dse_do_utils.datamanager">
 <span id="dse-do-utils-datamanager-module"></span><h2>dse_do_utils.datamanager module<a class="headerlink" href="#module-dse_do_utils.datamanager" title="Permalink to this headline">¶</a></h2>
@@ -672,6 +747,204 @@ This dump zip file can be used to create a new scenario (Using the right-hand-si
 <dd><p>Call REST API to stop the solve of the model.
 TODO: test</p>
 </dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.domodelexporter">
+<span id="dse-do-utils-domodelexporter-module"></span><h2>dse_do_utils.domodelexporter module<a class="headerlink" href="#module-dse_do_utils.domodelexporter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter">
+<em class="property">class </em><code class="descclassname">dse_do_utils.domodelexporter.</code><code class="descname">DOModelExporter</code><span class="sig-paren">(</span><em>do_model_names: typing.List[str], **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Exports a DO model from CPD2.5 using curl/web-requests.
+By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.</p>
+<p>Can be used in 4 ways:
+1. Typical: only specify a list of the DO Model names to export.
+2. Export from another project in same cluster.
+3. Export from another project in another cluster.
+4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Typical use:</dt>
+<dd><p class="first">Initialize the exporter with a list of DO Model names and call the method <cite>me.export_do_models()</cite>.
+Must be run in the same project and cluster.
+The DO Model export files are stored in the Data Assets of this project.
+Uses naming pattern: <cite>{do_model_name}_export_{YYYYMMDD_hhmm}.zip</cite>.:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Model1&#39;</span><span class="p">,</span> <span class="s1">&#39;Model2&#39;</span><span class="p">])</span>
+<span class="n">me</span><span class="o">.</span><span class="n">export_do_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Export from another project in same cluster:</dt>
+<dd><p class="first">Need to specify the <cite>project_id</cite>. See below for how to get the project_id.
+Assumes current user is a collaborator on the other project (if not use the next use-case):</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ProductionPlanning&#39;</span><span class="p">],</span>
+         <span class="n">project_id</span> <span class="o">=</span> <span class="s1">&#39;ef365b2c-9f28-447a-a933-5de6560a1cfa&#39;</span><span class="p">)</span>
+<span class="n">me</span><span class="o">.</span><span class="n">export_do_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Export from another project in other cluster:</dt>
+<dd><p class="first">Specify access_toke=None, user_name, password and project_id.
+Will retrieve the accessToken from the user-name and password:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">cpd_cluster_host</span> <span class="o">=</span> <span class="s1">&#39;https://dse-cp4d25-cluster4.cpolab.ibm.com&#39;</span><span class="p">,</span>
+             <span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">user_name</span> <span class="o">=</span> <span class="n">user_name</span><span class="p">,</span>
+             <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="p">,</span>
+             <span class="n">do_model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ProductionPlanning&#39;</span><span class="p">],</span>
+             <span class="n">project_id</span> <span class="o">=</span> <span class="s1">&#39;b7bf7fd8-aa50-4bd2-8364-02ea6d480895&#39;</span><span class="p">)</span>
+<span class="n">me</span><span class="o">.</span><span class="n">export_do_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Generate curl commands:</dt>
+<dd><ol class="first loweralpha simple">
+<li>Initialize the exporter: <cite>me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)</cite></li>
+</ol>
+<p>b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
+b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</p>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span><span class="o">=</span><span class="p">[],</span>
+             <span class="n">user_name</span> <span class="o">=</span> <span class="n">user_name</span><span class="p">,</span>
+             <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="p">)</span>
+<span class="n">me</span><span class="o">.</span><span class="n">get_access_token_curl</span><span class="p">()</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="s1">&#39;xxxxxx&#39;</span>  <span class="c1"># Get value from running the above curl command</span>
+<span class="n">me</span><span class="o">.</span><span class="n">get_do_model_export_curl</span><span class="p">(</span><span class="s1">&#39;ProductionPlanning&#39;</span><span class="p">,</span> <span class="n">access_token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>How to get the <cite>project_id</cite>:</dt>
+<dd><ol class="first last loweralpha">
+<li><p class="first">If not specifying a project_id in the constructor, it will get it automatically using the environment variable: <cite>os.environ[‘PROJECT_ID’]</cite>.</p>
+</li>
+<li><p class="first">Run the  <cite>os.environ[‘PROJECT_ID’]</cite> in a notebook in the target project.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Parse the project_id from the Page Source of a web page in the target project.</dt>
+<dd><ol class="first lowerroman">
+<li><dl class="first docutils">
+<dt>Manually.</dt>
+<dd><ol class="first arabic simple">
+<li>From any web-page of the CPD project, show the <cite>Page Source</cite>. (In Firefox: menu -&gt; Web Developer -&gt; Page Source)</li>
+<li>Do a find-in-page of the name of the project (control-F).</li>
+</ol>
+<p class="last">3. Just before the first instance of the project name, there is a field <cite>data_id</cite>, e.g.: <cite>data-id=”21c8ac71-26c1-49a5-a567-d4c69a0d8158”</cite>. Copy the data_id value.
+* Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Using the method <cite>DOModelExporter.get_project_id(project_name, page_source)</cite></p>
+</li>
+</ol>
+<p>Usage:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">page_source</span> <span class="o">=</span> <span class="s1">&#39;the page source copied from Page Source&#39;</span>
+<span class="n">project_id</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">get_project_id</span><span class="p">(</span><span class="s1">&#39;Full_Project_Name&#39;</span><span class="p">,</span> <span class="n">page_source</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>How to get the access_token:</dt>
+<dd><ol class="first loweralpha simple">
+<li>If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite>.</li>
+<li>Run the <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite> in a notebook in the target project.</li>
+</ol>
+<p class="last">c. Specify <cite>access_token=None</cite> in the constructor arguments (this is NOT the same as specifying a None value!).
+And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>How to get the cpd_cluster_host?</dt>
+<dd><ol class="first loweralpha simple">
+<li>If not provided, the exporter will use the environment variable <cite>os.environ[‘RUNTIME_ENV_APSX_URL’]</cite></li>
+</ol>
+<p class="last">b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. <cite>dse-cp4d25-cluster4.datascienceelite.com</cite>) that is NOT accessable when running from within the same cluster.&lt;br&gt;
+When running this from the same cluster, use the ‘original’ cluster name (e.g. <cite>dse-cp4d25-cluster4.cpolab.ibm.com</cite>).</p>
+</dd>
+</dl>
+</li>
+</ol>
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.export_do_models">
+<code class="descname">export_do_models</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.export_do_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.export_do_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>End-to-end run. Gets the access token and then the DO model export.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl">
+<code class="descname">get_access_token_curl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.get_access_token_curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the curl command to retreive the accessToken.
+Based on the cluster_name, user_name and password.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web">
+<code class="descname">get_access_token_web</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.get_access_token_web"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs web request to get the personal access-token.
+Based on the cluster_name, user_name and password.
+Stores it in self.access_token</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">
+<code class="descname">get_do_model_export_curl</code><span class="sig-paren">(</span><em>do_model_name: str</em>, <em>access_token: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.get_do_model_export_curl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the curl command to retreive the accessToken.
+Based on the cluster_name, user_name and password.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web">
+<code class="descname">get_do_model_export_web</code><span class="sig-paren">(</span><em>do_model_name: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.get_do_model_export_web"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs web-request to get DO model export.
+Based on the cluster_name, access_token, do_model_name.
+Stores result as a Data Asset</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.get_project_id">
+<em class="property">static </em><code class="descname">get_project_id</code><span class="sig-paren">(</span><em>project_name: str</em>, <em>page_source: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.get_project_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.get_project_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the project ID from a page source.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>project_name</strong> (<em>str</em>) – full name of the project</li>
+<li><strong>page_source</strong> (<em>str</em>) – the page source of a page of the project in CPD</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">project_id (str)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">
+<code class="descname">write_do_model_to_file</code><span class="sig-paren">(</span><em>do_model_name: str</em>, <em>response</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodelexporter.html#DOModelExporter.write_do_model_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1650,7 +1923,8 @@ See <a class="reference external" href="https://stackoverflow.com/questions/4585
 <dl class="function">
 <dt id="dse_do_utils.module_reload">
 <code class="descclassname">dse_do_utils.</code><code class="descname">module_reload</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils.html#module_reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.module_reload" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reloads all component modules. Use when you want to force a reload of this module with imp.reload().</p>
+<dd><p>DEPRECATED. Requires updates to Python 3.6
+Reloads all component modules. Use when you want to force a reload of this module with imp.reload().</p>
 <p>This avoids having to code somewhat complex reloading logic in the notebook that is using this module.</p>
 <p>Challenge with imp.reload of dse-do_utils. The following is NOT (!) sufficient:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imp</span>
