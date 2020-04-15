@@ -72,3 +72,25 @@ def write_data_asset_as_file_cpd25(asset_name: str, path: str = '/project_data/d
     with open(file_path, "wb") as f:
         f.write(project.get_file(asset_name).read())
     return file_path
+
+
+def write_data_asset_as_file_wsc(asset_name: str, path: str = '/home/dsxuser/work/', project=None) -> str:
+    """Writes a named data asset to file (for WS Cloud).
+    Assumes a data asset with `asset_name` exists.
+    Makes the file accessible for things like:
+    * Load from disk
+    * Pip install
+    * Module import
+
+    Args:
+        asset_name (str): name of the asset
+        path (str, Optional): Default (for WS Cloud) is '/home/dsxuser/work/'. Use path='' for current directory.
+        project (project_lib.Project): required for WS Cloud. For CPD, leave as None.
+    """
+    if project is None:
+        from project_lib import Project
+        project = Project.access()
+    file_path = os.path.join(path, asset_name)
+    with open(file_path, "wb") as f:
+        f.write(project.get_file(asset_name).read())
+    return file_path
