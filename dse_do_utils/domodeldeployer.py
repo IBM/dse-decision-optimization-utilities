@@ -13,13 +13,14 @@ class DOModelDeployer(object):
     """Deploys a DO Model in WML. For use in WS Cloud. Retrieves the model from the DO Model Builder.
 
     Usage::
+
         md = DOModelDeployer(wml_credentials, project, model_name, scenario_name, deployment_name, deployment_description)
         print(md.client.version)
         deployment_uid = md.deploy_model()
         print(deployment_uid)
 
     Make sure to use the watson-machine-learning-client-V4: version should look like '1.0.73'
-    (with the last number to be 2 digits (instead of 3 for V3).
+    (with the last number to be 2 digits, instead of 3 for V3).
 
     """
 
@@ -105,7 +106,7 @@ write_all_outputs(outputs)
         Returns:
             deployment_uid (str): Deployment UID necessary to call the deployment.
         """
-        self.create_archive()
+        self.create_model_archive()
         deployment_uid = self.deploy_archive()
         return deployment_uid
 
