@@ -115,6 +115,8 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
+        if self.env_is_wscloud():
+            data_dir = '/home/wsuser/work/'
         if ScenarioManager.env_is_cpd25():
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
@@ -142,6 +144,26 @@ class ScenarioManager(object):
         if not os.path.isdir(root_dir):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
+
+    def add_data_file_to_project(self, file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project.
+        Applies to CP4Dv2.5 and WS Cloud
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if self.project is None:
+            from project_lib import Project
+            self.project = Project.access()
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            self.project.save_data(file_name=file_name, data=f, overwrite=True)
 
     @staticmethod
     def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
@@ -457,15 +479,15 @@ class ScenarioManager(object):
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
         if ScenarioManager.env_is_cpd25():
-            ScenarioManager.add_data_file_to_project_s(excel_file_path_1, excel_file_name + '.xlsx')
-        # Save the csv copy (no longer supported in CPD25 because not necessary)
-        elif copy_to_csv:
-            excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
-            csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
-            writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
-            ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
-            writer_2.save()
-            os.rename(excel_file_path_2, csv_excel_file_path_2)
+            self.add_data_file_to_project(excel_file_path_1, excel_file_name + '.xlsx')
+        # # Save the csv copy (no longer supported in CPD25 because not necessary)
+        # elif copy_to_csv:
+        #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
+        #     csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
+        #     writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
+        #     ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
+        #     writer_2.save()
+        #     os.rename(excel_file_path_2, csv_excel_file_path_2)
 
     # -----------------------------------------------------------------
     # Read and write from/to Excel - base functions
@@ -678,6 +700,10 @@ class ScenarioManager(object):
         """Return true if environment is CPDv2.5"""
         return 'PWD' in os.environ
 
+    def env_is_wscloud(self) -> bool:
+        """Return true if environment is WS Cloud"""
+        return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work/'
+
     # @staticmethod
     # def _get_dd_client():
     #     """Return the Client managing the DO scenario.
@@ -712,3 +738,28 @@ class ScenarioManager(object):
         """Print the names of the input and output tables. For development and debugging."""
         print("Input tables: {}".format(", ".join(self.inputs.keys())))
         print("Output tables: {}".format(", ".join(self.outputs.keys())))
+
+
+    def export_model_as_lp(self, mdl, model_name: Optional[str] = None) -> str:
+        """Exports the model as an .lp file in the data assets.
+
+        Args:
+            mdl (docplex.mp.model): the docplex model
+            model_name (str): name of model (excluding the `.lp`). If no model_name, it uses the `mdl.name`
+
+        Returns:
+            (str): full file path of lp file
+
+        Note: now a method of ScenarioManager (instead of OptimizationEngine),
+        so this can be included in a dd-ignore notebook cell. Avoids the dependency on dse-do-utils in the ModelBuilder.
+        """
+        # Get model name:
+        if model_name is None:
+            model_name = mdl.name
+        datasets_dir = self.get_data_directory()
+        lp_file_name = model_name + '.lp'
+        lp_file_path = os.path.join(datasets_dir, lp_file_name)
+        mdl.export_as_lp(lp_file_path)  # Writes the .lp file
+        if self.env_is_cpd25():
+            self.add_data_file_to_project(lp_file_path, lp_file_name)
+        return lp_file_path
