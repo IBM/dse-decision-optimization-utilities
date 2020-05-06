@@ -62,6 +62,33 @@ To be used within:
 1. CPDv2.1 (version 0.2.2.3 is preferred. But version 0.3.0.0 should be backwards compatible.)
 2. CPDv2.5 (version 0.3.0.0 and up)
 3. WSLv1.2.3 with Python 2.7 (version 0.2.2.3 only)
+4. WS Cloud (version 0.4.0.0 and up)
+
+## DO Model Builder and WML environments
+When developing and using optimization models, there are 3 different environments the Python DO model might run in:
+1. A notebook environment. 
+2. The DO Model Builder environment.
+3. The WML deployment environment.
+
+In CPDv2.5:
+* Only the notebook environment can be regularly customized with the dse-do-utils.
+* The Model Builder environment cannot be customized. But, it has a feature to add 'files'. 
+The dse-do-utils internal modules have been refactored to be able to be uploaded separately as individual modules.
+* The WML environment cannot be customized. But the same work-around for adding modules/files to the MB model can be used.
+
+In CPDv3.0:
+* The WML environment can be customized using APIs.
+
+In future releases of CPD:
+* The DO Model Builder will also allow for environment customization
+
+## Scope of classes/modules
+The classes `OptimizationEngine` and  `DataManager` are intended to be used within the optimization model code 
+that will run in the Model Builder and WML deployment. All other classes, in particular the `ScenarioManager` are 
+designed to be used outside of the Model Builder or WML, e.g. within `#dd-ignore` cells.
+
+Therefore, the limitations in customizing environments can, for the moment, be avoided by not using 
+the classes `OptimizationEngine` and  `DataManager`.
 
 ## Requirements
 This package requires:
