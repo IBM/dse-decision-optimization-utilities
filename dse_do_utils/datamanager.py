@@ -6,13 +6,12 @@
 # DataManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-
-# from __future__ import absolute_import
-# from __future__ import division
-# from __future__ import print_function
-
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
+
+#  Typing aliases
+Inputs = Dict[str, pd.DataFrame]
+Outputs = Dict[str, pd.DataFrame]
 
 
 class DataManager(object):
@@ -33,7 +32,7 @@ class DataManager(object):
         * Contains a set of methods that create intermediate data ('pre-processing'). Intermediate data will also be assigned as a direct member property.
     """
 
-    def __init__(self, inputs: Optional[Dict[pd.DataFrame]] = None, outputs: Optional[Dict[pd.DataFrame]] = None):
+    def __init__(self, inputs: Optional[Inputs] = None, outputs: Optional[Outputs] = None):
         self.inputs = inputs
         self.outputs = outputs
         return
