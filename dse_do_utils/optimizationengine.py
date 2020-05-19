@@ -52,7 +52,8 @@ class OptimizationEngine(object):
         return OptimizationEngine.integer_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.integer_var_list(df.index, **kargs), index = df.index)
 
-    def continuous_var_series(self, df, **kargs) -> pd.Series[ContinuousVarType]:
+    def continuous_var_series(self, df, **kargs) -> pd.Series:
+        """Returns pd.Series[ContinuousVarType]"""
         return OptimizationEngine.continuous_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.continuous_var_list(df.index, **kargs), index = df.index)
 
