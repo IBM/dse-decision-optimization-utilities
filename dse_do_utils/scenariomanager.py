@@ -699,7 +699,7 @@ class ScenarioManager(object):
 
     def env_is_wscloud(self) -> bool:
         """Return true if environment is WS Cloud"""
-        return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work/'
+        return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work/'
 
     # @staticmethod
     # def _get_dd_client():
