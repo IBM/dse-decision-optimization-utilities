@@ -135,7 +135,7 @@ class OptimizationEngine(object):
         return OptimizationEngine.export_as_cpo_s(self.mdl, local_root=local_root, copy_to_csv=copy_to_csv)
 
     @staticmethod
-    def export_as_lp_s(model: docplex.mp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
+    def export_as_lp_s(model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
         """Export .lp file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in WSL, it will write to the local file system in the 'local_root/datasets' directory.
@@ -177,7 +177,7 @@ class OptimizationEngine(object):
         return lp_file_name_1
 
     @staticmethod
-    def export_as_cpo_s(model: docplex.cp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False, **kwargs) -> str:
+    def export_as_cpo_s(model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False, **kwargs) -> str:
         """Export .cpo file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in DSX, it will write to the local file system in the 'local_root/datasets' directory.
