@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0.0]
 ### Changed
 - Support for WS Cloud (project context in Client)
+- More flexibility on accepting Boolean values as float or int parameter 
 ### Added
 - Python data types in code
 
