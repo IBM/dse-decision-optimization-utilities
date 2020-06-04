@@ -101,7 +101,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dse-do-utils-deployeddomodel-module">dse_do_utils.deployeddomodel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
@@ -531,8 +531,132 @@ If testing imp.reload, rerun the notebook from the start.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="dse-do-utils-deployeddomodel-module">
-<h2>dse_do_utils.deployeddomodel module<a class="headerlink" href="#dse-do-utils-deployeddomodel-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-dse_do_utils.deployeddomodel">
+<span id="dse-do-utils-deployeddomodel-module"></span><h2>dse_do_utils.deployeddomodel module<a class="headerlink" href="#module-dse_do_utils.deployeddomodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel">
+<em class="property">class </em><code class="descclassname">dse_do_utils.deployeddomodel.</code><code class="descname">DeployedDOModel</code><span class="sig-paren">(</span><em>wml_credentials</em>, <em>space_name=None</em>, <em>model_name=None</em>, <em>deployment_uid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>New DeployedDOModel for CPD2.5</p>
+<p>Major steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Create an instance of a DeployedDOModel, configuring parameters</li>
+</ol>
+</div></blockquote>
+<p>Internally, the processes uses the WatsonMachineLearningAPIClient to communicate with the deployed model:</p>
+<blockquote>
+<div><ol class="arabic simple" start="2">
+<li>Start the solve job.</li>
+<li>Monitor the running solve job. Runs in a loop, updates the current state.</li>
+<li>Once the job completes, get the optimization result.</li>
+</ol>
+</div></blockquote>
+<p>In the code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">():</span>
+    <span class="n">solve_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>  <span class="c1"># Convert inputs to payload</span>
+    <span class="n">job_details</span><span class="p">,</span> <span class="n">job_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">(</span><span class="n">solve_payload</span><span class="p">)</span>
+    <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">(</span><span class="n">job_details</span><span class="p">,</span> <span class="n">job_uid</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">extract_solution</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">job_details</span>
+</pre></div>
+</div>
+<p>Usage:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Simplest, using all default options:</span>
+<span class="n">mdl</span> <span class="o">=</span> <span class="n">DeployedDOModel</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">,</span> <span class="n">space_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+<span class="n">job_details</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solve status: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">solve_status</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Objective: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">objective</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output tables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>TODOs:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Debug mode</li>
+<li>Get the cplex log file?</li>
+<li>Add kill and stop methods</li>
+<li>Configure polling interval</li>
+</ol>
+</div></blockquote>
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.execute_model">
+<code class="descname">execute_model</code><span class="sig-paren">(</span><em>inputs</em>, <em>time_limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.execute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution">
+<code class="descname">extract_solution</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.extract_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status">
+<em class="property">static </em><code class="descname">get_job_status</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_job_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Job states can be : queued, running, completed, failed, canceled.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs">
+<em class="property">static </em><code class="descname">get_outputs</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_outputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details">
+<em class="property">static </em><code class="descname">get_solve_details</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective">
+<em class="property">static </em><code class="descname">get_solve_details_objective</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_details_objective"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload">
+<code class="descname">get_solve_payload</code><span class="sig-paren">(</span><em>inputs</em>, <em>time_limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status">
+<em class="property">static </em><code class="descname">get_solve_status</code><span class="sig-paren">(</span><em>job_details</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution">
+<code class="descname">monitor_execution</code><span class="sig-paren">(</span><em>job_details</em>, <em>max_run_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.monitor_execution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor the model execution by periodically calling the API to get the current execution status.
+Result stored in self.execution_status_json and self.execution_status.</p>
+<p>TODO: Time-out?
+TODO: control the loop delay?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dse_do_utils.deployeddomodel.DeployedDOModel.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>inputs</em>, <em>time_limit=1000</em>, <em>max_run_time=60</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.solve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> (<em>dict of DataFrames</em>) – input tables</td>
+</tr>
+</tbody>
+</table>
+<p>Calls the following methods (in order):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-dse_do_utils.domodelexporter">
 <span id="dse-do-utils-domodelexporter-module"></span><h2>dse_do_utils.domodelexporter module<a class="headerlink" href="#module-dse_do_utils.domodelexporter" title="Permalink to this headline">¶</a></h2>
@@ -593,10 +717,12 @@ Will retrieve the accessToken from the user-name and password:</p>
 </dd>
 </dl>
 </li>
-<li><p class="first">Generate curl commands:
-a. Initialize the exporter: <cite>me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)</cite>
-b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
-c. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</p>
+<li><p class="first">Generate curl commands:</p>
+<ol class="loweralpha simple">
+<li>Initialize the exporter: <cite>me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)</cite></li>
+<li>Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</li>
+<li>Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</li>
+</ol>
 <blockquote>
 <div><p>Usage:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">me</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="p">(</span><span class="n">do_model_names</span><span class="o">=</span><span class="p">[],</span>
@@ -610,10 +736,13 @@ c. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_na
 <p>Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</p>
 </div></blockquote>
 </li>
-<li><p class="first">How to get the <cite>project_id</cite>:
-a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: <cite>os.environ[‘PROJECT_ID’]</cite>.
-b. Run the  <cite>os.environ[‘PROJECT_ID’]</cite> in a notebook in the target project.
-c. Parse the project_id from the Page Source of a web page in the target project.</p>
+<li><p class="first">How to get the <cite>project_id</cite>:</p>
+<ol class="loweralpha">
+<li><p class="first">If not specifying a project_id in the constructor, it will get it automatically using the environment variable: <cite>os.environ[‘PROJECT_ID’]</cite>.</p>
+</li>
+<li><p class="first">Run the  <cite>os.environ[‘PROJECT_ID’]</cite> in a notebook in the target project.</p>
+</li>
+<li><p class="first">Parse the project_id from the Page Source of a web page in the target project.</p>
 <blockquote>
 <div><ol class="lowerroman">
 <li><p class="first">Manually.</p>
@@ -636,14 +765,20 @@ c. Parse the project_id from the Page Source of a web page in the target project
 </div>
 </div></blockquote>
 </li>
-<li><p class="first">How to get the access_token:
-a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite>.
-b. Run the <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite> in a notebook in the target project.
-c. Specify <cite>access_token=None</cite> in the constructor arguments (this is NOT the same as specifying a None value!).        And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</p>
+</ol>
 </li>
-<li><p class="first">How to get the cpd_cluster_host?
-a. If not provided, the exporter will use the environment variable <cite>os.environ[‘RUNTIME_ENV_APSX_URL’]</cite>
-b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. <cite>dse-cp4d25-cluster4.datascienceelite.com</cite>) that is NOT accessable when running from within the same cluster.&lt;br&gt;        When running this from the same cluster, use the ‘original’ cluster name (e.g. <cite>dse-cp4d25-cluster4.cpolab.ibm.com</cite>).</p>
+<li><p class="first">How to get the access_token:</p>
+<ol class="loweralpha simple">
+<li>If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite>.</li>
+<li>Run the <cite>os.environ[‘USER_ACCESS_TOKEN’]</cite> in a notebook in the target project.</li>
+<li>Specify <cite>access_token=None</cite> in the constructor arguments (this is NOT the same as specifying a None value!).        And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</li>
+</ol>
+</li>
+<li><p class="first">How to get the cpd_cluster_host?</p>
+<ol class="loweralpha simple">
+<li>If not provided, the exporter will use the environment variable <cite>os.environ[‘RUNTIME_ENV_APSX_URL’]</cite></li>
+<li>For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. <cite>dse-cp4d25-cluster4.datascienceelite.com</cite>) that is NOT accessable when running from within the same cluster.&lt;br&gt;        When running this from the same cluster, use the ‘original’ cluster name (e.g. <cite>dse-cp4d25-cluster4.cpolab.ibm.com</cite>).</li>
+</ol>
 </li>
 </ol>
 <dl class="method">

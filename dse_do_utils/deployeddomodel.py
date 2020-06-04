@@ -11,12 +11,14 @@ class DeployedDOModel(object):
     New DeployedDOModel for CPD2.5
 
     Major steps:
-    1. Create an instance of a DeployedDOModel, configuring parameters
+
+        1. Create an instance of a DeployedDOModel, configuring parameters
 
     Internally, the processes uses the WatsonMachineLearningAPIClient to communicate with the deployed model:
-    2. Start the solve job.
-    3. Monitor the running solve job. Runs in a loop, updates the current state.
-    4. Once the job completes, get the optimization result.
+
+        2. Start the solve job.
+        3. Monitor the running solve job. Runs in a loop, updates the current state.
+        4. Once the job completes, get the optimization result.
 
 
     In the code::
@@ -40,10 +42,11 @@ class DeployedDOModel(object):
 
 
     TODOs:
-    1. Debug mode
-    2. Get the cplex log file?
-    3. Add kill and stop methods
-    4. Configure polling interval
+
+        1. Debug mode
+        2. Get the cplex log file?
+        3. Add kill and stop methods
+        4. Configure polling interval
 
 
     """

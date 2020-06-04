@@ -222,6 +222,7 @@
 <span class="sd">            me.export_do_models()</span>
 
 <span class="sd">    4. Generate curl commands:</span>
+
 <span class="sd">       a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`</span>
 <span class="sd">       b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</span>
 <span class="sd">       c. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</span>
@@ -239,6 +240,7 @@
 <span class="sd">        Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</span>
 
 <span class="sd">    5. How to get the `project_id`:</span>
+
 <span class="sd">       a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ[&#39;PROJECT_ID&#39;]`.</span>
 <span class="sd">       b. Run the  `os.environ[&#39;PROJECT_ID&#39;]` in a notebook in the target project.</span>
 <span class="sd">       c. Parse the project_id from the Page Source of a web page in the target project.</span>
@@ -258,12 +260,14 @@
 <span class="sd">                project_id = DOModelExporter.get_project_id(&#39;Full_Project_Name&#39;, page_source)</span>
 
 <span class="sd">    6. How to get the access_token:</span>
+
 <span class="sd">       a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ[&#39;USER_ACCESS_TOKEN&#39;]`.</span>
 <span class="sd">       b. Run the `os.environ[&#39;USER_ACCESS_TOKEN&#39;]` in a notebook in the target project.</span>
 <span class="sd">       c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!). \</span>
 <span class="sd">       And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</span>
 
 <span class="sd">    7. How to get the cpd_cluster_host?</span>
+
 <span class="sd">       a. If not provided, the exporter will use the environment variable `os.environ[&#39;RUNTIME_ENV_APSX_URL&#39;]`</span>
 <span class="sd">       b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.&lt;br&gt; \</span>
 <span class="sd">       When running this from the same cluster, use the &#39;original&#39; cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).</span>
