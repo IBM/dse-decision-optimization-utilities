@@ -78,7 +78,8 @@ class DataManager(object):
         return params
 
     @staticmethod
-    def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None, value_format: str = '%Y-%m-%d %H:%M'):
+    def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None,
+                            value_format: str = '%Y-%m-%d %H:%M:%S'):
         """
         Get value of parameter from the parameter table (DataFrame).
         Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
@@ -100,9 +101,22 @@ class DataManager(object):
         if param_name in params.index:
             raw_param = params.loc[param_name].value
             if param_type == 'int':
-                param = int(float(raw_param))  # by first doing the float, a value of '1.0' will be converted correctly
+                # Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.
+                if str(raw_param).lower() in ['false', 'f', 'no', 'n', '0', '0.0']:
+                    param = 0
+                elif str(raw_param).lower() in ['true', 't', 'yes', 'y', '1', '1.0']:
+                    param = 1
+                else:
+                    param = int(
+                        float(raw_param))  # by first doing the float, a value of '1.0' will be converted correctly
             elif param_type == 'float':
-                param = float(raw_param)
+                # Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.
+                if str(raw_param).lower() in ['false', 'f', 'no', 'n', '0', '0.0']:
+                    param = 0
+                elif str(raw_param).lower() in ['true', 't', 'yes', 'y', '1', '1.0']:
+                    param = 1
+                else:
+                    param = float(raw_param)
             elif param_type == 'str':
                 param = str(raw_param)
             elif param_type == 'bool':

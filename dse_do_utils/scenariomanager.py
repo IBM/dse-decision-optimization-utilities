@@ -113,8 +113,8 @@ class ScenarioManager(object):
         :return: path to the datasets folder
         """
         if self.env_is_wscloud():
-            data_dir = '/home/wsuser/work/'
-        if ScenarioManager.env_is_cpd25():
+            data_dir = '/home/dsxuser/work'  # or use os.environ['PWD'] ?
+        elif ScenarioManager.env_is_cpd25():
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
         elif ScenarioManager.env_is_dsx():
@@ -699,7 +699,7 @@ class ScenarioManager(object):
 
     def env_is_wscloud(self) -> bool:
         """Return true if environment is WS Cloud"""
-        return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work/'
+        return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work'
 
     # @staticmethod
     # def _get_dd_client():
