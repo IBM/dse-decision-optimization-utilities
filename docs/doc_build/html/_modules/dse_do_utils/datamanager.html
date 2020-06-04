@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.datamanager &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>dse_do_utils.datamanager &mdash; DSE DO Utils 0.4.0.0b documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.0b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.0b
               </div>
             
           
@@ -169,12 +169,12 @@
 <span class="c1"># DataManager</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
-
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
-
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1">#  Typing aliases</span>
+<span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+<span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="DataManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager">[docs]</a><span class="k">class</span> <span class="nc">DataManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -195,7 +195,7 @@
 <span class="sd">        * Contains a set of methods that create intermediate data (&#39;pre-processing&#39;). Intermediate data will also be assigned as a direct member property.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span>
         <span class="k">return</span>
@@ -226,7 +226,7 @@
     <span class="c1">#     &quot;&quot;&quot;</span>
     <span class="c1">#     return self.prep_parameters()</span>
 
-<div class="viewcode-block" id="DataManager.prep_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prep_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataManager.prep_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prep_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Pre-process the Parameter(s) input table.</span>
 <span class="sd">        Assumes the inputs contains a table named `Parameter` or `Parameters` with key `param` and column `value`.</span>
 <span class="sd">        Otherwise, creates a blank DataFrame instance.</span>
@@ -241,7 +241,8 @@
         <span class="k">return</span> <span class="n">params</span></div>
 
 <div class="viewcode-block" id="DataManager.get_parameter_value"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_parameter_value">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">value_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get value of parameter from the parameter table (DataFrame).</span>
 <span class="sd">        Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a</span>
@@ -263,9 +264,22 @@
         <span class="k">if</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
             <span class="n">raw_param</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
             <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
-                <span class="n">param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">raw_param</span><span class="p">))</span>  <span class="c1"># by first doing the float, a value of &#39;1.0&#39; will be converted correctly</span>
+                <span class="c1"># Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;0.0&#39;</span><span class="p">]:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">]:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">raw_param</span><span class="p">))</span>  <span class="c1"># by first doing the float, a value of &#39;1.0&#39; will be converted correctly</span>
             <span class="k">elif</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
-                <span class="n">param</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span>
+                <span class="c1"># Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;0.0&#39;</span><span class="p">]:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">]:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;str&#39;</span><span class="p">:</span>
                 <span class="n">param</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_param</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;bool&#39;</span><span class="p">:</span>
@@ -289,7 +303,7 @@
         <span class="k">return</span> <span class="n">param</span></div>
 
 <div class="viewcode-block" id="DataManager.df_crossjoin_si"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_si">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">df_crossjoin_si</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">df_crossjoin_si</span><span class="p">(</span><span class="n">df1</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df2</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a cross join (cartesian product) between two dataframes by using a constant temporary key.</span>
 <span class="sd">        Assumes both input dataframes have a single index column.</span>
@@ -322,7 +336,7 @@
 
     <span class="c1"># Multi-index DFs:</span>
 <div class="viewcode-block" id="DataManager.df_crossjoin_mi"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_mi">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">df_crossjoin_mi</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">df_crossjoin_mi</span><span class="p">(</span><span class="n">df1</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df2</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a cross join (cartesian product) between two dataframes by using a constant temporary key.</span>
 <span class="sd">        Assumes both input dataframes have a (single or multi) index.</span>
@@ -358,7 +372,7 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 <div class="viewcode-block" id="DataManager.df_crossjoin_ai"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_ai">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">df_crossjoin_ai</span><span class="p">(</span><span class="n">df1</span><span class="p">,</span> <span class="n">df2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">df_crossjoin_ai</span><span class="p">(</span><span class="n">df1</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df2</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cross-join &#39;Any Index&#39;</span>
 <span class="sd">        Make a cross join (cartesian product) between two dataframes by using a constant temporary key.</span>

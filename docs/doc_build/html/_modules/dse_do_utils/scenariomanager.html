@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>dse_do_utils.scenariomanager &mdash; DSE DO Utils 0.4.0.0b documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.0b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.0b
               </div>
             
           
@@ -169,12 +169,17 @@
 <span class="c1"># ScenarioManager</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">import</span> <span class="nn">docplex</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1">#  Typing aliases</span>
+<span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+<span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+<span class="n">InputsOutputs</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="ScenarioManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager">[docs]</a><span class="k">class</span> <span class="nc">ScenarioManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -223,18 +228,33 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># def __init__(self, model_name=None, scenario_name=None, load_from_excel=False, excel_input_file_name=None,</span>
-    <span class="c1"># write_to_excel=False, excel_output_file_name=None, local_root=None):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a ScenarioManager.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_name (str):</span>
+<span class="sd">            scenario_name (str):</span>
+<span class="sd">            local_root (str): Path of root when running on a local computer</span>
+<span class="sd">            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token</span>
+<span class="sd">            project_access_token (str): When running in WS Cloud, also requires a project_id</span>
+<span class="sd">            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">=</span> <span class="n">scenario_name</span>
-        <span class="c1"># self.load_from_excel = load_from_excel</span>
-        <span class="c1"># self.excel_input_file_name = excel_input_file_name</span>
-        <span class="c1"># self.write_to_excel = write_to_excel</span>
-        <span class="c1"># self.excel_output_file_name = excel_output_file_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span> <span class="o">=</span> <span class="n">local_root</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Or set the an empty dict?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="o">=</span> <span class="n">project_access_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):</span>
+    <span class="c1">#     self.model_name = model_name</span>
+    <span class="c1">#     self.scenario_name = scenario_name</span>
+    <span class="c1">#     self.local_root = local_root</span>
+    <span class="c1">#     self.inputs = None</span>
+    <span class="c1">#     self.outputs = None</span>
 
 <div class="viewcode-block" id="ScenarioManager.load_data"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_from_excel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load data from either the DO scenario, or an Excel spreadsheet.</span>
@@ -246,26 +266,18 @@
         <span class="k">if</span> <span class="n">load_from_excel</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data_from_excel</span><span class="p">(</span><span class="n">excel_file_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_scenario_s</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
-                                                                                  <span class="n">scenario_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">)</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data_from_scenario_s</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
 
-    <span class="c1"># def write_data(self, write_to_excel=False):</span>
-    <span class="c1">#     &quot;&quot;&quot;&quot;Write data to either the DO scenario or an Excel spreadsheet</span>
-    <span class="c1">#     TODO: Unlike with the load_data, allow for both writing to the scenario and to Excel. Use different APIs and pass the relevant arguments only to their specific APIs.</span>
-    <span class="c1">#     I.e. move some of the properties passed in the constructor to a dedicated write_to_scenario or write_to_excel API.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     if write_to_excel:</span>
-    <span class="c1">#         ScenarioManager.write_data_to_excel(excel_file_name=self.excel_output_file_name, inputs=self.inputs, outputs=self.outputs, copy_to_csv=True)</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         ScenarioManager.write_data_into_scenario(self.model_name, self.scenario_name, self.inputs, self.outputs)</span>
-
-<div class="viewcode-block" id="ScenarioManager.get_data_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_data_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.get_data_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_data_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Returns the path to the datasets folder.</span>
 
 <span class="sd">        :return: path to the datasets folder</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env_is_wscloud</span><span class="p">():</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/home/dsxuser/work&#39;</span>  <span class="c1"># or use os.environ[&#39;PWD&#39;] ?</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
             <span class="c1"># Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset&#39;</span>  <span class="c1"># Do NOT use the os.path.join!</span>
         <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>
@@ -274,7 +286,7 @@
             <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data_dir</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.get_root_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_root_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.get_root_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_root_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the root directory of the file system.</span>
 <span class="sd">        If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.</span>
 <span class="sd">        Raises:</span>
@@ -293,8 +305,28 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Root directory `</span><span class="si">{}</span><span class="s2">` does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_dir</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">root_dir</span></div>
 
+<div class="viewcode-block" id="ScenarioManager.add_data_file_to_project"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_file_to_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
+<span class="sd">        Applies to CP4Dv2.5 and WS Cloud</span>
+<span class="sd">        Needs to be called after the file has been saved regularly in the file system in</span>
+<span class="sd">        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.</span>
+<span class="sd">        Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path (str): full file path, including the file name and extension</span>
+<span class="sd">            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add to Project</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="ScenarioManager.add_data_file_to_project_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
 <span class="sd">        Applies to CP4Dv2.5.</span>
 <span class="sd">        Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.</span>
@@ -315,15 +347,14 @@
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to DO scenario - value-added</span>
     <span class="c1"># -----------------------------------------------------------------</span>
-<div class="viewcode-block" id="ScenarioManager.load_data_from_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Loads the data from a DO scenario&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data_from_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.write_data_into_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_into_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Writes the data into a DO scenario. Create new scenario and write data.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
-                                                          <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.add_data_into_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_into_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds data to a DO scenario. If table exists, does an overwrite/replace.&quot;&quot;&quot;</span>
@@ -335,7 +366,7 @@
 <span class="sd">        It will NOT get them from self.inputs or self.outputs!</span>
 <span class="sd">        In this way, you can control which to update. E.g. after a solve, only update the outputs, not the inputs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">replace_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.update_solve_output_into_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.update_solve_output_into_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">update_solve_output_into_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Replaces all output and KPIs table in the scenario.</span>
@@ -359,8 +390,7 @@
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to DO scenario - base functions</span>
     <span class="c1"># -----------------------------------------------------------------</span>
-<div class="viewcode-block" id="ScenarioManager.get_do_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.get_do_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a DO scenario.</span>
 
 <span class="sd">        Args:</span>
@@ -373,7 +403,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: When either the model_name or the scenario_name doesn&#39;t match an existing entity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">_get_dd_client</span><span class="p">()</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">dd_model_builder</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_builder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dd_model_builder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO model with name `</span><span class="si">{}</span><span class="s1">` exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">))</span>
@@ -382,17 +412,22 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO scenario with name `</span><span class="si">{}</span><span class="s1">` exists in model `</span><span class="si">{}</span><span class="s1">`&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">scenario</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.load_data_from_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_data_from_scenario_s</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Loads the data from a DO scenario&quot;&quot;&quot;</span>
-        <span class="n">scenario</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Loads the data from a DO scenario.</span>
+<span class="sd">        Returns empty dict if no tables.&quot;&quot;&quot;</span>
+        <span class="c1"># scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)</span>
+        <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
         <span class="c1"># Load all input data as a map { data_name: data_frame }</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">get_tables_data</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">get_tables_data</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.write_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">write_data_into_scenario_s</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="ScenarioManager.write_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                   <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">template_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create new scenario and write data.</span>
 
 <span class="sd">        If scenario exists: clears all existing data.</span>
@@ -405,7 +440,7 @@
 <span class="sd">        (including the KPIs), but not the objective value. The DO UI shows as if the model has been solved.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create scenario</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">_get_dd_client</span><span class="p">()</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">dd_model_builder</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_builder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dd_model_builder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO model with name `</span><span class="si">{}</span><span class="s1">` exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_name</span><span class="p">))</span>
@@ -419,15 +454,17 @@
             <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
                 <span class="n">scenario</span><span class="o">.</span><span class="n">add_table_data</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="n">table</span><span class="p">],</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.add_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">add_data_into_scenario_s</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="ScenarioManager.add_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                 <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                 <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Adds tables in existing scenario.</span>
 
 <span class="sd">        Replaces table, if table exists.</span>
 <span class="sd">        Assumes scenario exists. Does not explicitly clear existing tables.</span>
 <span class="sd">        Could be used in post-processing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">scenario</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
+        <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
                 <span class="n">scenario</span><span class="o">.</span><span class="n">add_table_data</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="n">table</span><span class="p">],</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
@@ -435,16 +472,18 @@
             <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
                 <span class="n">scenario</span><span class="o">.</span><span class="n">add_table_data</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="n">table</span><span class="p">],</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.replace_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">replace_data_into_scenario_s</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="ScenarioManager.replace_data_into_scenario_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s">[docs]</a>    <span class="k">def</span> <span class="nf">replace_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                     <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Replaces all input, output or both.</span>
 
 <span class="sd">        If input/output are not None, clears inputs/outputs first</span>
 <span class="sd">        Assumes scenario exists. Does explicitly clear all existing input/output tables.</span>
 <span class="sd">        TODO: test. Not sure this actually works</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">_get_dd_client</span><span class="p">()</span>
-        <span class="n">scenario</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">()</span>
+        <span class="n">scenario</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_do_scenario</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">clear_scenario_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
@@ -481,7 +520,7 @@
 
     <span class="c1"># TODO: test</span>
 <div class="viewcode-block" id="ScenarioManager.create_new_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.create_new_scenario">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_new_scenario</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">model_builder</span><span class="p">,</span> <span class="n">new_scenario_name</span><span class="p">,</span> <span class="n">template_scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_new_scenario</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">model_builder</span><span class="p">,</span> <span class="n">new_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new scenario from a template. The template is found either from the template_scenario_name,</span>
 <span class="sd">        or if this is None, from the new_scenario_name. If a scenario with the new name already exists,</span>
@@ -531,12 +570,12 @@
         <span class="k">return</span> <span class="n">scenario</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.get_kpis_table_as_dataframe"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_kpis_table_as_dataframe</span><span class="p">(</span><span class="n">mdl</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_kpis_table_as_dataframe</span><span class="p">(</span><span class="n">mdl</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return a DataFrame with the KPI names and values in the mdl.</span>
 <span class="sd">        This table is compatible with the representation in DO4WS and can be updated in the scenario.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            mdl (docplex.mp.model)</span>
+<span class="sd">            mdl (docplex.mp.model.Model)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            pd.DataFrame with columns NAME and VALUE: the KPIs in the mdl</span>
@@ -558,7 +597,7 @@
     <span class="c1"># Read and write from/to Excel - value added-functions</span>
     <span class="c1"># -----------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="ScenarioManager.load_data_from_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Load data from an Excel file located in the `datasets` folder of the root directory.</span>
 <span class="sd">        Convenience method.</span>
 <span class="sd">        If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor</span>
@@ -571,7 +610,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to an Excel file in datasets.</span>
 <span class="sd">        The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager</span>
 
@@ -600,21 +639,21 @@
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_1</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
         <span class="n">writer_1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
-            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
-        <span class="c1"># Save the csv copy (no longer supported in CPD25 because not necessary)</span>
-        <span class="k">elif</span> <span class="n">copy_to_csv</span><span class="p">:</span>
-            <span class="n">excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;to_csv.xlsx&#39;</span><span class="p">)</span>
-            <span class="n">csv_excel_file_path_2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;_xlsx.csv&#39;</span><span class="p">)</span>
-            <span class="n">writer_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path_2</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
-            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_2</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
-            <span class="n">writer_2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">excel_file_path_2</span><span class="p">,</span> <span class="n">csv_excel_file_path_2</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_to_project</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span></div>
+        <span class="c1"># # Save the csv copy (no longer supported in CPD25 because not necessary)</span>
+        <span class="c1"># elif copy_to_csv:</span>
+        <span class="c1">#     excel_file_path_2 = os.path.join(data_dir, excel_file_name + &#39;to_csv.xlsx&#39;)</span>
+        <span class="c1">#     csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + &#39;_xlsx.csv&#39;)</span>
+        <span class="c1">#     writer_2 = pd.ExcelWriter(excel_file_path_2, engine=&#39;xlsxwriter&#39;)</span>
+        <span class="c1">#     ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)</span>
+        <span class="c1">#     writer_2.save()</span>
+        <span class="c1">#     os.rename(excel_file_path_2, csv_excel_file_path_2)</span>
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to Excel - base functions</span>
     <span class="c1"># -----------------------------------------------------------------</span>
 <div class="viewcode-block" id="ScenarioManager.load_data_from_excel_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">,</span> <span class="n">table_index_sheet</span><span class="o">=</span><span class="s1">&#39;_table_index_&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">,</span> <span class="n">table_index_sheet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;_table_index_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create dataFrames from the sheets of the Excel file.</span>
 <span class="sd">        Store in dictionary df_dict with table_name as key.</span>
@@ -656,13 +695,13 @@
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_create_truncted_post_fixed_name</span><span class="p">(</span><span class="n">long_name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_truncted_post_fixed_name</span><span class="p">(</span><span class="n">long_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a trunced name post-fixed with &#39;_&lt;index&gt;&#39; where the total length of the string &lt;= max_length&quot;&quot;&quot;</span>
         <span class="n">post_fix</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">long_name</span><span class="p">[:</span><span class="n">max_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">post_fix</span><span class="p">)]</span> <span class="o">+</span> <span class="n">post_fix</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_create_unique_abbreviated_name</span><span class="p">(</span><span class="n">long_name</span><span class="p">,</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">existing_names</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_unique_abbreviated_name</span><span class="p">(</span><span class="n">long_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">existing_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a unique, abbreviated name such that it is not a member of the existing_names set.</span>
 <span class="sd">        Name is made unique by post-fixing &#39;_&lt;index&gt;&#39; where index is an increasing integer, starting at 0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -677,7 +716,10 @@
         <span class="k">return</span> <span class="n">name</span>
 
 <div class="viewcode-block" id="ScenarioManager.write_data_to_excel_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">table_index_sheet</span><span class="o">=</span><span class="s1">&#39;_table_index_&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">,</span>
+                              <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">table_index_sheet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;_table_index_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Writes all dataframes in the inputs and outputs to the Excel writer, with sheet-names based on</span>
 <span class="sd">        the keys of the inputs/outputs. Due to the Excel limitation of maximum 31 characters for the sheet-name,</span>
 <span class="sd">        tables names longer than the 31 characters will be abbreviated with a unique name. The mapping between</span>
@@ -720,7 +762,9 @@
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Load data from csv</span>
     <span class="c1"># -----------------------------------------------------------------</span>
-<div class="viewcode-block" id="ScenarioManager.load_data_from_csv"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_directory</span><span class="p">,</span> <span class="n">input_csv_name_pattern</span><span class="o">=</span><span class="s2">&quot;*.csv&quot;</span><span class="p">,</span> <span class="n">output_csv_name_pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_csv"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">input_csv_name_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.csv&quot;</span><span class="p">,</span>
+                           <span class="n">output_csv_name_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Load data from matching csv files in a directory.</span>
 <span class="sd">        Uses glob.glob() to pattern-match files in the csv_directory.</span>
 <span class="sd">        If you want to load one file, specify the full name including the `.csv` extension.</span>
@@ -741,7 +785,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.load_data_from_csv_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_data_from_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">csv_name_pattern</span><span class="o">=</span><span class="s2">&quot;*.csv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_data_from_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">csv_name_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.csv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Read data from all matching .csv files in a directory.</span>
 
 <span class="sd">        Args:</span>
@@ -763,7 +807,7 @@
             <span class="n">inputs</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
         <span class="k">return</span> <span class="n">inputs</span>  <span class="c1"># , outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.write_data_to_csv"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.write_data_to_csv"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to .csv files in the root/datasets folder.</span>
 
 <span class="sd">        Args: None</span>
@@ -775,7 +819,9 @@
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.write_data_to_csv_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">write_data_to_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write_data_to_csv_s</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                            <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Write data to .csv files in a directory. Name as name of DataFrame.</span>
 
 <span class="sd">        Args:</span>
@@ -805,29 +851,78 @@
     <span class="c1"># -----------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="ScenarioManager.env_is_dsx"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">env_is_dsx</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">env_is_dsx</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return true if environment is DSX&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;DSX_PROJECT_DIR&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.env_is_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">env_is_cpd25</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">env_is_cpd25</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return true if environment is CPDv2.5&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;PWD&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_dd_client</span><span class="p">():</span>
+<div class="viewcode-block" id="ScenarioManager.env_is_wscloud"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_wscloud">[docs]</a>    <span class="k">def</span> <span class="nf">env_is_wscloud</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return true if environment is WS Cloud&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;PWD&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/dsxuser/work&#39;</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def _get_dd_client():</span>
+    <span class="c1">#     &quot;&quot;&quot;Return the Client managing the DO scenario.</span>
+    <span class="c1">#     Only reason for this separate API is to place the import Client in one place,</span>
+    <span class="c1">#     so that editing this code on a local laptop generates one error.</span>
+    <span class="c1">#     Returns: new dd_scenario.Client</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     from dd_scenario import Client</span>
+    <span class="c1">#     return Client()</span>
+
+<div class="viewcode-block" id="ScenarioManager.get_dd_client"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_dd_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_dd_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the Client managing the DO scenario.</span>
-<span class="sd">        Only reason for this separate API is to place the import Client in one place,</span>
-<span class="sd">        so that editing this code on a local laptop generates one error.</span>
 <span class="sd">        Returns: new dd_scenario.Client</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">dd_scenario</span> <span class="kn">import</span> <span class="n">Client</span>
-        <span class="k">return</span> <span class="n">Client</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># When in WS Cloud:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+            <span class="c1"># The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span>
+                              <span class="n">project_access_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span><span class="p">)</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#  In WSL/CPD:</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.print_table_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.print_table_names">[docs]</a>    <span class="k">def</span> <span class="nf">print_table_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.print_table_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.print_table_names">[docs]</a>    <span class="k">def</span> <span class="nf">print_table_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Print the names of the input and output tables. For development and debugging.&quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Input tables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output tables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output tables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span></div>
+
+
+<div class="viewcode-block" id="ScenarioManager.export_model_as_lp"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.export_model_as_lp">[docs]</a>    <span class="k">def</span> <span class="nf">export_model_as_lp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Exports the model as an .lp file in the data assets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mdl (docplex.mp.model): the docplex model</span>
+<span class="sd">            model_name (str): name of model (excluding the `.lp`). If no model_name, it uses the `mdl.name`</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (str): full file path of lp file</span>
+
+<span class="sd">        Note: now a method of ScenarioManager (instead of OptimizationEngine),</span>
+<span class="sd">        so this can be included in a dd-ignore notebook cell. Avoids the dependency on dse-do-utils in the ModelBuilder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get model name:</span>
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">datasets_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
+        <span class="n">lp_file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span>
+        <span class="n">lp_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
+        <span class="n">mdl</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">)</span>  <span class="c1"># Writes the .lp file</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_to_project</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lp_file_path</span></div></div>
 </pre></div>
 
            </div>

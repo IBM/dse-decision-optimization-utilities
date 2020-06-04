@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.cpd25utilities &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>dse_do_utils.cpd25utilities &mdash; DSE DO Utils 0.4.0.0b documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.0b',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.0b
               </div>
             
           
@@ -172,16 +172,13 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 
+
 <div class="viewcode-block" id="add_file_path_as_data_asset_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25">[docs]</a><span class="k">def</span> <span class="nf">add_file_path_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
 <span class="sd">    Applies to CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.</span>
 <span class="sd">    Needs to be called after the file has been saved regularly in the file system.</span>
 <span class="sd">    Typically, that would be in `/project_data/data_asset/`.</span>
 <span class="sd">    Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        file_path (str): full file path, including the file name and extension</span>
-<span class="sd">        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.</span>
 
 <span class="sd">    Usage::</span>
 
@@ -195,7 +192,12 @@
 <span class="sd">    Beware that the same data now exists in 2 different places:</span>
 <span class="sd">        * In the Cloud Object Storage (COS)</span>
 <span class="sd">        * As a file in `/project_data/data_asset/`</span>
+
 <span class="sd">    Changing any of the 2 independently can cause inconsistencies.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (str): full file path, including the file name and extension</span>
+<span class="sd">        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">asset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">asset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
@@ -205,9 +207,12 @@
         <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">asset_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="add_file_as_data_asset_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25">[docs]</a><span class="k">def</span> <span class="nf">add_file_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Adds a file located in &#39;/project_data/data_asset/&#39; as a Data Asset to the Watson Studio project.</span>
+<div class="viewcode-block" id="add_file_as_data_asset_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25">[docs]</a><span class="k">def</span> <span class="nf">add_file_as_data_asset_cpd25</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Adds a file located in `/project_data/data_asset/` as a Data Asset to the Watson Studio project.</span>
 <span class="sd">    So that it appears in the UI and can be exported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_name (str): name of file, including extension</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -219,10 +224,11 @@
 <div class="viewcode-block" id="write_data_asset_as_file_cpd25"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25">[docs]</a><span class="k">def</span> <span class="nf">write_data_asset_as_file_cpd25</span><span class="p">(</span><span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Writes a named data asset to file.</span>
 <span class="sd">    Assumes a data asset with `asset_name` exists.</span>
-<span class="sd">    Makes the file accessable for things like:</span>
-<span class="sd">    * Load from disk</span>
-<span class="sd">    * Pip install</span>
-<span class="sd">    * Module import</span>
+<span class="sd">    Makes the file accessible for things like:</span>
+
+<span class="sd">        * Load from disk</span>
+<span class="sd">        * Pip install</span>
+<span class="sd">        * Module import</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        asset_name (str): name of the asset</span>
@@ -234,6 +240,63 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="n">asset_name</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="write_data_asset_as_file_wsc"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_wsc">[docs]</a><span class="k">def</span> <span class="nf">write_data_asset_as_file_wsc</span><span class="p">(</span><span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;/home/dsxuser/work/&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Writes a named data asset to file (for WS Cloud).</span>
+<span class="sd">    Assumes a data asset with `asset_name` exists.</span>
+<span class="sd">    Makes the file accessible for things like:</span>
+
+<span class="sd">        * Load from disk</span>
+<span class="sd">        * Pip install</span>
+<span class="sd">        * Module import</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        asset_name (str): name of the asset</span>
+<span class="sd">        path (str, Optional): Default (for WS Cloud) is &#39;/home/dsxuser/work/&#39;. Use path=&#39;&#39; for current directory.</span>
+<span class="sd">        project (project_lib.Project): required for WS Cloud. For CPD, leave as None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="n">asset_name</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<div class="viewcode-block" id="add_file_path_as_data_asset_wsc"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_wsc">[docs]</a><span class="k">def</span> <span class="nf">add_file_path_as_data_asset_wsc</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
+<span class="sd">    Applies to WS Cloud and CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.</span>
+<span class="sd">    Needs to be called after the file has been saved regularly in the file system.</span>
+<span class="sd">    Typically, that would be in:</span>
+
+<span class="sd">        * CPDv2.5: `/project_data/data_asset/`</span>
+<span class="sd">        * WS Cloud: `/home/dsxuser/work/`, or `os.environ[&#39;PWD&#39;]`, or `./`, or no path</span>
+
+<span class="sd">    Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project (project_lib.Project): required for WS Cloud</span>
+<span class="sd">        file_path (str): full file path, including the file name and extension</span>
+<span class="sd">        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.</span>
+
+<span class="sd">    Usage::</span>
+
+<span class="sd">        # Write some file as an example:</span>
+<span class="sd">        file_path = &#39;/project_data/data_asset/myfile.csv&#39;</span>
+<span class="sd">        with open(file_path, &#39;w+&#39;) as f:</span>
+<span class="sd">             f.write(&quot;Hello World&quot;)</span>
+<span class="sd">        # Add file as a data asset:</span>
+<span class="sd">        add_file_as_data_asset_cpd25(file_path)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+        <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">asset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">asset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">asset_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

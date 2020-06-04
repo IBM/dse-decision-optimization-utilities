@@ -17,10 +17,6 @@ def add_file_path_as_data_asset_cpd25(file_path: str, asset_name: str = None) ->
     Typically, that would be in `/project_data/data_asset/`.
     Ensures the file is visible in the Data Assets of the Watson Studio UI.
 
-    Args:
-        file_path (str): full file path, including the file name and extension
-        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.
-
     Usage::
 
         # Write some file as an example:
@@ -33,7 +29,12 @@ def add_file_path_as_data_asset_cpd25(file_path: str, asset_name: str = None) ->
     Beware that the same data now exists in 2 different places:
         * In the Cloud Object Storage (COS)
         * As a file in `/project_data/data_asset/`
+
     Changing any of the 2 independently can cause inconsistencies.
+
+    Args:
+        file_path (str): full file path, including the file name and extension
+        asset_name (str): name of data asset. Default is None. If None, the asset_name will be extracted from the file_path.
     """
     if asset_name is None:
         asset_name = os.path.basename(file_path)
@@ -46,6 +47,9 @@ def add_file_path_as_data_asset_cpd25(file_path: str, asset_name: str = None) ->
 def add_file_as_data_asset_cpd25(file_name: str) -> None:
     """Adds a file located in `/project_data/data_asset/` as a Data Asset to the Watson Studio project.
     So that it appears in the UI and can be exported.
+
+    Args:
+        file_name (str): name of file, including extension
     """
     file_path = os.path.join('/project_data/data_asset/', file_name)
     with open(file_path, 'rb') as f:
@@ -58,9 +62,10 @@ def write_data_asset_as_file_cpd25(asset_name: str, path: str = '/project_data/d
     """Writes a named data asset to file.
     Assumes a data asset with `asset_name` exists.
     Makes the file accessible for things like:
-    * Load from disk
-    * Pip install
-    * Module import
+
+        * Load from disk
+        * Pip install
+        * Module import
 
     Args:
         asset_name (str): name of the asset
@@ -78,9 +83,10 @@ def write_data_asset_as_file_wsc(asset_name: str, path: str = '/home/dsxuser/wor
     """Writes a named data asset to file (for WS Cloud).
     Assumes a data asset with `asset_name` exists.
     Makes the file accessible for things like:
-    * Load from disk
-    * Pip install
-    * Module import
+
+        * Load from disk
+        * Pip install
+        * Module import
 
     Args:
         asset_name (str): name of the asset
@@ -101,8 +107,10 @@ def add_file_path_as_data_asset_wsc(file_path: str, asset_name: str = None, proj
     Applies to WS Cloud and CPDv2.5. Works for any file. Allows the file to be viewed and downloaded from Watson Studio UI.
     Needs to be called after the file has been saved regularly in the file system.
     Typically, that would be in:
+
         * CPDv2.5: `/project_data/data_asset/`
-        * WS Cloud: `/home/dsxuser/work/`, or `os.environ['PWD']`, or './`, or no path
+        * WS Cloud: `/home/dsxuser/work/`, or `os.environ['PWD']`, or `./`, or no path
+
     Ensures the file is visible in the Data Assets of the Watson Studio UI.
 
     Args:

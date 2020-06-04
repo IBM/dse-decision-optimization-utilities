@@ -23,10 +23,11 @@ class DOModelExporter(object):
     By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.
 
     Can be used in 4 ways:
-    1. Typical: only specify a list of the DO Model names to export.
-    2. Export from another project in same cluster.
-    3. Export from another project in another cluster.
-    4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.
+
+        1. Typical: only specify a list of the DO Model names to export.
+        2. Export from another project in same cluster.
+        3. Export from another project in another cluster.
+        4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.
 
     1. Typical use:
         Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()`.
@@ -58,9 +59,10 @@ class DOModelExporter(object):
             me.export_do_models()
 
     4. Generate curl commands:
-        a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`
-        b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
-        b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).
+       a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`
+       b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.
+       c. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).
+
 
         Usage::
 
@@ -74,14 +76,17 @@ class DOModelExporter(object):
         Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.
 
     5. How to get the `project_id`:
-        a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ['PROJECT_ID']`.
-        b. Run the  `os.environ['PROJECT_ID']` in a notebook in the target project.
-        c. Parse the project_id from the Page Source of a web page in the target project.
+       a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ['PROJECT_ID']`.
+       b. Run the  `os.environ['PROJECT_ID']` in a notebook in the target project.
+       c. Parse the project_id from the Page Source of a web page in the target project.
+
             i. Manually.
+
                 1. From any web-page of the CPD project, show the `Page Source`. (In Firefox: menu -> Web Developer -> Page Source)
                 2. Do a find-in-page of the name of the project (control-F).
                 3. Just before the first instance of the project name, there is a field `data_id`, e.g.: `data-id="21c8ac71-26c1-49a5-a567-d4c69a0d8158"`. Copy the data_id value.
-                * Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.
+                4. Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.
+
             ii. Using the method `DOModelExporter.get_project_id(project_name, page_source)`
 
             Usage::
@@ -90,15 +95,15 @@ class DOModelExporter(object):
                 project_id = DOModelExporter.get_project_id('Full_Project_Name', page_source)
 
     6. How to get the access_token:
-        a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ['USER_ACCESS_TOKEN']`.
-        b. Run the `os.environ['USER_ACCESS_TOKEN']` in a notebook in the target project.
-        c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!).
-        And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.
+       a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ['USER_ACCESS_TOKEN']`.
+       b. Run the `os.environ['USER_ACCESS_TOKEN']` in a notebook in the target project.
+       c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!). \
+       And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.
 
     7. How to get the cpd_cluster_host?
-        a. If not provided, the exporter will use the environment variable `os.environ['RUNTIME_ENV_APSX_URL']`
-        b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.<br>
-        When running this from the same cluster, use the 'original' cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).
+       a. If not provided, the exporter will use the environment variable `os.environ['RUNTIME_ENV_APSX_URL']`
+       b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.<br> \
+       When running this from the same cluster, use the 'original' cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).
     """
 
     def __init__(self, do_model_names: List[str], **kwargs):
