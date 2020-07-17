@@ -222,6 +222,8 @@ class MapManager(object):
         Usage::
 
             popup_table = [
+                ('property_1', 'value_1'),
+                ('property_2', 'value_2'),
             ]
             popup = MapManager.get_popup_table(popup_table)
 
