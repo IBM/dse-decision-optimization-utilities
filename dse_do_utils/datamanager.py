@@ -222,7 +222,8 @@ class DataManager(object):
         Returns:
             (DataFrame) cross join of df1 and df2
         """
-        if isinstance(df1.index, pd.core.index.MultiIndex) or isinstance(df2.index, pd.core.index.MultiIndex):
+        # if isinstance(df1.index, pd.core.index.MultiIndex) or isinstance(df2.index, pd.core.index.MultiIndex):  # pd.core.index.MultiIndex is deprecated
+        if isinstance(df1.index, pd.MultiIndex) or isinstance(df2.index, pd.MultiIndex):  # Fix for Pandas 1.0
             return DataManager.df_crossjoin_mi(df1, df2, **kwargs)
         else:
             return DataManager.df_crossjoin_si(df1, df2, **kwargs)

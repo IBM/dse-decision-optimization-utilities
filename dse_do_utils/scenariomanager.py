@@ -485,6 +485,7 @@ class ScenarioManager(object):
         #     ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
         #     writer_2.save()
         #     os.rename(excel_file_path_2, csv_excel_file_path_2)
+        return excel_file_path_1
 
     # -----------------------------------------------------------------
     # Read and write from/to Excel - base functions
