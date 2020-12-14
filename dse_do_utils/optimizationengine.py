@@ -6,9 +6,6 @@
 # OptimizationEngine
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-# from __future__ import absolute_import
-# from __future__ import division
-# from __future__ import print_function
 import docplex
 import pandas as pd
 import os
@@ -37,7 +34,7 @@ class OptimizationEngine(object):
         self.mdl: Model = Model(name=name)
         self.dm = data_manager
 
-    def integer_var_series(self, df: pd.DataFrame, **kargs) -> pd.Series[IntegerVarType]:
+    def integer_var_series(self, df: pd.DataFrame, **kargs) -> pd.Series:
         """Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.
         Result can be assigned to a column of the df.
         Usage:
@@ -49,30 +46,35 @@ class OptimizationEngine(object):
             **kargs: arguments passed to mdl.integer_var_list method. E.g. 'name'
 
         Returns:
-            (pandas.Series) with integer dvars, index matches index of df
+            (pandas.Series) with integer dvars (IntegerVarType), index matches index of df
         """
         # We are re-using the index from the DF index:
         return OptimizationEngine.integer_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.integer_var_list(df.index, **kargs), index = df.index)
 
-    def continuous_var_series(self, df, **kargs) -> pd.Series[ContinuousVarType]:
+    def continuous_var_series(self, df, **kargs) -> pd.Series:
+        """Returns pd.Series[ContinuousVarType]"""
         return OptimizationEngine.continuous_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.continuous_var_list(df.index, **kargs), index = df.index)
 
-    def binary_var_series(self, df, **kargs) -> pd.Series[BinaryVarType]:
+    def binary_var_series(self, df, **kargs) -> pd.Series:
+        """Returns pd.Series[BinaryVarType]"""
         return OptimizationEngine.binary_var_series_s(self.mdl, df, **kargs)
         # return pd.Series(self.mdl.binary_var_list(df.index, **kargs), index = df.index)
 
     @staticmethod
-    def integer_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[IntegerVarType]:
+    def integer_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
+        """Returns pd.Series[IntegerVarType]"""
         return pd.Series(mdl.integer_var_list(df.index, **kargs), index=df.index)
 
     @staticmethod
-    def continuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[ContinuousVarType]:
+    def continuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
+        """Returns pd.Series[ContinuousVarType]."""
         return pd.Series(mdl.continuous_var_list(df.index, **kargs), index=df.index)
 
     @staticmethod
-    def binary_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series[BinaryVarType]:
+    def binary_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
+        """Returns pd.Series[BinaryVarType]"""
         return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index)
 
     def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
@@ -133,7 +135,7 @@ class OptimizationEngine(object):
         return OptimizationEngine.export_as_cpo_s(self.mdl, local_root=local_root, copy_to_csv=copy_to_csv)
 
     @staticmethod
-    def export_as_lp_s(model: docplex.mp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
+    def export_as_lp_s(model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
         """Export .lp file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in WSL, it will write to the local file system in the 'local_root/datasets' directory.
@@ -175,7 +177,7 @@ class OptimizationEngine(object):
         return lp_file_name_1
 
     @staticmethod
-    def export_as_cpo_s(model: docplex.cp.model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False, **kwargs) -> str:
+    def export_as_cpo_s(model, model_name: Optional[str] = None, local_root: Optional[str] = None, copy_to_csv: bool = False, **kwargs) -> str:
         """Export .cpo file of model in the 'DSX_PROJECT_DIR.datasets' folder.
         It can write a copy as a .csv file, so it can be exported to a local machine.
         If not in DSX, it will write to the local file system in the 'local_root/datasets' directory.

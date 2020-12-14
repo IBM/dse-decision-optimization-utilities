@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.scenariopicker &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>dse_do_utils.scenariopicker &mdash; DSE DO Utils 0.4.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.1
               </div>
             
           
@@ -173,6 +173,7 @@
 <span class="c1"># from ipywidgets import widgets</span>
 
 <span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
 <div class="viewcode-block" id="ScenarioPicker"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker">[docs]</a><span class="k">class</span> <span class="nc">ScenarioPicker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Notebook widget to interactively select a scenario from the dd_scenario.Client.</span>
@@ -233,14 +234,18 @@
             <span class="n">display</span><span class="p">(</span>
                 <span class="n">Javascript</span><span class="p">(</span><span class="s1">&#39;IPython.notebook.execute_cells_below()&#39;</span><span class="p">))</span>  <span class="c1"># Will also run the cell with the refresh button</span></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">project_access_token</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">=</span> <span class="n">scenario_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_scenario</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># For get_dd_client:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="o">=</span> <span class="n">project_access_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
 
-    <span class="k">def</span> <span class="nf">_get_scenario_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Return a list of scenario names&#39;&#39;&#39;</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">_get_dd_client</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">_get_scenario_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of scenario names&quot;&quot;&quot;</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">()</span>
         <span class="n">dd_model_builder</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_builder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dd_model_builder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO model with name </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span>
@@ -248,7 +253,7 @@
         <span class="n">scenario_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">sc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="p">]</span>  <span class="c1"># Get only the name property of the scenario tuple</span>
         <span class="k">return</span> <span class="n">scenario_names</span>
 
-<div class="viewcode-block" id="ScenarioPicker.get_scenario_select_drop_down"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_select_drop_down">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario_select_drop_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioPicker.get_scenario_select_drop_down"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_select_drop_down">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario_select_drop_down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the drop-down button.&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widgets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">drop_down</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
@@ -317,7 +322,27 @@
             <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No scenario selected.&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScenarioPicker.get_dd_client"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_dd_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_dd_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the Client managing the DO scenario.</span>
+<span class="sd">        Returns: new dd_scenario.Client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">dd_scenario</span> <span class="kn">import</span> <span class="n">Client</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># When in WS Cloud:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+            <span class="c1"># The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span>
+                              <span class="n">project_access_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span><span class="p">)</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#  In WSL/CPD:</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>

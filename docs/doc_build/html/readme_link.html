@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read me &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>Read me &mdash; DSE DO Utils 0.4.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -45,7 +45,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="dse_do_utils" href="modules.html" />
-    <link rel="prev" title="Welcome to DSE DO Utils’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to DSE DO Utils documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.1
               </div>
             
           
@@ -104,6 +104,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#import">Import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#target-environments">Target environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#do-model-builder-and-wml-environments">DO Model Builder and WML environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scope-of-classes-modules">Scope of classes/modules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -245,7 +247,40 @@ See the <code class="docutils literal"><span class="pre">InstallationReadMe.md</
 <li>CPDv2.1 (version 0.2.2.3 is preferred. But version 0.3.0.0 should be backwards compatible.)</li>
 <li>CPDv2.5 (version 0.3.0.0 and up)</li>
 <li>WSLv1.2.3 with Python 2.7 (version 0.2.2.3 only)</li>
+<li>WS Cloud (version 0.4.0.0 and up)</li>
 </ol>
+</div>
+<div class="section" id="do-model-builder-and-wml-environments">
+<h2>DO Model Builder and WML environments<a class="headerlink" href="#do-model-builder-and-wml-environments" title="Permalink to this headline">¶</a></h2>
+<p>When developing and using optimization models, there are 3 different environments the Python DO model might run in:</p>
+<ol class="arabic simple">
+<li>A notebook environment.</li>
+<li>The DO Model Builder environment.</li>
+<li>The WML deployment environment.</li>
+</ol>
+<p>In CPDv2.5:</p>
+<ul class="simple">
+<li>Only the notebook environment can be regularly customized with the dse-do-utils.</li>
+<li>The Model Builder environment cannot be customized. But, it has a feature to add ‘files’.
+The dse-do-utils internal modules have been refactored to be able to be uploaded separately as individual modules.</li>
+<li>The WML environment cannot be customized. But the same work-around for adding modules/files to the MB model can be used.</li>
+</ul>
+<p>In CPDv3.0:</p>
+<ul class="simple">
+<li>The WML environment can be customized using APIs.</li>
+</ul>
+<p>In future releases of CPD:</p>
+<ul class="simple">
+<li>The DO Model Builder will also allow for environment customization</li>
+</ul>
+</div>
+<div class="section" id="scope-of-classes-modules">
+<h2>Scope of classes/modules<a class="headerlink" href="#scope-of-classes-modules" title="Permalink to this headline">¶</a></h2>
+<p>The classes <code class="docutils literal"><span class="pre">OptimizationEngine</span></code> and  <code class="docutils literal"><span class="pre">DataManager</span></code> are intended to be used within the optimization model code
+that will run in the Model Builder and WML deployment. All other classes, in particular the <code class="docutils literal"><span class="pre">ScenarioManager</span></code> are
+designed to be used outside of the Model Builder or WML, e.g. within <code class="docutils literal"><span class="pre">#dd-ignore</span></code> cells.</p>
+<p>Therefore, the limitations in customizing environments can, for the moment, be avoided by not using
+the classes <code class="docutils literal"><span class="pre">OptimizationEngine</span></code> and  <code class="docutils literal"><span class="pre">DataManager</span></code>.</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
@@ -270,7 +305,7 @@ This package is only available within WSL and ICPd. It cannot be pip installed i
         <a href="modules.html" class="btn btn-neutral float-right" title="dse_do_utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to DSE DO Utils’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to DSE DO Utils documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

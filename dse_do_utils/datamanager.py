@@ -6,13 +6,12 @@
 # DataManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-
-# from __future__ import absolute_import
-# from __future__ import division
-# from __future__ import print_function
-
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
+
+#  Typing aliases
+Inputs = Dict[str, pd.DataFrame]
+Outputs = Dict[str, pd.DataFrame]
 
 
 class DataManager(object):
@@ -33,7 +32,7 @@ class DataManager(object):
         * Contains a set of methods that create intermediate data ('pre-processing'). Intermediate data will also be assigned as a direct member property.
     """
 
-    def __init__(self, inputs: Optional[Dict[pd.DataFrame]] = None, outputs: Optional[Dict[pd.DataFrame]] = None):
+    def __init__(self, inputs: Optional[Inputs] = None, outputs: Optional[Outputs] = None):
         self.inputs = inputs
         self.outputs = outputs
         return
@@ -79,7 +78,8 @@ class DataManager(object):
         return params
 
     @staticmethod
-    def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None, value_format: str = '%Y-%m-%d %H:%M'):
+    def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None,
+                            value_format: str = '%Y-%m-%d %H:%M:%S'):
         """
         Get value of parameter from the parameter table (DataFrame).
         Note that if the input table has a mix of data types in the value column, Pandas can change the data type of a
@@ -101,9 +101,22 @@ class DataManager(object):
         if param_name in params.index:
             raw_param = params.loc[param_name].value
             if param_type == 'int':
-                param = int(float(raw_param))  # by first doing the float, a value of '1.0' will be converted correctly
+                # Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.
+                if str(raw_param).lower() in ['false', 'f', 'no', 'n', '0', '0.0']:
+                    param = 0
+                elif str(raw_param).lower() in ['true', 't', 'yes', 'y', '1', '1.0']:
+                    param = 1
+                else:
+                    param = int(
+                        float(raw_param))  # by first doing the float, a value of '1.0' will be converted correctly
             elif param_type == 'float':
-                param = float(raw_param)
+                # Unfortunately, Pandas may sometimes convert a 0 to a FALSE, etc.
+                if str(raw_param).lower() in ['false', 'f', 'no', 'n', '0', '0.0']:
+                    param = 0
+                elif str(raw_param).lower() in ['true', 't', 'yes', 'y', '1', '1.0']:
+                    param = 1
+                else:
+                    param = float(raw_param)
             elif param_type == 'str':
                 param = str(raw_param)
             elif param_type == 'bool':
@@ -209,7 +222,8 @@ class DataManager(object):
         Returns:
             (DataFrame) cross join of df1 and df2
         """
-        if isinstance(df1.index, pd.core.index.MultiIndex) or isinstance(df2.index, pd.core.index.MultiIndex):
+        # if isinstance(df1.index, pd.core.index.MultiIndex) or isinstance(df2.index, pd.core.index.MultiIndex):  # pd.core.index.MultiIndex is deprecated
+        if isinstance(df1.index, pd.MultiIndex) or isinstance(df2.index, pd.MultiIndex):  # Fix for Pandas 1.0
             return DataManager.df_crossjoin_mi(df1, df2, **kwargs)
         else:
             return DataManager.df_crossjoin_si(df1, df2, **kwargs)

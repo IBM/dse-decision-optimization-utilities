@@ -6,9 +6,6 @@
 # ScenarioManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-# from __future__ import absolute_import
-# from __future__ import division
-# from __future__ import print_function
 import os
 import glob
 
@@ -17,8 +14,8 @@ import pandas as pd
 from typing import Sequence, List, Dict, Tuple, Optional
 
 #  Typing aliases
-Inputs = Dict[pd.DataFrame]
-Outputs = Dict[pd.DataFrame]
+Inputs = Dict[str, pd.DataFrame]
+Outputs = Dict[str, pd.DataFrame]
 InputsOutputs = Tuple[Inputs, Outputs]
 
 
@@ -68,12 +65,33 @@ class ScenarioManager(object):
 
     """
 
-    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
+    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
+                 local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None):
+        """Create a ScenarioManager.
+
+        Args:
+            model_name (str):
+            scenario_name (str):
+            local_root (str): Path of root when running on a local computer
+            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
+            project_access_token (str): When running in WS Cloud, also requires a project_id
+            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
+        """
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.local_root = local_root
+        self.project_id = project_id
+        self.project_access_token = project_access_token
+        self.project = project
         self.inputs = None
         self.outputs = None
+
+    # def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
+    #     self.model_name = model_name
+    #     self.scenario_name = scenario_name
+    #     self.local_root = local_root
+    #     self.inputs = None
+    #     self.outputs = None
 
     def load_data(self, load_from_excel=False, excel_file_name=None):
         """Load data from either the DO scenario, or an Excel spreadsheet.
@@ -85,8 +103,8 @@ class ScenarioManager(object):
         if load_from_excel:
             self.inputs, self.outputs = self.load_data_from_excel(excel_file_name)
         else:
-            self.inputs, self.outputs = ScenarioManager.load_data_from_scenario_s(model_name=self.model_name,
-                                                                                  scenario_name=self.scenario_name)
+            scenario = ScenarioManager.get_do_scenario(self.model_name, self.scenario_name)
+            self.inputs, self.outputs = self.load_data_from_scenario_s(scenario)
         return self.inputs, self.outputs
 
     def get_data_directory(self) -> str:
@@ -94,7 +112,9 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
-        if ScenarioManager.env_is_cpd25():
+        if self.env_is_wscloud():
+            data_dir = '/home/dsxuser/work'  # or use os.environ['PWD'] ?
+        elif ScenarioManager.env_is_cpd25():
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
         elif ScenarioManager.env_is_dsx():
@@ -122,6 +142,26 @@ class ScenarioManager(object):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
 
+    def add_data_file_to_project(self, file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project.
+        Applies to CP4Dv2.5 and WS Cloud
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if self.project is None:
+            from project_lib import Project
+            self.project = Project.access()
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+        with open(file_path, 'rb') as f:
+            self.project.save_data(file_name=file_name, data=f, overwrite=True)
+
     @staticmethod
     def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project.
@@ -146,13 +186,12 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     def load_data_from_scenario(self) -> InputsOutputs:
         """Loads the data from a DO scenario"""
-        self.inputs, self.outputs = ScenarioManager.load_data_from_scenario_s(self.model_name, self.scenario_name)
+        self.inputs, self.outputs = self.load_data_from_scenario_s(self.model_name, self.scenario_name)
         return self.inputs, self.outputs
 
     def write_data_into_scenario(self):
         """Writes the data into a DO scenario. Create new scenario and write data."""
-        return ScenarioManager.write_data_into_scenario_s(self.model_name, self.scenario_name, self.inputs,
-                                                          self.outputs)
+        return self.write_data_into_scenario_s(self.model_name, self.scenario_name, self.inputs, self.outputs)
 
     def add_data_into_scenario(self, inputs=None, outputs=None):
         """Adds data to a DO scenario. If table exists, does an overwrite/replace."""
@@ -164,7 +203,7 @@ class ScenarioManager(object):
         It will NOT get them from self.inputs or self.outputs!
         In this way, you can control which to update. E.g. after a solve, only update the outputs, not the inputs.
         """
-        return ScenarioManager.replace_data_into_scenario_s(self.model_name, self.scenario_name, inputs, outputs)
+        return self.replace_data_into_scenario_s(self.model_name, self.scenario_name, inputs, outputs)
 
     def update_solve_output_into_scenario(self, mdl, outputs):
         """Replaces all output and KPIs table in the scenario.
@@ -188,8 +227,7 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     # Read and write from/to DO scenario - base functions
     # -----------------------------------------------------------------
-    @staticmethod
-    def get_do_scenario(model_name, scenario_name):
+    def get_do_scenario(self, model_name, scenario_name):
         """Returns a DO scenario.
 
         Args:
@@ -202,7 +240,7 @@ class ScenarioManager(object):
         Raises:
             ValueError: When either the model_name or the scenario_name doesn't match an existing entity.
         """
-        client = ScenarioManager._get_dd_client()
+        client = ScenarioManager.get_dd_client(self)
         dd_model_builder = client.get_model_builder(name=model_name)
         if dd_model_builder is None:
             raise ValueError('No DO model with name `{}` exists'.format(model_name))
@@ -211,18 +249,19 @@ class ScenarioManager(object):
             raise ValueError('No DO scenario with name `{}` exists in model `{}`'.format(scenario_name, model_name))
         return scenario
 
-    @staticmethod
-    def load_data_from_scenario_s(model_name: str, scenario_name: str) -> InputsOutputs:
+    # @staticmethod
+    def load_data_from_scenario_s(self, model_name: str, scenario_name: str) -> InputsOutputs:
         """Loads the data from a DO scenario.
         Returns empty dict if no tables."""
-        scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)
+        # scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)
+        scenario = self.get_do_scenario(model_name, scenario_name)
         # Load all input data as a map { data_name: data_frame }
         inputs = scenario.get_tables_data(category='input')
         outputs = scenario.get_tables_data(category='output')
         return (inputs, outputs)
 
-    @staticmethod
-    def write_data_into_scenario_s(model_name: str, scenario_name: str,
+    # @staticmethod
+    def write_data_into_scenario_s(self, model_name: str, scenario_name: str,
                                    inputs: Optional[Inputs] = None,
                                    outputs: Optional[Outputs] = None,
                                    template_scenario_name: Optional[str] = None) -> None:
@@ -238,7 +277,7 @@ class ScenarioManager(object):
         (including the KPIs), but not the objective value. The DO UI shows as if the model has been solved.
         """
         # Create scenario
-        client = ScenarioManager._get_dd_client()
+        client = ScenarioManager.get_dd_client(self)
         dd_model_builder = client.get_model_builder(name=model_name)
         if dd_model_builder is None:
             raise ValueError('No DO model with name `{}` exists'.format(model_name))
@@ -252,8 +291,8 @@ class ScenarioManager(object):
             for table in outputs:
                 scenario.add_table_data(table, outputs[table], category='output')
 
-    @staticmethod
-    def add_data_into_scenario_s(model_name: str, scenario_name: str,
+    # @staticmethod
+    def add_data_into_scenario_s(self, model_name: str, scenario_name: str,
                                  inputs: Optional[Inputs] = None,
                                  outputs: Optional[Outputs] = None) -> None:
         """Adds tables in existing scenario.
@@ -262,7 +301,7 @@ class ScenarioManager(object):
         Assumes scenario exists. Does not explicitly clear existing tables.
         Could be used in post-processing.
         """
-        scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)
+        scenario = self.get_do_scenario(model_name, scenario_name)
         if inputs is not None:
             for table in inputs:
                 scenario.add_table_data(table, inputs[table], category='input')
@@ -270,8 +309,8 @@ class ScenarioManager(object):
             for table in outputs:
                 scenario.add_table_data(table, outputs[table], category='output')
 
-    @staticmethod
-    def replace_data_into_scenario_s(model_name: str, scenario_name: str,
+    # @staticmethod
+    def replace_data_into_scenario_s(self, model_name: str, scenario_name: str,
                                      inputs: Optional[Inputs] = None,
                                      outputs: Optional[Outputs] = None) -> None:
         """Replaces all input, output or both.
@@ -280,8 +319,8 @@ class ScenarioManager(object):
         Assumes scenario exists. Does explicitly clear all existing input/output tables.
         TODO: test. Not sure this actually works
         """
-        client = ScenarioManager._get_dd_client()
-        scenario = ScenarioManager.get_do_scenario(model_name, scenario_name)
+        client = self.get_dd_client()
+        scenario = self.get_do_scenario(model_name, scenario_name)
         if inputs is not None:
             ScenarioManager.clear_scenario_data(client, scenario, category='input')
             for table in inputs:
@@ -368,12 +407,12 @@ class ScenarioManager(object):
         return scenario
 
     @staticmethod
-    def get_kpis_table_as_dataframe(mdl: docplex.mp.model) -> pd.DataFrame:
+    def get_kpis_table_as_dataframe(mdl) -> pd.DataFrame:
         """Return a DataFrame with the KPI names and values in the mdl.
         This table is compatible with the representation in DO4WS and can be updated in the scenario.
 
         Args:
-            mdl (docplex.mp.model)
+            mdl (docplex.mp.model.Model)
 
         Returns:
             pd.DataFrame with columns NAME and VALUE: the KPIs in the mdl
@@ -437,15 +476,16 @@ class ScenarioManager(object):
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
         if ScenarioManager.env_is_cpd25():
-            ScenarioManager.add_data_file_to_project_s(excel_file_path_1, excel_file_name + '.xlsx')
-        # Save the csv copy (no longer supported in CPD25 because not necessary)
-        elif copy_to_csv:
-            excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
-            csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
-            writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
-            ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
-            writer_2.save()
-            os.rename(excel_file_path_2, csv_excel_file_path_2)
+            self.add_data_file_to_project(excel_file_path_1, excel_file_name + '.xlsx')
+        # # Save the csv copy (no longer supported in CPD25 because not necessary)
+        # elif copy_to_csv:
+        #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
+        #     csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
+        #     writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
+        #     ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
+        #     writer_2.save()
+        #     os.rename(excel_file_path_2, csv_excel_file_path_2)
+        return excel_file_path_1
 
     # -----------------------------------------------------------------
     # Read and write from/to Excel - base functions
@@ -583,7 +623,7 @@ class ScenarioManager(object):
         return self.inputs, self.outputs
 
     @staticmethod
-    def load_data_from_csv_s(csv_directory: str, csv_name_pattern: str = "*.csv", **kwargs) -> Dict[pd.DataFrame]:
+    def load_data_from_csv_s(csv_directory: str, csv_name_pattern: str = "*.csv", **kwargs) -> Dict[str, pd.DataFrame]:
         """Read data from all matching .csv files in a directory.
 
         Args:
@@ -658,17 +698,66 @@ class ScenarioManager(object):
         """Return true if environment is CPDv2.5"""
         return 'PWD' in os.environ
 
-    @staticmethod
-    def _get_dd_client():
+    def env_is_wscloud(self) -> bool:
+        """Return true if environment is WS Cloud"""
+        return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work'
+
+    # @staticmethod
+    # def _get_dd_client():
+    #     """Return the Client managing the DO scenario.
+    #     Only reason for this separate API is to place the import Client in one place,
+    #     so that editing this code on a local laptop generates one error.
+    #     Returns: new dd_scenario.Client
+    #     """
+    #     from dd_scenario import Client
+    #     return Client()
+
+    def get_dd_client(self):
         """Return the Client managing the DO scenario.
-        Only reason for this separate API is to place the import Client in one place,
-        so that editing this code on a local laptop generates one error.
         Returns: new dd_scenario.Client
         """
         from dd_scenario import Client
-        return Client()
+        if self.project is not None:
+            pc = self.project.project_context
+            return Client(pc=pc)
+        elif (self.project_id is not None) and (self.project_access_token is not None):
+            # When in WS Cloud:
+            from project_lib import Project
+            # The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.
+            project = Project(project_id=self.project_id,
+                              project_access_token=self.project_access_token)
+            pc = project.project_context
+            return Client(pc=pc)
+        else:
+            #  In WSL/CPD:
+            return Client()
 
     def print_table_names(self) -> None:
         """Print the names of the input and output tables. For development and debugging."""
         print("Input tables: {}".format(", ".join(self.inputs.keys())))
         print("Output tables: {}".format(", ".join(self.outputs.keys())))
+
+
+    def export_model_as_lp(self, mdl, model_name: Optional[str] = None) -> str:
+        """Exports the model as an .lp file in the data assets.
+
+        Args:
+            mdl (docplex.mp.model): the docplex model
+            model_name (str): name of model (excluding the `.lp`). If no model_name, it uses the `mdl.name`
+
+        Returns:
+            (str): full file path of lp file
+
+        Note: now a method of ScenarioManager (instead of OptimizationEngine),
+        so this can be included in a dd-ignore notebook cell. Avoids the dependency on dse-do-utils in the ModelBuilder.
+        """
+        # Get model name:
+        if model_name is None:
+            model_name = mdl.name
+        datasets_dir = self.get_data_directory()
+        lp_file_name = model_name + '.lp'
+        lp_file_path = os.path.join(datasets_dir, lp_file_name)
+        mdl.export_as_lp(lp_file_path)  # Writes the .lp file
+        if self.env_is_cpd25():
+            self.add_data_file_to_project(lp_file_path, lp_file_name)
+        return lp_file_path

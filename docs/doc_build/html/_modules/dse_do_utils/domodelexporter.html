@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dse_do_utils.domodelexporter &mdash; DSE DO Utils 0.3.0.2b documentation</title>
+  <title>dse_do_utils.domodelexporter &mdash; DSE DO Utils 0.4.0.1 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'0.3.0.2b',
+              VERSION:'0.4.0.1',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.3.0.2b
+                0.4.0.1
               </div>
             
           
@@ -176,6 +176,7 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
+
 <span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">(</span>
     <span class="n">urllib3</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>  <span class="c1"># Supresses the &quot;InsecureRequestWarning: Unverified HTTPS request is being made&quot; you get when downloading from a CPD cluster.</span>
 
@@ -185,10 +186,11 @@
 <span class="sd">    By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.</span>
 
 <span class="sd">    Can be used in 4 ways:</span>
-<span class="sd">    1. Typical: only specify a list of the DO Model names to export.</span>
-<span class="sd">    2. Export from another project in same cluster.</span>
-<span class="sd">    3. Export from another project in another cluster.</span>
-<span class="sd">    4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.</span>
+
+<span class="sd">        1. Typical: only specify a list of the DO Model names to export.</span>
+<span class="sd">        2. Export from another project in same cluster.</span>
+<span class="sd">        3. Export from another project in another cluster.</span>
+<span class="sd">        4. Generates the full curl commands. Then copy and paste them into a terminal that supports curl.</span>
 
 <span class="sd">    1. Typical use:</span>
 <span class="sd">        Initialize the exporter with a list of DO Model names and call the method `me.export_do_models()`.</span>
@@ -220,9 +222,11 @@
 <span class="sd">            me.export_do_models()</span>
 
 <span class="sd">    4. Generate curl commands:</span>
-<span class="sd">        a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`</span>
-<span class="sd">        b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</span>
-<span class="sd">        b. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</span>
+
+<span class="sd">       a. Initialize the exporter: `me = DOModelExporter(cluster_name, user_name, password, do_model_name, project_id)`</span>
+<span class="sd">       b. Get the access-token curl command: me.get_access_token_curl(). Extract the access_token string.</span>
+<span class="sd">       c. Get the export-do-model curl command: me.get_do_model_export_curl(do_model_name, access_token).</span>
+
 
 <span class="sd">        Usage::</span>
 
@@ -236,14 +240,18 @@
 <span class="sd">        Curl commands can be run for instance from the Git Bash terminal that is part of Git for Windows.</span>
 
 <span class="sd">    5. How to get the `project_id`:</span>
-<span class="sd">        a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ[&#39;PROJECT_ID&#39;]`.</span>
-<span class="sd">        b. Run the  `os.environ[&#39;PROJECT_ID&#39;]` in a notebook in the target project.</span>
-<span class="sd">        c. Parse the project_id from the Page Source of a web page in the target project.</span>
+
+<span class="sd">       a. If not specifying a project_id in the constructor, it will get it automatically using the environment variable: `os.environ[&#39;PROJECT_ID&#39;]`.</span>
+<span class="sd">       b. Run the  `os.environ[&#39;PROJECT_ID&#39;]` in a notebook in the target project.</span>
+<span class="sd">       c. Parse the project_id from the Page Source of a web page in the target project.</span>
+
 <span class="sd">            i. Manually.</span>
+
 <span class="sd">                1. From any web-page of the CPD project, show the `Page Source`. (In Firefox: menu -&gt; Web Developer -&gt; Page Source)</span>
 <span class="sd">                2. Do a find-in-page of the name of the project (control-F).</span>
 <span class="sd">                3. Just before the first instance of the project name, there is a field `data_id`, e.g.: `data-id=&quot;21c8ac71-26c1-49a5-a567-d4c69a0d8158&quot;`. Copy the data_id value.</span>
-<span class="sd">                * Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.</span>
+<span class="sd">                4. Beware that the Page Source may contain other project-names and projects-IDs, so search on the full project name.</span>
+
 <span class="sd">            ii. Using the method `DOModelExporter.get_project_id(project_name, page_source)`</span>
 
 <span class="sd">            Usage::</span>
@@ -252,15 +260,17 @@
 <span class="sd">                project_id = DOModelExporter.get_project_id(&#39;Full_Project_Name&#39;, page_source)</span>
 
 <span class="sd">    6. How to get the access_token:</span>
-<span class="sd">        a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ[&#39;USER_ACCESS_TOKEN&#39;]`.</span>
-<span class="sd">        b. Run the `os.environ[&#39;USER_ACCESS_TOKEN&#39;]` in a notebook in the target project.</span>
-<span class="sd">        c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!).</span>
-<span class="sd">        And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</span>
+
+<span class="sd">       a. If not provided (i.e. no entry in the constructor arguments), exporter uses the environment variable `os.environ[&#39;USER_ACCESS_TOKEN&#39;]`.</span>
+<span class="sd">       b. Run the `os.environ[&#39;USER_ACCESS_TOKEN&#39;]` in a notebook in the target project.</span>
+<span class="sd">       c. Specify `access_token=None` in the constructor arguments (this is NOT the same as specifying a None value!). \</span>
+<span class="sd">       And specify a user-name and password. Exporter will retrieve the accessToken by calling a web-API.</span>
 
 <span class="sd">    7. How to get the cpd_cluster_host?</span>
-<span class="sd">        a. If not provided, the exporter will use the environment variable `os.environ[&#39;RUNTIME_ENV_APSX_URL&#39;]`</span>
-<span class="sd">        b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.&lt;br&gt;</span>
-<span class="sd">        When running this from the same cluster, use the &#39;original&#39; cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).</span>
+
+<span class="sd">       a. If not provided, the exporter will use the environment variable `os.environ[&#39;RUNTIME_ENV_APSX_URL&#39;]`</span>
+<span class="sd">       b. For remote clusters. Beware of the URL of the cluster! DSE clusters may use some alias (e.g. `dse-cp4d25-cluster4.datascienceelite.com`) that is NOT accessable when running from within the same cluster.&lt;br&gt; \</span>
+<span class="sd">       When running this from the same cluster, use the &#39;original&#39; cluster name (e.g. `dse-cp4d25-cluster4.cpolab.ibm.com`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -285,7 +295,7 @@
         <span class="c1">#                                    f&quot;{do_model_name}_export_{datetime.now().strftime(&#39;%Y%m%d_%H%M&#39;)}.zip&quot;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_directory</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;export_directory&#39;</span><span class="p">,</span> <span class="s1">&#39;/project_data/data_asset/&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DOModelExporter.get_access_token_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.get_access_token_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the curl command to retreive the accessToken.</span>
 <span class="sd">        Based on the cluster_name, user_name and password.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -296,7 +306,7 @@
 <span class="s2">  -u &#39;</span><span class="si">{self.user_name}</span><span class="s2">:</span><span class="si">{self.password}</span><span class="s2">&#39;&quot;</span>
         <span class="k">return</span> <span class="n">curl_command</span></div>
 
-<div class="viewcode-block" id="DOModelExporter.get_do_model_export_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.get_do_model_export_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the curl command to retreive the accessToken.</span>
 <span class="sd">        Based on the cluster_name, user_name and password.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -330,7 +340,7 @@
             <span class="n">project_id</span> <span class="o">=</span> <span class="n">page_source</span><span class="p">[</span><span class="n">start_project_id</span><span class="p">:</span><span class="n">end_project_id</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">project_id</span></div>
 
-<div class="viewcode-block" id="DOModelExporter.get_access_token_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_web</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.get_access_token_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_access_token_web</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Runs web request to get the personal access-token.</span>
 <span class="sd">        Based on the cluster_name, user_name and password.</span>
 <span class="sd">        Stores it in self.access_token</span>
@@ -356,7 +366,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">response</span></div>
 
-<div class="viewcode-block" id="DOModelExporter.get_do_model_export_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.get_do_model_export_web"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Runs web-request to get DO model export.</span>
 <span class="sd">        Based on the cluster_name, access_token, do_model_name.</span>
 <span class="sd">        Stores result as a Data Asset</span>
@@ -388,10 +398,10 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{do_model_name}</span><span class="s2">_export_{datetime.now().strftime(&#39;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M&#39;)}.zip&quot;</span>
 
-<div class="viewcode-block" id="DOModelExporter.write_do_model_to_file"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_do_model_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.write_do_model_to_file"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_do_model_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">os</span>
         <span class="n">export_file_name</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">)</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_directory</span><span class="p">,</span> <span class="n">export_file_name</span><span class="p">)</span>
@@ -406,7 +416,7 @@
                 <span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">export_file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">file_path</span></div>
 
-<div class="viewcode-block" id="DOModelExporter.export_do_models"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.export_do_models">[docs]</a>    <span class="k">def</span> <span class="nf">export_do_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DOModelExporter.export_do_models"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.export_do_models">[docs]</a>    <span class="k">def</span> <span class="nf">export_do_models</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;End-to-end run. Gets the access token and then the DO model export.&quot;&quot;&quot;</span>
         <span class="c1"># If access_token is None, first retrieve it from the host using the un/pw. This should be the exception.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

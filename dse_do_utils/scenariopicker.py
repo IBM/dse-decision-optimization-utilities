@@ -71,14 +71,18 @@ class ScenarioPicker(object):
             display(
                 Javascript('IPython.notebook.execute_cells_below()'))  # Will also run the cell with the refresh button
 
-    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None):
+    def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, project_id=Optional[str], project_access_token=Optional[str], project=None):
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.selected_scenario = None
+        # For get_dd_client:
+        self.project_id = project_id
+        self.project_access_token = project_access_token
+        self.project = project
 
     def _get_scenario_names(self) -> List[str]:
         """Return a list of scenario names"""
-        client = ScenarioManager._get_dd_client()
+        client = self.get_dd_client()
         dd_model_builder = client.get_model_builder(name=self.model_name)
         if dd_model_builder is None:
             raise ValueError('No DO model with name {}'.format(self.model_name))
@@ -156,3 +160,23 @@ class ScenarioPicker(object):
         else:
             raise ValueError('No scenario selected.')
         return (inputs, outputs)
+
+    def get_dd_client(self):
+        """Return the Client managing the DO scenario.
+        Returns: new dd_scenario.Client
+        """
+        from dd_scenario import Client
+        if self.project is not None:
+            pc = self.project.project_context
+            return Client(pc=pc)
+        elif (self.project_id is not None) and (self.project_access_token is not None):
+            # When in WS Cloud:
+            from project_lib import Project
+            # The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.
+            project = Project(project_id=self.project_id,
+                              project_access_token=self.project_access_token)
+            pc = project.project_context
+            return Client(pc=pc)
+        else:
+            #  In WSL/CPD:
+            return Client()

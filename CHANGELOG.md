@@ -5,9 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.4.0.1] 
+### Added
+- ScenarioManager.write_data_to_excel returns Excel filepath
+
+### Changed
+- Fix in DataManager.df_crossjoin_ai to make compatible with Pandas 1.0
+
+## [0.4.0.0] - 2020-06-23
+### Changed
+- Support for WS Cloud (project context in Client)
+- More flexibility on accepting Boolean values as float or int parameter 
+### Added
+- Python data types in code
 
 ## [0.3.0.1] - 2020-03-04
-## Added
+### Added
 - DOModelExporter: export DO models in CPDv2.5
 - cpd25utilities: some data asset read and write functions
 
