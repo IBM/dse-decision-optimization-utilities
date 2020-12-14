@@ -74,12 +74,14 @@ def module_reload():
     import scenariopicker
     import deployeddomodel
     import mapmanager
+    import multiscenariomanager
     importlib.reload(datamanager)
     importlib.reload(optimizationengine)
     importlib.reload(scenariomanager)
     importlib.reload(scenariopicker)
     importlib.reload(deployeddomodel)
     importlib.reload(mapmanager)
+    importlib.reload(multiscenariomanager)
 
     # The imports below cannot be done here.
     # You need to redo the class imports from the notebook that is calling this function
