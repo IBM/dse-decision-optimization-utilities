@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0.2b]
 ### Added
 - MultiScenarioManager
+- ScenarioManager.load_data_from_excel_s load subset of tables
 
 ## [0.4.0.1]  - 2020-12-14
 ### Added

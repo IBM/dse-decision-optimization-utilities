@@ -53,6 +53,16 @@ class MultiScenarioManager(object):
     def __init__(self, model_name: Optional[str] = None, scenario_names: List[str] = [],
                  local_root: Optional[str] = None, project_id: Optional[str] = None,
                  project_access_token: Optional[str] = None, project=None):
+        """Create a MultiScenarioManager.
+
+        Args:
+            model_name (str):
+            scenario_names (List[str]): list of anmes of scenarios to export. If not specified or empty then it will select all scenarios in the model
+            local_root (str): Path of root when running on a local computer
+            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
+            project_access_token (str): When running in WS Cloud, also requires a project_id
+            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
+        """
         self.model_name = model_name
         self.local_root = local_root
         self.project_id = project_id
