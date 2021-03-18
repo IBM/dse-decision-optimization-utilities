@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MultiScenarioManager
 - ScenarioManager.load_data_from_excel_s load subset of tables
 - First draft of the ScenarioDbManager (undocumented)
+- Fixes to DeployedDOModel to make it CPD 3.5 compatible (new WML client)
 
 ## [0.4.0.1]  - 2020-12-14
 ### Added

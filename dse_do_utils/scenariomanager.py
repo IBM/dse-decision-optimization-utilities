@@ -317,7 +317,6 @@ class ScenarioManager(object):
 
         If input/output are not None, clears inputs/outputs first
         Assumes scenario exists. Does explicitly clear all existing input/output tables.
-        TODO: test. Not sure this actually works
         """
         client = self.get_dd_client()
         scenario = self.get_do_scenario(model_name, scenario_name)
