@@ -37,6 +37,30 @@ class DataManager(object):
         self.outputs = outputs
         return
 
+    def prepare_data_frames(self):
+        if (self.inputs is not None) and (len(self.inputs) > 0):
+            self.prepare_input_data_frames()
+        if (self.outputs is not None) and (len(self.outputs) > 0):
+            self.prepare_output_data_frames()
+
+    def prepare_input_data_frames(self):
+        """Placeholder to process input data frames, in particular to set the index and
+        to assign dataframes to a direct property of the DataManager.
+        Make sure to test if table-name exists in input dict so we can re-use this class in e.g.
+        DashEnterprise apps where not the whole scenario is loaded.
+
+        Example::
+
+            if 'MyTable' in self.inputs:
+                self.my_table = self.inputs['MyTable'].set_index('Id', verify_integrity=True)
+
+        """
+        pass
+
+    def prepare_input_data_frames(self):
+        """Placeholder to process output data frames."""
+        pass
+
     def print_hello(self):
         """FOR TESTING: Print some hello string.
 
