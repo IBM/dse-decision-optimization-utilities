@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First draft of the ScenarioDbManager (undocumented)
 - Fixes to DeployedDOModel to make it CPD 3.5 compatible (new WML client)
 - Bumping the version from 0.4.0.2b to 0.4.1.0b due to the many changes
+- DataManager.prepare_data_frames method
 
 ## [0.4.0.1]  - 2020-12-14
 ### Added
