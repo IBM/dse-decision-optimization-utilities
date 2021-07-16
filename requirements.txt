@@ -1,0 +1,11 @@
+pandas
+decision-optimization-client==1.0.0
+docplex
+
+#Sphinx and m2r2 for documentation generation:
+sphinx
+m2r2
+
+# wheel for building package:
+wheel
+twine
