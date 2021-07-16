@@ -401,7 +401,7 @@ class ScenarioManager(object):
                 # Create a new scenario (does not have solve code)
                 scenario = model_builder.create_scenario(name=new_scenario_name)
             else:
-                # Existing scenario probabaly already has solver code, so maintain that.
+                # Existing scenario probably already has solver code, so maintain that.
                 ScenarioManager.clear_scenario_data(client, scenario)
         return scenario
 

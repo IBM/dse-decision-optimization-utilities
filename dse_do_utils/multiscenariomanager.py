@@ -27,9 +27,9 @@ except:
 
 
 class MultiScenarioManager(object):
-    """Manages multiple scnearios from same DO Model/Experiment.
+    """Manages multiple scenarios from same DO Model/Experiment.
     Can export all scenarios in one Excel spreadsheet, where it adds the scenario_name as an additional column.
-    Also adds an aditional 'Scenario' table. (This looks relevant for usage (filtering) in Cognos.)
+    Also adds an additional 'Scenario' table. (This looks relevant for usage (filtering) in Cognos.)
     By default, writes an Excel file in datasets named "model_name + '_multi_output'.xlsx"
 
     Usage 1 - All scenarios from Model::
@@ -229,7 +229,7 @@ class MultiScenarioManager(object):
         client = self.get_dd_client()
         model_builder = client.get_model_builder(name=self.model_name)
         if model_builder is None:
-            raise ValueError('No DO model with name `{}` exists'.format(model_name))
+            raise ValueError('No DO model with name `{}` exists'.format(self.model_name))
         names = model_builder.get_scenarios(as_dict=True)
         return list(names.keys())
 
@@ -244,7 +244,7 @@ class MultiScenarioManager(object):
         client = self.get_dd_client()
         model_builder = client.get_model_builder(name=self.model_name)
         if model_builder is None:
-            raise ValueError('No DO model with name `{}` exists'.format(model_name))
+            raise ValueError('No DO model with name `{}` exists'.format(self.model_name))
         scenarios_dict = model_builder.get_scenarios(as_dict=True)
         df = pd.DataFrame({'scenario_name': list(scenarios_dict.keys())})
         if scenario_names is not None:
