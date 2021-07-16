@@ -317,7 +317,6 @@ class ScenarioManager(object):
 
         If input/output are not None, clears inputs/outputs first
         Assumes scenario exists. Does explicitly clear all existing input/output tables.
-        TODO: test. Not sure this actually works
         """
         client = self.get_dd_client()
         scenario = self.get_do_scenario(model_name, scenario_name)
@@ -402,7 +401,7 @@ class ScenarioManager(object):
                 # Create a new scenario (does not have solve code)
                 scenario = model_builder.create_scenario(name=new_scenario_name)
             else:
-                # Existing scenario probabaly already has solver code, so maintain that.
+                # Existing scenario probably already has solver code, so maintain that.
                 ScenarioManager.clear_scenario_data(client, scenario)
         return scenario
 
@@ -491,16 +490,28 @@ class ScenarioManager(object):
     # Read and write from/to Excel - base functions
     # -----------------------------------------------------------------
     @staticmethod
-    def load_data_from_excel_s(xl: pd.ExcelFile, table_index_sheet: str = '_table_index_') -> InputsOutputs:
+    def load_data_from_excel_s(xl: pd.ExcelFile, table_index_sheet: str = '_table_index_', input_table_names:List[str]=None, output_table_names:List[str]=None) -> InputsOutputs:
         """
         Create dataFrames from the sheets of the Excel file.
         Store in dictionary df_dict with table_name as key.
         The table_name is either the name of the sheet, or the table_name as defined in the table_index_sheet.
-        TODO: Test allow for distinction between input and output via the index-sheet
+
+        In the default case, when the input_table_names or output_table_names are None, the category of the table
+        (i.e. input or output) is driven off the value in the table_index_sheet.
+        If not listed in table_index_sheet, it is placed in the inputs.
+
+        However, to reduce the load time for certain applications, we can restrict the tables it loads by specifying them in
+        the input_table_names or output_table_names. If one of them is not None, it wil only load those tables
+        and categorize them accordingly.
+
+        Note that if either input_table_names or output_table_names is used, if applicable, they would refer to
+        the *translated* tables names by the table_index_sheet. (I.e. not the abbreviated names used in the sheet names.)
 
         Args:
             xl (pandas.ExcelFile): Excel file
             table_index_sheet (str): Name of table index sheet
+            input_table_names (List[str]): names of input tables to read
+            output_table_names (List[str]): names of output tables to read
 
         Returns:
             (Dict[str,DataFrame], Dict[str,DataFrame]): A tuple of inputs and outputs dictionaries of DataFrames,
@@ -523,14 +534,70 @@ class ScenarioManager(object):
                 if (table_index_df is not None):
                     if (sheet in table_index_df.index.values):
                         table_name = table_index_df.loc[sheet].table_name
-                    if ('category' in table_index_df.columns.values):  # TODO: test!
+                    if ('category' in table_index_df.columns.values):
                         category = table_index_df.loc[sheet].category
 
-                if category == 'output':
-                    outputs[table_name] = xl.parse(sheet)
+                if input_table_names is None and output_table_names is None:
+                    # Categorize according to the table_index_sheet
+                    if category == 'output':
+                        outputs[table_name] = xl.parse(sheet)
+                    else:
+                        inputs[table_name] = xl.parse(sheet)
                 else:
-                    inputs[table_name] = xl.parse(sheet)
+                    # Categorize according to the input/output_table_names
+                    if input_table_names is not None and table_name in input_table_names:
+                        inputs[table_name] = xl.parse(sheet)
+                    elif output_table_names is not None and table_name in output_table_names:
+                        outputs[table_name] = xl.parse(sheet)
+
+                # Original code (before adding input/output_table_names)
+                # if category == 'output':
+                #     outputs[table_name] = xl.parse(sheet)
+                # else:
+                #     inputs[table_name] = xl.parse(sheet)
         return inputs, outputs
+
+
+    # def load_data_from_excel_s(xl: pd.ExcelFile, table_index_sheet: str = '_table_index_') -> InputsOutputs:
+    #     """
+    #     Create dataFrames from the sheets of the Excel file.
+    #     Store in dictionary df_dict with table_name as key.
+    #     The table_name is either the name of the sheet, or the table_name as defined in the table_index_sheet.
+    #     TODO: Test allow for distinction between input and output via the index-sheet
+    #
+    #     Args:
+    #         xl (pandas.ExcelFile): Excel file
+    #         table_index_sheet (str): Name of table index sheet
+    #
+    #     Returns:
+    #         (Dict[str,DataFrame], Dict[str,DataFrame]): A tuple of inputs and outputs dictionaries of DataFrames,
+    #             one df per sheet
+    #     """
+    #     # Check for table_index sheet:
+    #     table_index_df = None
+    #     if (table_index_sheet is not None) and (table_index_sheet in xl.sheet_names):
+    #         table_index_df = xl.parse(table_index_sheet)
+    #         table_index_df.set_index('sheet_name', inplace=True)
+    #
+    #     # Load all sheets:
+    #     inputs = {}
+    #     outputs = {}
+    #     for sheet in xl.sheet_names:
+    #         if sheet != table_index_sheet:  # Do not load the table_index as a df_dict DataFrame
+    #             table_name = sheet  # default if no abbreviation
+    #             category = 'input'
+    #             # Translate table_name if possible:
+    #             if (table_index_df is not None):
+    #                 if (sheet in table_index_df.index.values):
+    #                     table_name = table_index_df.loc[sheet].table_name
+    #                 if ('category' in table_index_df.columns.values):  # TODO: test!
+    #                     category = table_index_df.loc[sheet].category
+    #
+    #             if category == 'output':
+    #                 outputs[table_name] = xl.parse(sheet)
+    #             else:
+    #                 inputs[table_name] = xl.parse(sheet)
+    #     return inputs, outputs
 
     @staticmethod
     def _create_truncted_post_fixed_name(long_name: str, max_length: int, index: int) -> str:

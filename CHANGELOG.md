@@ -5,7 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [0.4.0.1] 
+## [0.4.1.0b]
+### Added
+- MultiScenarioManager
+- ScenarioManager.load_data_from_excel_s load subset of tables
+- First draft of the ScenarioDbManager (undocumented)
+- Fixes to DeployedDOModel to make it CPD 3.5 compatible (new WML client)
+- Bumping the version from 0.4.0.2b to 0.4.1.0b due to the many changes
+- DataManager.prepare_data_frames method
+
+## [0.4.0.1]  - 2020-12-14
 ### Added
 - ScenarioManager.write_data_to_excel returns Excel filepath
 
