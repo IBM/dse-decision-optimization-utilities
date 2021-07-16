@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.0.0b]
 ### Changed
 - Replace dd-scenario with decision-optimization-client==1.0.0 package (essential for CP4D 4.0)
+- Deprecated the DOModelExporter: dev does not support exporting a DO model in any way.
 ### Added
 - 
 
