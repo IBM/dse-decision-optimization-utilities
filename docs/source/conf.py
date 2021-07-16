@@ -40,7 +40,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'm2r'
+    'm2r2'
               ]
 napoleon_google_docstring = True
 
@@ -94,7 +94,10 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme" #'alabaster'
+# html_theme = "sphinx_rtd_theme" #'alabaster'  # VT 20210716: doesn't work anymore
+# html_theme = 'bizstyle'  # 'classic' VT 20210716: both have a problem with a missing 'about.html' template
+
+html_style = 'alabaster'  # TODO VT 20210716: works but is ugly!
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -178,6 +181,7 @@ texinfo_documents = [
      author, 'DSEDOUtils', 'One line description of project.',
      'Miscellaneous'),
 ]
+
 
 
 
