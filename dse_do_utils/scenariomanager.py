@@ -3,7 +3,7 @@
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-# ScenarioManager
+# ScenarioManager - for CPD4.0 using decision_optimization_client instead of dd_scenario
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 import os
@@ -241,7 +241,7 @@ class ScenarioManager(object):
             ValueError: When either the model_name or the scenario_name doesn't match an existing entity.
         """
         client = ScenarioManager.get_dd_client(self)
-        dd_model_builder = client.get_model_builder(name=model_name)
+        dd_model_builder = client.get_experiment(name=model_name)
         if dd_model_builder is None:
             raise ValueError('No DO model with name `{}` exists'.format(model_name))
         scenario = dd_model_builder.get_scenario(name=scenario_name)
@@ -278,7 +278,7 @@ class ScenarioManager(object):
         """
         # Create scenario
         client = ScenarioManager.get_dd_client(self)
-        dd_model_builder = client.get_model_builder(name=model_name)
+        dd_model_builder = client.get_experiment(name=model_name)
         if dd_model_builder is None:
             raise ValueError('No DO model with name `{}` exists'.format(model_name))
         scenario = ScenarioManager.create_new_scenario(client, dd_model_builder, new_scenario_name=scenario_name,
@@ -364,13 +364,13 @@ class ScenarioManager(object):
         Creates a new blank scenario if a scenario with this name doesn't exist.
 
         Args:
-            client (dd_scenario.Client): Client managing the DO model
-            model_builder (dd_scenario.ModelBuilder): The DO model
+            client (decision_optimization_client.Client): Client managing the DO model
+            model_builder (decision_optimization_client.Experiment): The DO model
             new_scenario_name (str): Name for the new scenario
             template_scenario_name (str): Name of an existing scenario
 
         Returns:
-            A dd_scenario.Container of type scenario
+            A decision_optimization_client.Container of type scenario
         Raises:
             ValueError: new_scenario_name is None
             ValueError: new_scenario_name is the same as template_scenario_name
@@ -401,7 +401,7 @@ class ScenarioManager(object):
                 # Create a new scenario (does not have solve code)
                 scenario = model_builder.create_scenario(name=new_scenario_name)
             else:
-                # Existing scenario probably already has solver code, so maintain that.
+                # Existing scenario probabaly already has solver code, so maintain that.
                 ScenarioManager.clear_scenario_data(client, scenario)
         return scenario
 
@@ -769,21 +769,11 @@ class ScenarioManager(object):
         """Return true if environment is WS Cloud"""
         return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work'
 
-    # @staticmethod
-    # def _get_dd_client():
-    #     """Return the Client managing the DO scenario.
-    #     Only reason for this separate API is to place the import Client in one place,
-    #     so that editing this code on a local laptop generates one error.
-    #     Returns: new dd_scenario.Client
-    #     """
-    #     from dd_scenario import Client
-    #     return Client()
-
     def get_dd_client(self):
         """Return the Client managing the DO scenario.
-        Returns: new dd_scenario.Client
+        Returns: new decision_optimization_client.Client
         """
-        from dd_scenario import Client
+        from decision_optimization_client import Client
         if self.project is not None:
             pc = self.project.project_context
             return Client(pc=pc)
