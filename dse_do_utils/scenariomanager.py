@@ -329,14 +329,6 @@ class ScenarioManager(object):
             for table in outputs:
                 scenario.add_table_data(table, outputs[table], category='output')
 
-    # @staticmethod
-    # def load_scenario_from_data(scenario, data, category='input'):
-    #     """"
-    #     TODO: test. Not sure this actually works
-    #     """
-    #     for table in data:
-    #         scenario.add_table_data(table, data[table], category=category)
-
     # -----------------------------------------------------------------
     # Scenario operations
     # -----------------------------------------------------------------
@@ -377,7 +369,7 @@ class ScenarioManager(object):
         """
         if new_scenario_name is None: raise ValueError('The new_scenario_name cannot be None')
         if template_scenario_name is not None:
-            if (new_scenario_name != template_scenario_name): raise ValueError(
+            if (new_scenario_name == template_scenario_name): raise ValueError(
                 'The new_scenario_name `{}` must be different from the template_scenario_name `{}`'.format(
                     new_scenario_name, template_scenario_name))
             # Copy and clear data from template scenario
