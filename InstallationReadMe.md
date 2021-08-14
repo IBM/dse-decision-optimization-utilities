@@ -1,5 +1,26 @@
 # DSE_DO_Utils Installation
 
+## Installation on CPDv4.0
+For Cloud Pak for Data v4.0.
+
+### Install in customized environment
+CPDv4.0 allows for easy customization of environments.
+Add the following to the customization configuration:
+
+```
+channels:
+  - fake     # or empty
+  - nodefaults
+
+dependencies:
+  - pip
+  - pip:
+    - dse-do-utils==0.5.0.0
+    - decision-optimization-client==1.0.0
+```
+This automatically downloads dse-do-utils from PyPI and installs the package.
+(Note: the `fake` / `nodefaults` is a hack to avoid installation of pip itself. This will greatly improve the installation performance.)
+
 ## Installation on CPDv2.5
 For Cloud Pak for Data v2.5.
 See also the notebook `Install_DSE_DO_Utils_ReadMe.ipynb`.

@@ -19,7 +19,8 @@ urllib3.disable_warnings(
 
 
 class DOModelExporter(object):
-    """Exports a DO model from CPD2.5 using curl/web-requests.
+    """DEPRECATED. These APis are no longer available from CPDv3.5
+    Exports a DO model from CPD2.5 using curl/web-requests.
     By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.
 
     Can be used in 4 ways:
