@@ -1,164 +1,47 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>dse_do_utils.domodelexporter &mdash; DSE DO Utils 0.4.0.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dse_do_utils.domodelexporter &#8212; DSE DO Utils 0.5.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'0.4.0.1',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.domodelexporter</a></li> 
+      </ul>
+    </div>  
 
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../../index.html" class="icon icon-home"> DSE DO Utils
-          
-
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                0.4.0.1
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">Read me</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../readme_link.html#dse-do-utils">DSE_DO_Utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
-</ul>
-
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">DSE DO Utils</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-          <li><a href="../dse_do_utils.html">dse_do_utils</a> &raquo;</li>
-        
-      <li>dse_do_utils.domodelexporter</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <h1>Source code for dse_do_utils.domodelexporter</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
@@ -182,7 +65,8 @@
 
 
 <div class="viewcode-block" id="DOModelExporter"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter">[docs]</a><span class="k">class</span> <span class="nc">DOModelExporter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Exports a DO model from CPD2.5 using curl/web-requests.</span>
+    <span class="sd">&quot;&quot;&quot;DEPRECATED. These APis are no longer available from CPDv3.5</span>
+<span class="sd">    Exports a DO model from CPD2.5 using curl/web-requests.</span>
 <span class="sd">    By default, the export files are stored as datetime-stamped zip files in the Data Assets of the project.</span>
 
 <span class="sd">    Can be used in 4 ways:</span>
@@ -300,10 +184,10 @@
 <span class="sd">        Based on the cluster_name, user_name and password.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">curl_command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;curl -k -X GET </span><span class="se">\</span>
-<span class="s2">  </span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v1/preauth/validateAuth </span><span class="se">\</span>
+<span class="s2">  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cpd_cluster_host</span><span class="si">}</span><span class="s2">/v1/preauth/validateAuth </span><span class="se">\</span>
 <span class="s2">  -H &#39;Accept: */*&#39; </span><span class="se">\</span>
 <span class="s2">  -H &#39;Accept-Encoding: gzip, deflate&#39; </span><span class="se">\</span>
-<span class="s2">  -u &#39;</span><span class="si">{self.user_name}</span><span class="s2">:</span><span class="si">{self.password}</span><span class="s2">&#39;&quot;</span>
+<span class="s2">  -u &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
         <span class="k">return</span> <span class="n">curl_command</span></div>
 
 <div class="viewcode-block" id="DOModelExporter.get_do_model_export_curl"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl">[docs]</a>    <span class="k">def</span> <span class="nf">get_do_model_export_curl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -312,10 +196,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">export_file_name</span> <span class="o">=</span> <span class="n">DOModelExporter</span><span class="o">.</span><span class="n">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">)</span>
         <span class="n">curl_command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;curl -k -v -X GET </span><span class="se">\</span>
-<span class="s2">  &#39;</span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v2/decisions/</span><span class="si">{do_model_name}</span><span class="s2">/archive?projectId=</span><span class="si">{self.project_id}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">  &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cpd_cluster_host</span><span class="si">}</span><span class="s2">/v2/decisions/</span><span class="si">{</span><span class="n">do_model_name</span><span class="si">}</span><span class="s2">/archive?projectId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&#39; </span><span class="se">\</span>
 <span class="s2">  -H &#39;Accept: application/zip&#39; </span><span class="se">\</span>
-<span class="s2">  -H &#39;Authorization: Bearer </span><span class="si">{access_token}</span><span class="s2">&#39; </span><span class="se">\</span>
-<span class="s2">  --output </span><span class="si">{export_file_name}</span><span class="s2">&quot;</span>
+<span class="s2">  -H &#39;Authorization: Bearer </span><span class="si">{</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">  --output </span><span class="si">{</span><span class="n">export_file_name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">curl_command</span></div>
 
 <div class="viewcode-block" id="DOModelExporter.get_project_id"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_project_id">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -329,10 +213,10 @@
 <span class="sd">            project_id (str)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">project_name_match</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&gt;</span><span class="si">{project_name}</span><span class="s2">&lt;/a&gt;&quot;</span>
+        <span class="n">project_name_match</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&lt;/a&gt;&quot;</span>
         <span class="n">project_name_start</span> <span class="o">=</span> <span class="n">page_source</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">project_name_match</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">project_name_start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find project using &#39;</span><span class="si">{project_name_match}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find project using &#39;</span><span class="si">{</span><span class="n">project_name_match</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="n">project_id</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">start_project_id</span> <span class="o">=</span> <span class="n">page_source</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;data-id=&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">project_name_start</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span>
@@ -353,7 +237,7 @@
             <span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;*/*&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Accept-Encoding&#39;</span><span class="p">:</span> <span class="s1">&#39;gzip, deflate&#39;</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{self.cpd_cluster_host}</span><span class="s1">/v1/preauth/validateAuth&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cpd_cluster_host</span><span class="si">}</span><span class="s1">/v1/preauth/validateAuth&#39;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success retrieving accessToken.&quot;</span><span class="p">)</span>
@@ -380,14 +264,14 @@
             <span class="p">(</span><span class="s1">&#39;projectId&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.cpd_cluster_host}</span><span class="s2">/v2/decisions/</span><span class="si">{do_model_name}</span><span class="s2">/archive&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cpd_cluster_host</span><span class="si">}</span><span class="s2">/v2/decisions/</span><span class="si">{</span><span class="n">do_model_name</span><span class="si">}</span><span class="s2">/archive&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
             <span class="c1"># Success</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Success downloading DO Model. Writing to file.&quot;</span><span class="p">)</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_do_model_to_file</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exported DO model in </span><span class="si">{file_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exported DO model in </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error downloading DO Model: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;errors&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;message&#39;</span><span class="p">]))</span>
@@ -399,7 +283,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_export_file_name</span><span class="p">(</span><span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{do_model_name}</span><span class="s2">_export_{datetime.now().strftime(&#39;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M&#39;)}.zip&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">do_model_name</span><span class="si">}</span><span class="s2">_export_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.zip&quot;</span>
 
 <div class="viewcode-block" id="DOModelExporter.write_do_model_to_file"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_do_model_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">os</span>
@@ -429,43 +313,44 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AccessToken is None, not possible to export DO models.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
-           </div>
-           
+            <div class="clearer"></div>
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2019, Victor Terpstra
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.domodelexporter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Victor Terpstra.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.1.
+    </div>
+  </body>
 </html>
