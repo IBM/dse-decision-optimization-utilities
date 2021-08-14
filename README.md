@@ -6,6 +6,12 @@ Decision Optimization utilities for IBM Watson Studio Local and ICPd projects.
 
 This repository contains the package `dse_do_utils`. This can be installed using pip.
 
+## Important
+From v0.5.0.0, the dse-do-utils require the package decision-optimization-client==1.0.0 and no longer the former dd-scenario.
+This package is NOT installed by default, neither in CPD3.5 not CPD4.0.
+DSE-DO-Utils v0.5.0.0 works in both CPD 3.5 and 4.0.
+dd-scenario works in CPDv3.5, but NOT in CPDv4.0.
+
 ## Main classes:
 1. ScenarioManager. Reads and writes table data from and to all combinations of csv-files, Excel spreadhseet and DO scenario.
 2. DataManager. A DataManager is mostly a container for data and functions for pre- and post-processing. 
@@ -16,7 +22,28 @@ Can be subclassed and stored in a script to be able to share code between multip
 Also contains some functions to create dvars and export .lp files.
 4. ScenarioPicker. Interactively pick an existing scenario from a drop-down menu in a notebook. Typically used in visualization notebooks. 
 5. MapManager. For creating map visualizations using Folium.
-6. DOModelExporter. To export DO Models in CPDv2.5.
+
+## Installation on CPDv4.0
+For Cloud Pak for Data v4.0.
+
+### Install in customized environment
+CPDv4.0 allows for easy customization of environments.
+Add the following to the customization configuration:
+
+```
+channels:
+  - fake     # or empty
+  - nodefaults
+
+dependencies:
+  - pip
+  - pip:
+    - dse-do-utils==0.5.0.0
+    - decision-optimization-client==1.0.0
+```
+This automatically downloads dse-do-utils from PyPI and installs the package.
+(Note: the `fake` / `nodefaults` is a hack to avoid installation of pip itself. This will greatly improve the installation performance.)
+
 
 ## Installation (CPDv2.5)
 (For Cloud Pak for Data v2.5)
