@@ -66,8 +66,13 @@ class ScenarioManager(object):
     """
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
-                 local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None):
+                 local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
+                 template_scenario_name: Optional[str] = None):
         """Create a ScenarioManager.
+
+        Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
+        When creating a new scenario, will copy the template scenario. This ensures the new scenario can be updated with output generated from running the Jupyter notebook.
+        This is a work-around for the problem that the DO Experiment will not show outputs updated/generated from a notebook unless the scenario has at least been solved successfully once.
 
         Args:
             model_name (str):
@@ -76,6 +81,7 @@ class ScenarioManager(object):
             project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
             project_access_token (str): When running in WS Cloud, also requires a project_id
             project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
+            template_scenario_name (str): If scenario doesn't exists: create new one. If template_scenario_name is specified, use that as template.
         """
         self.model_name = model_name
         self.scenario_name = scenario_name
@@ -85,6 +91,7 @@ class ScenarioManager(object):
         self.project = project
         self.inputs = None
         self.outputs = None
+        self.template_scenario_name = template_scenario_name
 
     # def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
     #     self.model_name = model_name
@@ -191,7 +198,10 @@ class ScenarioManager(object):
 
     def write_data_into_scenario(self):
         """Writes the data into a DO scenario. Create new scenario and write data."""
-        return self.write_data_into_scenario_s(self.model_name, self.scenario_name, self.inputs, self.outputs)
+        return self.write_data_into_scenario_s(self.model_name, self.scenario_name, self.inputs, self.outputs, self.template_scenario_name)
+    # def write_data_into_scenario(self):
+    #     """Writes the data into a DO scenario. Create new scenario and write data."""
+    #     return self.write_data_into_scenario_s(self.model_name, self.scenario_name, self.inputs, self.outputs)
 
     def add_data_into_scenario(self, inputs=None, outputs=None):
         """Adds data to a DO scenario. If table exists, does an overwrite/replace."""

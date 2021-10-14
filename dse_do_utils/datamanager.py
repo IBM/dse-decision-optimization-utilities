@@ -57,9 +57,17 @@ class DataManager(object):
         """
         pass
 
-    def prepare_input_data_frames(self):
-        """Placeholder to process output data frames."""
-        pass
+    def prepare_output_data_frames(self):
+        """Placeholder to process output data frames.
+        Processes the default 'kpis' table.
+        """
+        if 'kpis' in self.outputs and self.outputs['kpis'].shape[0] > 0:
+            """Note: for some reason an imported scenario uses 'Name' and 'Value' as column names!"""
+            df = self.outputs['kpis']
+            df.columns= df.columns.str.upper()
+            self.kpis = (df
+                         .set_index(['NAME'], verify_integrity = True)
+                         )
 
     def print_hello(self):
         """FOR TESTING: Print some hello string.

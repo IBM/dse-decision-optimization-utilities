@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.0.0b documentation</title>
+    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.0b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
@@ -89,7 +89,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prepare_output_data_frames</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">prepare_input_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataManager.prepare_input_data_frames"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_input_data_frames">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_input_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Placeholder to process input data frames, in particular to set the index and</span>
 <span class="sd">        to assign dataframes to a direct property of the DataManager.</span>
 <span class="sd">        Make sure to test if table-name exists in input dict so we can re-use this class in e.g.</span>
@@ -101,11 +101,19 @@
 <span class="sd">                self.my_table = self.inputs[&#39;MyTable&#39;].set_index(&#39;Id&#39;, verify_integrity=True)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
-
-<div class="viewcode-block" id="DataManager.prepare_input_data_frames"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_input_data_frames">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_input_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Placeholder to process output data frames.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DataManager.prepare_output_data_frames"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_output_data_frames">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_output_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Placeholder to process output data frames.</span>
+<span class="sd">        Processes the default &#39;kpis&#39; table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;kpis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;kpis&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Note: for some reason an imported scenario uses &#39;Name&#39; and &#39;Value&#39; as column names!&quot;&quot;&quot;</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;kpis&#39;</span><span class="p">]</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kpis</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span>
+                         <span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;NAME&#39;</span><span class="p">],</span> <span class="n">verify_integrity</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataManager.print_hello"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.print_hello">[docs]</a>    <span class="k">def</span> <span class="nf">print_hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;FOR TESTING: Print some hello string.</span>
@@ -395,7 +403,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.0b documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
