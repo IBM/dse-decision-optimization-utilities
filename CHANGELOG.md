@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## [0.5.0.1b]
 ### Changed
-- 
+- ScenarioManager.write_data_into_scenario now supports a template scenario name when creating a new scenario.
 ### Added
 - 
 
