@@ -61,7 +61,8 @@ class DeployedDOModel(object):
         If the deployment_uuid is specified (WS Cloud), the space_name and model_name are optional.  TODO: test on IBM Cloud
         If no deployment_uuid (CPD), specify both the model and space name.
         Will find UUID based on space and deployed model id.
-        In CPDv3.5, always define the space_name, in combination with either the model_name, or the deployment_id
+        In CPDv3.5, always define the space_name, in combination with either the model_name, or the deployment_id.
+        Providing the deployment_id is more efficient. If proving the name, the DeployedDOModel will look for the DeploymentID based on the model name.
 
         Time limits:
         - Both are optional: if no value, no time-limit is imposed

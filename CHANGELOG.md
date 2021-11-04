@@ -5,11 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## [0.5.0.1b]
+## [0.5.1.0b]
+### Changed
+- data asset folder location in CP4D v4.0.2 (with new git)
+
+## [0.5.0.1]
 ### Changed
 - ScenarioManager.write_data_into_scenario now supports a template scenario name when creating a new scenario.
 ### Added
-- 
+- DataManager.extract_solution static method
 
 ## [0.5.0.0]
 ### Changed

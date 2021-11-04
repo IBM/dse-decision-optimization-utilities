@@ -119,7 +119,11 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
-        if self.env_is_wscloud():
+        if ScenarioManager.env_is_cpd40():
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space()
+            data_dir = wslib.mount.get_base_dir()
+        elif self.env_is_wscloud():
             data_dir = '/home/dsxuser/work'  # or use os.environ['PWD'] ?
         elif ScenarioManager.env_is_cpd25():
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
@@ -756,6 +760,18 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     # Utils
     # -----------------------------------------------------------------
+
+    @staticmethod
+    def env_is_cpd40() -> bool:
+        """Return true if environment is CPDv4.0.2 and in particular supports ibm_watson_studio_lib to get access to data assets"""
+        try:
+            from ibm_watson_studio_lib import access_project_or_space
+            # wslib = access_project_or_space()
+            # wslib.mount.get_base_dir()
+            is_cpd40 = True
+        except:
+            is_cpd40 = False
+        return is_cpd40
 
     @staticmethod
     def env_is_dsx() -> bool:
