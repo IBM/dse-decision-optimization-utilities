@@ -153,7 +153,7 @@ class ScenarioManager(object):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
 
-    def add_data_file_to_project(self, file_path: str, file_name: Optional[str] = None) -> None:
+    def add_data_file_using_project_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project.
         Applies to CP4Dv2.5 and WS Cloud
         Needs to be called after the file has been saved regularly in the file system in
@@ -172,6 +172,49 @@ class ScenarioManager(object):
             file_name = os.path.basename(file_path)
         with open(file_path, 'rb') as f:
             self.project.save_data(file_name=file_name, data=f, overwrite=True)
+
+    def add_data_file_using_ws_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+        Applies to CP4Dv4.0
+        TODO: where should the file be written?
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        from ibm_watson_studio_lib import access_project_or_space
+        wslib = access_project_or_space()
+        # BUG / TODO: this works fine if the asset doesn't yet exist. However, if so, it trows an error, i.e. the overwrite=True flag doesn't seem to work.
+        wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True)
+
+        # if file_name is None:
+        #     file_name = os.path.basename(file_path)
+        # with open(file_path, 'rb') as f:
+        #     # wslib.save_data(asset_name_or_item=file_name, data=f, overwrite=True)
+        #     wslib.upload_file(file_path=file_path, overwrite=True)
+
+    @staticmethod
+    def add_data_file_using_ws_lib_s(file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+        Applies to CP4Dv4.0
+        TODO: where should the file be written?
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        from ibm_watson_studio_lib import access_project_or_space
+        wslib = access_project_or_space()
+        # BUG / TODO: this works fine if the asset doesn't yet exist. However, if so, it trows an error, i.e. the overwrite=True flag doesn't seem to work.
+        wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True)
 
     @staticmethod
     def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
@@ -480,8 +523,10 @@ class ScenarioManager(object):
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        if ScenarioManager.env_is_cpd25():
-            self.add_data_file_to_project(excel_file_path_1, excel_file_name + '.xlsx')
+        if ScenarioManager.env_is_cpd40():
+            self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        elif ScenarioManager.env_is_cpd25():
+            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
         # # Save the csv copy (no longer supported in CPD25 because not necessary)
         # elif copy_to_csv:
         #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
@@ -747,14 +792,18 @@ class ScenarioManager(object):
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd25():
+                if ScenarioManager.env_is_cpd40():
+                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                elif ScenarioManager.env_is_cpd25():
                     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd25():
+                if ScenarioManager.env_is_cpd40():
+                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                elif ScenarioManager.env_is_cpd25():
                     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
 
     # -----------------------------------------------------------------
@@ -833,6 +882,8 @@ class ScenarioManager(object):
         lp_file_name = model_name + '.lp'
         lp_file_path = os.path.join(datasets_dir, lp_file_name)
         mdl.export_as_lp(lp_file_path)  # Writes the .lp file
+        if ScenarioManager.env_is_cpd40():
+            self.add_data_file_using_ws_lib(lp_file_path)
         if self.env_is_cpd25():
-            self.add_data_file_to_project(lp_file_path, lp_file_name)
+            self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
         return lp_file_path
