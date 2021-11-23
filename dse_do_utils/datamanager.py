@@ -342,3 +342,13 @@ class DataManager(object):
                 if column in df.columns:
                     df = df.drop([column], axis=1)
         return df
+
+    def get_raw_table_by_name(self, table_name: str) -> Optional[pd.DataFrame]:
+        """Get the 'raw' (non-indexed) table from inputs or outputs."""
+        if self.inputs is not None and table_name in self.inputs:
+            df = self.inputs[table_name]
+        elif self.outputs is not None and table_name in self.outputs:
+            df = self.outputs[table_name]
+        else:
+            df = None
+        return df

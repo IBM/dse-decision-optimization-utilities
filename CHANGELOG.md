@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.1.0b]
 ### Changed
 - data asset folder location in CP4D v4.0.2 (with new git)
+- save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2
 ### Added
 - DataManager.extract_solution static method
+- DataManager.get_raw_table_by_name method
 
 ## [0.5.0.1]
 ### Changed
