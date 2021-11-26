@@ -854,6 +854,7 @@ class ScenarioManager(object):
         """Return true if environment is CPDv2.5"""
         return 'PWD' in os.environ
 
+    @staticmethod
     def env_is_wscloud(self) -> bool:
         """Return true if environment is WS Cloud"""
         return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work'
