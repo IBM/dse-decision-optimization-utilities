@@ -536,11 +536,11 @@ class ScenarioManager(object):
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        if ScenarioManager.env_is_cpd40():
+        if ScenarioManager.env_is_wscloud():  # Test for CPDaaS FIRST because env_is_cpd40 call in CPDaaS will generate a warning in Jupyter
+            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        elif ScenarioManager.env_is_cpd40():
             self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
         elif ScenarioManager.env_is_cpd25():
-            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        elif ScenarioManager.env_is_wscloud():
             self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
         # # Save the csv copy (no longer supported in CPD25 because not necessary)
         # elif copy_to_csv:
