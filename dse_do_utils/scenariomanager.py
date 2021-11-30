@@ -122,7 +122,7 @@ class ScenarioManager(object):
         # Note: first test for wscloud:
         # In CPDaaS the current test for cpd40 returns TRUE!
         if self.env_is_wscloud():
-            data_dir = '/home/wsuser/work'  # or use os.environ['PWD'] ?
+            data_dir = os.environ['PWD']  # '/home/wsuser/work' or use os.environ['PWD']
         elif ScenarioManager.env_is_cpd40():
             from ibm_watson_studio_lib import access_project_or_space
             wslib = access_project_or_space()
@@ -857,7 +857,8 @@ class ScenarioManager(object):
     @staticmethod
     def env_is_wscloud() -> bool:
         """Return true if environment is WS Cloud"""
-        return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work'
+        # return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work'
+        return 'RUNTIME_ENV_APSX_URL' in os.environ and os.environ['RUNTIME_ENV_APSX_URL'] == 'https://api.dataplatform.cloud.ibm.com'
 
     def get_dd_client(self):
         """Return the Client managing the DO scenario.
