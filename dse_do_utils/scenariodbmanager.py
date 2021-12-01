@@ -1,3 +1,11 @@
+# Copyright IBM All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# ScenarioDbManager 
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
 import sqlalchemy
 import pandas as pd
 from typing import Dict, List
@@ -159,6 +167,7 @@ class ScenarioDbManager():
         self.metadata = sqlalchemy.MetaData()
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
+        self.read_scenario_table_from_db_callback = None  # For Flask caching in Dash Enterprise
 
     #     def __init__(self, db_tables: Dict[str, ScenarioDbTable], credentials=None, schema: str = None, echo=False,
     #                  multi_scenario: bool = False):
@@ -180,33 +189,123 @@ class ScenarioDbManager():
     def create_sqllite_engine(self, echo):
         return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo)
 
+    #     def get_db2_connection_string(self, credentials, schema: str):
+    #         """Create a DB2 connection string.
+    #         Needs a work-around for DB2 on cloud.ibm.com.
+    #         The option 'ssl=True' doesn't work. Instead use 'Security=ssl'.
+    #         See https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy.
+
+    #         TODO:
+    #         * Not sure the check for the port 50001 is necessary, or if this applies to any `ssl=True`
+    #         * The schema doesn't work properly in db2 on cloud.ibm.com. Instead it automatically creates a schema based on the username.
+    #         * Also tried to use 'schema={schema}', but it didn't work properly.
+    #         * In case ssl=False, do NOT add the option `ssl=False`: doesn't gie an error, but select rows will always return zero rows!
+    #         * TODO: what do we do in case ssl=True, but the port is not 50001?!
+    #         """
+    #         if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
+    #             ssl = '?Security=ssl'  # Instead of 'ssl=True'
+    #         else:
+    #             #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
+    #             ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
+    #         connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format(
+    #             username=credentials['username'],
+    #             password=credentials['password'],
+    #             host=credentials['host'],
+    #             port=credentials['port'],
+    #             database=credentials['database'],
+    #             ssl=ssl,
+    #             schema=schema
+    #         )
+    #         return connection_string
+
     def get_db2_connection_string(self, credentials, schema: str):
         """Create a DB2 connection string.
+
         Needs a work-around for DB2 on cloud.ibm.com.
+        Workaround: Pass in your credentials like this:
+
+        DB2_credentials = {
+            'username': "user1",
+            'password': "password1",
+            'host': "hostname.databases.appdomain.cloud",
+            'port': "30080",
+            'database': "bludb",
+            'schema': "my_schema", #<- SCHEMA IN DATABASE
+            'ssl': "SSL" #<- NOTE: SPECIFY SSL HERE IF TRUE FOR DB2
+        }
+
         The option 'ssl=True' doesn't work. Instead use 'Security=ssl'.
         See https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy.
 
         TODO:
         * Not sure the check for the port 50001 is necessary, or if this applies to any `ssl=True`
+            * Took the port 50001 out. This is because the port isn't consistent per db2 instance in cloud. See code below.
         * The schema doesn't work properly in db2 on cloud.ibm.com. Instead it automatically creates a schema based on the username.
+            * This might be a limitation in the lite DB2 version. Code below worked properly with paid verions where you can have multiple schemas
         * Also tried to use 'schema={schema}', but it didn't work properly.
+            * See code below, it should work now.
         * In case ssl=False, do NOT add the option `ssl=False`: doesn't gie an error, but select rows will always return zero rows!
+            * It appears you have to always specify SSL for DB2aaS- but code below allows you to override with warning.
         * TODO: what do we do in case ssl=True, but the port is not 50001?!
+            * Should be fixed.
         """
-        if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
-            ssl = '?Security=ssl'  # Instead of 'ssl=True'
+        #REMOVED GY 11/16/21
+        #
+        #if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
+        #    ssl = '?Security=ssl'  # Instead of 'ssl=True'
+        #else:
+        #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
+        #   ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
+        #connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format( if(credentials['ssl']):
+
+        if 'ssl' in credentials:
+            #    SAVE FOR FUTURE LOGGER MESSAGES...
+            #print("SSL Flag detected.")
+
+            #SET THIS IF WE NEED TO SEE IF WE ARE CONNECTING TO A CLOUD DATABASE VS ON PREM (FUTURE?)
+            #WE ARE CONNECTING TO A DB2 DATABASE AAS, SO WE NEED TO SET (CHECK) THE SSL FLAG CORRECTLY
+            #if("DATABASES.APPDOMAIN.CLOUD" in str(credentials['host']).upper()):
+            #    SAVE FOR FUTURE LOGGER MESSAGES...
+            #print("DB2 database in the cloud detected based off hostname...")
+
+            #SSL=True IS NOT THE PROPER SYNTAX FOR SQLALCHEMY AND DB2 CLOUD. IT NEEDS TO BE 'ssl=SSL' so we will correct it.
+
+            if(str(credentials['ssl']).upper() == 'TRUE'):
+                #                 print("WARNING! 'SSL':'TRUE' Detected, but it needs to be 'ssl':'SSL' for SQL ALCHEMY. Correcting...")
+                credentials['ssl'] = 'SSL'
+            elif(str(credentials['ssl']).upper() == 'SSL'):
+                #    SAVE FOR FUTURE LOGGER MESSAGES...
+                #print("SSL Specified correctly for DB2aaS cloud connection.")
+                credentials['ssl'] = 'SSL'
+            else:
+                print("WARNING! SSL was specified as a none standard value: SSL was not set to True or SSL.")
+
+            connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema};SECURITY={ssl}'.format(
+                username=credentials['username'],
+                password=credentials['password'],
+                host=credentials['host'],
+                port=credentials['port'],
+                database=credentials['database'],
+                ssl=credentials['ssl'],
+                schema=schema
+            )
+
         else:
-            #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
-            ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
-        connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format(
-            username=credentials['username'],
-            password=credentials['password'],
-            host=credentials['host'],
-            port=credentials['port'],
-            database=credentials['database'],
-            ssl=ssl,
-            schema=schema
-        )
+            #             print(" WARNING! SSL was not specified! Creating connection string without it!")
+
+            connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema}'.format(
+                username=credentials['username'],
+                password=credentials['password'],
+                host=credentials['host'],
+                port=credentials['port'],
+                database=credentials['database'],
+                schema=schema
+            )
+
+
+            #    SAVE FOR FUTURE LOGGER MESSAGES...
+        #print("Connection String : " + connection_string)
+
         return connection_string
 
     def create_db2_engine(self, credentials, schema: str, echo: bool = False):
@@ -307,6 +406,93 @@ class ScenarioDbManager():
                     print(
                         f"Max number of exceptions {max_num_exceptions} for this table exceeded. Stopped inserting more data.")
                     break
+
+    def read_scenario_table_from_db(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
+        """
+        Load a single table from the DB.
+        :param scenario_name: Name of scenario
+        :param scenario_table_name: Name of scenario table (not the DB table name)
+        :return:
+        """
+        # print(f"read table {scenario_table_name}")
+        if scenario_table_name in self.input_db_tables:
+            db_table = self.input_db_tables[scenario_table_name]
+        elif scenario_table_name in self.output_db_tables:
+            db_table = self.output_db_tables[scenario_table_name]
+        else:
+            # error!
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot load data from DB.")
+
+        db_table_name = db_table.db_table_name
+        sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
+        df = pd.read_sql(sql, con=self.engine)
+        if db_table_name != 'scenario':
+            df = df.drop(columns=['scenario_name'])
+
+        return df
+
+    def set_table_read_callback(self, table_read_callback=None):
+        """Sets a callback function to read a table from a scenario
+        """
+        #     print(f"Set callback to {table_read_callback}")
+        self.read_scenario_table_from_db_callback = table_read_callback
+
+    def read_scenario_table_from_db_cached(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
+        """For use with Flask caching. Default implementation.
+        In case no caching has been configured. Simply calls the regular method `read_scenario_table_from_db`.
+
+        For caching:
+        1. Specify a callback procedure in `read_scenario_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
+        which in turn calls the regular method `read_scenario_table_from_db`
+        """
+        # 1. Override this method and call a procedure that uses a hard-coded version of a ScenarioDbManager,
+        # which in turn calls the regular method `read_scenario_table_from_db`
+
+        # return self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        if self.read_scenario_table_from_db_callback is not None:
+            df = self.read_scenario_table_from_db_callback(scenario_name, scenario_table_name)  # NOT a method!
+        else:
+            df = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        return df
+
+    def read_scenario_tables_from_db_cached(self, scenario_name: str, input_table_names:List[str]=None, output_table_names:List[str]=None):
+        """For use with Flask caching. Loads data for selected input and output tables.
+        Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`"""
+
+        if input_table_names is None:  # load all tables by default
+            input_table_names = list(self.input_db_tables.keys())
+            if 'Scenario' in input_table_names: input_table_names.remove('Scenario')  # Remove the scenario table
+        if output_table_names is None:  # load all tables by default
+            output_table_names = self.output_db_tables.keys()
+
+        inputs = {}
+        for scenario_table_name in input_table_names:
+            # print(f"read input table {scenario_table_name}")
+            inputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
+
+        outputs = {}
+        for scenario_table_name in output_table_names:
+            # print(f"read output table {scenario_table_name}")
+            outputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
+        return inputs, outputs
+
+    def read_scenario_tables_from_db(self, scenario_name: str, input_table_names:List[str]=None, output_table_names:List[str]=None):
+        """Loads data for selected input and output tables.
+        If either list is names is None, will load all tables as defined in db_tables configuration.
+        """
+        if input_table_names is None:  # load all tables by default
+            input_table_names = list(self.input_db_tables.keys())
+            if 'Scenario' in input_table_names: input_table_names.remove('Scenario')  # Remove the scenario table
+        if output_table_names is None:  # load all tables by default
+            output_table_names = self.output_db_tables.keys()
+
+        inputs = {}
+        for scenario_table_name in input_table_names:
+            inputs[scenario_table_name] = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        outputs = {}
+        for scenario_table_name in output_table_names:
+            outputs[scenario_table_name] = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        return inputs, outputs
 
     def read_scenario_from_db(self, scenario_name: str):
         """Single scenario load.
@@ -442,3 +628,45 @@ class ScenarioDbManager():
         sql = f"SELECT * FROM SCENARIO"
         df = pd.read_sql(sql, con=self.engine).set_index(['scenario_name'])
         return df
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#  Input Tables
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class ScenarioTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'scenario'):
+        columns_metadata = [
+            Column('scenario_name', String(256), primary_key=True),
+        ]
+        super().__init__(db_table_name, columns_metadata)
+
+
+class ParameterTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'parameters', extended_columns_metadata: List[Column] = []):
+        columns_metadata = [
+            Column('param', String(256), primary_key=True),
+            Column('value', String(256), primary_key=False),
+        ]
+        columns_metadata.extend(extended_columns_metadata)
+        super().__init__(db_table_name, columns_metadata)
+
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#  Output Tables
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class KpiTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'kpis'):
+        columns_metadata = [
+            Column('NAME', String(256), primary_key=True),
+            Column('VALUE', Float(), primary_key=False),
+        ]
+        super().__init__(db_table_name, columns_metadata)
+
+class BusinessKpiTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'business_kpi', extended_columns_metadata: List[Column] = []):
+        columns_metadata = [
+            Column('kpi', String(256), primary_key=True),
+            Column('value', Float(), primary_key=False),
+        ]
+        columns_metadata.extend(extended_columns_metadata)
+        super().__init__(db_table_name, columns_metadata)
