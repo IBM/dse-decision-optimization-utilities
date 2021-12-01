@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-## [0.5.1.0]
+## [Unreleased]## [0.5.1.1b]
+### Changed
+- (minor) Release dates in this change log
+- (planned) Allow forced platform/version in ScenarioManager
+- (planned) ScenarioDbManager support for DB2WH in cloud
+### Added
+
+
+## [0.5.1.0] - 2021-11-30
 ### Changed
 - data asset folder location in CP4D v4.0.2 (with new git)
 - save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2 in ScenarioManager
@@ -13,11 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DataManager.extract_solution static method
 - DataManager.get_raw_table_by_name method
 
-## [0.5.0.1]
+## [0.5.0.1] - 2021-10-29
 ### Changed
 - ScenarioManager.write_data_into_scenario now supports a template scenario name when creating a new scenario.
 
-## [0.5.0.0]
+## [0.5.0.0] - 2021-08-14
 ### Changed
 - Replace dd-scenario with decision-optimization-client==1.0.0 package (essential for CP4D 4.0)
 - Deprecated the DOModelExporter: dev does not support exporting a DO model in any way.
@@ -25,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 
 
-## [0.4.1.0]
+## [0.4.1.0] - 2021-07-16
 ### Added
 - MultiScenarioManager
 - ScenarioManager.load_data_from_excel_s load subset of tables
