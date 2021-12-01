@@ -326,3 +326,29 @@ class DataManager(object):
     #         dataframe,
     #         dataframe.apply(
     #             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)
+
+    @staticmethod
+    def extract_solution(df, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None, drop: bool = True):
+        """Generalized routine to extract a solution value.
+        Can remove the dvar column from the df to be able to have a clean df for export into scenario."""
+        if extract_dvar_names is not None:
+            for xDVarName in extract_dvar_names:
+                if xDVarName in df.columns:
+                    df[f'{xDVarName}Sol'] = [dvar.solution_value for dvar in df[xDVarName]]
+                    if drop:
+                        df = df.drop([xDVarName], axis=1)
+        if drop and drop_column_names is not None:
+            for column in drop_column_names:
+                if column in df.columns:
+                    df = df.drop([column], axis=1)
+        return df
+
+    def get_raw_table_by_name(self, table_name: str) -> Optional[pd.DataFrame]:
+        """Get the 'raw' (non-indexed) table from inputs or outputs."""
+        if self.inputs is not None and table_name in self.inputs:
+            df = self.inputs[table_name]
+        elif self.outputs is not None and table_name in self.outputs:
+            df = self.outputs[table_name]
+        else:
+            df = None
+        return df

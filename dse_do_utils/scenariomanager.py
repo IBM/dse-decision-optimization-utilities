@@ -119,8 +119,14 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
+        # Note: first test for wscloud:
+        # In CPDaaS the current test for cpd40 returns TRUE!
         if self.env_is_wscloud():
-            data_dir = '/home/dsxuser/work'  # or use os.environ['PWD'] ?
+            data_dir = os.environ['PWD']  # '/home/wsuser/work' or use os.environ['PWD']
+        elif ScenarioManager.env_is_cpd40():
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space()
+            data_dir = wslib.mount.get_base_dir()
         elif ScenarioManager.env_is_cpd25():
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
@@ -149,11 +155,11 @@ class ScenarioManager(object):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
 
-    def add_data_file_to_project(self, file_path: str, file_name: Optional[str] = None) -> None:
+    def add_data_file_using_project_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project.
-        Applies to CP4Dv2.5 and WS Cloud
+        Applies to CP4Dv2.5 and WS Cloud/CP4DaaS
         Needs to be called after the file has been saved regularly in the file system in
-        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        `/project_data/data_asset/` (for CPD2.5) or `/home/wsuser/work/` in CPDaaS.
         Ensures the file is visible in the Data Assets of the Watson Studio UI.
 
         Args:
@@ -169,9 +175,62 @@ class ScenarioManager(object):
         with open(file_path, 'rb') as f:
             self.project.save_data(file_name=file_name, data=f, overwrite=True)
 
+    def add_data_file_using_ws_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+        Applies to CP4Dv4.0
+        TODO: where should the file be written?
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/wsuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+
+        with open(file_path, 'rb') as f:
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space()
+            wslib.save_data(asset_name_or_item=file_name, data=f.read(), overwrite=True)
+
+        # Notes:
+        # * wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True) CANNOT(!) overwrite an existing asset
+        # * Unlike with project_lib, we need to do a f.read()
+        # * ibm_watson_studio_lib is not (yet?) available in CPDaaS, but if so similar to project_lib it may need a handle to the self.project. Thus this non-static method.
+
+    @staticmethod
+    def add_data_file_using_ws_lib_s(file_path: str, file_name: Optional[str] = None) -> None:
+        """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+        Applies to CP4Dv4.0
+        TODO: where should the file be written?
+        Needs to be called after the file has been saved regularly in the file system in
+        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
+        Ensures the file is visible in the Data Assets of the Watson Studio UI.
+
+        Args:
+            file_path (str): full file path, including the file name and extension
+            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+        """
+        # Add to Project
+        if file_name is None:
+            file_name = os.path.basename(file_path)
+
+        with open(file_path, 'rb') as f:
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space()
+            wslib.save_data(asset_name_or_item=file_name, data=f.read(), overwrite=True)
+
+        # Note that wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True) CANNOT(!) overwrite an existing asset
+        # Unlike with project_lib, we need to do a f.read()
+
+
     @staticmethod
     def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
-        """Add a data file to the Watson Studio project.
+        """DEPRECATED: will never work on CP4DaaS since it requires the project_lib.Project
+        Add a data file to the Watson Studio project.
         Applies to CP4Dv2.5.
         Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
         Ensures the file is visible in the Data Assets of the Watson Studio UI.
@@ -183,6 +242,7 @@ class ScenarioManager(object):
         # Add to Project
         if file_name is None:
             file_name = os.path.basename(file_path)
+
         with open(file_path, 'rb') as f:
             from project_lib import Project
             project = Project.access()
@@ -476,8 +536,12 @@ class ScenarioManager(object):
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        if ScenarioManager.env_is_cpd25():
-            self.add_data_file_to_project(excel_file_path_1, excel_file_name + '.xlsx')
+        if ScenarioManager.env_is_wscloud():  # Test for CPDaaS FIRST because env_is_cpd40 call in CPDaaS will generate a warning in Jupyter
+            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        elif ScenarioManager.env_is_cpd40():
+            self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        elif ScenarioManager.env_is_cpd25():
+            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
         # # Save the csv copy (no longer supported in CPD25 because not necessary)
         # elif copy_to_csv:
         #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
@@ -743,19 +807,42 @@ class ScenarioManager(object):
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd25():
+                if ScenarioManager.env_is_cpd40():
+                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                elif ScenarioManager.env_is_cpd25():
                     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd25():
+                if ScenarioManager.env_is_cpd40():
+                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                elif ScenarioManager.env_is_cpd25():
                     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
 
     # -----------------------------------------------------------------
     # Utils
     # -----------------------------------------------------------------
+
+    @staticmethod
+    def env_is_cpd40() -> bool:
+        """Return true if environment is CPDv4.0.2 and in particular supports ibm_watson_studio_lib to get access to data assets.
+
+        Notes:
+            - The `import from ibm_watson_studio_lib import access_project_or_space` does NOT fail in CPDaaS
+            - The `wslib = access_project_or_space()` does fail in CPDaaS, however with an ugly error message
+            - Current ugly work-around is to always first test for CPDaaS using the environment variable
+            - TODO: prevent error/warning in CPDaaS
+        """
+        try:
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space()
+            wslib.mount.get_base_dir()
+            is_cpd40 = True
+        except:
+            is_cpd40 = False
+        return is_cpd40
 
     @staticmethod
     def env_is_dsx() -> bool:
@@ -767,9 +854,11 @@ class ScenarioManager(object):
         """Return true if environment is CPDv2.5"""
         return 'PWD' in os.environ
 
-    def env_is_wscloud(self) -> bool:
+    @staticmethod
+    def env_is_wscloud() -> bool:
         """Return true if environment is WS Cloud"""
-        return 'PWD' in os.environ and os.environ['PWD'] == '/home/dsxuser/work'
+        # return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work'
+        return 'RUNTIME_ENV_APSX_URL' in os.environ and os.environ['RUNTIME_ENV_APSX_URL'] == 'https://api.dataplatform.cloud.ibm.com'
 
     def get_dd_client(self):
         """Return the Client managing the DO scenario.
@@ -817,6 +906,8 @@ class ScenarioManager(object):
         lp_file_name = model_name + '.lp'
         lp_file_path = os.path.join(datasets_dir, lp_file_name)
         mdl.export_as_lp(lp_file_path)  # Writes the .lp file
+        if ScenarioManager.env_is_cpd40():
+            self.add_data_file_using_ws_lib(lp_file_path)
         if self.env_is_cpd25():
-            self.add_data_file_to_project(lp_file_path, lp_file_name)
+            self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
         return lp_file_path

@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.0.1 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.1.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -307,6 +307,13 @@ See <a class="reference external" href="https://mkonrad.net/2016/04/16/cross-joi
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.extract_solution">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">extract_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extract_dvar_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_column_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.extract_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.extract_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalized routine to extract a solution value.
+Can remove the dvar column from the df to be able to have a clean df for export into scenario.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.get_parameter_value">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_parameter_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'%Y-%m-%d</span> <span class="pre">%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.get_parameter_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.get_parameter_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get value of parameter from the parameter table (DataFrame).
@@ -325,6 +332,12 @@ This requires the explicit conversion to the expected data type.</p>
 </dd>
 </dl>
 <p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.get_raw_table_by_name">
+<span class="sig-name descname"><span class="pre">get_raw_table_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.get_raw_table_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.get_raw_table_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ‘raw’ (non-indexed) table from inputs or outputs.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1092,12 +1105,12 @@ Will create a file <cite>datasets/MyExcelFileOutput.xlsx</cite>.:</p>
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project">
-<span class="sig-name descname"><span class="pre">add_data_file_to_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_to_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a data file to the Watson Studio project.
-Applies to CP4Dv2.5 and WS Cloud
-Needs to be called after the file has been saved regularly in the file system in
-<cite>/project_data/data_asset/</cite> (for CPD2.5) or <cite>/home/dsxuser/work/</cite> in WS Cloud.
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_data_file_to_project_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_to_project_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED: will never work on CP4DaaS since it requires the project_lib.Project
+Add a data file to the Watson Studio project.
+Applies to CP4Dv2.5.
+Needs to be called after the file has been saved regularly in the file system in <cite>/project_data/data_asset/</cite>.
 Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1110,11 +1123,50 @@ Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_data_file_to_project_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_to_project_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_project_lib">
+<span class="sig-name descname"><span class="pre">add_data_file_using_project_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_using_project_lib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_project_lib" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a data file to the Watson Studio project.
-Applies to CP4Dv2.5.
-Needs to be called after the file has been saved regularly in the file system in <cite>/project_data/data_asset/</cite>.
+Applies to CP4Dv2.5 and WS Cloud/CP4DaaS
+Needs to be called after the file has been saved regularly in the file system in
+<cite>/project_data/data_asset/</cite> (for CPD2.5) or <cite>/home/wsuser/work/</cite> in CPDaaS.
+Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – full file path, including the file name and extension</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib">
+<span class="sig-name descname"><span class="pre">add_data_file_using_ws_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_using_ws_lib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+Applies to CP4Dv4.0
+TODO: where should the file be written?
+Needs to be called after the file has been saved regularly in the file system in
+<cite>/project_data/data_asset/</cite> (for CPD2.5) or <cite>/home/wsuser/work/</cite> in WS Cloud.
+Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – full file path, including the file name and extension</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib_s">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_data_file_using_ws_lib_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_data_file_using_ws_lib_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
+Applies to CP4Dv4.0
+TODO: where should the file be written?
+Needs to be called after the file has been saved regularly in the file system in
+<cite>/project_data/data_asset/</cite> (for CPD2.5) or <cite>/home/dsxuser/work/</cite> in WS Cloud.
 Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1192,6 +1244,19 @@ Creates a new blank scenario if a scenario with this name doesn’t exist.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd40">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">env_is_cpd40</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_cpd40"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd40" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if environment is CPDv4.0.2 and in particular supports ibm_watson_studio_lib to get access to data assets.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>import from ibm_watson_studio_lib import access_project_or_space</cite> does NOT fail in CPDaaS</p></li>
+<li><p>The <cite>wslib = access_project_or_space()</cite> does fail in CPDaaS, however with an ugly error message</p></li>
+<li><p>Current ugly work-around is to always first test for CPDaaS using the environment variable</p></li>
+<li><p>TODO: prevent error/warning in CPDaaS</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">env_is_dsx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_dsx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return true if environment is DSX</p>
@@ -1199,7 +1264,7 @@ Creates a new blank scenario if a scenario with this name doesn’t exist.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.env_is_wscloud">
-<span class="sig-name descname"><span class="pre">env_is_wscloud</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_wscloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_wscloud" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">env_is_wscloud</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.env_is_wscloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.env_is_wscloud" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return true if environment is WS Cloud</p>
 </dd></dl>
 
@@ -1783,7 +1848,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
