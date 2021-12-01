@@ -7,15 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.1.1b]
 ### Changed
 - (minor) Release dates in this change log
-- (planned) Allow forced platform/version in ScenarioManager
+- (minor) Removed support for DSX as platform choice
+- Optional forced platform/version in ScenarioManager
 - (planned) ScenarioDbManager support for DB2WH in cloud
 ### Added
 
 
 ## [0.5.1.0] - 2021-11-30
 ### Changed
-- data asset folder location in CP4D v4.0.2 (with new git)
-- save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2 in ScenarioManager
+- Writing data asset in CP4DaaS (as of 30 Nov 2021)
+- Data asset folder location in CP4D v4.0.2 (with new git)
+- Save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2 in ScenarioManager
 ### Added
 - DataManager.extract_solution static method
 - DataManager.get_raw_table_by_name method

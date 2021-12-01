@@ -163,19 +163,21 @@ class OptimizationEngine(object):
         lp_file_name_1 = os.path.join(datasets_dir, model_name + '.lp')
         model.export_as_lp(lp_file_name_1)  # Writes the .lp file
 
+        ScenarioManager.add_file_as_data_asset_s(lp_file_name_1, model_name + '.lp')
 
-        if ScenarioManager.env_is_cpd40():
-            ScenarioManager.add_data_file_using_ws_lib_s(lp_file_name_1)
-        if ScenarioManager.env_is_cpd25():
-            ScenarioManager.add_data_file_to_project_s(lp_file_name_1, model_name + '.lp')
-        # Copy to csv (Not supported in CPD25. Not necessary.):
-        elif copy_to_csv:
-            # lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
-            # csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
-            lp_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.lp')
-            csv_file_name_2 = os.path.join(datasets_dir, model_name + '_lp.csv')
-            model.export_as_lp(lp_file_name_2)
-            os.rename(lp_file_name_2, csv_file_name_2)
+        # platform = ScenarioManager.detect_platform()
+        # if platform == platform.CPD40:
+        #     ScenarioManager.add_data_file_using_ws_lib_s(lp_file_name_1)
+        # if platform == platform.CPD25:
+        #     ScenarioManager.add_data_file_to_project_s(lp_file_name_1, model_name + '.lp')
+        # # Copy to csv (Not supported in CPD25. Not necessary.):
+        # elif copy_to_csv:
+        #     # lp_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_to_csv.lp')
+        #     # csv_file_name_2 = os.path.join(root_dir, 'datasets', model_name + '_lp.csv')
+        #     lp_file_name_2 = os.path.join(datasets_dir, model_name + '_to_csv.lp')
+        #     csv_file_name_2 = os.path.join(datasets_dir, model_name + '_lp.csv')
+        #     model.export_as_lp(lp_file_name_2)
+        #     os.rename(lp_file_name_2, csv_file_name_2)
         # Return
         return lp_file_name_1
 
