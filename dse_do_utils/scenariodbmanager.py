@@ -123,9 +123,16 @@ class ScenarioDbTable():
 #########################################################################
 class AutoScenarioDbTable(ScenarioDbTable):
     """Designed to automatically generate the table definition based on the DataFrame.
-    TODO: may not be working properly. Needs testing.
+    Advantages:
+    - No need to define a custom ScenarioDbTable class per table
+    - Automatically all columns are inserted
+    Disadvantages:
+    - No primary and foreign key relations. Thus no checks.
+    - Missing relationships means Cognos cannot automatically extract a data model
     """
-    def __init__(self, db_table_name):
+    def __init__(self, db_table_name: str):
+        """Need to provide a name for the DB table.
+        """
         super().__init__(db_table_name)
 
     def create_table_metadata(self, metadata, multi_scenario: bool = False):
@@ -261,7 +268,8 @@ class ScenarioDbManager():
                 #print("SSL Specified correctly for DB2aaS cloud connection.")
                 credentials['ssl'] = 'SSL'
             else:
-                print("WARNING! SSL was specified as a none standard value: SSL was not set to True or SSL.")
+                # print("WARNING! SSL was specified as a none standard value: SSL was not set to True or SSL.")
+                pass
 
             connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema};SECURITY={ssl}'.format(
                 username=credentials['username'],
@@ -516,9 +524,16 @@ class ScenarioDbManager():
         Also deletes entry in scenario table
         TODO: do within one session/cursor, so we don't have to worry about the order of the delete?
         """
+        insp = sqlalchemy.inspect(self.engine)
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
-            sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
-            self.engine.execute(sql)
+            if insp.has_table(db_table.db_table_name, schema=self.schema):
+                sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
+                self.engine.execute(sql)
+
+        # for scenario_table_name, db_table in reversed(self.db_tables.items()):
+        #     sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
+        #     self.engine.execute(sql)
+
         # Delete scenario entry in scenario table:
         sql = f"DELETE FROM SCENARIO WHERE scenario_name = '{scenario_name}'"
         self.engine.execute(sql)
