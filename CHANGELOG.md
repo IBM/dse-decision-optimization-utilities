@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.1.1b]
 ### Changed
 - (minor) Release dates in this change log
-- (minor) Removed support for DSX as platform choice
-- Optional forced platform/version in ScenarioManager
-- (planned) ScenarioDbManager support for DB2WH in cloud
+- ScenarioDbManager support for DB2 in cloud
+- Fixed AutoScenarioDbTable functionality in ScenarioDbManager
 ### Added
-
+- Optional forced platform/version in ScenarioManager
+### Removed
+- (minor) Removed support for DSX as platform choice
 
 ## [0.5.1.0] - 2021-11-30
 ### Changed
