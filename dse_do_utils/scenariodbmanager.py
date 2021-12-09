@@ -25,6 +25,18 @@ Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
 
+# from sqlalchemy import event
+# from sqlalchemy.engine import Engine
+# from sqlite3 import Connection as SQLite3Connection
+#
+# @event.listens_for(Engine, "connect")
+# def _set_sqlite_pragma(dbapi_connection, connection_record):
+#     if isinstance(dbapi_connection, SQLite3Connection):
+#         cursor = dbapi_connection.cursor()
+#         cursor.execute("PRAGMA foreign_keys=ON;")
+#         cursor.close()
+
+
 class ScenarioDbTable():
     """Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
     Only columns that are specified and included in the DB insert.

@@ -78,7 +78,8 @@ class ScenarioManager(object):
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
                  local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
-                 template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None):
+                 template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
+                 inputs: Inputs = None, outputs: Outputs = None):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
@@ -107,8 +108,8 @@ class ScenarioManager(object):
         self.project_id = project_id
         self.project_access_token = project_access_token
         self.project = project
-        self.inputs = None
-        self.outputs = None
+        self.inputs = inputs
+        self.outputs = outputs
         self.template_scenario_name = template_scenario_name
         if platform is None:
             platform = ScenarioManager.detect_platform()
@@ -482,7 +483,7 @@ class ScenarioManager(object):
                 # Create a new scenario (does not have solve code)
                 scenario = model_builder.create_scenario(name=new_scenario_name)
             else:
-                # Existing scenario probabaly already has solver code, so maintain that.
+                # Existing scenario probably already has solver code, so maintain that.
                 ScenarioManager.clear_scenario_data(client, scenario)
         return scenario
 

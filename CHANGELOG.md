@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed AutoScenarioDbTable functionality in ScenarioDbManager
 ### Added
 - Optional forced platform/version in ScenarioManager
+- DataManager.print_inputs_outputs_summary() method
+- inputs and outputs arguments to ScenarioManager.__init__
 ### Removed
 - (minor) Removed support for DSX as platform choice
 
