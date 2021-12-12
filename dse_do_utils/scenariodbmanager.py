@@ -43,11 +43,29 @@ class ScenarioDbTable():
     """
 
     def __init__(self, db_table_name: str, columns_metadata: List[sqlalchemy.Column] = [], constraints_metadata=[]):
+        """
+        Note: Currently, the db_table_name applies a camel_case_to_snake_case conversion. Mixed case is giving problems in the schema.
+        However, supplying a mixed-case is not working well and is causing DB FK errors.
+        Therefore, for now, ensure db_table_name is all lower-case.
+
+        Also, will check db_table_name against some reserved words, i.e. ['order']
+
+        :param db_table_name: Name of table in DB. Do NOT use MixedCase! Will cause odd DB errors. Lower-case works fine.
+        :param columns_metadata:
+        :param constraints_metadata:
+        """
         self.db_table_name = ScenarioDbTable.camel_case_to_snake_case(
             db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
         self.columns_metadata = columns_metadata
         self.constraints_metadata = constraints_metadata
         self.dtype = None
+        if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
+            print(f"Warning: using mixed case in the db_table_name {db_table_name} may cause unexpected DB errors. Use lower-case only.")
+
+        reserved_table_names = ['order']  # TODO: add more reserved words for table names
+        if db_table_name in reserved_table_names:
+            print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
+
 
     def get_db_table_name(self) -> str:
         return self.db_table_name
