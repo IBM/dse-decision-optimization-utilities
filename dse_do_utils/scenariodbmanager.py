@@ -10,6 +10,7 @@
 # VT 2021-12-01:
 # - Cleanup, small documentation and typing hints
 # - Make 'multi_scenario' the default option
+# - Support for DB2 Cloud
 # -----------------------------------------------------------------------------------
 
 import sqlalchemy
