@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mixed-case db_table_name warning in ScenarioDbTable
 - DB-table-name reserved word warning in ScenarioDbTable
 - plotlymanager module
+- Cached read of scenarios table in ScenarioDbManager
 ### Removed
 - (minor) Removed support for DSX as platform choice
 

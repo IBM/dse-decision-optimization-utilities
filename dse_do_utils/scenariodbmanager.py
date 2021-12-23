@@ -7,10 +7,11 @@
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 # Change notes
+# VT 2021-12-22:
+# - Cached read of scenarios table
 # VT 2021-12-01:
 # - Cleanup, small documentation and typing hints
 # - Make 'multi_scenario' the default option
-# - Support for DB2 Cloud
 # -----------------------------------------------------------------------------------
 
 import sqlalchemy
@@ -435,6 +436,30 @@ class ScenarioDbManager():
 
         return df
 
+    #######################################################################################################
+    # Caching
+    #######################################################################################################
+    ## ScenarioTable
+    def set_scenarios_table_read_callback(self, scenarios_table_read_callback=None):
+        """Sets a callback function to read the scenario table from the DB
+        """
+        self.read_scenarios_table_from_db_callback = scenarios_table_read_callback
+
+    def read_scenarios_table_from_db_cached(self) -> pd.DataFrame:
+        """For use with Flask caching. Default implementation.
+        In case no caching has been configured. Simply calls the regular method `get_scenarios_df`.
+
+        For caching:
+        1. Specify a callback procedure in `read_scenarios_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
+        which in turn calls the regular method `get_scenarios_df`
+        """
+        if self.read_scenarios_table_from_db_callback is not None:
+            df = self.read_scenarios_table_from_db_callback()  # NOT a method!
+        else:
+            df = self.get_scenarios_df()
+        return df
+
+    ## Tables
     def set_table_read_callback(self, table_read_callback=None):
         """Sets a callback function to read a table from a scenario
         """
