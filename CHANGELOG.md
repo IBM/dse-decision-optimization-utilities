@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.1.1b]
+## [Unreleased]## [0.5.2.0b]
 ### Changed
 - (minor) Release dates in this change log
 - ScenarioDbManager support for DB2 in cloud
 - Fixed AutoScenarioDbTable functionality in ScenarioDbManager
+- Bumped-up version to 0.5.2 due to many changes
 ### Added
 - Optional forced platform/version in ScenarioManager
 - DataManager.print_inputs_outputs_summary() method
