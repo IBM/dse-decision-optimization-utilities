@@ -3,6 +3,7 @@
 Steps:
 1. Change the version in the files `dse_do_utils.version.py` to something like `0.2.0`. 
 (`setup.py` and `/docs/source/conf.py` now automatically gets it from `version.py`)`
+Update the CHANGELOG.md (version and release date)
 
 2. Regenerate the documentation with `make html` (see `docs/doc_readme.md`). 
 Open Terminal (Alt+F12), `cd docs`, run <br>
