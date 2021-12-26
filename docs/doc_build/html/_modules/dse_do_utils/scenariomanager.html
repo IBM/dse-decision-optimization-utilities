@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.1.0 documentation</title>
+    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 
@@ -63,6 +63,17 @@
 <span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">InputsOutputs</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">]</span>
+
+<span class="c1"># Platform</span>
+<span class="c1"># Different platform require different approaches for writing data assets</span>
+<span class="c1"># ScenarioManager will try to detect platform automatically. However, these tests are sensitive and un-supported.</span>
+<span class="c1"># Therefore, to allow better control and avoid dependency on underlying conditions, user can explicitly set the platform</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<div class="viewcode-block" id="Platform"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.Platform">[docs]</a><span class="k">class</span> <span class="nc">Platform</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">CPDaaS</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># As of Nov 2021, CPDaaS uses project_lib</span>
+    <span class="n">CPD40</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># CPD 4.0 uses ibm_watson_studio_lib</span>
+    <span class="n">CPD25</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># CPD 2.5-3.5 uses project_lib (but differently from CPDaaS)</span>
+    <span class="n">Local</span> <span class="o">=</span> <span class="mi">4</span></div>
 
 
 <div class="viewcode-block" id="ScenarioManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager">[docs]</a><span class="k">class</span> <span class="nc">ScenarioManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -113,12 +124,19 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">template_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+                 <span class="n">template_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">platform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Platform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioManager.</span>
 
 <span class="sd">        Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.</span>
 <span class="sd">        When creating a new scenario, will copy the template scenario. This ensures the new scenario can be updated with output generated from running the Jupyter notebook.</span>
 <span class="sd">        This is a work-around for the problem that the DO Experiment will not show outputs updated/generated from a notebook unless the scenario has at least been solved successfully once.</span>
+
+<span class="sd">        The way files are added as data assets in CPD/CPDaaS is different for different platforms and has been changing frequently with newer versions.</span>
+<span class="sd">        The ScenarioManager will try and detect the platform to choose the appropriate method.</span>
+<span class="sd">        However, these checks are sensitive and not supported by the platform.</span>
+<span class="sd">        Therefore, the ScenarioManager allows explicit control via the argument `platform`.</span>
+<span class="sd">        Valid choices are: `CPDaaS`, `CPD40`, `CPD25`, and `Local`</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            model_name (str):</span>
@@ -128,6 +146,7 @@
 <span class="sd">            project_access_token (str): When running in WS Cloud, also requires a project_id</span>
 <span class="sd">            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud</span>
 <span class="sd">            template_scenario_name (str): If scenario doesn&#39;t exists: create new one. If template_scenario_name is specified, use that as template.</span>
+<span class="sd">            platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">=</span> <span class="n">scenario_name</span>
@@ -135,9 +154,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="o">=</span> <span class="n">project_access_token</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_scenario_name</span> <span class="o">=</span> <span class="n">template_scenario_name</span>
+        <span class="k">if</span> <span class="n">platform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">detect_platform</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="n">platform</span>
 
     <span class="c1"># def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):</span>
     <span class="c1">#     self.model_name = model_name</span>
@@ -167,17 +189,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Note: first test for wscloud:</span>
         <span class="c1"># In CPDaaS the current test for cpd40 returns TRUE!</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env_is_wscloud</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span><span class="p">:</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">]</span>  <span class="c1"># &#39;/home/wsuser/work&#39; or use os.environ[&#39;PWD&#39;]</span>
-        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPD40</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">ibm_watson_studio_lib</span> <span class="kn">import</span> <span class="n">access_project_or_space</span>
             <span class="n">wslib</span> <span class="o">=</span> <span class="n">access_project_or_space</span><span class="p">()</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="n">wslib</span><span class="o">.</span><span class="n">mount</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPD25</span><span class="p">:</span>
             <span class="c1"># Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset&#39;</span>  <span class="c1"># Do NOT use the os.path.join!</span>
-        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>
-            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>  <span class="c1"># Do we need to add an empty string at the end?</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Local file system</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data_dir</span></div>
@@ -509,7 +529,7 @@
                 <span class="c1"># Create a new scenario (does not have solve code)</span>
                 <span class="n">scenario</span> <span class="o">=</span> <span class="n">model_builder</span><span class="o">.</span><span class="n">create_scenario</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">new_scenario_name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Existing scenario probabaly already has solver code, so maintain that.</span>
+                <span class="c1"># Existing scenario probably already has solver code, so maintain that.</span>
                 <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">clear_scenario_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">scenario</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">scenario</span></div>
 
@@ -582,12 +602,15 @@
         <span class="n">writer_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_1</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
         <span class="n">writer_1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_wscloud</span><span class="p">():</span>  <span class="c1"># Test for CPDaaS FIRST because env_is_cpd40 call in CPDaaS will generate a warning in Jupyter</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_project_lib</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_project_lib</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_file_as_data_asset</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if self.platform == Platform.CPDaaS:</span>
+        <span class="c1">#     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + &#39;.xlsx&#39;)</span>
+        <span class="c1"># elif self.platform == Platform.CPD40:</span>
+        <span class="c1">#     self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + &#39;.xlsx&#39;)</span>
+        <span class="c1"># elif self.platform == Platform.CPD25:</span>
+        <span class="c1">#     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + &#39;.xlsx&#39;)</span>
         <span class="c1"># # Save the csv copy (no longer supported in CPD25 because not necessary)</span>
         <span class="c1"># elif copy_to_csv:</span>
         <span class="c1">#     excel_file_path_2 = os.path.join(data_dir, excel_file_name + &#39;to_csv.xlsx&#39;)</span>
@@ -597,6 +620,37 @@
         <span class="c1">#     writer_2.save()</span>
         <span class="c1">#     os.rename(excel_file_path_2, csv_excel_file_path_2)</span>
         <span class="k">return</span> <span class="n">excel_file_path_1</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.add_file_as_data_asset"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset">[docs]</a>    <span class="k">def</span> <span class="nf">add_file_as_data_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register an existing file as a data asset in CPD.</span>
+
+<span class="sd">        :param file_path: full path of the file</span>
+<span class="sd">        :param asset_name: name of asset. If None, will get the name from the file</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.add_file_as_data_asset_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">platform</span><span class="p">:</span> <span class="n">Platform</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register an existing file as a data asset in CPD.</span>
+
+<span class="sd">        :param file_path: full path of the file</span>
+<span class="sd">        :param asset_name: name of asset. If None, will get the name from the file</span>
+<span class="sd">        :param platform: CPD40, CPD25, CPSaaS, or Local. If None, will autodetect.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">asset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">platform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">detect_platform</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">platform</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Platform</span><span class="o">.</span><span class="n">CPD40</span><span class="p">,</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span><span class="p">]:</span>
+            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPD25</span><span class="p">:</span>
+            <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># i.e Local: do not register as data asset</span>
+            <span class="k">pass</span></div>
+
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to Excel - base functions</span>
@@ -848,28 +902,43 @@
 
 <span class="sd">        Returns: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">platform</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">detect_platform</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
-                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
-                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
+                <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">)</span>
+                <span class="c1"># if platform == Platform.CPD40:</span>
+                <span class="c1">#     ScenarioManager.add_data_file_using_ws_lib_s(file_path)</span>
+                <span class="c1"># elif platform in [Platform.CPD25, Platform.CPDaaS]:</span>
+                <span class="c1">#     ScenarioManager.add_data_file_to_project_s(file_path, table_name + &quot;.csv&quot;)</span>
         <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
-                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
-                    <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_data_file_to_project_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span></div>
+                <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">)</span></div>
+                <span class="c1"># if platform == Platform.CPD40:</span>
+                <span class="c1">#     ScenarioManager.add_data_file_using_ws_lib_s(file_path)</span>
+                <span class="c1"># elif platform in [Platform.CPD25, Platform.CPDaaS]:</span>
+                <span class="c1">#     ScenarioManager.add_data_file_to_project_s(file_path, table_name + &quot;.csv&quot;)</span>
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
     <span class="c1"># -----------------------------------------------------------------</span>
+<div class="viewcode-block" id="ScenarioManager.detect_platform"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.detect_platform">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">detect_platform</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Platform</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_wscloud</span><span class="p">():</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPD40</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPD25</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">platform</span> <span class="o">=</span> <span class="n">Platform</span><span class="o">.</span><span class="n">Local</span>
+        <span class="k">return</span> <span class="n">platform</span></div>
+
 
 <div class="viewcode-block" id="ScenarioManager.env_is_cpd40"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd40">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">env_is_cpd40</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -952,10 +1021,14 @@
         <span class="n">lp_file_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span>
         <span class="n">lp_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
         <span class="n">mdl</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">)</span>  <span class="c1"># Writes the .lp file</span>
-        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_project_lib</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_file_as_data_asset</span><span class="p">(</span><span class="n">lp_file_path</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
+        <span class="c1"># if self.platform == Platform.CPDaaS:</span>
+        <span class="c1">#     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)</span>
+        <span class="c1"># elif self.platform == Platform.CPD40:</span>
+        <span class="c1">#     self.add_data_file_using_ws_lib(lp_file_path)</span>
+        <span class="c1"># elif self.platform == Platform.CPD25:</span>
+        <span class="c1">#     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)</span>
         <span class="k">return</span> <span class="n">lp_file_path</span></div></div>
 </pre></div>
 
@@ -988,7 +1061,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 

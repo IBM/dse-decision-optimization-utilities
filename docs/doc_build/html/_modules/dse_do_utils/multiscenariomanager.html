@@ -1,0 +1,345 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dse_do_utils.multiscenariomanager &#8212; DSE DO Utils 0.5.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.multiscenariomanager</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dse_do_utils.multiscenariomanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># MultiScenarioManager</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------------</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1">#  Typing aliases</span>
+<span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+<span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+<span class="n">InputsOutputs</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Import as part of package</span>
+    <span class="kn">from</span> <span class="nn">.scenariomanager</span> <span class="kn">import</span> <span class="n">ScenarioManager</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># import as part of DO Model Builder</span>
+    <span class="kn">from</span> <span class="nn">scenariomanager</span> <span class="kn">import</span> <span class="n">ScenarioManager</span>
+
+<span class="c1"># from dse_do_utils import ScenarioManager</span>
+
+
+<div class="viewcode-block" id="MultiScenarioManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager">[docs]</a><span class="k">class</span> <span class="nc">MultiScenarioManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manages multiple scenarios from same DO Model/Experiment.</span>
+<span class="sd">    Can export all scenarios in one Excel spreadsheet, where it adds the scenario_name as an additional column.</span>
+<span class="sd">    Also adds an additional &#39;Scenario&#39; table. (This looks relevant for usage (filtering) in Cognos.)</span>
+<span class="sd">    By default, writes an Excel file in datasets named &quot;model_name + &#39;_multi_output&#39;.xlsx&quot;</span>
+
+<span class="sd">    Usage 1 - All scenarios from Model::</span>
+
+<span class="sd">        model_name = &#39;My Model&#39;</span>
+<span class="sd">        msm = MultiScenarioManager(model_name=model_name)</span>
+<span class="sd">        msm.get_multi_scenario_data()</span>
+<span class="sd">        msm.write_data_to_excel()</span>
+
+
+<span class="sd">    Usage 2 - Selected scenarios from Model::</span>
+
+<span class="sd">        model_name = &#39;My Model&#39;</span>
+<span class="sd">        scenario_names = [&#39;Scenario 1&#39;, &#39;Scenario 2&#39;]</span>
+<span class="sd">        msm = MultiScenarioManager(model_name=model_name, scenario_names=scenario_names)</span>
+<span class="sd">        msm.get_multi_scenario_data()</span>
+<span class="sd">        msm.write_data_to_excel()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+                 <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">project_access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a MultiScenarioManager.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model_name (str):</span>
+<span class="sd">            scenario_names (List[str]): list of anmes of scenarios to export. If not specified or empty then it will select all scenarios in the model</span>
+<span class="sd">            local_root (str): Path of root when running on a local computer</span>
+<span class="sd">            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token</span>
+<span class="sd">            project_access_token (str): When running in WS Cloud, also requires a project_id</span>
+<span class="sd">            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span> <span class="o">=</span> <span class="n">local_root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="o">=</span> <span class="n">project_access_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenarios_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_df</span><span class="p">(</span><span class="n">scenario_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scenario_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1">#             self.scenario_names = self.get_all_scenario_names()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenarios_df</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scenario_names</span> <span class="o">=</span> <span class="n">scenario_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs_by_scenario</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs_by_scenario</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_dd_client"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_dd_client">[docs]</a>    <span class="k">def</span> <span class="nf">get_dd_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the Client managing the DO scenario.</span>
+<span class="sd">        Returns: new dd_scenario.Client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">dd_scenario</span> <span class="kn">import</span> <span class="n">Client</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># When in WS Cloud:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+            <span class="c1"># The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span>
+                              <span class="n">project_access_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span><span class="p">)</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">project_context</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#  In WSL/CPD:</span>
+            <span class="k">return</span> <span class="n">Client</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.load_data_from_scenario"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.load_data_from_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;TODO: see of by re-using a Client, this can be done faster&quot;&quot;&quot;</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">project_access_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">load_data_from_scenario</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.env_is_wscloud"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.env_is_wscloud">[docs]</a>    <span class="k">def</span> <span class="nf">env_is_wscloud</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return true if environment is WS Cloud&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;PWD&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PWD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/dsxuser/work&#39;</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_data_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_data_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the path to the datasets folder.</span>
+
+<span class="sd">        :return: path to the datasets folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd40</span><span class="p">():</span>
+            <span class="kn">from</span> <span class="nn">ibm_watson_studio_lib</span> <span class="kn">import</span> <span class="n">access_project_or_space</span>
+            <span class="n">wslib</span> <span class="o">=</span> <span class="n">access_project_or_space</span><span class="p">()</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">wslib</span><span class="o">.</span><span class="n">mount</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">env_is_wscloud</span><span class="p">():</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/home/dsxuser/work&#39;</span>  <span class="c1"># or use os.environ[&#39;PWD&#39;] ?</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="c1"># Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset&#39;</span>  <span class="c1"># Do NOT use the os.path.join!</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span>
+                                    <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>  <span class="c1"># Do we need to add an empty string at the end?</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Local file system</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_dir</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_root_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_root_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_root_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the root directory of the file system.</span>
+<span class="sd">        If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError if root directory doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="n">root_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+        <span class="k">elif</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_dsx</span><span class="p">():</span>  <span class="c1"># Note that this is False in DO! So don&#39;t run in DO</span>
+            <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;DSX_PROJECT_DIR&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The local_root should be specified if loading from a file from outside of WS&#39;</span><span class="p">)</span>
+            <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_root</span>
+        <span class="c1"># Assert that root_dir actually exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Root directory `</span><span class="si">{}</span><span class="s2">` does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root_dir</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">root_dir</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.add_data_file_to_project"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.add_data_file_to_project">[docs]</a>    <span class="k">def</span> <span class="nf">add_data_file_to_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a data file to the Watson Studio project.</span>
+<span class="sd">        Applies to CP4Dv2.5 and WS Cloud</span>
+<span class="sd">        Needs to be called after the file has been saved regularly in the file system in</span>
+<span class="sd">        `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.</span>
+<span class="sd">        Ensures the file is visible in the Data Assets of the Watson Studio UI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path (str): full file path, including the file name and extension</span>
+<span class="sd">            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add to Project</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">project_lib</span> <span class="kn">import</span> <span class="n">Project</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="o">.</span><span class="n">access</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_multi_scenario_data"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_multi_scenario_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_multi_scenario_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scenario_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scenario_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_names</span>
+        <span class="k">for</span> <span class="n">scenario_name</span> <span class="ow">in</span> <span class="n">scenario_names</span><span class="p">:</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data_from_scenario</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputs_by_scenario</span><span class="p">[</span><span class="n">scenario_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs_by_scenario</span><span class="p">[</span><span class="n">scenario_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">MultiScenarioManager</span><span class="o">.</span><span class="n">merge_scenario_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs_by_scenario</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="s1">&#39;Scenario&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenarios_df</span>  <span class="c1"># Adding the Scenarios as a reference table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">MultiScenarioManager</span><span class="o">.</span><span class="n">merge_scenario_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs_by_scenario</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to an Excel file in datasets.</span>
+<span class="sd">        The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager</span>
+
+<span class="sd">        If the excel_file_name is None, it will be generated from the model_name and scenario_name: MODEL_NAME + &quot;_multi_output&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            excel_file_name (str): The file name for the Excel file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">excel_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">excel_file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_multi_output&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The argument excel_file_name can only be &#39;None&#39; if the model_name &#39;</span><span class="si">{}</span><span class="s2">&#39; has been specified.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span>
+
+        <span class="c1"># Save the regular Excel file:</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
+        <span class="n">excel_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
+        <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">env_is_cpd25</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_to_project</span><span class="p">(</span><span class="n">excel_file_path</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">excel_file_path</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.merge_scenario_data"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.merge_scenario_data">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_scenario_data</span><span class="p">(</span><span class="n">data_by_scenario</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Add scenario_name as column. Merge tables&quot;&quot;&quot;</span>
+        <span class="n">merged_data_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">data_dict</span> <span class="ow">in</span> <span class="n">data_by_scenario</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1">#             print(f&quot;Merge scenario {scenario}&quot;)</span>
+            <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1">#                 print(f&quot;Merge scenario {scenario} - table {table_name}&quot;)</span>
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario</span>
+                <span class="k">if</span> <span class="n">table_name</span> <span class="ow">in</span> <span class="n">merged_data_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">existing_df</span> <span class="o">=</span> <span class="n">merged_data_dict</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span>
+                    <span class="c1"># TODO: what will happen if the 2 dataframes have different columns? A: you get both columns and NaN values</span>
+                    <span class="n">existing_df</span> <span class="o">=</span> <span class="n">existing_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">merged_data_dict</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">existing_df</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">merged_data_dict</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">merged_data_dict</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_all_scenario_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_all_scenario_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_scenario_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deprecated. Replaced by get_scenarios_df&quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">()</span>
+        <span class="n">model_builder</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_builder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_builder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO model with name `</span><span class="si">{}</span><span class="s1">` exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">model_builder</span><span class="o">.</span><span class="n">get_scenarios</span><span class="p">(</span><span class="n">as_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">names</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="MultiScenarioManager.get_scenarios_df"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_scenarios_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenarios_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return scenarios as Dataframe.</span>
+<span class="sd">        If scenario_names is None, will get all scenarios in Model.</span>
+<span class="sd">        Else, just the ones matching the names.</span>
+<span class="sd">        For now, the only column in the df is the scenario_name.</span>
+<span class="sd">        More can be added later.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dd_client</span><span class="p">()</span>
+        <span class="n">model_builder</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_builder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_builder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No DO model with name `</span><span class="si">{}</span><span class="s1">` exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">))</span>
+        <span class="n">scenarios_dict</span> <span class="o">=</span> <span class="n">model_builder</span><span class="o">.</span><span class="n">get_scenarios</span><span class="p">(</span><span class="n">as_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">scenarios_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())})</span>
+        <span class="k">if</span> <span class="n">scenario_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;scenario_name in @scenario_names&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.multiscenariomanager</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Victor Terpstra.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.1.
+    </div>
+  </body>
+</html>
