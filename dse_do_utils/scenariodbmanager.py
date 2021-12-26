@@ -1,3 +1,19 @@
+# Copyright IBM All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# ScenarioDbManager
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# Change notes
+# VT 2021-12-22:
+# - Cached read of scenarios table
+# VT 2021-12-01:
+# - Cleanup, small documentation and typing hints
+# - Make 'multi_scenario' the default option
+# -----------------------------------------------------------------------------------
+
 import sqlalchemy
 import pandas as pd
 from typing import Dict, List
@@ -6,25 +22,57 @@ import re
 from sqlalchemy import exc
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
 
+#  Typing aliases
+Inputs = Dict[str, pd.DataFrame]
+Outputs = Dict[str, pd.DataFrame]
+
+
+# from sqlalchemy import event
+# from sqlalchemy.engine import Engine
+# from sqlite3 import Connection as SQLite3Connection
+#
+# @event.listens_for(Engine, "connect")
+# def _set_sqlite_pragma(dbapi_connection, connection_record):
+#     if isinstance(dbapi_connection, SQLite3Connection):
+#         cursor = dbapi_connection.cursor()
+#         cursor.execute("PRAGMA foreign_keys=ON;")
+#         cursor.close()
+
 
 class ScenarioDbTable():
-    """Abstract class?"""
+    """Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
+    Only columns that are specified and included in the DB insert.
+    """
 
     def __init__(self, db_table_name: str, columns_metadata: List[sqlalchemy.Column] = [], constraints_metadata=[]):
+        """
+        Note: Currently, the db_table_name applies a camel_case_to_snake_case conversion. Mixed case is giving problems in the schema.
+        However, supplying a mixed-case is not working well and is causing DB FK errors.
+        Therefore, for now, ensure db_table_name is all lower-case.
+
+        Also, will check db_table_name against some reserved words, i.e. ['order']
+
+        :param db_table_name: Name of table in DB. Do NOT use MixedCase! Will cause odd DB errors. Lower-case works fine.
+        :param columns_metadata:
+        :param constraints_metadata:
+        """
         self.db_table_name = ScenarioDbTable.camel_case_to_snake_case(
             db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
         self.columns_metadata = columns_metadata
         self.constraints_metadata = constraints_metadata
-        #         self.create_table_sql = None
-        #         self.index_columns = None
         self.dtype = None
+        if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
+            print(f"Warning: using mixed case in the db_table_name {db_table_name} may cause unexpected DB errors. Use lower-case only.")
 
-    #         self.scenario_primary_foreign_key = Column('scenario_name', String(256), ForeignKey("scenario.scenario_name"), primary_key=True)
+        reserved_table_names = ['order']  # TODO: add more reserved words for table names
+        if db_table_name in reserved_table_names:
+            print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
 
-    def get_db_table_name(self):
+
+    def get_db_table_name(self) -> str:
         return self.db_table_name
 
-    def get_df_column_names(self):
+    def get_df_column_names(self) -> List[str]:
         """TODO: what to do if the column names in the DB are different from the column names in the DF?"""
         column_names = []
         for c in self.columns_metadata:
@@ -32,18 +80,14 @@ class ScenarioDbTable():
                 column_names.append(c.name)
         return column_names
 
-    #         return [c.name for c in self.columns_metadata]
-
     def create_table_metadata(self, metadata, multi_scenario: bool = False):
-        """If multi_scenario, then add a primary key 'scenario_name'"""
+        """If multi_scenario, then add a primary key 'scenario_name'."""
         columns_metadata = self.columns_metadata
         constraints_metadata = self.constraints_metadata
 
         if multi_scenario and (self.db_table_name != 'scenario'):
-            # TODO: do we need to exclude the ScenarioDbTable itself? Or is sqlalchemy automatically taking care of duplicate Columns?
             columns_metadata.insert(0, Column('scenario_name', String(256), ForeignKey("scenario.scenario_name"),
                                               primary_key=True, index=True))
-            #             columns_metadata.insert(0, self.scenario_primary_foreign_key)
             constraints_metadata = [ScenarioDbTable.add_scenario_name_to_fk_constraint(fkc) for fkc in
                                     constraints_metadata]
 
@@ -60,22 +104,19 @@ class ScenarioDbTable():
         refcolumns.insert(0, f"{table_name}.scenario_name")
         return ForeignKeyConstraint(columns, refcolumns)
 
-    #     def convert_data(self, df):
-    #         # By default convert column names to snake_case:
-    #         df = ScenarioDbTable.df_column_names_to_snake_case(df)
-    #         return df
-
     @staticmethod
-    def camel_case_to_snake_case(name):
+    def camel_case_to_snake_case(name: str) -> str:
         return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
     @staticmethod
-    def df_column_names_to_snake_case(df):
+    def df_column_names_to_snake_case(df: pd.DataFrame) -> pd.DataFrame:
+        """"Change all columns names from camelCase to snake_case."""
         df.columns = [ScenarioDbTable.camel_case_to_snake_case(x) for x in df.columns]
         return df
 
-    def insert_table_in_db_bulk(self, df, mgr):
-        """
+    def insert_table_in_db_bulk(self, df: pd.DataFrame, mgr):
+        """Insert a DataFrame in the DB using 'bulk' insert, i.e. with one SQL insert.
+        (Instead of row-by-row.)
         Args:
             df (pd.DataFrame)
             mgr (ScenarioDbManager)
@@ -92,7 +133,7 @@ class ScenarioDbTable():
             print(e)
 
     @staticmethod
-    def sqlcol(df):
+    def sqlcol(df: pd.DataFrame) -> Dict:
         dtypedict = {}
         for i, j in zip(df.columns, df.dtypes):
             if "object" in str(j):
@@ -110,10 +151,20 @@ class ScenarioDbTable():
 
 
 #########################################################################
-#
+# AutoScenarioDbTable
 #########################################################################
 class AutoScenarioDbTable(ScenarioDbTable):
-    def __init__(self, db_table_name):
+    """Designed to automatically generate the table definition based on the DataFrame.
+    Advantages:
+    - No need to define a custom ScenarioDbTable class per table
+    - Automatically all columns are inserted
+    Disadvantages:
+    - No primary and foreign key relations. Thus no checks.
+    - Missing relationships means Cognos cannot automatically extract a data model
+    """
+    def __init__(self, db_table_name: str):
+        """Need to provide a name for the DB table.
+        """
         super().__init__(db_table_name)
 
     def create_table_metadata(self, metadata, multi_scenario: bool = False):
@@ -142,6 +193,8 @@ class AutoScenarioDbTable(ScenarioDbTable):
 #########################################################################
 #  ScenarioDbManager
 #########################################################################
+
+
 class ScenarioDbManager():
     """
     TODO:
@@ -149,7 +202,8 @@ class ScenarioDbManager():
     These to be inserted after the others. No need for a
     """
 
-    def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable], credentials=None, schema: str = None, echo=False, multi_scenario: bool = False):
+    def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
+                 credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True):
         self.schema = schema
         self.input_db_tables = input_db_tables
         self.output_db_tables = output_db_tables
@@ -159,16 +213,7 @@ class ScenarioDbManager():
         self.metadata = sqlalchemy.MetaData()
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
-
-    #     def __init__(self, db_tables: Dict[str, ScenarioDbTable], credentials=None, schema: str = None, echo=False,
-    #                  multi_scenario: bool = False):
-    #         self.schema = schema
-    #         self.db_tables = db_tables
-    #         self.engine = self.create_database_engine(credentials, schema, echo)
-    #         self.echo = echo
-    #         self.metadata = sqlalchemy.MetaData()
-    #         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
-    #         self.initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
+        self.read_scenario_table_from_db_callback = None  # For Flask caching in Dash Enterprise
 
     def create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
         if credentials is not None:
@@ -177,36 +222,108 @@ class ScenarioDbManager():
             engine = self.create_sqllite_engine(echo)
         return engine
 
-    def create_sqllite_engine(self, echo):
+    def create_sqllite_engine(self, echo: bool):
         return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo)
+
+    #     def get_db2_connection_string(self, credentials, schema: str):
+    #         """Create a DB2 connection string.
+    #         Needs a work-around for DB2 on cloud.ibm.com.
+    #         The option 'ssl=True' doesn't work. Instead use 'Security=ssl'.
+    #         See https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy.
+
+    #         TODO:
+    #         * Not sure the check for the port 50001 is necessary, or if this applies to any `ssl=True`
+    #         * The schema doesn't work properly in db2 on cloud.ibm.com. Instead it automatically creates a schema based on the username.
+    #         * Also tried to use 'schema={schema}', but it didn't work properly.
+    #         * In case ssl=False, do NOT add the option `ssl=False`: doesn't gie an error, but select rows will always return zero rows!
+    #         * TODO: what do we do in case ssl=True, but the port is not 50001?!
+    #         """
+    #         if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
+    #             ssl = '?Security=ssl'  # Instead of 'ssl=True'
+    #         else:
+    #             #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
+    #             ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
+    #         connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format(
+    #             username=credentials['username'],
+    #             password=credentials['password'],
+    #             host=credentials['host'],
+    #             port=credentials['port'],
+    #             database=credentials['database'],
+    #             ssl=ssl,
+    #             schema=schema
+    #         )
+    #         return connection_string
 
     def get_db2_connection_string(self, credentials, schema: str):
         """Create a DB2 connection string.
+
         Needs a work-around for DB2 on cloud.ibm.com.
+        Workaround: Pass in your credentials like this:
+
+        DB2_credentials = {
+            'username': "user1",
+            'password': "password1",
+            'host': "hostname.databases.appdomain.cloud",
+            'port': "30080",
+            'database': "bludb",
+            'schema': "my_schema", #<- SCHEMA IN DATABASE
+            'ssl': "SSL" #<- NOTE: SPECIFY SSL HERE IF TRUE FOR DB2
+        }
+
         The option 'ssl=True' doesn't work. Instead use 'Security=ssl'.
         See https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy.
 
-        TODO:
-        * Not sure the check for the port 50001 is necessary, or if this applies to any `ssl=True`
-        * The schema doesn't work properly in db2 on cloud.ibm.com. Instead it automatically creates a schema based on the username.
-        * Also tried to use 'schema={schema}', but it didn't work properly.
-        * In case ssl=False, do NOT add the option `ssl=False`: doesn't gie an error, but select rows will always return zero rows!
-        * TODO: what do we do in case ssl=True, but the port is not 50001?!
+        Notes:
+            * The schema doesn't work properly in DB2 Lite version on cloud.ibm.com. Schema names work properly
+              with paid versions where you can have multiple schemas
+            * SQLAlchemy expects a certain way the SSL is encoded in the connection string.
+              This method adapts based on different ways the SSL is defined in the credentials
         """
-        if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
-            ssl = '?Security=ssl'  # Instead of 'ssl=True'
+
+        if 'ssl' in credentials:
+            #    SAVE FOR FUTURE LOGGER MESSAGES...
+            #print("SSL Flag detected.")
+
+            #SET THIS IF WE NEED TO SEE IF WE ARE CONNECTING TO A CLOUD DATABASE VS ON PREM (FUTURE?)
+            #WE ARE CONNECTING TO A DB2 DATABASE AAS, SO WE NEED TO SET (CHECK) THE SSL FLAG CORRECTLY
+            #if("DATABASES.APPDOMAIN.CLOUD" in str(credentials['host']).upper()):
+            #    SAVE FOR FUTURE LOGGER MESSAGES...
+            #print("DB2 database in the cloud detected based off hostname...")
+
+            #SSL=True IS NOT THE PROPER SYNTAX FOR SQLALCHEMY AND DB2 CLOUD. IT NEEDS TO BE 'ssl=SSL' so we will correct it.
+
+            if(str(credentials['ssl']).upper() == 'TRUE'):
+                #print("WARNING! 'SSL':'TRUE' Detected, but it needs to be 'ssl':'SSL' for SQL ALCHEMY. Correcting...")
+                credentials['ssl'] = 'SSL'
+            elif(str(credentials['ssl']).upper() == 'SSL'):
+                # SAVE FOR FUTURE LOGGER MESSAGES...
+                #print("SSL Specified correctly for DB2aaS cloud connection.")
+                credentials['ssl'] = 'SSL'
+            else:
+                # print("WARNING! SSL was specified as a none standard value: SSL was not set to True or SSL.")
+                pass
+
+            connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema};SECURITY={ssl}'.format(
+                username=credentials['username'],
+                password=credentials['password'],
+                host=credentials['host'],
+                port=credentials['port'],
+                database=credentials['database'],
+                ssl=credentials['ssl'],
+                schema=schema
+            )
         else:
-            #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
-            ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
-        connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format(
-            username=credentials['username'],
-            password=credentials['password'],
-            host=credentials['host'],
-            port=credentials['port'],
-            database=credentials['database'],
-            ssl=ssl,
-            schema=schema
-        )
+            # print(" WARNING! SSL was not specified! Creating connection string without it!")
+            connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema}'.format(
+                username=credentials['username'],
+                password=credentials['password'],
+                host=credentials['host'],
+                port=credentials['port'],
+                database=credentials['database'],
+                schema=schema
+            )
+        # SAVE FOR FUTURE LOGGER MESSAGES...
+        #print("Connection String : " + connection_string)
         return connection_string
 
     def create_db2_engine(self, credentials, schema: str, echo: bool = False):
@@ -216,20 +333,9 @@ class ScenarioDbManager():
         connection_string = self.get_db2_connection_string(credentials, schema)
         return sqlalchemy.create_engine(connection_string, echo=echo)
 
-    #     def create_db2_engine(self, credentials, schema: str, echo: bool = False):
-    #         connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database};currentSchema={schema}'.format(
-    #             username=credentials['username'],
-    #             password=credentials['password'],
-    #             host=credentials['host'],
-    #             port=credentials['port'],
-    #             database=credentials['database'],
-    #             schema=schema
-    #         )
-    #         return sqlalchemy.create_engine(connection_string, echo=echo)
-
     def initialize_db_tables_metadata(self):
         """To be called from constructor, after engine is 'created'/connected, after self.metadata, self.multi_scenario have been set.
-        This will add the  `scenario_name` to the db_table configurations.
+        This will add the `scenario_name` to the db_table configurations.
         This also allows non-bulk inserts into an existing DB (i.e. without running 'create_schema')"""
         for scenario_table_name, db_table in self.db_tables.items():
             db_table.table_metadata = db_table.create_table_metadata(self.metadata,
@@ -244,10 +350,8 @@ class ScenarioDbManager():
             r = self.engine.execute(sql)
 
     def create_schema(self):
+        """Drops all tables and re-creates the schema in the DB."""
         self.drop_all_tables()
-        #         for scenario_table_name, db_table in self.db_tables.items():
-        #             db_table.table_metadata = db_table.create_table_metadata(self.metadata, self.multi_scenario)  # Stores the table schema in the self.metadata
-
         self.metadata.create_all(self.engine, checkfirst=True)
 
     def insert_scenarios_in_db(self, inputs={}, outputs={}, bulk: bool = True):
@@ -256,7 +360,7 @@ class ScenarioDbManager():
         for table_name, df in outputs.items():
             self.insert_table_in_db(table_name, df, bulk)
 
-    def insert_tables_in_db(self, inputs={}, outputs={}, bulk: bool = True, auto_insert: bool = False):
+    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {}, bulk: bool = True, auto_insert: bool = False):
         """Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
         TODO: how to set the schema info without clearing the existing schema and thus the whole DB?
         """
@@ -280,7 +384,7 @@ class ScenarioDbManager():
                     db_table = AutoScenarioDbTable(scenario_table_name)
                     db_table.insert_table_in_db_bulk(df, self)
 
-    def insert_table_in_db(self, db_table: ScenarioDbTable, df):
+    def insert_table_in_db(self, db_table: ScenarioDbTable, df: pd.DataFrame):
         num_exceptions = 0
         max_num_exceptions = 10
         columns = db_table.get_df_column_names()
@@ -308,7 +412,118 @@ class ScenarioDbManager():
                         f"Max number of exceptions {max_num_exceptions} for this table exceeded. Stopped inserting more data.")
                     break
 
-    def read_scenario_from_db(self, scenario_name: str):
+    def read_scenario_table_from_db(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
+        """
+        Load a single table from the DB.
+        :param scenario_name: Name of scenario
+        :param scenario_table_name: Name of scenario table (not the DB table name)
+        :return:
+        """
+        # print(f"read table {scenario_table_name}")
+        if scenario_table_name in self.input_db_tables:
+            db_table = self.input_db_tables[scenario_table_name]
+        elif scenario_table_name in self.output_db_tables:
+            db_table = self.output_db_tables[scenario_table_name]
+        else:
+            # error!
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot load data from DB.")
+
+        db_table_name = db_table.db_table_name
+        sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
+        df = pd.read_sql(sql, con=self.engine)
+        if db_table_name != 'scenario':
+            df = df.drop(columns=['scenario_name'])
+
+        return df
+
+    #######################################################################################################
+    # Caching
+    #######################################################################################################
+    ## ScenarioTable
+    def set_scenarios_table_read_callback(self, scenarios_table_read_callback=None):
+        """Sets a callback function to read the scenario table from the DB
+        """
+        self.read_scenarios_table_from_db_callback = scenarios_table_read_callback
+
+    def read_scenarios_table_from_db_cached(self) -> pd.DataFrame:
+        """For use with Flask caching. Default implementation.
+        In case no caching has been configured. Simply calls the regular method `get_scenarios_df`.
+
+        For caching:
+        1. Specify a callback procedure in `read_scenarios_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
+        which in turn calls the regular method `get_scenarios_df`
+        """
+        if self.read_scenarios_table_from_db_callback is not None:
+            df = self.read_scenarios_table_from_db_callback()  # NOT a method!
+        else:
+            df = self.get_scenarios_df()
+        return df
+
+    ## Tables
+    def set_table_read_callback(self, table_read_callback=None):
+        """Sets a callback function to read a table from a scenario
+        """
+        #     print(f"Set callback to {table_read_callback}")
+        self.read_scenario_table_from_db_callback = table_read_callback
+
+    def read_scenario_table_from_db_cached(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
+        """For use with Flask caching. Default implementation.
+        In case no caching has been configured. Simply calls the regular method `read_scenario_table_from_db`.
+
+        For caching:
+        1. Specify a callback procedure in `read_scenario_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
+        which in turn calls the regular method `read_scenario_table_from_db`
+        """
+        # 1. Override this method and call a procedure that uses a hard-coded version of a ScenarioDbManager,
+        # which in turn calls the regular method `read_scenario_table_from_db`
+
+        # return self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        if self.read_scenario_table_from_db_callback is not None:
+            df = self.read_scenario_table_from_db_callback(scenario_name, scenario_table_name)  # NOT a method!
+        else:
+            df = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        return df
+
+    def read_scenario_tables_from_db_cached(self, scenario_name: str, input_table_names:List[str]=None, output_table_names:List[str]=None):
+        """For use with Flask caching. Loads data for selected input and output tables.
+        Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`"""
+
+        if input_table_names is None:  # load all tables by default
+            input_table_names = list(self.input_db_tables.keys())
+            if 'Scenario' in input_table_names: input_table_names.remove('Scenario')  # Remove the scenario table
+        if output_table_names is None:  # load all tables by default
+            output_table_names = self.output_db_tables.keys()
+
+        inputs = {}
+        for scenario_table_name in input_table_names:
+            # print(f"read input table {scenario_table_name}")
+            inputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
+
+        outputs = {}
+        for scenario_table_name in output_table_names:
+            # print(f"read output table {scenario_table_name}")
+            outputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
+        return inputs, outputs
+
+    def read_scenario_tables_from_db(self, scenario_name: str, input_table_names:List[str]=None, output_table_names:List[str]=None):
+        """Loads data for selected input and output tables.
+        If either list is names is None, will load all tables as defined in db_tables configuration.
+        """
+        if input_table_names is None:  # load all tables by default
+            input_table_names = list(self.input_db_tables.keys())
+            if 'Scenario' in input_table_names: input_table_names.remove('Scenario')  # Remove the scenario table
+        if output_table_names is None:  # load all tables by default
+            output_table_names = self.output_db_tables.keys()
+
+        inputs = {}
+        for scenario_table_name in input_table_names:
+            inputs[scenario_table_name] = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        outputs = {}
+        for scenario_table_name in output_table_names:
+            outputs[scenario_table_name] = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
+        return inputs, outputs
+
+    def read_scenario_from_db(self, scenario_name: str) -> (Inputs, Outputs):
         """Single scenario load.
         Reads all tables for a single scenario.
         Returns all tables in one dict"""
@@ -365,14 +580,21 @@ class ScenarioDbManager():
         Also deletes entry in scenario table
         TODO: do within one session/cursor, so we don't have to worry about the order of the delete?
         """
+        insp = sqlalchemy.inspect(self.engine)
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
-            sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
-            self.engine.execute(sql)
+            if insp.has_table(db_table.db_table_name, schema=self.schema):
+                sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
+                self.engine.execute(sql)
+
+        # for scenario_table_name, db_table in reversed(self.db_tables.items()):
+        #     sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
+        #     self.engine.execute(sql)
+
         # Delete scenario entry in scenario table:
         sql = f"DELETE FROM SCENARIO WHERE scenario_name = '{scenario_name}'"
         self.engine.execute(sql)
 
-    def replace_scenario_in_db(self, scenario_name: str, inputs={}, outputs={}, bulk=True):
+    def replace_scenario_in_db(self, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {}, bulk=True):
         """Replace a single full scenario in the DB. If doesn't exists, will insert.
         Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).
         Will first delete all rows associated with a scenario_name.
@@ -442,3 +664,45 @@ class ScenarioDbManager():
         sql = f"SELECT * FROM SCENARIO"
         df = pd.read_sql(sql, con=self.engine).set_index(['scenario_name'])
         return df
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#  Input Tables
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+class ScenarioTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'scenario'):
+        columns_metadata = [
+            Column('scenario_name', String(256), primary_key=True),
+        ]
+        super().__init__(db_table_name, columns_metadata)
+
+
+class ParameterTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'parameters', extended_columns_metadata: List[Column] = []):
+        columns_metadata = [
+            Column('param', String(256), primary_key=True),
+            Column('value', String(256), primary_key=False),
+        ]
+        columns_metadata.extend(extended_columns_metadata)
+        super().__init__(db_table_name, columns_metadata)
+
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#  Output Tables
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class KpiTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'kpis'):
+        columns_metadata = [
+            Column('NAME', String(256), primary_key=True),
+            Column('VALUE', Float(), primary_key=False),
+        ]
+        super().__init__(db_table_name, columns_metadata)
+
+class BusinessKpiTable(ScenarioDbTable):
+    def __init__(self, db_table_name: str = 'business_kpi', extended_columns_metadata: List[Column] = []):
+        columns_metadata = [
+            Column('kpi', String(256), primary_key=True),
+            Column('value', Float(), primary_key=False),
+        ]
+        columns_metadata.extend(extended_columns_metadata)
+        super().__init__(db_table_name, columns_metadata)

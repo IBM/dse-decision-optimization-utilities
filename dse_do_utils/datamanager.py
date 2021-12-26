@@ -352,3 +352,11 @@ class DataManager(object):
         else:
             df = None
         return df
+
+    def print_inputs_outputs_summary(self):
+        """Prints a summary of the input and output data.
+        Prints the names of all input and output tables, along with the column names and the number of rows and columns."""
+        for table_name, df in self.inputs.items():
+            print(f"Input {table_name}: {df.shape[0]} rows, {df.shape[1]} columns: {', '.join([col for col in df.columns])}")
+        for table_name, df in self.outputs.items():
+            print(f"Output {table_name}: {df.shape[0]} rows, {df.shape[1]} columns: {', '.join([col for col in df.columns])}")

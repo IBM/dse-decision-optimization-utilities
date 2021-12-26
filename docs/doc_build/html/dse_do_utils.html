@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.1.0 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -392,6 +392,13 @@ If testing autoreload, rerun the second cell only. Verify it prints the updated 
 If testing imp.reload, rerun the notebook from the start.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.print_inputs_outputs_summary">
+<span class="sig-name descname"><span class="pre">print_inputs_outputs_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.print_inputs_outputs_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.print_inputs_outputs_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a summary of the input and output data.
+Prints the names of all input and output tables, along with the column names and the number of rows and columns.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -532,6 +539,307 @@ Result stored in self.execution_status_json and self.execution_status.</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="module-dse_do_utils.deployeddomodelcpd21">
+<span id="dse-do-utils-deployeddomodelcpd21-module"></span><h2>dse_do_utils.deployeddomodelcpd21 module<a class="headerlink" href="#module-dse_do_utils.deployeddomodelcpd21" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.deployeddomodelcpd21.</span></span><span class="sig-name descname"><span class="pre">DeployedDOModel_CPD21</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CONTAINER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_file_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../datasets'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log.txt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Note: the deployment in CPDv2.5 has completely changed. This class is NOT compatible with CPDv2.5.</p>
+<p>Major steps:
+1. Create an instance of a DeployedDOModel, configuring parameters (e.g. the URL and access token)</p>
+<p>Internally, the processes uses GETs to communicate with the deployed model:</p>
+<ol class="arabic simple">
+<li><p>Get configuration data from the service (<code class="xref py py-meth docutils literal notranslate"><span class="pre">retrieve_solve_configuration()</span></code>). This will give a URL to start a job. (<cite>self.solve_config_json</cite>)</p></li>
+<li><p>Start the solve job. Returns info/urls to monitor the running job. (<cite>self.job_config_json</cite>)</p></li>
+<li><p>Monitor the running solve job. Runs in a loop, updates the current state. (<cite>self.execution_status_json</cite>)</p></li>
+<li><p>Once the job completes, get the optimization result.</p></li>
+<li><p>Clean-up the resources</p></li>
+</ol>
+<p>In the code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">():</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note on InsecureRequestWarning
+If the option <cite>verify=False</cite> is being used for REST calls, the following warning is generated (for each REST API call):
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">InsecureRequestWarning:</span> <span class="pre">Unverified</span> <span class="pre">HTTPS</span> <span class="pre">request</span> <span class="pre">is</span> <span class="pre">being</span> <span class="pre">made.</span> <span class="pre">Adding</span> <span class="pre">certificate</span> <span class="pre">verification</span> <span class="pre">is</span> <span class="pre">strongly</span> <span class="pre">advised.</span> <span class="pre">See:</span> <span class="pre">https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings</span>
+<span class="pre">InsecureRequestWarning)</span>
+<span class="pre">`</span></code>
+With the option suppress_warnings=True, all warnings in the mdl.solve() API are suppressed/ignored</p>
+<p>TODOs:</p>
+<p>1. Turning the option to False doesn’t work, i.e. skipping parameter <cite>oaas.dumpZipName</cite> will result in no attachments!
+Work-around for now is to always add this option, let the server generate the dump and log file, but not download the zip and log files if debug = False
+And always cleanup after.
+3. Test kill and stop methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.cleanup">
+<span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.cleanup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to clean-up the job and, if applicable, the debug file.
+Delete the job from the execution service as well as the debug file from the “debug” container, to free space on the cluster.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.execute_model">
+<span class="sig-name descname"><span class="pre">execute_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.execute_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.execute_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to start the solve of the model. Returns the execution data in self.execution_result.
+Contains urls to monitor, stop or kill the job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_dump_name_and_url">
+<span class="sig-name descname"><span class="pre">get_debug_dump_name_and_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_debug_dump_name_and_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_dump_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the dump&lt;&gt;.zip file and the url to the data of the dump&lt;&gt;.zip file.
+Can be called after the first time the job monitor has retrieved the self.execution_status_json</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_file_url">
+<span class="sig-name descname"><span class="pre">get_debug_file_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_debug_file_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_file_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the debug file.
+To be used to retrieve the debug&lt;&gt;.zip file.
+Also used to clean-up the remote debug file.
+Is the self.debug_file_data_url minus the <cite>/data</cite> at the end</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_service_model_url">
+<span class="sig-name descname"><span class="pre">get_execution_service_model_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_execution_service_model_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_service_model_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL for the first call to the optimization service. Retrieves the service_configuration_json</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_status">
+<span class="sig-name descname"><span class="pre">get_execution_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_execution_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_headers">
+<span class="sig-name descname"><span class="pre">get_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_input_files">
+<span class="sig-name descname"><span class="pre">get_input_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_input_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_input_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inputs for submission to the job execution run.</p>
+<p>Challenge: the solve_config should be the first element in the self.files dict.
+Work-around: use an OrderedDict. Not sure of this always works, i.e. if the</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_job_url">
+<span class="sig-name descname"><span class="pre">get_job_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_job_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the running job.
+Will be called repeatedly while monitoring the execution of the job.
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_kill_job_url">
+<span class="sig-name descname"><span class="pre">get_kill_job_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_kill_job_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_kill_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to kill a running job.
+TODO: test
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_name_and_url">
+<span class="sig-name descname"><span class="pre">get_log_file_name_and_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_log_file_name_and_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the log.txt file and the url to the data.
+Can be called after the first time the job monitor has retrieved the self.execution_status_json</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_url">
+<span class="sig-name descname"><span class="pre">get_log_file_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_log_file_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL of the log file.
+To be used to retrieve the log file.
+Also used to clean-up the remote log file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_objective">
+<span class="sig-name descname"><span class="pre">get_objective</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_objective" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available after post process (both CONTAINER and INLINE_TABLE)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solution_name_and_url">
+<span class="sig-name descname"><span class="pre">get_solution_name_and_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_solution_name_and_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solution_name_and_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name (‘solution.json’) and the URL of the solution data.
+This applies to both <cite>CONTAINER</cite> and <cite>INLINE_TABLE</cite> modes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_config">
+<span class="sig-name descname"><span class="pre">get_solve_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_solve_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current solve_config.
+Note that the self.solve_config will e first set after the <cite>retrieve_solve_configuration</cite>.
+Next, it will be manipulated to add debugging information.
+Can only be called after the call to <cite>retrieve_solve_configuration</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_status">
+<span class="sig-name descname"><span class="pre">get_solve_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_solve_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available during and after the job monitoring. String with values ‘NOT_STARTED’, ‘RUNNING’, “PROCESSED”, “FAILED”, “INTERRUPTED”, more?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_url">
+<span class="sig-name descname"><span class="pre">get_solve_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_solve_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to start the execution of the solve job.
+Can only be called after the call to <cite>retrieve_solve_configuration</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_stop_job_url">
+<span class="sig-name descname"><span class="pre">get_stop_job_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.get_stop_job_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_stop_job_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to stop a running job.
+TODO: test
+Can only be called after the call to <cite>execute_model</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.kill_job">
+<span class="sig-name descname"><span class="pre">kill_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.kill_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.kill_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to kill the solve of the model.
+TODO: test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.monitor_execution">
+<span class="sig-name descname"><span class="pre">monitor_execution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.monitor_execution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.monitor_execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor the model execution by periodically calling REST API to get the current execution status.
+Result stored in self.execution_status_json and self.execution_status.</p>
+<p>TODO: what are all possible values for execution_status? Are we stopping under the right conditions?
+TODO: stop if we get an unknown status?
+TODO: Time-out?
+TODO: control the loop delay?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container">
+<span class="sig-name descname"><span class="pre">post_process_container</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process ‘CONTAINER’ type job.
+Called when execution reached status ‘PROCESSED’ and attachment_type=’CONTAINER’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container_get_dataframe">
+<span class="sig-name descname"><span class="pre">post_process_container_get_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_container_get_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container_get_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the data from a table attachment and load into a DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_failed">
+<span class="sig-name descname"><span class="pre">post_process_failed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_failed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when execution reached status ‘FAILED’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table">
+<span class="sig-name descname"><span class="pre">post_process_inline_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_inline_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process ‘INLINE_TABLE’ type job.
+when execution reached status ‘PROCESSED’ and attachment_type=’INLINE_TABLE’.</p>
+<p>In ‘INLINE_TABLE’ all output table data is already in the execution_status_json.
+This data is in the form of json (not in csv format like the ‘CONTAINER’ type).
+The solution data is not included and needs to be retrieved via a URL, just like with the ‘CONTAINER’ type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table_get_dataframe">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">post_process_inline_table_get_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_inline_table_get_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table_get_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the ‘table’ to a DataFrame.
+Applies to ‘INLINE_TABLE’ attachment type.</p>
+<p>table is a dict with 2 keys:
+1. name: string
+2. rows: list of dicts with 1 key: <cite>values</cite>: list of strings/integers/floats</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_interrupted">
+<span class="sig-name descname"><span class="pre">post_process_interrupted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_interrupted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_interrupted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when execution reached status ‘INTERRUPTED’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_processed">
+<span class="sig-name descname"><span class="pre">post_process_processed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.post_process_processed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_processed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process the succesfully completed solve job.
+Called when execution reached status ‘PROCESSED’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_debug_materials">
+<span class="sig-name descname"><span class="pre">retrieve_debug_materials</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.retrieve_debug_materials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_debug_materials" title="Permalink to this definition">¶</a></dt>
+<dd><p>The dump zip and log files is saved in the self.debug_file_dir folder.
+This dump zip file can be used to create a new scenario. (Using the right-hand-side panel in the Model Builder, ‘Create Scenario From file’.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_file">
+<span class="sig-name descname"><span class="pre">retrieve_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.retrieve_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the data of the file
+The file is saved in de debug folder.</p>
+<p>Can be used for the dump&lt;&gt;.zip file or the log.txt file
+This dump zip file can be used to create a new scenario (Using the right-hand-side panel in the Model Builder, ‘Create Scenario From file’)</p>
+<p>Note that if we get here, there exists a log or dump file on the deployed service. Make sure this gets cleaned up.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solution">
+<span class="sig-name descname"><span class="pre">retrieve_solution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.retrieve_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to retrieve the solution.json.</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solve_configuration">
+<span class="sig-name descname"><span class="pre">retrieve_solve_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.retrieve_solve_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solve_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to GET the solve configuration. Result in self.solve_config_json</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.set_output_settings_in_solve_configuration">
+<span class="sig-name descname"><span class="pre">set_output_settings_in_solve_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.set_output_settings_in_solve_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.set_output_settings_in_solve_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the self.solve_config to define the required output and debug results</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</p>
+<p>Calls the following methods (in order):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.stop_job">
+<span class="sig-name descname"><span class="pre">stop_job</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodelcpd21.html#DeployedDOModel_CPD21.stop_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.stop_job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call REST API to stop the solve of the model.
+TODO: test</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="dse-do-utils-domodeldeployer-module">
+<h2>dse_do_utils.domodeldeployer module<a class="headerlink" href="#dse-do-utils-domodeldeployer-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-dse_do_utils.domodelexporter">
 <span id="dse-do-utils-domodelexporter-module"></span><h2>dse_do_utils.domodelexporter module<a class="headerlink" href="#module-dse_do_utils.domodelexporter" title="Permalink to this headline">¶</a></h2>
@@ -850,6 +1158,130 @@ Despite the suggestion in <a class="reference external" href="https://nbviewer.j
 </dd></dl>
 
 </div>
+<div class="section" id="module-dse_do_utils.multiscenariomanager">
+<span id="dse-do-utils-multiscenariomanager-module"></span><h2>dse_do_utils.multiscenariomanager module<a class="headerlink" href="#module-dse_do_utils.multiscenariomanager" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.multiscenariomanager.</span></span><span class="sig-name descname"><span class="pre">MultiScenarioManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_access_token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages multiple scenarios from same DO Model/Experiment.
+Can export all scenarios in one Excel spreadsheet, where it adds the scenario_name as an additional column.
+Also adds an additional ‘Scenario’ table. (This looks relevant for usage (filtering) in Cognos.)
+By default, writes an Excel file in datasets named “model_name + ‘_multi_output’.xlsx”</p>
+<p>Usage 1 - All scenarios from Model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;My Model&#39;</span>
+<span class="n">msm</span> <span class="o">=</span> <span class="n">MultiScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
+<span class="n">msm</span><span class="o">.</span><span class="n">get_multi_scenario_data</span><span class="p">()</span>
+<span class="n">msm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Usage 2 - Selected scenarios from Model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;My Model&#39;</span>
+<span class="n">scenario_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Scenario 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Scenario 2&#39;</span><span class="p">]</span>
+<span class="n">msm</span> <span class="o">=</span> <span class="n">MultiScenarioManager</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_names</span><span class="o">=</span><span class="n">scenario_names</span><span class="p">)</span>
+<span class="n">msm</span><span class="o">.</span><span class="n">get_multi_scenario_data</span><span class="p">()</span>
+<span class="n">msm</span><span class="o">.</span><span class="n">write_data_to_excel</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.add_data_file_to_project">
+<span class="sig-name descname"><span class="pre">add_data_file_to_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.add_data_file_to_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.add_data_file_to_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a data file to the Watson Studio project.
+Applies to CP4Dv2.5 and WS Cloud
+Needs to be called after the file has been saved regularly in the file system in
+<cite>/project_data/data_asset/</cite> (for CPD2.5) or <cite>/home/dsxuser/work/</cite> in WS Cloud.
+Ensures the file is visible in the Data Assets of the Watson Studio UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – full file path, including the file name and extension</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – name of data asset. Default is None. If None, the file-name will be extracted from the file_path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.env_is_wscloud">
+<span class="sig-name descname"><span class="pre">env_is_wscloud</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.env_is_wscloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.env_is_wscloud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if environment is WS Cloud</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_all_scenario_names">
+<span class="sig-name descname"><span class="pre">get_all_scenario_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_all_scenario_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_all_scenario_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. Replaced by get_scenarios_df</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_data_directory">
+<span class="sig-name descname"><span class="pre">get_data_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_data_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_data_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the path to the datasets folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>path to the datasets folder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_dd_client">
+<span class="sig-name descname"><span class="pre">get_dd_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_dd_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_dd_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Client managing the DO scenario.
+Returns: new dd_scenario.Client</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_multi_scenario_data">
+<span class="sig-name descname"><span class="pre">get_multi_scenario_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_multi_scenario_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_multi_scenario_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_root_directory">
+<span class="sig-name descname"><span class="pre">get_root_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_root_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_root_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root directory of the file system.
+If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
+:raises ValueError if root directory doesn’t exist.:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.get_scenarios_df">
+<span class="sig-name descname"><span class="pre">get_scenarios_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.get_scenarios_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_scenarios_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return scenarios as Dataframe.
+If scenario_names is None, will get all scenarios in Model.
+Else, just the ones matching the names.
+For now, the only column in the df is the scenario_name.
+More can be added later.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.load_data_from_scenario">
+<span class="sig-name descname"><span class="pre">load_data_from_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.load_data_from_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.load_data_from_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: see of by re-using a Client, this can be done faster</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.merge_scenario_data">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">merge_scenario_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_by_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.merge_scenario_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.merge_scenario_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add scenario_name as column. Merge tables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.multiscenariomanager.MultiScenarioManager.write_data_to_excel">
+<span class="sig-name descname"><span class="pre">write_data_to_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/multiscenariomanager.html#MultiScenarioManager.write_data_to_excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.multiscenariomanager.MultiScenarioManager.write_data_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write inputs and/or outputs to an Excel file in datasets.
+The inputs and outputs as in the attributes <cite>self.inputs</cite> and <cite>self.outputs</cite> of the ScenarioManager</p>
+<p>If the excel_file_name is None, it will be generated from the model_name and scenario_name: MODEL_NAME + “_multi_output”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>excel_file_name</strong> (<em>str</em>) – The file name for the Excel file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-dse_do_utils.optimizationengine">
 <span id="dse-do-utils-optimizationengine-module"></span><h2>dse_do_utils.optimizationengine module<a class="headerlink" href="#module-dse_do_utils.optimizationengine" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -1055,11 +1487,392 @@ df[‘xDVar’] = mdl.integer_var_series(df, name = ‘xDVar’)</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-dse_do_utils.plotlymanager">
+<span id="dse-do-utils-plotlymanager-module"></span><h2>dse_do_utils.plotlymanager module<a class="headerlink" href="#module-dse_do_utils.plotlymanager" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.plotlymanager.PlotlyManager">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.plotlymanager.</span></span><span class="sig-name descname"><span class="pre">PlotlyManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.datamanager.DataManager" title="dse_do_utils.datamanager.DataManager"><span class="pre">dse_do_utils.datamanager.DataManager</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/plotlymanager.html#PlotlyManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.plotlymanager.PlotlyManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds method that create Plotly charts.
+Pass-in the DM as an input in the constructor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.plotlymanager.PlotlyManager.get_dash_tab_layout_m">
+<span class="sig-name descname"><span class="pre">get_dash_tab_layout_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/plotlymanager.html#PlotlyManager.get_dash_tab_layout_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.plotlymanager.PlotlyManager.get_dash_tab_layout_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>On the instance <cite>self</cite>, call the method named by get_tab_layout_{page_id}.
+Used in dse_do_dashboard Plotly-Dash dashboards</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m">
+<span class="sig-name descname"><span class="pre">get_plotly_fig_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/plotlymanager.html#PlotlyManager.get_plotly_fig_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>On the instance <cite>self</cite>, call the method named by id[‘index’]
+For use with pattern-matching callbacks. Assumes the id[‘index’] is the name of a method of this class and returns a fig.
+Used in dse_do_dashboard Plotly-Dash dashboards</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dse_do_utils.scenariodbmanager">
+<span id="dse-do-utils-scenariodbmanager-module"></span><h2>dse_do_utils.scenariodbmanager module<a class="headerlink" href="#module-dse_do_utils.scenariodbmanager" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">AutoScenarioDbTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
+<p>Designed to automatically generate the table definition based on the DataFrame.
+Advantages:
+- No need to define a custom ScenarioDbTable class per table
+- Automatically all columns are inserted
+Disadvantages:
+- No primary and foreign key relations. Thus no checks.
+- Missing relationships means Cognos cannot automatically extract a data model</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata">
+<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>If multi_scenario, then add a primary key ‘scenario_name’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk">
+<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – </p></li>
+<li><p><strong>mgr</strong> (<a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="dse_do_utils.scenariodbmanager.ScenarioDbManager"><em>ScenarioDbManager</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.BusinessKpiTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">BusinessKpiTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'business_kpi'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extended_columns_metadata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#BusinessKpiTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.BusinessKpiTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.KpiTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">KpiTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'kpis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#KpiTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.KpiTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ParameterTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ParameterTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'parameters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extended_columns_metadata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ParameterTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ParameterTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioDbManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TODO:
+* Allow insert of tables in inputs/outputs that do not have ScenarioDbTable definitions, like in the original ScenarioDbManager
+These to be inserted after the others. No need for a</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_scenario_name_to_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.add_scenario_name_to_dfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a <cite>scenario_name</cite> column to each df.
+Or overwrites all values of that column already exists.
+This avoids to need for the MultiScenarioManager when loading and storing single scenarios.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_database_engine">
+<span class="sig-name descname"><span class="pre">create_database_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_database_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_database_engine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_db2_engine">
+<span class="sig-name descname"><span class="pre">create_db2_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_db2_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_db2_engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DB2 engine instance.
+Connection string logic in <cite>get_db2_connection_string</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema">
+<span class="sig-name descname"><span class="pre">create_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops all tables and re-creates the schema in the DB.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_sqllite_engine">
+<span class="sig-name descname"><span class="pre">create_sqllite_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_sqllite_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_sqllite_engine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db">
+<span class="sig-name descname"><span class="pre">delete_scenario_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.delete_scenario_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes all rows associated with a given scenario.
+Note that it only deletes rows from tables defined in the self.db_tables, i.e. will NOT delete rows in ‘auto-inserted’ tables!
+Must do a ‘cascading’ delete to ensure not violating FK constraints. In reverse order of how they are inserted.
+Also deletes entry in scenario table
+TODO: do within one session/cursor, so we don’t have to worry about the order of the delete?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">delete_scenario_name_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.delete_scenario_name_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops the column <cite>scenario_name</cite> from any df in either inputs or outputs.
+This is used to create a inputs/outputs combination similar to loading a single scenario from the DO Experiment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables">
+<span class="sig-name descname"><span class="pre">drop_all_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.drop_all_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops all tables as defined in db_tables (if exists)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.get_db2_connection_string">
+<span class="sig-name descname"><span class="pre">get_db2_connection_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.get_db2_connection_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_db2_connection_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DB2 connection string.</p>
+<p>Needs a work-around for DB2 on cloud.ibm.com.
+Workaround: Pass in your credentials like this:</p>
+<dl class="simple">
+<dt>DB2_credentials = {</dt><dd><p>‘username’: “user1”,
+‘password’: “password1”,
+‘host’: “hostname.databases.appdomain.cloud”,
+‘port’: “30080”,
+‘database’: “bludb”,
+‘schema’: “my_schema”, #&lt;- SCHEMA IN DATABASE
+‘ssl’: “SSL” #&lt;- NOTE: SPECIFY SSL HERE IF TRUE FOR DB2</p>
+</dd>
+</dl>
+<p>}</p>
+<p>The option ‘ssl=True’ doesn’t work. Instead use ‘Security=ssl’.
+See <a class="reference external" href="https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy">https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy</a>.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The schema doesn’t work properly in DB2 Lite version on cloud.ibm.com. Schema names work properly
+with paid versions where you can have multiple schemas</p></li>
+<li><p>SQLAlchemy expects a certain way the SSL is encoded in the connection string.
+This method adapts based on different ways the SSL is defined in the credentials</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df">
+<span class="sig-name descname"><span class="pre">get_scenarios_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.get_scenarios_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all scenarios in df. Result is indexed by <cite>scenario_name</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.initialize_db_tables_metadata">
+<span class="sig-name descname"><span class="pre">initialize_db_tables_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.initialize_db_tables_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.initialize_db_tables_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be called from constructor, after engine is ‘created’/connected, after self.metadata, self.multi_scenario have been set.
+This will add the <cite>scenario_name</cite> to the db_table configurations.
+This also allows non-bulk inserts into an existing DB (i.e. without running ‘create_schema’)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db">
+<span class="sig-name descname"><span class="pre">insert_scenarios_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_scenarios_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_single_scenario_tables_in_db">
+<span class="sig-name descname"><span class="pre">insert_single_scenario_tables_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_single_scenario_tables_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_single_scenario_tables_in_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifically for single scenario replace/insert.
+Does NOT insert into the <cite>scenario</cite> table.
+No <cite>auto_insert</cite>, i.e. only df matching db_tables.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_in_db">
+<span class="sig-name descname"><span class="pre">insert_table_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_table_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db">
+<span class="sig-name descname"><span class="pre">insert_tables_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_insert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_tables_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
+TODO: how to set the schema info without clearing the existing schema and thus the whole DB?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">
+<span class="sig-name descname"><span class="pre">read_scenario_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single scenario load.
+Reads all tables for a single scenario.
+Returns all tables in one dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db">
+<span class="sig-name descname"><span class="pre">read_scenario_table_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_table_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a single table from the DB.
+:param scenario_name: Name of scenario
+:param scenario_table_name: Name of scenario table (not the DB table name)
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached">
+<span class="sig-name descname"><span class="pre">read_scenario_table_from_db_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_table_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>For use with Flask caching. Default implementation.
+In case no caching has been configured. Simply calls the regular method <cite>read_scenario_table_from_db</cite>.</p>
+<p>For caching:
+1. Specify a callback procedure in <cite>read_scenario_table_from_db_callback</cite> that uses a hard-coded version of a ScenarioDbManager,
+which in turn calls the regular method <cite>read_scenario_table_from_db</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db">
+<span class="sig-name descname"><span class="pre">read_scenario_tables_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_tables_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads data for selected input and output tables.
+If either list is names is None, will load all tables as defined in db_tables configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached">
+<span class="sig-name descname"><span class="pre">read_scenario_tables_from_db_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_tables_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>For use with Flask caching. Loads data for selected input and output tables.
+Same as <cite>read_scenario_tables_from_db</cite>, but calls <cite>read_scenario_table_from_db_cached</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db">
+<span class="sig-name descname"><span class="pre">read_scenarios_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenarios_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi scenario load.
+Reads all tables from set of scenarios</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached">
+<span class="sig-name descname"><span class="pre">read_scenarios_table_from_db_cached</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenarios_table_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>For use with Flask caching. Default implementation.
+In case no caching has been configured. Simply calls the regular method <cite>get_scenarios_df</cite>.</p>
+<p>For caching:
+1. Specify a callback procedure in <cite>read_scenarios_table_from_db_callback</cite> that uses a hard-coded version of a ScenarioDbManager,
+which in turn calls the regular method <cite>get_scenarios_df</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db">
+<span class="sig-name descname"><span class="pre">replace_scenario_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.replace_scenario_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace a single full scenario in the DB. If doesn’t exists, will insert.
+Only inserts tables with an entry defined in self.db_tables (i.e. no <cite>auto_insert</cite>).
+Will first delete all rows associated with a scenario_name.
+Will set/overwrite the scenario_name in all dfs, so no need to add in advance.
+Assumes schema has been created.
+Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback">
+<span class="sig-name descname"><span class="pre">set_scenarios_table_read_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenarios_table_read_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.set_scenarios_table_read_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a callback function to read the scenario table from the DB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback">
+<span class="sig-name descname"><span class="pre">set_table_read_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_read_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.set_table_read_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a callback function to read a table from a scenario</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioDbTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_metadata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
+Only columns that are specified and included in the DB insert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.add_scenario_name_to_fk_constraint">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_scenario_name_to_fk_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fkc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">sqlalchemy.sql.schema.ForeignKeyConstraint</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.add_scenario_name_to_fk_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.add_scenario_name_to_fk_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new ForeignKeyConstraint by adding the <cite>scenario_name</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.camel_case_to_snake_case">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">camel_case_to_snake_case</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.camel_case_to_snake_case"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.camel_case_to_snake_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata">
+<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>If multi_scenario, then add a primary key ‘scenario_name’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.df_column_names_to_snake_case">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">df_column_names_to_snake_case</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.df_column_names_to_snake_case"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.df_column_names_to_snake_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Change all columns names from camelCase to snake_case.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name">
+<span class="sig-name descname"><span class="pre">get_db_table_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_db_table_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names">
+<span class="sig-name descname"><span class="pre">get_df_column_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_df_column_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: what to do if the column names in the DB are different from the column names in the DF?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">
+<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a DataFrame in the DB using ‘bulk’ insert, i.e. with one SQL insert.
+(Instead of row-by-row.)
+:param df:
+:type df: pd.DataFrame
+:param mgr:
+:type mgr: ScenarioDbManager</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.sqlcol">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">sqlcol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.sqlcol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.sqlcol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'scenario'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-dse_do_utils.scenariomanager">
 <span id="dse-do-utils-scenariomanager-module"></span><h2>dse_do_utils.scenariomanager module<a class="headerlink" href="#module-dse_do_utils.scenariomanager" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.Platform">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariomanager.</span></span><span class="sig-name descname"><span class="pre">Platform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#Platform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.Platform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.Platform.CPD25">
+<span class="sig-name descname"><span class="pre">CPD25</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#dse_do_utils.scenariomanager.Platform.CPD25" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.Platform.CPD40">
+<span class="sig-name descname"><span class="pre">CPD40</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#dse_do_utils.scenariomanager.Platform.CPD40" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.Platform.CPDaaS">
+<span class="sig-name descname"><span class="pre">CPDaaS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#dse_do_utils.scenariomanager.Platform.CPDaaS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.Platform.Local">
+<span class="sig-name descname"><span class="pre">Local</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#dse_do_utils.scenariomanager.Platform.Local" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariomanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_access_token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariomanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_access_token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariomanager.Platform" title="dse_do_utils.scenariomanager.Platform"><span class="pre">dse_do_utils.scenariomanager.Platform</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A ScenarioManager is responsible for loading and storing the input and output DataFrame dictionaries.
 The data can be loaded from and stored into:</p>
@@ -1194,6 +2007,41 @@ Could be used in post-processing.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset">
+<span class="sig-name descname"><span class="pre">add_file_as_data_asset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_file_as_data_asset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an existing file as a data asset in CPD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> – full path of the file</p></li>
+<li><p><strong>asset_name</strong> – name of asset. If None, will get the name from the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_file_as_data_asset_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariomanager.Platform" title="dse_do_utils.scenariomanager.Platform"><span class="pre">dse_do_utils.scenariomanager.Platform</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_file_as_data_asset_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an existing file as a data asset in CPD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> – full path of the file</p></li>
+<li><p><strong>asset_name</strong> – name of asset. If None, will get the name from the file</p></li>
+<li><p><strong>platform</strong> – CPD40, CPD25, CPSaaS, or Local. If None, will autodetect.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">clear_scenario_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.clear_scenario_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clears all input and output tables from a scenario.</p>
@@ -1236,6 +2084,11 @@ Creates a new blank scenario if a scenario with this name doesn’t exist.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.detect_platform">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">detect_platform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dse_do_utils.scenariomanager.Platform" title="dse_do_utils.scenariomanager.Platform"><span class="pre">dse_do_utils.scenariomanager.Platform</span></a></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.detect_platform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.detect_platform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25">
@@ -1800,9 +2653,14 @@ If it is, you may need to add another reload:</p>
 <li><a class="reference internal" href="#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.deployeddomodelcpd21">dse_do_utils.deployeddomodelcpd21 module</a></li>
+<li><a class="reference internal" href="#dse-do-utils-domodeldeployer-module">dse_do_utils.domodeldeployer module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.multiscenariomanager">dse_do_utils.multiscenariomanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.plotlymanager">dse_do_utils.plotlymanager module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.scenariodbmanager">dse_do_utils.scenariodbmanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariopicker">dse_do_utils.scenariopicker module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.utilities">dse_do_utils.utilities module</a></li>
@@ -1848,7 +2706,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.1.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>

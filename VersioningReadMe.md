@@ -4,9 +4,14 @@ Steps:
 1. Change the version in the files `dse_do_utils.version.py` to something like `0.2.0`. 
 (`setup.py` and `/docs/source/conf.py` now automatically gets it from `version.py`)`
 
-2. Regenerate the documentation with `make-html` (see `docs/doc_readme.md`). 
+2. Regenerate the documentation with `make html` (see `docs/doc_readme.md`). 
 Open Terminal (Alt+F12), `cd docs`, run <br>
-`make html` 
+`make clean`
+`make html`
+If Powershell:
+`cmd.exe /c make html`
+Note that if you added/removed modules, you first need to re-run the sphinx command:
+`sphinx-apidoc -f -o source/ ../dse_do_utils/`
 
 3. For PyPI, build the wheel file.
 a. Delete all files in `./dist`

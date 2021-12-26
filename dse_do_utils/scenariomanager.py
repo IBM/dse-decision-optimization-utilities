@@ -18,6 +18,17 @@ Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 InputsOutputs = Tuple[Inputs, Outputs]
 
+# Platform
+# Different platform require different approaches for writing data assets
+# ScenarioManager will try to detect platform automatically. However, these tests are sensitive and un-supported.
+# Therefore, to allow better control and avoid dependency on underlying conditions, user can explicitly set the platform
+import enum
+class Platform(enum.Enum):
+    CPDaaS = 1  # As of Nov 2021, CPDaaS uses project_lib
+    CPD40 = 2  # CPD 4.0 uses ibm_watson_studio_lib
+    CPD25 = 3  # CPD 2.5-3.5 uses project_lib (but differently from CPDaaS)
+    Local = 4
+
 
 class ScenarioManager(object):
     """
@@ -67,12 +78,19 @@ class ScenarioManager(object):
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
                  local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
-                 template_scenario_name: Optional[str] = None):
+                 template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
+                 inputs: Inputs = None, outputs: Outputs = None):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
         When creating a new scenario, will copy the template scenario. This ensures the new scenario can be updated with output generated from running the Jupyter notebook.
         This is a work-around for the problem that the DO Experiment will not show outputs updated/generated from a notebook unless the scenario has at least been solved successfully once.
+
+        The way files are added as data assets in CPD/CPDaaS is different for different platforms and has been changing frequently with newer versions.
+        The ScenarioManager will try and detect the platform to choose the appropriate method.
+        However, these checks are sensitive and not supported by the platform.
+        Therefore, the ScenarioManager allows explicit control via the argument `platform`.
+        Valid choices are: `CPDaaS`, `CPD40`, `CPD25`, and `Local`
 
         Args:
             model_name (str):
@@ -82,6 +100,7 @@ class ScenarioManager(object):
             project_access_token (str): When running in WS Cloud, also requires a project_id
             project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
             template_scenario_name (str): If scenario doesn't exists: create new one. If template_scenario_name is specified, use that as template.
+            platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.
         """
         self.model_name = model_name
         self.scenario_name = scenario_name
@@ -89,9 +108,12 @@ class ScenarioManager(object):
         self.project_id = project_id
         self.project_access_token = project_access_token
         self.project = project
-        self.inputs = None
-        self.outputs = None
+        self.inputs = inputs
+        self.outputs = outputs
         self.template_scenario_name = template_scenario_name
+        if platform is None:
+            platform = ScenarioManager.detect_platform()
+        self.platform = platform
 
     # def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None, local_root: Optional[str] = None):
     #     self.model_name = model_name
@@ -121,17 +143,15 @@ class ScenarioManager(object):
         """
         # Note: first test for wscloud:
         # In CPDaaS the current test for cpd40 returns TRUE!
-        if self.env_is_wscloud():
+        if self.platform == Platform.CPDaaS:
             data_dir = os.environ['PWD']  # '/home/wsuser/work' or use os.environ['PWD']
-        elif ScenarioManager.env_is_cpd40():
+        elif self.platform == Platform.CPD40:
             from ibm_watson_studio_lib import access_project_or_space
             wslib = access_project_or_space()
             data_dir = wslib.mount.get_base_dir()
-        elif ScenarioManager.env_is_cpd25():
+        elif self.platform == Platform.CPD25:
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
-        elif ScenarioManager.env_is_dsx():
-            data_dir = os.path.join(self.get_root_directory(), 'datasets')  # Do we need to add an empty string at the end?
         else:  # Local file system
             data_dir = os.path.join(self.get_root_directory(), 'datasets')
         return data_dir
@@ -463,7 +483,7 @@ class ScenarioManager(object):
                 # Create a new scenario (does not have solve code)
                 scenario = model_builder.create_scenario(name=new_scenario_name)
             else:
-                # Existing scenario probabaly already has solver code, so maintain that.
+                # Existing scenario probably already has solver code, so maintain that.
                 ScenarioManager.clear_scenario_data(client, scenario)
         return scenario
 
@@ -536,12 +556,15 @@ class ScenarioManager(object):
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
-        if ScenarioManager.env_is_wscloud():  # Test for CPDaaS FIRST because env_is_cpd40 call in CPDaaS will generate a warning in Jupyter
-            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        elif ScenarioManager.env_is_cpd40():
-            self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        elif ScenarioManager.env_is_cpd25():
-            self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
+
+        self.add_file_as_data_asset(excel_file_path_1, excel_file_name + '.xlsx')
+
+        # if self.platform == Platform.CPDaaS:
+        #     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        # elif self.platform == Platform.CPD40:
+        #     self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
+        # elif self.platform == Platform.CPD25:
+        #     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
         # # Save the csv copy (no longer supported in CPD25 because not necessary)
         # elif copy_to_csv:
         #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
@@ -551,6 +574,37 @@ class ScenarioManager(object):
         #     writer_2.save()
         #     os.rename(excel_file_path_2, csv_excel_file_path_2)
         return excel_file_path_1
+
+    def add_file_as_data_asset(self, file_path: str, asset_name:str = None):
+        """Register an existing file as a data asset in CPD.
+
+        :param file_path: full path of the file
+        :param asset_name: name of asset. If None, will get the name from the file
+        :return:
+        """
+        ScenarioManager.add_file_as_data_asset_s(file_path, asset_name, self.platform)
+
+    @staticmethod
+    def add_file_as_data_asset_s(file_path: str, asset_name: str = None, platform: Platform = None):
+        """Register an existing file as a data asset in CPD.
+
+        :param file_path: full path of the file
+        :param asset_name: name of asset. If None, will get the name from the file
+        :param platform: CPD40, CPD25, CPSaaS, or Local. If None, will autodetect.
+        :return:
+        """
+        if asset_name is None:
+            asset_name = os.path.basename(file_path)
+        if platform is None:
+            platform = ScenarioManager.detect_platform()
+
+        if platform in [Platform.CPD40, Platform.CPDaaS]:
+            ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+        elif platform == Platform.CPD25:
+            ScenarioManager.add_data_file_to_project_s(file_path, asset_name)
+        else:  # i.e Local: do not register as data asset
+            pass
+
 
     # -----------------------------------------------------------------
     # Read and write from/to Excel - base functions
@@ -802,28 +856,43 @@ class ScenarioManager(object):
 
         Returns: None
         """
+        platform = ScenarioManager.detect_platform()
         if inputs is not None:
             for table_name, df in inputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd40():
-                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
-                elif ScenarioManager.env_is_cpd25():
-                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+                ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
+                # if platform == Platform.CPD40:
+                #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                # elif platform in [Platform.CPD25, Platform.CPDaaS]:
+                #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                if ScenarioManager.env_is_cpd40():
-                    ScenarioManager.add_data_file_using_ws_lib_s(file_path)
-                elif ScenarioManager.env_is_cpd25():
-                    ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+                ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
+                # if platform == Platform.CPD40:
+                #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+                # elif platform in [Platform.CPD25, Platform.CPDaaS]:
+                #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
 
     # -----------------------------------------------------------------
     # Utils
     # -----------------------------------------------------------------
+    @staticmethod
+    def detect_platform() -> Platform:
+        if ScenarioManager.env_is_wscloud():
+            platform = Platform.CPDaaS
+        elif ScenarioManager.env_is_cpd40():
+            platform = Platform.CPD40
+        elif ScenarioManager.env_is_cpd25():
+            platform = Platform.CPD25
+        else:
+            platform = Platform.Local
+        return platform
+
 
     @staticmethod
     def env_is_cpd40() -> bool:
@@ -906,8 +975,12 @@ class ScenarioManager(object):
         lp_file_name = model_name + '.lp'
         lp_file_path = os.path.join(datasets_dir, lp_file_name)
         mdl.export_as_lp(lp_file_path)  # Writes the .lp file
-        if ScenarioManager.env_is_cpd40():
-            self.add_data_file_using_ws_lib(lp_file_path)
-        if self.env_is_cpd25():
-            self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
+
+        self.add_file_as_data_asset(lp_file_path, lp_file_name)
+        # if self.platform == Platform.CPDaaS:
+        #     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
+        # elif self.platform == Platform.CPD40:
+        #     self.add_data_file_using_ws_lib(lp_file_path)
+        # elif self.platform == Platform.CPD25:
+        #     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
         return lp_file_path
