@@ -1,7 +1,6 @@
 # from typing import List, Dict, Tuple, Optional
 from dse_do_utils.datamanager import DataManager
 
-from IPython.display import display, HTML
 import plotly
 import plotly.graph_objs as go
 
@@ -12,6 +11,7 @@ def _show(self):
         2. Create a go.Figure fig in the normal Plotly way. Then in the last line of the cell, instead of `fig.show()`, do a:
         3. `fig._show()`
     """
+    from IPython.display import display, HTML  # Need to import dynamically. Otherwise problems running locally in pure Python (i.e. without Jupyter)
     html = plotly.io.to_html(self)
     display(HTML(html))
 go.Figure._show = _show
