@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]## [0.5.3.0b]
+### Added
+- ScenarioDbManager - enable_sqlite_fk feature to include FK checks in SQLite
+- ScenarioDbManager - enable_sessions feature to use sessions
+
 ## [Unreleased]## [0.5.2.1b]
 ### Changed
 - (critical) Fix IPython import for `_show()` workaround in PlotlyManager to avoid import exception when running on local workstation

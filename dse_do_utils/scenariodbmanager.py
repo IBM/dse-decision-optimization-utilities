@@ -6,7 +6,10 @@
 # ScenarioDbManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-# Change notes
+# Change notes:
+# VT 2021-12-27:
+# - FK checks in SQLite. Avoids the hack in a separate Jupyter cell.
+# - Sessions
 # VT 2021-12-22:
 # - Cached read of scenarios table
 # VT 2021-12-01:
@@ -203,13 +206,15 @@ class ScenarioDbManager():
     """
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
-                 credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True):
+                 credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True, enable_sessions: bool = True, enable_sqlite_fk: bool = True):
         self.schema = schema
         self.input_db_tables = input_db_tables
         self.output_db_tables = output_db_tables
         self.db_tables = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
-        self.engine = self.create_database_engine(credentials, schema, echo)
+        self.enable_sessions = enable_sessions  # Development in progress
+        self.enable_sqlite_fk = enable_sqlite_fk
         self.echo = echo
+        self.engine = self.create_database_engine(credentials, schema, echo)
         self.metadata = sqlalchemy.MetaData()
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
@@ -223,7 +228,22 @@ class ScenarioDbManager():
         return engine
 
     def create_sqllite_engine(self, echo: bool):
+        if self.enable_sqlite_fk:
+            ScenarioDbManager.enable_sqlite_foreign_key_checks()
         return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo)
+
+    @staticmethod
+    def enable_sqlite_foreign_key_checks():
+        print("Enable SQLite FK checks")
+        from sqlalchemy import event
+        from sqlalchemy.engine import Engine
+        from sqlite3 import Connection as SQLite3Connection
+        @event.listens_for(Engine, "connect")
+        def _set_sqlite_pragma(dbapi_connection, connection_record):
+            if isinstance(dbapi_connection, SQLite3Connection):
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON;")
+                cursor.close()
 
     #     def get_db2_connection_string(self, credentials, schema: str):
     #         """Create a DB2 connection string.
