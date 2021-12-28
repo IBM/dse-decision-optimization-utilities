@@ -457,17 +457,24 @@ class ScenarioDbManager():
             self.insert_scenarios_in_db_transaction(inputs=inputs, outputs=outputs, bulk=bulk)
 
     def insert_scenarios_in_db_transaction(self, inputs={}, outputs={}, bulk: bool = True, connection=None):
+        num_caught_exceptions=0
         for table_name, df in inputs.items():
-            self.insert_table_in_db(table_name, df, bulk, connection=connection)
+            num_caught_exceptions += self.insert_table_in_db(table_name, df, bulk, connection=connection)
         for table_name, df in outputs.items():
-            self.insert_table_in_db(table_name, df, bulk, connection=connection)
+            num_caught_exceptions += self.insert_table_in_db(table_name, df, bulk, connection=connection)
+        # Throw exception if any exceptions caught in 'non-bulk' mode
+        # This will cause a rollback when using a transaction
+        if num_caught_exceptions > 0:
+            raise RuntimeError(f"Multiple ({num_caught_exceptions}) Integrity and/or Statement errors caught. See log. Raising exception to allow for rollback.")
 
-    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {}, bulk: bool = True, auto_insert: bool = False, connection=None):
+
+    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {}, bulk: bool = True, auto_insert: bool = False, connection=None) -> int:
         """Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
         TODO: how to set the schema info without clearing the existing schema and thus the whole DB?
         """
         dfs = {**inputs, **outputs}  # Combine all dfs in one dict
         completed_dfs = []
+        num_caught_exceptions=0
         for scenario_table_name, db_table in self.db_tables.items():
             if scenario_table_name in dfs:
                 completed_dfs.append(scenario_table_name)
@@ -475,7 +482,7 @@ class ScenarioDbManager():
                     #                     self.insert_table_in_db_bulk(db_table, dfs[scenario_table_name])
                     db_table.insert_table_in_db_bulk(dfs[scenario_table_name], self, connection=connection)
                 else:  # Row by row for data checking
-                    self.insert_table_in_db(db_table, dfs[scenario_table_name], connection=connection)
+                    num_caught_exceptions += self.insert_table_in_db(db_table, dfs[scenario_table_name], connection=connection)
             else:
                 print(f"No table named {scenario_table_name} in inputs or outputs")
         # Insert any tables not defined in the schema:
@@ -485,8 +492,9 @@ class ScenarioDbManager():
                     print(f"Table {scenario_table_name} auto inserted")
                     db_table = AutoScenarioDbTable(scenario_table_name)
                     db_table.insert_table_in_db_bulk(df, self, connection=connection)
+        return num_caught_exceptions
 
-    def insert_table_in_db(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None):
+    def insert_table_in_db(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None) -> int:
         num_exceptions = 0
         max_num_exceptions = 10
         columns = db_table.get_df_column_names()
@@ -516,6 +524,7 @@ class ScenarioDbManager():
                     print(
                         f"Max number of exceptions {max_num_exceptions} for this table exceeded. Stopped inserting more data.")
                     break
+        return num_exceptions
 
     def read_scenario_table_from_db(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
         """
@@ -732,7 +741,12 @@ class ScenarioDbManager():
         else:
             connection.execute(sql)
         # Step 4: (bulk) insert scenario
-        self.insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
+        num_caught_exceptions = self.insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
+        # Throw exception if any exceptions caught in 'non-bulk' mode
+        # This will cause a rollback when using a transaction
+        if num_caught_exceptions > 0:
+            raise RuntimeError(f"Multiple ({num_caught_exceptions}) Integrity and/or Statement errors caught. See log. Raising exception to allow for rollback.")
+
 
     @staticmethod
     def add_scenario_name_to_dfs(scenario_name: str, inputs: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
@@ -745,11 +759,12 @@ class ScenarioDbManager():
             outputs[scenario_table_name] = df
         return outputs
 
-    def insert_single_scenario_tables_in_db(self, inputs={}, outputs={}, bulk: bool = True, connection=None):
+    def insert_single_scenario_tables_in_db(self, inputs={}, outputs={}, bulk: bool = True, connection=None) -> int:
         """Specifically for single scenario replace/insert.
         Does NOT insert into the `scenario` table.
         No `auto_insert`, i.e. only df matching db_tables.
         """
+        num_caught_exceptions = 0
         dfs = {**inputs, **outputs}  # Combine all dfs in one dict
         for scenario_table_name, db_table in self.db_tables.items():
             if scenario_table_name != 'Scenario':
@@ -760,9 +775,10 @@ class ScenarioDbManager():
                     if bulk:
                         db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
                     else:  # Row by row for data checking
-                        self.insert_table_in_db(db_table, df, connection=connection)
+                        num_caught_exceptions += self.insert_table_in_db(db_table, df, connection=connection)
                 else:
                     print(f"No table named {scenario_table_name} in inputs or outputs")
+        return num_caught_exceptions
 
     @staticmethod
     def delete_scenario_name_column(inputs, outputs):
