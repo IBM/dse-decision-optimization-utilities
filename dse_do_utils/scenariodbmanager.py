@@ -9,7 +9,7 @@
 # Change notes:
 # VT 2021-12-27:
 # - FK checks in SQLite. Avoids the hack in a separate Jupyter cell.
-# - Sessions
+# - Transactions
 # VT 2021-12-22:
 # - Cached read of scenarios table
 # VT 2021-12-01:
@@ -105,7 +105,8 @@ class ScenarioDbTable():
         # Create a new ForeignKeyConstraint by adding the `scenario_name`
         columns.insert(0, 'scenario_name')
         refcolumns.insert(0, f"{table_name}.scenario_name")
-        return ForeignKeyConstraint(columns, refcolumns)
+        # TODO: `deferrable=True` doesn't seem to have an effect
+        return ForeignKeyConstraint(columns, refcolumns, deferrable=True)
 
     @staticmethod
     def camel_case_to_snake_case(name: str) -> str:
@@ -117,19 +118,23 @@ class ScenarioDbTable():
         df.columns = [ScenarioDbTable.camel_case_to_snake_case(x) for x in df.columns]
         return df
 
-    def insert_table_in_db_bulk(self, df: pd.DataFrame, mgr):
+    def insert_table_in_db_bulk(self, df: pd.DataFrame, mgr, connection=None):
         """Insert a DataFrame in the DB using 'bulk' insert, i.e. with one SQL insert.
         (Instead of row-by-row.)
         Args:
             df (pd.DataFrame)
             mgr (ScenarioDbManager)
+            connection: if not None, being run within a transaction
         """
         table_name = self.get_db_table_name()
         columns = self.get_df_column_names()
         try:
-            # TODO: does it make sense to specify the dtype if we have a proper schema?
-            df[columns].to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='append', dtype=None,
+            if connection is None:
+                df[columns].to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='append', dtype=None,
                                index=False)
+            else:
+                df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
+                                   index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
@@ -173,11 +178,12 @@ class AutoScenarioDbTable(ScenarioDbTable):
     def create_table_metadata(self, metadata, multi_scenario: bool = False):
         return None
 
-    def insert_table_in_db_bulk(self, df, mgr):
+    def insert_table_in_db_bulk(self, df, mgr, connection=None):
         """
         Args:
             df (pd.DataFrame)
             mgr (ScenarioDbManager)
+            connection: if not None, being run within a transaction
         """
         table_name = self.get_db_table_name()
         if self.dtype is None:
@@ -187,7 +193,10 @@ class AutoScenarioDbTable(ScenarioDbTable):
         try:
             # Note that this can use the 'replace', so the table will be dropped automatically and the defintion auto created
             # So no need to drop the table explicitly (?)
-            df.to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='replace', dtype=dtype, index=False)
+            if connection is None:
+                df.to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='replace', dtype=dtype, index=False)
+            else:
+                df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='replace', dtype=dtype, index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
@@ -206,12 +215,12 @@ class ScenarioDbManager():
     """
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
-                 credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True, enable_sessions: bool = True, enable_sqlite_fk: bool = True):
+                 credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True, enable_transactions: bool = True, enable_sqlite_fk: bool = True):
         self.schema = schema
         self.input_db_tables = input_db_tables
         self.output_db_tables = output_db_tables
         self.db_tables = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
-        self.enable_sessions = enable_sessions  # Development in progress
+        self.enable_transactions = enable_transactions  # Development in progress
         self.enable_sqlite_fk = enable_sqlite_fk
         self.echo = echo
         self.engine = self.create_database_engine(credentials, schema, echo)
@@ -362,12 +371,25 @@ class ScenarioDbManager():
                                                                      self.multi_scenario)  # Stores the table schema in the self.metadata
 
     def drop_all_tables(self):
-        """Drops all tables as defined in db_tables (if exists)"""
+        if self.enable_transactions:
+            with self.engine.begin() as connection:
+                self.drop_all_tables_transaction(connection=connection)
+        else:
+            self.drop_all_tables_transaction()
+
+    def drop_all_tables_transaction(self, connection=None):
+        """Drops all tables as defined in db_tables (if exists)
+        TODO: loop over tables as they exist in the DB.
+        This will make sure that however the schema definition has changed, all tables will be cleared.
+        """
         for scenario_table_name, db_table in self.db_tables.items():
             db_table_name = db_table.db_table_name
             sql = f"DROP TABLE IF EXISTS {db_table_name}"
             #         print(f"Dropping table {db_table_name}")
-            r = self.engine.execute(sql)
+            if connection is None:
+                r = self.engine.execute(sql)
+            else:
+                r = connection.execute(sql)
 
     def create_schema(self):
         """Drops all tables and re-creates the schema in the DB."""
@@ -375,12 +397,20 @@ class ScenarioDbManager():
         self.metadata.create_all(self.engine, checkfirst=True)
 
     def insert_scenarios_in_db(self, inputs={}, outputs={}, bulk: bool = True):
-        for table_name, df in inputs.items():
-            self.insert_table_in_db(table_name, df, bulk)
-        for table_name, df in outputs.items():
-            self.insert_table_in_db(table_name, df, bulk)
+        if self.enable_transactions:
+            print("Inserting all tables within a transaction")
+            with self.engine.begin() as connection:
+                self.insert_scenarios_in_db_transaction(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
+        else:
+            self.insert_scenarios_in_db_transaction(inputs=inputs, outputs=outputs, bulk=bulk)
 
-    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {}, bulk: bool = True, auto_insert: bool = False):
+    def insert_scenarios_in_db_transaction(self, inputs={}, outputs={}, bulk: bool = True, connection=None):
+        for table_name, df in inputs.items():
+            self.insert_table_in_db(table_name, df, bulk, connection=connection)
+        for table_name, df in outputs.items():
+            self.insert_table_in_db(table_name, df, bulk, connection=connection)
+
+    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {}, bulk: bool = True, auto_insert: bool = False, connection=None):
         """Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
         TODO: how to set the schema info without clearing the existing schema and thus the whole DB?
         """
@@ -391,9 +421,9 @@ class ScenarioDbManager():
                 completed_dfs.append(scenario_table_name)
                 if bulk:
                     #                     self.insert_table_in_db_bulk(db_table, dfs[scenario_table_name])
-                    db_table.insert_table_in_db_bulk(dfs[scenario_table_name], self)
+                    db_table.insert_table_in_db_bulk(dfs[scenario_table_name], self, connection=connection)
                 else:  # Row by row for data checking
-                    self.insert_table_in_db(db_table, dfs[scenario_table_name])
+                    self.insert_table_in_db(db_table, dfs[scenario_table_name], connection=connection)
             else:
                 print(f"No table named {scenario_table_name} in inputs or outputs")
         # Insert any tables not defined in the schema:
@@ -402,9 +432,9 @@ class ScenarioDbManager():
                 if scenario_table_name not in completed_dfs:
                     print(f"Table {scenario_table_name} auto inserted")
                     db_table = AutoScenarioDbTable(scenario_table_name)
-                    db_table.insert_table_in_db_bulk(df, self)
+                    db_table.insert_table_in_db_bulk(df, self, connection=connection)
 
-    def insert_table_in_db(self, db_table: ScenarioDbTable, df: pd.DataFrame):
+    def insert_table_in_db(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None):
         num_exceptions = 0
         max_num_exceptions = 10
         columns = db_table.get_df_column_names()
@@ -417,7 +447,10 @@ class ScenarioDbManager():
                     values(row)
             )
             try:
-                self.engine.execute(stmt)
+                if connection is None:
+                    self.engine.execute(stmt)
+                else:
+                    connection.execute(stmt)
             except exc.IntegrityError as e:
                 print("++++++++++++Integrity Error+++++++++++++")
                 print(e)
@@ -593,7 +626,7 @@ class ScenarioDbManager():
 
         return inputs, outputs
 
-    def delete_scenario_from_db(self, scenario_name: str):
+    def delete_scenario_from_db(self, scenario_name: str, connection=None):
         """Deletes all rows associated with a given scenario.
         Note that it only deletes rows from tables defined in the self.db_tables, i.e. will NOT delete rows in 'auto-inserted' tables!
         Must do a 'cascading' delete to ensure not violating FK constraints. In reverse order of how they are inserted.
@@ -604,7 +637,10 @@ class ScenarioDbManager():
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             if insp.has_table(db_table.db_table_name, schema=self.schema):
                 sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
-                self.engine.execute(sql)
+                if connection is None:
+                    self.engine.execute(sql)
+                else:
+                    connection.execute(sql)
 
         # for scenario_table_name, db_table in reversed(self.db_tables.items()):
         #     sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"
@@ -612,9 +648,20 @@ class ScenarioDbManager():
 
         # Delete scenario entry in scenario table:
         sql = f"DELETE FROM SCENARIO WHERE scenario_name = '{scenario_name}'"
-        self.engine.execute(sql)
+        if connection is None:
+            self.engine.execute(sql)
+        else:
+            connection.execute(sql)
 
     def replace_scenario_in_db(self, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {}, bulk=True):
+        if self.enable_transactions:
+            print("Replacing scenario within transaction")
+            with self.engine.begin() as connection:
+                self.replace_scenario_in_db_transaction(scenario_name=scenario_name, inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
+        else:
+            self.replace_scenario_in_db_transaction(scenario_name=scenario_name, inputs=inputs, outputs=outputs, bulk=bulk)
+
+    def replace_scenario_in_db_transaction(self, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {}, bulk=True, connection=None):
         """Replace a single full scenario in the DB. If doesn't exists, will insert.
         Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).
         Will first delete all rows associated with a scenario_name.
@@ -622,15 +669,18 @@ class ScenarioDbManager():
         Assumes schema has been created.
         Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way."""
         # Step 1: delete scenario if exists
-        self.delete_scenario_from_db(scenario_name)
+        self.delete_scenario_from_db(scenario_name, connection=connection)
         # Step 2: add scenario_name to all dfs
         inputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, inputs)
         outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
         # Step 3: insert scenario_name in scenario table
         sql = f"INSERT INTO SCENARIO (scenario_name) VALUES ('{scenario_name}')"
-        self.engine.execute(sql)
+        if connection is None:
+            self.engine.execute(sql)
+        else:
+            connection.execute(sql)
         # Step 4: (bulk) insert scenario
-        self.insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk)
+        self.insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
 
     @staticmethod
     def add_scenario_name_to_dfs(scenario_name: str, inputs: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
@@ -643,7 +693,7 @@ class ScenarioDbManager():
             outputs[scenario_table_name] = df
         return outputs
 
-    def insert_single_scenario_tables_in_db(self, inputs={}, outputs={}, bulk: bool = True):
+    def insert_single_scenario_tables_in_db(self, inputs={}, outputs={}, bulk: bool = True, connection=None):
         """Specifically for single scenario replace/insert.
         Does NOT insert into the `scenario` table.
         No `auto_insert`, i.e. only df matching db_tables.
@@ -656,9 +706,9 @@ class ScenarioDbManager():
                     print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
                     #                 display(df.head(3))
                     if bulk:
-                        db_table.insert_table_in_db_bulk(df, self)
+                        db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
                     else:  # Row by row for data checking
-                        self.insert_table_in_db(db_table, df)
+                        self.insert_table_in_db(db_table, df, connection=connection)
                 else:
                     print(f"No table named {scenario_table_name} in inputs or outputs")
 
