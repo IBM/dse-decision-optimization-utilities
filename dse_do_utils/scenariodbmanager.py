@@ -10,6 +10,7 @@
 # VT 2021-12-27:
 # - FK checks in SQLite. Avoids the hack in a separate Jupyter cell.
 # - Transactions
+# - Removed `ScenarioDbTable.camel_case_to_snake_case(db_table_name)` from ScenarioDbTable constructor
 # VT 2021-12-22:
 # - Cached read of scenarios table
 # VT 2021-12-01:
@@ -49,9 +50,10 @@ class ScenarioDbTable():
 
     def __init__(self, db_table_name: str, columns_metadata: List[sqlalchemy.Column] = [], constraints_metadata=[]):
         """
-        Note: Currently, the db_table_name applies a camel_case_to_snake_case conversion. Mixed case is giving problems in the schema.
-        However, supplying a mixed-case is not working well and is causing DB FK errors.
+        Warning: Do not use mixed case names for the db_table_name.
+        Supplying a mixed-case is not working well and is causing DB FK errors.
         Therefore, for now, ensure db_table_name is all lower-case.
+        Currently, the code does NOT prevent from using mixed-case. It just generates a warning.
 
         Also, will check db_table_name against some reserved words, i.e. ['order']
 
@@ -59,8 +61,8 @@ class ScenarioDbTable():
         :param columns_metadata:
         :param constraints_metadata:
         """
-        self.db_table_name = ScenarioDbTable.camel_case_to_snake_case(
-            db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
+        self.db_table_name = db_table_name
+            # ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
         self.columns_metadata = columns_metadata
         self.constraints_metadata = constraints_metadata
         self.dtype = None
