@@ -105,8 +105,8 @@ class ScenarioDbTable():
         # Create a new ForeignKeyConstraint by adding the `scenario_name`
         columns.insert(0, 'scenario_name')
         refcolumns.insert(0, f"{table_name}.scenario_name")
-        # TODO: `deferrable=True` doesn't seem to have an effect
-        return ForeignKeyConstraint(columns, refcolumns, deferrable=True)
+        # TODO: `deferrable=True` doesn't seem to have an effect. Also, deferrable is illegal in DB2!?
+        return ForeignKeyConstraint(columns, refcolumns)  #, deferrable=True
 
     @staticmethod
     def camel_case_to_snake_case(name: str) -> str:
@@ -216,6 +216,17 @@ class ScenarioDbManager():
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True, enable_transactions: bool = True, enable_sqlite_fk: bool = True):
+        """Create a ScenarioDbManager.
+
+        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
+        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
+        :param credentials: DB credentials
+        :param schema: schema name
+        :param echo: if True, SQLAlchemy will produce a lot of debugging output
+        :param multi_scenario: If true, adds SCENARIO table and PK
+        :param enable_transactions: If true, uses transactions
+        :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
+        """
         self.schema = schema
         self.input_db_tables = input_db_tables
         self.output_db_tables = output_db_tables
@@ -230,6 +241,9 @@ class ScenarioDbManager():
         self.read_scenario_table_from_db_callback = None  # For Flask caching in Dash Enterprise
 
     def create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
+        """Creates a SQLalchemy engine at initialization.
+        If no credentials, creates an in-memory SQLite DB. Which can be used for schema validation of the data.
+        """
         if credentials is not None:
             engine = self.create_db2_engine(credentials, schema, echo)
         else:
@@ -243,6 +257,7 @@ class ScenarioDbManager():
 
     @staticmethod
     def enable_sqlite_foreign_key_checks():
+        """Enables the FK constraint validation in SQLite."""
         print("Enable SQLite FK checks")
         from sqlalchemy import event
         from sqlalchemy.engine import Engine
@@ -304,7 +319,7 @@ class ScenarioDbManager():
 
         Notes:
             * The schema doesn't work properly in DB2 Lite version on cloud.ibm.com. Schema names work properly
-              with paid versions where you can have multiple schemas
+              with paid versions where you can have multiple schemas, i.e. the 'Standard' version.
             * SQLAlchemy expects a certain way the SSL is encoded in the connection string.
               This method adapts based on different ways the SSL is defined in the credentials
         """
@@ -381,8 +396,15 @@ class ScenarioDbManager():
         """Drops all tables as defined in db_tables (if exists)
         TODO: loop over tables as they exist in the DB.
         This will make sure that however the schema definition has changed, all tables will be cleared.
+        Problem. The following code will loop over all existing tables:
+
+            inspector = sqlalchemy.inspect(self.engine)
+            for db_table_name in inspector.get_table_names(schema=self.schema):
+
+        However, the order is alphabetically, which causes FK constraint violation
+        Weirdly, this happens in SQLite, not in DB2! With or without transactions
         """
-        for scenario_table_name, db_table in self.db_tables.items():
+        for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
             sql = f"DROP TABLE IF EXISTS {db_table_name}"
             #         print(f"Dropping table {db_table_name}")
@@ -390,6 +412,24 @@ class ScenarioDbManager():
                 r = self.engine.execute(sql)
             else:
                 r = connection.execute(sql)
+
+    # def drop_all_tables_transaction(self, connection=None):
+    #     """Drops all tables as defined in db_tables (if exists)
+    #     TODO: loop over tables as they exist in the DB.
+    #     This will make sure that however the schema definition has changed, all tables will be cleared.
+    #     """
+    #     # for scenario_table_name, db_table in self.db_tables.items():
+    #     #     db_table_name = db_table.db_table_name
+    #     #     sql = f"DROP TABLE IF EXISTS {db_table_name}"
+    #
+    #     inspector = sqlalchemy.inspect(self.engine)
+    #     for db_table_name in inspector.get_table_names(schema=self.schema):
+    #         sql = f"DROP TABLE {db_table_name}"  # We don't need 'IF EXISTS' since we're looping of existing tables
+    #         #         print(f"Dropping table {db_table_name}")
+    #         if connection is None:
+    #             r = self.engine.execute(sql)
+    #         else:
+    #             r = connection.execute(sql)
 
     def create_schema(self):
         """Drops all tables and re-creates the schema in the DB."""
