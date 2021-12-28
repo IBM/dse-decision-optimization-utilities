@@ -228,7 +228,8 @@ class ScenarioDbManager():
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         """
         self.schema = schema
-        self.input_db_tables = input_db_tables
+        self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
+        self.input_db_tables = self.add_scenario_table(input_db_tables)
         self.output_db_tables = output_db_tables
         self.db_tables = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
         self.enable_transactions = enable_transactions  # Development in progress
@@ -236,9 +237,20 @@ class ScenarioDbManager():
         self.echo = echo
         self.engine = self.create_database_engine(credentials, schema, echo)
         self.metadata = sqlalchemy.MetaData()
-        self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
         self.read_scenario_table_from_db_callback = None  # For Flask caching in Dash Enterprise
+
+    def add_scenario_table(self, input_db_tables):
+        """Adds a Scenario table as the first in the OrderedDict (if it doesn't already exist)"""
+        if self.multi_scenario:
+            if 'Scenario' not in input_db_tables.keys():
+                input_db_tables.update({'Scenario': ScenarioTable()})
+                input_db_tables.move_to_end('Scenario', last=False)
+            else:
+                if list(input_db_tables.keys()).index('Scenario') > 0:
+                    print("Warning: the `Scenario` table should be the first in the input tables")
+        return input_db_tables
+
 
     def create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
         """Creates a SQLalchemy engine at initialization.
