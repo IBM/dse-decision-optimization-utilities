@@ -1,6 +1,6 @@
-pandas
+pandas~=1.0.5
 decision-optimization-client==1.0.0
-docplex
+docplex~=2.20.204
 
 #Sphinx and m2r2 for documentation generation:
 sphinx
@@ -9,3 +9,10 @@ m2r2
 # wheel for building package:
 wheel
 twine
+
+plotly~=4.14.3
+#ipython~=7.25.0
+requests~=2.25.1
+urllib3~=1.26.3
+SQLAlchemy~=1.3.23
+setuptools~=54.0.0
