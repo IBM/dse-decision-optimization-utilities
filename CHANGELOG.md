@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.3.0b]
 ### Added
 - ScenarioDbManager - enable_sqlite_fk feature to include FK checks in SQLite
-- ScenarioDbManager - enable_transactions feature to use transactions
+- ScenarioDbManager - enable_transactions feature to use transactions and rollbacks
 - ScenarioDbManager - automatically insert a ScenarioTable in input tables
+### Removed
+- ScenarioDbTable - removed db_table_name to snake_case conversion
 
 ## [Unreleased]## [0.5.2.1b]
 ### Changed

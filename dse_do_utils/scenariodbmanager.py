@@ -69,7 +69,7 @@ class ScenarioDbTable():
         if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
             print(f"Warning: using mixed case in the db_table_name {db_table_name} may cause unexpected DB errors. Use lower-case only.")
 
-        reserved_table_names = ['order']  # TODO: add more reserved words for table names
+        reserved_table_names = ['order', 'parameter']  # TODO: add more reserved words for table names
         if db_table_name in reserved_table_names:
             print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
 
@@ -165,12 +165,19 @@ class ScenarioDbTable():
 #########################################################################
 class AutoScenarioDbTable(ScenarioDbTable):
     """Designed to automatically generate the table definition based on the DataFrame.
+
+    Main difference with the 'regular' ScenarioDbTable definition:
+    * At 'create_schema`, the table will NOT be created. Instead,
+    * At 'insert_table_in_db_bulk' SQLAlchemy will automatically create a TABLE based on the DataFrame.
+
     Advantages:
     - No need to define a custom ScenarioDbTable class per table
     - Automatically all columns are inserted
     Disadvantages:
     - No primary and foreign key relations. Thus no checks.
     - Missing relationships means Cognos cannot automatically extract a data model
+
+    TODO: find out what will happen if the DataFrame structure changes and we're doing a new insert
     """
     def __init__(self, db_table_name: str):
         """Need to provide a name for the DB table.
@@ -427,28 +434,43 @@ class ScenarioDbManager():
             else:
                 r = connection.execute(sql)
 
-    # def drop_all_tables_transaction(self, connection=None):
-    #     """Drops all tables as defined in db_tables (if exists)
-    #     TODO: loop over tables as they exist in the DB.
-    #     This will make sure that however the schema definition has changed, all tables will be cleared.
-    #     """
-    #     # for scenario_table_name, db_table in self.db_tables.items():
-    #     #     db_table_name = db_table.db_table_name
-    #     #     sql = f"DROP TABLE IF EXISTS {db_table_name}"
-    #
-    #     inspector = sqlalchemy.inspect(self.engine)
-    #     for db_table_name in inspector.get_table_names(schema=self.schema):
-    #         sql = f"DROP TABLE {db_table_name}"  # We don't need 'IF EXISTS' since we're looping of existing tables
-    #         #         print(f"Dropping table {db_table_name}")
-    #         if connection is None:
-    #             r = self.engine.execute(sql)
-    #         else:
-    #             r = connection.execute(sql)
+    def drop_schema_transaction(self, schema: str, connection=None):
+        """Drops schema, and all the objects defined within that schema.
+        See: https://www.ibm.com/docs/en/db2/11.5?topic=procedure-admin-drop-schema-drop-schema
+        However, this doesn't work on DB2 cloud.
+        TODO: find out if and how we can get this to work.
+        """
+        # sql = f"DROP SCHEMA {schema} CASCADE"  # Not allowed in DB2!
+        sql = f"CALL SYSPROC.ADMIN_DROP_SCHEMA('{schema}', NULL, 'ERRORSCHEMA', 'ERRORTABLE')"
+        # sql = f"CALL SYSPROC.ADMIN_DROP_SCHEMA('{schema}', NULL, NULL, NULL)"
+        if connection is None:
+            r = self.engine.execute(sql)
+        else:
+            r = connection.execute(sql)
 
     def create_schema(self):
         """Drops all tables and re-creates the schema in the DB."""
-        self.drop_all_tables()
-        self.metadata.create_all(self.engine, checkfirst=True)
+        # self.drop_all_tables()
+        # self.metadata.create_all(self.engine, checkfirst=True)
+        if self.enable_transactions:
+            print("Create schema within a transaction")
+            with self.engine.begin() as connection:
+                self.create_schema_transaction(connection=connection)
+        else:
+            self.create_schema_transaction()
+
+    def create_schema_transaction(self, connection=None):
+        """Drops all tables and re-creates the schema in the DB."""
+        # if self.schema is None:
+        #     self.drop_all_tables_transaction(connection=connection)
+        # else:
+        #     self.drop_schema_transaction(self.schema)
+        # DROP SCHEMA isn't working properly, so back to dropping all tables
+        self.drop_all_tables_transaction(connection=connection)
+        if connection is None:
+            self.metadata.create_all(self.engine, checkfirst=True)
+        else:
+            self.metadata.create_all(connection, checkfirst=True)
 
     def insert_scenarios_in_db(self, inputs={}, outputs={}, bulk: bool = True):
         if self.enable_transactions:
