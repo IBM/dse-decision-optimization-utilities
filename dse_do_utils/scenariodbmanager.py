@@ -788,12 +788,14 @@ class ScenarioDbManager():
     #######################################################################################################
     # ScenarioTable
     def set_scenarios_table_read_callback(self, scenarios_table_read_callback=None):
-        """Sets a callback function to read the scenario table from the DB
+        """DEPRECATED - now in DoDashApp
+        Sets a callback function to read the scenario table from the DB
         """
         self.read_scenarios_table_from_db_callback = scenarios_table_read_callback
 
     def read_scenarios_table_from_db_cached(self) -> pd.DataFrame:
-        """For use with Flask caching. Default implementation.
+        """DEPRECATED - now in DoDashApp
+        For use with Flask caching. Default implementation.
         To be called from (typically) a Dash app to use the cached version.
         In case no caching has been configured. Simply calls the regular method `get_scenarios_df`.
 
@@ -809,13 +811,15 @@ class ScenarioDbManager():
 
     # Tables
     def set_table_read_callback(self, table_read_callback=None):
-        """Sets a callback function to read a table from a scenario
+        """DEPRECATED - now in DoDashApp
+        Sets a callback function to read a table from a scenario
         """
         #     print(f"Set callback to {table_read_callback}")
         self.read_scenario_table_from_db_callback = table_read_callback
 
     def read_scenario_table_from_db_cached(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
-        """For use with Flask caching. Default implementation.
+        """DEPRECATED - now in DoDashApp
+        For use with Flask caching. Default implementation.
         In case no caching has been configured. Simply calls the regular method `read_scenario_table_from_db`.
 
         For caching:
@@ -835,7 +839,8 @@ class ScenarioDbManager():
     def read_scenario_tables_from_db_cached(self, scenario_name: str,
                                             input_table_names: List[str] = None,
                                             output_table_names: List[str] = None) -> (Inputs, Outputs):
-        """For use with Flask caching. Loads data for selected input and output tables.
+        """DEPRECATED - now in DoDashApp
+        For use with Flask caching. Loads data for selected input and output tables.
         Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`.
         Is called from dse_do_dashboard.DoDashApp to create the PlotlyManager."""
 
