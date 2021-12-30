@@ -4,7 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.2.0b]
+## [0.5.3.0] - 2021-12-30
+### Changed
+- ScenarioDbManager - refactoring, cleanup and documentation
+### Added
+- ScenarioDbManager - enable_sqlite_fk feature to include FK checks in SQLite
+- ScenarioDbManager - enable_transactions feature to use transactions and rollbacks
+- ScenarioDbManager - automatically insert a ScenarioTable in input tables
+- plotly_cpd_workaround with go.Figure._show method
+### Removed
+- ScenarioDbTable - removed db_table_name to snake_case conversion
+- plotlymanager - go.Figure._show method (moved to separate module)
+
+## [Unreleased]## [0.5.2.1b]
+### Changed
+- (critical) Fix IPython import for `_show()` workaround in PlotlyManager to avoid import exception when running on local workstation
+
+## [0.5.2.0] - 2021-12-26
 ### Changed
 - (minor) Release dates in this change log
 - ScenarioDbManager support for DB2 in cloud

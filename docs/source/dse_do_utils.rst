@@ -76,6 +76,14 @@ dse\_do\_utils.optimizationengine module
    :undoc-members:
    :show-inheritance:
 
+dse\_do\_utils.plotly\_cpd\_workaround module
+---------------------------------------------
+
+.. automodule:: dse_do_utils.plotly_cpd_workaround
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dse\_do\_utils.plotlymanager module
 -----------------------------------
 
