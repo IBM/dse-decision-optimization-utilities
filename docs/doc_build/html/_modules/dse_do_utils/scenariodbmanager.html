@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.3.0 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.3.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -255,7 +255,7 @@
 <span class="sd">    TODO: documentation!</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
                  <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioDbManager.</span>
@@ -269,6 +269,7 @@
 <span class="sd">        :param enable_transactions: If true, uses transactions</span>
 <span class="sd">        :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># WARNING: do NOT use &#39;OrderedDict[str, ScenarioDbTable]&#39; as type. OrderedDict is not subscriptable. Will cause a syntax error.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span> <span class="o">=</span> <span class="n">multi_scenario</span>  <span class="c1"># If true, will add a primary key &#39;scenario_name&#39; to each table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span> <span class="o">=</span> <span class="n">enable_transactions</span>
@@ -288,9 +289,10 @@
     <span class="c1"># Initialization. Called from constructor.</span>
     <span class="c1">############################################################################################</span>
 
-    <span class="k">def</span> <span class="nf">_add_scenario_db_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_add_scenario_db_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Adds a Scenario table as the first in the OrderedDict (if it doesn&#39;t already exist).</span>
 <span class="sd">        Called from constructor.&quot;&quot;&quot;</span>
+        <span class="c1"># WARNING: do NOT use &#39;OrderedDict[str, ScenarioDbTable]&#39; as type. OrderedDict is not subscriptable. Will cause a syntax error.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;Scenario&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_db_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">input_db_tables</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Scenario&#39;</span><span class="p">:</span> <span class="n">ScenarioTable</span><span class="p">()})</span>
@@ -1061,7 +1063,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
