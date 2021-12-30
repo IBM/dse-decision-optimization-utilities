@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.2.0 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -52,13 +52,19 @@
 <span class="c1"># ScenarioDbManager</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
-<span class="c1"># Change notes</span>
+<span class="c1"># Change notes:</span>
+<span class="c1"># VT 2021-12-27:</span>
+<span class="c1"># - FK checks in SQLite. Avoids the hack in a separate Jupyter cell.</span>
+<span class="c1"># - Transactions</span>
+<span class="c1"># - Removed `ScenarioDbTable.camel_case_to_snake_case(db_table_name)` from ScenarioDbTable constructor</span>
+<span class="c1"># - Cleanup and documentation</span>
 <span class="c1"># VT 2021-12-22:</span>
 <span class="c1"># - Cached read of scenarios table</span>
 <span class="c1"># VT 2021-12-01:</span>
 <span class="c1"># - Cleanup, small documentation and typing hints</span>
 <span class="c1"># - Make &#39;multi_scenario&#39; the default option</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -73,28 +79,17 @@
 <span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 
 
-<span class="c1"># from sqlalchemy import event</span>
-<span class="c1"># from sqlalchemy.engine import Engine</span>
-<span class="c1"># from sqlite3 import Connection as SQLite3Connection</span>
-<span class="c1">#</span>
-<span class="c1"># @event.listens_for(Engine, &quot;connect&quot;)</span>
-<span class="c1"># def _set_sqlite_pragma(dbapi_connection, connection_record):</span>
-<span class="c1">#     if isinstance(dbapi_connection, SQLite3Connection):</span>
-<span class="c1">#         cursor = dbapi_connection.cursor()</span>
-<span class="c1">#         cursor.execute(&quot;PRAGMA foreign_keys=ON;&quot;)</span>
-<span class="c1">#         cursor.close()</span>
-
-
-<div class="viewcode-block" id="ScenarioDbTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable">[docs]</a><span class="k">class</span> <span class="nc">ScenarioDbTable</span><span class="p">():</span>
+<div class="viewcode-block" id="ScenarioDbTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable">[docs]</a><span class="k">class</span> <span class="nc">ScenarioDbTable</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.</span>
 <span class="sd">    Only columns that are specified and included in the DB insert.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">constraints_metadata</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Note: Currently, the db_table_name applies a camel_case_to_snake_case conversion. Mixed case is giving problems in the schema.</span>
-<span class="sd">        However, supplying a mixed-case is not working well and is causing DB FK errors.</span>
+<span class="sd">        Warning: Do not use mixed case names for the db_table_name.</span>
+<span class="sd">        Supplying a mixed-case is not working well and is causing DB FK errors.</span>
 <span class="sd">        Therefore, for now, ensure db_table_name is all lower-case.</span>
+<span class="sd">        Currently, the code does NOT prevent from using mixed-case. It just generates a warning.</span>
 
 <span class="sd">        Also, will check db_table_name against some reserved words, i.e. [&#39;order&#39;]</span>
 
@@ -102,18 +97,17 @@
 <span class="sd">        :param columns_metadata:</span>
 <span class="sd">        :param constraints_metadata:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span> <span class="o">=</span> <span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">camel_case_to_snake_case</span><span class="p">(</span>
-            <span class="n">db_table_name</span><span class="p">)</span>  <span class="c1"># To make sure it is a proper DB table name. Also allows us to use the scenario table name.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table_name</span>
+            <span class="c1"># ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="o">=</span> <span class="n">columns_metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_metadata</span> <span class="o">=</span> <span class="n">constraints_metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: using mixed case in the db_table_name </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> may cause unexpected DB errors. Use lower-case only.&quot;</span><span class="p">)</span>
 
-        <span class="n">reserved_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span>  <span class="c1"># TODO: add more reserved words for table names</span>
+        <span class="n">reserved_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;parameter&#39;</span><span class="p">]</span>  <span class="c1"># TODO: add more reserved words for table names</span>
         <span class="k">if</span> <span class="n">db_table_name</span> <span class="ow">in</span> <span class="n">reserved_table_names</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: the db_table_name &#39;</span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&#39; is a reserved word. Do not use as table name.&quot;</span><span class="p">)</span>
-
 
 <div class="viewcode-block" id="ScenarioDbTable.get_db_table_name"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_table_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span></div>
@@ -148,7 +142,8 @@
         <span class="c1"># Create a new ForeignKeyConstraint by adding the `scenario_name`</span>
         <span class="n">columns</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;scenario_name&#39;</span><span class="p">)</span>
         <span class="n">refcolumns</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">.scenario_name&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ForeignKeyConstraint</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">refcolumns</span><span class="p">)</span></div>
+        <span class="c1"># TODO: `deferrable=True` doesn&#39;t seem to have an effect. Also, deferrable is illegal in DB2!?</span>
+        <span class="k">return</span> <span class="n">ForeignKeyConstraint</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">refcolumns</span><span class="p">)</span>  <span class="c1">#, deferrable=True</span></div>
 
 <div class="viewcode-block" id="ScenarioDbTable.camel_case_to_snake_case"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.camel_case_to_snake_case">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">camel_case_to_snake_case</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -160,19 +155,23 @@
         <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">camel_case_to_snake_case</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="ScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">mgr</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">mgr</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert a DataFrame in the DB using &#39;bulk&#39; insert, i.e. with one SQL insert.</span>
 <span class="sd">        (Instead of row-by-row.)</span>
 <span class="sd">        Args:</span>
 <span class="sd">            df (pd.DataFrame)</span>
 <span class="sd">            mgr (ScenarioDbManager)</span>
+<span class="sd">            connection: if not None, being run within a transaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_table_name</span><span class="p">()</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># TODO: does it make sense to specify the dtype if we have a proper schema?</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
@@ -201,12 +200,19 @@
 <span class="c1">#########################################################################</span>
 <div class="viewcode-block" id="AutoScenarioDbTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable">[docs]</a><span class="k">class</span> <span class="nc">AutoScenarioDbTable</span><span class="p">(</span><span class="n">ScenarioDbTable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Designed to automatically generate the table definition based on the DataFrame.</span>
+
+<span class="sd">    Main difference with the &#39;regular&#39; ScenarioDbTable definition:</span>
+<span class="sd">    * At &#39;create_schema`, the table will NOT be created. Instead,</span>
+<span class="sd">    * At &#39;insert_table_in_db_bulk&#39; SQLAlchemy will automatically create a TABLE based on the DataFrame.</span>
+
 <span class="sd">    Advantages:</span>
 <span class="sd">    - No need to define a custom ScenarioDbTable class per table</span>
 <span class="sd">    - Automatically all columns are inserted</span>
 <span class="sd">    Disadvantages:</span>
 <span class="sd">    - No primary and foreign key relations. Thus no checks.</span>
 <span class="sd">    - Missing relationships means Cognos cannot automatically extract a data model</span>
+
+<span class="sd">    TODO: find out what will happen if the DataFrame structure changes and we&#39;re doing a new insert</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Need to provide a name for the DB table.</span>
@@ -216,11 +222,12 @@
 <div class="viewcode-block" id="AutoScenarioDbTable.create_table_metadata"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">create_table_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="AutoScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="p">):</span>
+<div class="viewcode-block" id="AutoScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            df (pd.DataFrame)</span>
 <span class="sd">            mgr (ScenarioDbManager)</span>
+<span class="sd">            connection: if not None, being run within a transaction</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_table_name</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -230,46 +237,98 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Note that this can use the &#39;replace&#39;, so the table will be dropped automatically and the defintion auto created</span>
             <span class="c1"># So no need to drop the table explicitly (?)</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
 
+
 <span class="c1">#########################################################################</span>
 <span class="c1">#  ScenarioDbManager</span>
 <span class="c1">#########################################################################</span>
-
-
 <div class="viewcode-block" id="ScenarioDbManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager">[docs]</a><span class="k">class</span> <span class="nc">ScenarioDbManager</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TODO:</span>
-<span class="sd">    * Allow insert of tables in inputs/outputs that do not have ScenarioDbTable definitions, like in the original ScenarioDbManager</span>
-<span class="sd">    These to be inserted after the others. No need for a</span>
+<span class="sd">    TODO: documentation!</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
-                 <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
+                 <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a ScenarioDbManager.</span>
+
+<span class="sd">        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.</span>
+<span class="sd">        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.</span>
+<span class="sd">        :param credentials: DB credentials</span>
+<span class="sd">        :param schema: schema name</span>
+<span class="sd">        :param echo: if True, SQLAlchemy will produce a lot of debugging output</span>
+<span class="sd">        :param multi_scenario: If true, adds SCENARIO table and PK</span>
+<span class="sd">        :param enable_transactions: If true, uses transactions</span>
+<span class="sd">        :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span> <span class="o">=</span> <span class="n">input_db_tables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span> <span class="o">=</span> <span class="n">multi_scenario</span>  <span class="c1"># If true, will add a primary key &#39;scenario_name&#39; to each table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span> <span class="o">=</span> <span class="n">enable_transactions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_sqlite_fk</span> <span class="o">=</span> <span class="n">enable_sqlite_fk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo</span> <span class="o">=</span> <span class="n">echo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_scenario_db_table</span><span class="p">(</span><span class="n">input_db_tables</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span> <span class="o">=</span> <span class="n">output_db_tables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">output_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>  <span class="c1"># {**input_db_tables, **output_db_tables}  # For compatibility reasons</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_database_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">echo</span> <span class="o">=</span> <span class="n">echo</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_database_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">MetaData</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span> <span class="o">=</span> <span class="n">multi_scenario</span>  <span class="c1"># If true, will add a primary key &#39;scenario_name&#39; to each table</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_db_tables_metadata</span><span class="p">()</span>  <span class="c1"># Needs to be done after self.metadata, self.multi_scenario has been set</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db_callback</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># For Flask caching in Dash Enterprise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_db_tables_metadata</span><span class="p">()</span>  <span class="c1"># Needs to be done after self.metadata, self.multi_scenario has been set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db_callback</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># For Flask caching</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_scenarios_table_from_db_callback</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># For Flask caching</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.create_database_engine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_database_engine">[docs]</a>    <span class="k">def</span> <span class="nf">create_database_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># Initialization. Called from constructor.</span>
+    <span class="c1">############################################################################################</span>
+
+    <span class="k">def</span> <span class="nf">_add_scenario_db_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Adds a Scenario table as the first in the OrderedDict (if it doesn&#39;t already exist).</span>
+<span class="sd">        Called from constructor.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Scenario&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_db_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">input_db_tables</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Scenario&#39;</span><span class="p">:</span> <span class="n">ScenarioTable</span><span class="p">()})</span>
+                <span class="n">input_db_tables</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;Scenario&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;Scenario&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: the `Scenario` table should be the first in the input tables&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">input_db_tables</span>
+
+    <span class="k">def</span> <span class="nf">_create_database_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a SQLAlchemy engine at initialization.</span>
+<span class="sd">        If no credentials, creates an in-memory SQLite DB. Which can be used for schema validation of the data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_db2_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_db2_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_sqllite_engine</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">engine</span></div>
+            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sqllite_engine</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">engine</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.create_sqllite_engine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_sqllite_engine">[docs]</a>    <span class="k">def</span> <span class="nf">create_sqllite_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;sqlite:///:memory:&#39;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_create_sqllite_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_sqlite_fk</span><span class="p">:</span>
+            <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">_enable_sqlite_foreign_key_checks</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;sqlite:///:memory:&#39;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_enable_sqlite_foreign_key_checks</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Enables the FK constraint validation in SQLite.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Enable SQLite FK checks&quot;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">event</span>
+        <span class="kn">from</span> <span class="nn">sqlalchemy.engine</span> <span class="kn">import</span> <span class="n">Engine</span>
+        <span class="kn">from</span> <span class="nn">sqlite3</span> <span class="kn">import</span> <span class="n">Connection</span> <span class="k">as</span> <span class="n">SQLite3Connection</span>
+
+        <span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">Engine</span><span class="p">,</span> <span class="s2">&quot;connect&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_set_sqlite_pragma</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">connection_record</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">SQLite3Connection</span><span class="p">):</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbapi_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA foreign_keys=ON;&quot;</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="c1">#     def get_db2_connection_string(self, credentials, schema: str):</span>
     <span class="c1">#         &quot;&quot;&quot;Create a DB2 connection string.</span>
@@ -300,7 +359,7 @@
     <span class="c1">#         )</span>
     <span class="c1">#         return connection_string</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.get_db2_connection_string"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_db2_connection_string">[docs]</a>    <span class="k">def</span> <span class="nf">get_db2_connection_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_db2_connection_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a DB2 connection string.</span>
 
 <span class="sd">        Needs a work-around for DB2 on cloud.ibm.com.</span>
@@ -321,7 +380,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            * The schema doesn&#39;t work properly in DB2 Lite version on cloud.ibm.com. Schema names work properly</span>
-<span class="sd">              with paid versions where you can have multiple schemas</span>
+<span class="sd">              with paid versions where you can have multiple schemas, i.e. the &#39;Standard&#39; version.</span>
 <span class="sd">            * SQLAlchemy expects a certain way the SSL is encoded in the connection string.</span>
 <span class="sd">              This method adapts based on different ways the SSL is defined in the credentials</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -370,67 +429,223 @@
             <span class="p">)</span>
         <span class="c1"># SAVE FOR FUTURE LOGGER MESSAGES...</span>
         <span class="c1">#print(&quot;Connection String : &quot; + connection_string)</span>
-        <span class="k">return</span> <span class="n">connection_string</span></div>
+        <span class="k">return</span> <span class="n">connection_string</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.create_db2_engine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_db2_engine">[docs]</a>    <span class="k">def</span> <span class="nf">create_db2_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_db2_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a DB2 engine instance.</span>
 <span class="sd">        Connection string logic in `get_db2_connection_string`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">connection_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db2_connection_string</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span></div>
+        <span class="n">connection_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_db2_connection_string</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.initialize_db_tables_metadata"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.initialize_db_tables_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_db_tables_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_initialize_db_tables_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;To be called from constructor, after engine is &#39;created&#39;/connected, after self.metadata, self.multi_scenario have been set.</span>
 <span class="sd">        This will add the `scenario_name` to the db_table configurations.</span>
 <span class="sd">        This also allows non-bulk inserts into an existing DB (i.e. without running &#39;create_schema&#39;)&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">db_table</span><span class="o">.</span><span class="n">table_metadata</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">create_table_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
-                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span><span class="p">)</span>  <span class="c1"># Stores the table schema in the self.metadata</span></div>
+                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span><span class="p">)</span>  <span class="c1"># Stores the table schema in the self.metadata</span>
+
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># Create schema</span>
+    <span class="c1">############################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.create_schema"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema">[docs]</a>    <span class="k">def</span> <span class="nf">create_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drops all tables and re-creates the schema in the DB.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Create schema within a transaction&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_schema_transaction</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_schema_transaction</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_schema_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;(Re)creates a schema, optionally using a transaction</span>
+<span class="sd">        Drops all tables and re-creates the schema in the DB.&quot;&quot;&quot;</span>
+        <span class="c1"># if self.schema is None:</span>
+        <span class="c1">#     self.drop_all_tables_transaction(connection=connection)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.drop_schema_transaction(self.schema)</span>
+        <span class="c1"># DROP SCHEMA isn&#39;t working properly, so back to dropping all tables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">checkfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">checkfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ScenarioDbManager.drop_all_tables"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables">[docs]</a>    <span class="k">def</span> <span class="nf">drop_all_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Drops all tables as defined in db_tables (if exists)&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Drops all tables in the current schema.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_drop_all_tables_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drops all tables as defined in db_tables (if exists)</span>
+<span class="sd">        TODO: loop over tables as they exist in the DB.</span>
+<span class="sd">        This will make sure that however the schema definition has changed, all tables will be cleared.</span>
+<span class="sd">        Problem. The following code will loop over all existing tables:</span>
+
+<span class="sd">            inspector = sqlalchemy.inspect(self.engine)</span>
+<span class="sd">            for db_table_name in inspector.get_table_names(schema=self.schema):</span>
+
+<span class="sd">        However, the order is alphabetically, which causes FK constraint violation</span>
+<span class="sd">        Weirdly, this happens in SQLite, not in DB2! With or without transactions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="c1">#         print(f&quot;Dropping table {db_table_name}&quot;)</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScenarioDbManager.create_schema"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema">[docs]</a>    <span class="k">def</span> <span class="nf">create_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Drops all tables and re-creates the schema in the DB.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">drop_all_tables</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">checkfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScenarioDbManager.insert_scenarios_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_scenarios_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">outputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">insert_table_in_db</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">bulk</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">insert_table_in_db</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">bulk</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScenarioDbManager.insert_tables_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_tables_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">auto_insert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.</span>
-<span class="sd">        TODO: how to set the schema info without clearing the existing schema and thus the whole DB?</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">outputs</span><span class="p">}</span>  <span class="c1"># Combine all dfs in one dict</span>
-        <span class="n">completed_dfs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
-                <span class="n">completed_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">bulk</span><span class="p">:</span>
-                    <span class="c1">#                     self.insert_table_in_db_bulk(db_table, dfs[scenario_table_name])</span>
-                    <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">],</span> <span class="bp">self</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>  <span class="c1"># Row by row for data checking</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">insert_table_in_db</span><span class="p">(</span><span class="n">db_table</span><span class="p">,</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No table named </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> in inputs or outputs&quot;</span><span class="p">)</span>
-        <span class="c1"># Insert any tables not defined in the schema:</span>
-        <span class="k">if</span> <span class="n">auto_insert</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">completed_dfs</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Table </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> auto inserted&quot;</span><span class="p">)</span>
-                    <span class="n">db_table</span> <span class="o">=</span> <span class="n">AutoScenarioDbTable</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">)</span>
-                    <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ScenarioDbManager.insert_table_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table</span><span class="p">:</span> <span class="n">ScenarioDbTable</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_drop_schema_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;NOT USED. Not working in DB2 Cloud.</span>
+<span class="sd">        Drops schema, and all the objects defined within that schema.</span>
+<span class="sd">        See: https://www.ibm.com/docs/en/db2/11.5?topic=procedure-admin-drop-schema-drop-schema</span>
+<span class="sd">        However, this doesn&#39;t work on DB2 cloud.</span>
+<span class="sd">        TODO: find out if and how we can get this to work.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sql = f&quot;DROP SCHEMA {schema} CASCADE&quot;  # Not allowed in DB2!</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CALL SYSPROC.ADMIN_DROP_SCHEMA(&#39;</span><span class="si">{</span><span class="n">schema</span><span class="si">}</span><span class="s2">&#39;, NULL, &#39;ERRORSCHEMA&#39;, &#39;ERRORTABLE&#39;)&quot;</span>
+        <span class="c1"># sql = f&quot;CALL SYSPROC.ADMIN_DROP_SCHEMA(&#39;{schema}&#39;, NULL, NULL, NULL)&quot;</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+    <span class="c1">#####################################################################################</span>
+    <span class="c1"># DEPRECATED(?): `insert_scenarios_in_db` and `insert_scenarios_in_db_transaction`</span>
+    <span class="c1">#####################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.insert_scenarios_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_scenarios_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">outputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED. If we need it back, requires re-evaluation and bulk support.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Inserting all tables within a transaction&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_insert_scenarios_in_db_transaction</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_scenarios_in_db_transaction</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_insert_scenarios_in_db_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">outputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED(?)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_caught_exceptions</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">num_caught_exceptions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_in_db_by_row</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">num_caught_exceptions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_in_db_by_row</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="c1"># Throw exception if any exceptions caught in &#39;non-bulk&#39; mode</span>
+        <span class="c1"># This will cause a rollback when using a transaction</span>
+        <span class="k">if</span> <span class="n">num_caught_exceptions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiple (</span><span class="si">{</span><span class="n">num_caught_exceptions</span><span class="si">}</span><span class="s2">) Integrity and/or Statement errors caught. See log. Raising exception to allow for rollback.&quot;</span><span class="p">)</span>
+
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># Insert/replace scenario</span>
+    <span class="c1">############################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.replace_scenario_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">replace_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert or replace a scenario. Main API to insert/update a scenario.</span>
+<span class="sd">        If the scenario exists, will delete rows first.</span>
+<span class="sd">        Inserts scenario data in all tables.</span>
+<span class="sd">        Inserts tables in order specified in OrderedDict. Inputs first, outputs second.</span>
+
+<span class="sd">        :param scenario_name:</span>
+<span class="sd">        :param inputs:</span>
+<span class="sd">        :param outputs:</span>
+<span class="sd">        :param bulk:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Replacing scenario within transaction&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_replace_scenario_in_db_transaction</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_replace_scenario_in_db_transaction</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_replace_scenario_in_db_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span>
+                                            <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Replace a single full scenario in the DB. If doesn&#39;t exist, will insert.</span>
+<span class="sd">        Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).</span>
+<span class="sd">        Will first delete all rows associated with a scenario_name.</span>
+<span class="sd">        Will set/overwrite the scenario_name in all dfs, so no need to add in advance.</span>
+<span class="sd">        Assumes schema has been created.</span>
+<span class="sd">        Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Step 1: delete scenario if exists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_scenario_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="c1"># Step 2: add scenario_name to all dfs</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">add_scenario_name_to_dfs</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">add_scenario_name_to_dfs</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+        <span class="c1"># Step 3: insert scenario_name in scenario table</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT INTO SCENARIO (scenario_name) VALUES (&#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="c1"># Step 4: (bulk) insert scenario</span>
+        <span class="n">num_caught_exceptions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_single_scenario_tables_in_db</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="c1"># Throw exception if any exceptions caught in &#39;non-bulk&#39; mode</span>
+        <span class="c1"># This will cause a rollback when using a transaction</span>
+        <span class="k">if</span> <span class="n">num_caught_exceptions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiple (</span><span class="si">{</span><span class="n">num_caught_exceptions</span><span class="si">}</span><span class="s2">) Integrity and/or Statement errors caught. See log. Raising exception to allow for rollback.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_delete_scenario_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes all rows associated with a given scenario.</span>
+<span class="sd">        Note that it only deletes rows from tables defined in the self.db_tables, i.e. will NOT delete rows in &#39;auto-inserted&#39; tables!</span>
+<span class="sd">        Must do a &#39;cascading&#39; delete to ensure not violating FK constraints. In reverse order of how they are inserted.</span>
+<span class="sd">        Also deletes entry in scenario table</span>
+<span class="sd">        TODO: do within one session/cursor, so we don&#39;t have to worry about the order of the delete?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">insp</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">insp</span><span class="o">.</span><span class="n">has_table</span><span class="p">(</span><span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">):</span>
+                <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE FROM </span><span class="si">{</span><span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+        <span class="c1"># Delete scenario entry in scenario table:</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE FROM SCENARIO WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_insert_single_scenario_tables_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span>
+                                             <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Specifically for single scenario replace/insert.</span>
+<span class="sd">        Does NOT insert into the `scenario` table.</span>
+<span class="sd">        No `auto_insert`, i.e. only df matching db_tables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_caught_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">outputs</span><span class="p">}</span>  <span class="c1"># Combine all dfs in one dict</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="o">!=</span> <span class="s1">&#39;Scenario&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1">#                 display(df.head(3))</span>
+                    <span class="k">if</span> <span class="n">bulk</span><span class="p">:</span>
+                        <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Row by row for data checking</span>
+                        <span class="n">num_caught_exceptions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_in_db_by_row</span><span class="p">(</span><span class="n">db_table</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No table named </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> in inputs or outputs&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">num_caught_exceptions</span>
+
+    <span class="k">def</span> <span class="nf">_insert_table_in_db_by_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table</span><span class="p">:</span> <span class="n">ScenarioDbTable</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Inserts a table in the DB row-by-row.</span>
+<span class="sd">        For debugging FK/PK data issues.</span>
+<span class="sd">        Uses a single SQL insert statement for each row in the DataFrame so that if there is a FK/PK issue,</span>
+<span class="sd">        the error message will be about only this row. Is a lot easier to debug than using bulk.</span>
+<span class="sd">        In addition, it catches the exception and keeps on inserting, so that we get to see multiple errors.</span>
+<span class="sd">        This allows us to debug multiple data issues within one run.</span>
+<span class="sd">        To avoid too many exceptions, the number of exceptions per table is limited to 10.</span>
+<span class="sd">        After the limit, the insert will be terminated. And the next table will be inserted.</span>
+<span class="sd">        Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">max_num_exceptions</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">()</span>
@@ -443,7 +658,10 @@
                     <span class="n">values</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -456,43 +674,175 @@
                 <span class="k">if</span> <span class="n">num_exceptions</span> <span class="o">&gt;</span> <span class="n">max_num_exceptions</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Max number of exceptions </span><span class="si">{</span><span class="n">max_num_exceptions</span><span class="si">}</span><span class="s2"> for this table exceeded. Stopped inserting more data.&quot;</span><span class="p">)</span>
-                    <span class="k">break</span></div>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">num_exceptions</span>
+
+<div class="viewcode-block" id="ScenarioDbManager.insert_tables_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_tables_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span>
+                            <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">auto_insert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED.</span>
+<span class="sd">        Was attempt to automatically insert a scenario without any schema definition.</span>
+<span class="sd">        Currently, one would need to use the AutoScenarioDbTable in the constructor.</span>
+<span class="sd">        If you want to automatically create such schema based on the inputs/outputs, then do that in the constructor. Not here.</span>
+<span class="sd">        Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">outputs</span><span class="p">}</span>  <span class="c1"># Combine all dfs in one dict</span>
+        <span class="n">completed_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">num_caught_exceptions</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
+                <span class="n">completed_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bulk</span><span class="p">:</span>
+                    <span class="c1">#                     self.insert_table_in_db_bulk(db_table, dfs[scenario_table_name])</span>
+                    <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">],</span> <span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># Row by row for data checking</span>
+                    <span class="n">num_caught_exceptions</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_in_db_by_row</span><span class="p">(</span><span class="n">db_table</span><span class="p">,</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">],</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No table named </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> in inputs or outputs&quot;</span><span class="p">)</span>
+        <span class="c1"># Insert any tables not defined in the schema:</span>
+        <span class="k">if</span> <span class="n">auto_insert</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">completed_dfs</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Table </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> auto inserted&quot;</span><span class="p">)</span>
+                    <span class="n">db_table</span> <span class="o">=</span> <span class="n">AutoScenarioDbTable</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">)</span>
+                    <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">num_caught_exceptions</span></div>
+
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># Read scenario</span>
+    <span class="c1">############################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.get_scenarios_df"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenarios_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all scenarios in df. Result is indexed by `scenario_name`.</span>
+<span class="sd">        Main API to get all scenarios.</span>
+<span class="sd">        The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM SCENARIO&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">df</span></div>
 
 <div class="viewcode-block" id="ScenarioDbManager.read_scenario_table_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_table_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load a single table from the DB.</span>
+        <span class="sd">&quot;&quot;&quot;Read a single table from the DB.</span>
+<span class="sd">        Main API to read a single table.</span>
+<span class="sd">        The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</span>
+
 <span class="sd">        :param scenario_name: Name of scenario</span>
 <span class="sd">        :param scenario_table_name: Name of scenario table (not the DB table name)</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(f&quot;read table {scenario_table_name}&quot;)</span>
-        <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="p">:</span>
-            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span><span class="p">:</span>
-            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">:</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># error!</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario table name &#39;</span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&#39; unknown. Cannot load data from DB.&quot;</span><span class="p">)</span>
 
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_scenario_db_table_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">db_table</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="ScenarioDbManager.read_scenario_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Single scenario load.</span>
+<span class="sd">        Main API to read a complete scenario.</span>
+<span class="sd">        Reads all tables for a single scenario.</span>
+<span class="sd">        Returns all tables in one dict&quot;&quot;&quot;</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_scenario_db_table_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">db_table</span><span class="p">)</span>
+
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_scenario_db_table_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">db_table</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
+
+    <span class="k">def</span> <span class="nf">_read_scenario_db_table_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">db_table</span><span class="p">:</span> <span class="n">ScenarioDbTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read one table from the DB.</span>
+<span class="sd">        Removes the `scenario_name` column.&quot;&quot;&quot;</span>
         <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
         <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">db_table_name</span> <span class="o">!=</span> <span class="s1">&#39;scenario&#39;</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">df</span></div>
+        <span class="k">return</span> <span class="n">df</span>
+
+
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># Old Read scenario APIs</span>
+    <span class="c1">############################################################################################</span>
+    <span class="c1"># def read_scenario_table_from_db(self, scenario_name: str, scenario_table_name: str) -&gt; pd.DataFrame:</span>
+    <span class="c1">#     &quot;&quot;&quot;Read a single table from the DB.</span>
+    <span class="c1">#     The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     :param scenario_name: Name of scenario</span>
+    <span class="c1">#     :param scenario_table_name: Name of scenario table (not the DB table name)</span>
+    <span class="c1">#     :return:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # print(f&quot;read table {scenario_table_name}&quot;)</span>
+    <span class="c1">#     if scenario_table_name in self.input_db_tables:</span>
+    <span class="c1">#         db_table = self.input_db_tables[scenario_table_name]</span>
+    <span class="c1">#     elif scenario_table_name in self.output_db_tables:</span>
+    <span class="c1">#         db_table = self.output_db_tables[scenario_table_name]</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         # error!</span>
+    <span class="c1">#         raise ValueError(f&quot;Scenario table name &#39;{scenario_table_name}&#39; unknown. Cannot load data from DB.&quot;)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     db_table_name = db_table.db_table_name</span>
+    <span class="c1">#     sql = f&quot;SELECT * FROM {db_table_name} WHERE scenario_name = &#39;{scenario_name}&#39;&quot;</span>
+    <span class="c1">#     df = pd.read_sql(sql, con=self.engine)</span>
+    <span class="c1">#     if db_table_name != &#39;scenario&#39;:</span>
+    <span class="c1">#         df = df.drop(columns=[&#39;scenario_name&#39;])</span>
+    <span class="c1">#</span>
+    <span class="c1">#     return df</span>
+
+    <span class="c1"># def read_scenario_from_db(self, scenario_name: str) -&gt; (Inputs, Outputs):</span>
+    <span class="c1">#     &quot;&quot;&quot;Single scenario load.</span>
+    <span class="c1">#     Reads all tables for a single scenario.</span>
+    <span class="c1">#     Returns all tables in one dict&quot;&quot;&quot;</span>
+    <span class="c1">#     inputs = {}</span>
+    <span class="c1">#     for scenario_table_name, db_table in self.input_db_tables.items():</span>
+    <span class="c1">#         db_table_name = db_table.db_table_name</span>
+    <span class="c1">#         sql = f&quot;SELECT * FROM {db_table_name} WHERE scenario_name = &#39;{scenario_name}&#39;&quot;</span>
+    <span class="c1">#         df = pd.read_sql(sql, con=self.engine)</span>
+    <span class="c1">#         #         print(db_table_name)</span>
+    <span class="c1">#         inputs[scenario_table_name] = df</span>
+    <span class="c1">#</span>
+    <span class="c1">#     outputs = {}</span>
+    <span class="c1">#     for scenario_table_name, db_table in self.output_db_tables.items():</span>
+    <span class="c1">#         db_table_name = db_table.db_table_name</span>
+    <span class="c1">#         sql = f&quot;SELECT * FROM {db_table_name} WHERE scenario_name = &#39;{scenario_name}&#39;&quot;</span>
+    <span class="c1">#         df = pd.read_sql(sql, con=self.engine)</span>
+    <span class="c1">#         #         print(db_table_name)</span>
+    <span class="c1">#         outputs[scenario_table_name] = df</span>
+    <span class="c1">#</span>
+    <span class="c1">#     inputs, outputs = ScenarioDbManager.delete_scenario_name_column(inputs, outputs)</span>
+    <span class="c1">#     return inputs, outputs</span>
 
     <span class="c1">#######################################################################################################</span>
     <span class="c1"># Caching</span>
+    <span class="c1"># How it works:</span>
+    <span class="c1"># Setup:</span>
+    <span class="c1"># 1. DoDashApp defines a procedure `read_xxxx_proc`</span>
+    <span class="c1"># 2. DoDashApp applies Flask caching to procedure</span>
+    <span class="c1"># 3. DoDashApp registers the procedure as a callback in the ScenarioDbManager.read_xxx_callback using `dbm.set_xxx_callback(read_xxx_callback)`</span>
+    <span class="c1"># Operationally (where dbm is a ScenarioDbManager):</span>
+    <span class="c1"># 1. In the DoDashApp, call to `dbm.read_xxxx_cached()`</span>
+    <span class="c1"># 2. In the `ScenarioDbManager.read_xxxx_cached()` calls the cached callback procedure defined in the DoDashApp (i.e. `read_xxxx_proc`)</span>
+    <span class="c1"># 3. The cached procedure calls `dbm.read_xxxx()`</span>
+    <span class="c1">#</span>
+    <span class="c1"># TODO: why can&#39;t the DoDashApp call the `read_xxxx_proc` directly. This would avoid all this registration of callbacks</span>
+    <span class="c1"># TODO: migrate all of this caching and callbacks (if applicable) to the DoDashApp to reduce complexity and dependency</span>
     <span class="c1">#######################################################################################################</span>
-    <span class="c1">## ScenarioTable</span>
+    <span class="c1"># ScenarioTable</span>
 <div class="viewcode-block" id="ScenarioDbManager.set_scenarios_table_read_callback"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback">[docs]</a>    <span class="k">def</span> <span class="nf">set_scenarios_table_read_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenarios_table_read_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets a callback function to read the scenario table from the DB</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED - now in DoDashApp</span>
+<span class="sd">        Sets a callback function to read the scenario table from the DB</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_scenarios_table_from_db_callback</span> <span class="o">=</span> <span class="n">scenarios_table_read_callback</span></div>
 
 <div class="viewcode-block" id="ScenarioDbManager.read_scenarios_table_from_db_cached"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenarios_table_from_db_cached</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;For use with Flask caching. Default implementation.</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED - now in DoDashApp</span>
+<span class="sd">        For use with Flask caching. Default implementation.</span>
+<span class="sd">        To be called from (typically) a Dash app to use the cached version.</span>
 <span class="sd">        In case no caching has been configured. Simply calls the regular method `get_scenarios_df`.</span>
 
 <span class="sd">        For caching:</span>
@@ -505,15 +855,17 @@
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenarios_df</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
-    <span class="c1">## Tables</span>
+    <span class="c1"># Tables</span>
 <div class="viewcode-block" id="ScenarioDbManager.set_table_read_callback"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback">[docs]</a>    <span class="k">def</span> <span class="nf">set_table_read_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_read_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sets a callback function to read a table from a scenario</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED - now in DoDashApp</span>
+<span class="sd">        Sets a callback function to read a table from a scenario</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#     print(f&quot;Set callback to {table_read_callback}&quot;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db_callback</span> <span class="o">=</span> <span class="n">table_read_callback</span></div>
 
 <div class="viewcode-block" id="ScenarioDbManager.read_scenario_table_from_db_cached"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_table_from_db_cached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;For use with Flask caching. Default implementation.</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED - now in DoDashApp</span>
+<span class="sd">        For use with Flask caching. Default implementation.</span>
 <span class="sd">        In case no caching has been configured. Simply calls the regular method `read_scenario_table_from_db`.</span>
 
 <span class="sd">        For caching:</span>
@@ -530,9 +882,13 @@
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.read_scenario_tables_from_db_cached"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_tables_from_db_cached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_table_names</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_table_names</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;For use with Flask caching. Loads data for selected input and output tables.</span>
-<span class="sd">        Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ScenarioDbManager.read_scenario_tables_from_db_cached"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_tables_from_db_cached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                            <span class="n">input_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">output_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DEPRECATED - now in DoDashApp</span>
+<span class="sd">        For use with Flask caching. Loads data for selected input and output tables.</span>
+<span class="sd">        Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`.</span>
+<span class="sd">        Is called from dse_do_dashboard.DoDashApp to create the PlotlyManager.&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">input_table_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># load all tables by default</span>
             <span class="n">input_table_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -551,7 +907,12 @@
             <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db_cached</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.read_scenario_tables_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_tables_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_table_names</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_table_names</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1">#######################################################################################################</span>
+    <span class="c1"># Review</span>
+    <span class="c1">#######################################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.read_scenario_tables_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_tables_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                     <span class="n">input_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">output_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads data for selected input and output tables.</span>
 <span class="sd">        If either list is names is None, will load all tables as defined in db_tables configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -569,30 +930,7 @@
             <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.read_scenario_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenario_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Single scenario load.</span>
-<span class="sd">        Reads all tables for a single scenario.</span>
-<span class="sd">        Returns all tables in one dict&quot;&quot;&quot;</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
-            <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
-            <span class="c1">#         print(db_table_name)</span>
-            <span class="n">inputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
-
-        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
-            <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
-            <span class="c1">#         print(db_table_name)</span>
-            <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
-
-        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">delete_scenario_name_column</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
-
-<div class="viewcode-block" id="ScenarioDbManager.read_scenarios_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenarios_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
+<div class="viewcode-block" id="ScenarioDbManager.read_scenarios_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_scenarios_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Multi scenario load.</span>
 <span class="sd">        Reads all tables from set of scenarios&quot;&quot;&quot;</span>
         <span class="n">where_scenarios</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">scenario_names</span><span class="p">])</span>
@@ -619,45 +957,9 @@
 
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.delete_scenario_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">delete_scenario_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Deletes all rows associated with a given scenario.</span>
-<span class="sd">        Note that it only deletes rows from tables defined in the self.db_tables, i.e. will NOT delete rows in &#39;auto-inserted&#39; tables!</span>
-<span class="sd">        Must do a &#39;cascading&#39; delete to ensure not violating FK constraints. In reverse order of how they are inserted.</span>
-<span class="sd">        Also deletes entry in scenario table</span>
-<span class="sd">        TODO: do within one session/cursor, so we don&#39;t have to worry about the order of the delete?</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">insp</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-            <span class="k">if</span> <span class="n">insp</span><span class="o">.</span><span class="n">has_table</span><span class="p">(</span><span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">):</span>
-                <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE FROM </span><span class="si">{</span><span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-
-        <span class="c1"># for scenario_table_name, db_table in reversed(self.db_tables.items()):</span>
-        <span class="c1">#     sql = f&quot;DELETE FROM {db_table.db_table_name} WHERE scenario_name = &#39;{scenario_name}&#39;&quot;</span>
-        <span class="c1">#     self.engine.execute(sql)</span>
-
-        <span class="c1"># Delete scenario entry in scenario table:</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE FROM SCENARIO WHERE scenario_name = &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ScenarioDbManager.replace_scenario_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">replace_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">bulk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Replace a single full scenario in the DB. If doesn&#39;t exists, will insert.</span>
-<span class="sd">        Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).</span>
-<span class="sd">        Will first delete all rows associated with a scenario_name.</span>
-<span class="sd">        Will set/overwrite the scenario_name in all dfs, so no need to add in advance.</span>
-<span class="sd">        Assumes schema has been created.</span>
-<span class="sd">        Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way.&quot;&quot;&quot;</span>
-        <span class="c1"># Step 1: delete scenario if exists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delete_scenario_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">)</span>
-        <span class="c1"># Step 2: add scenario_name to all dfs</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">add_scenario_name_to_dfs</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
-        <span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">add_scenario_name_to_dfs</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
-        <span class="c1"># Step 3: insert scenario_name in scenario table</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT INTO SCENARIO (scenario_name) VALUES (&#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-        <span class="c1"># Step 4: (bulk) insert scenario</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">insert_single_scenario_tables_in_db</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bulk</span><span class="o">=</span><span class="n">bulk</span><span class="p">)</span></div>
-
+    <span class="c1">#######################################################################################################</span>
+    <span class="c1"># Utils</span>
+    <span class="c1">#######################################################################################################</span>
 <div class="viewcode-block" id="ScenarioDbManager.add_scenario_name_to_dfs"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">add_scenario_name_to_dfs</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Adds a `scenario_name` column to each df.</span>
@@ -669,27 +971,8 @@
             <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
         <span class="k">return</span> <span class="n">outputs</span></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.insert_single_scenario_tables_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_single_scenario_tables_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">insert_single_scenario_tables_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">outputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">bulk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Specifically for single scenario replace/insert.</span>
-<span class="sd">        Does NOT insert into the `scenario` table.</span>
-<span class="sd">        No `auto_insert`, i.e. only df matching db_tables.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">outputs</span><span class="p">}</span>  <span class="c1"># Combine all dfs in one dict</span>
-        <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="o">!=</span> <span class="s1">&#39;Scenario&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
-                    <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="c1">#                 display(df.head(3))</span>
-                    <span class="k">if</span> <span class="n">bulk</span><span class="p">:</span>
-                        <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Row by row for data checking</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">insert_table_in_db</span><span class="p">(</span><span class="n">db_table</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No table named </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2"> in inputs or outputs&quot;</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="ScenarioDbManager.delete_scenario_name_column"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">delete_scenario_name_column</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">delete_scenario_name_column</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Drops the column `scenario_name` from any df in either inputs or outputs.</span>
 <span class="sd">        This is used to create a inputs/outputs combination similar to loading a single scenario from the DO Experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -703,18 +986,12 @@
             <span class="k">if</span> <span class="s1">&#39;scenario_name&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">])</span>
                 <span class="n">new_outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
-        <span class="k">return</span> <span class="n">new_inputs</span><span class="p">,</span> <span class="n">new_outputs</span></div>
+        <span class="k">return</span> <span class="n">new_inputs</span><span class="p">,</span> <span class="n">new_outputs</span></div></div>
 
-<div class="viewcode-block" id="ScenarioDbManager.get_scenarios_df"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenarios_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return all scenarios in df. Result is indexed by `scenario_name`.&quot;&quot;&quot;</span>
-        <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM SCENARIO&quot;</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">df</span></div></div>
 
-<span class="c1"># +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
-<span class="c1">#  Input Tables</span>
-<span class="c1"># +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
-
+<span class="c1">#######################################################################################################</span>
+<span class="c1"># Input Tables</span>
+<span class="c1">#######################################################################################################</span>
 <div class="viewcode-block" id="ScenarioTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioTable">[docs]</a><span class="k">class</span> <span class="nc">ScenarioTable</span><span class="p">(</span><span class="n">ScenarioDbTable</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;scenario&#39;</span><span class="p">):</span>
         <span class="n">columns_metadata</span> <span class="o">=</span> <span class="p">[</span>
@@ -733,9 +1010,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">db_table_name</span><span class="p">,</span> <span class="n">columns_metadata</span><span class="p">)</span></div>
 
 
-<span class="c1"># +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
-<span class="c1">#  Output Tables</span>
-<span class="c1"># +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+<span class="c1">#######################################################################################################</span>
+<span class="c1"># Output Tables</span>
+<span class="c1">#######################################################################################################</span>
 <div class="viewcode-block" id="KpiTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.KpiTable">[docs]</a><span class="k">class</span> <span class="nc">KpiTable</span><span class="p">(</span><span class="n">ScenarioDbTable</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;kpis&#39;</span><span class="p">):</span>
         <span class="n">columns_metadata</span> <span class="o">=</span> <span class="p">[</span>
@@ -743,6 +1020,7 @@
             <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;VALUE&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">(),</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="p">]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">db_table_name</span><span class="p">,</span> <span class="n">columns_metadata</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="BusinessKpiTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.BusinessKpiTable">[docs]</a><span class="k">class</span> <span class="nc">BusinessKpiTable</span><span class="p">(</span><span class="n">ScenarioDbTable</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;business_kpi&#39;</span><span class="p">,</span> <span class="n">extended_columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
@@ -783,7 +1061,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 

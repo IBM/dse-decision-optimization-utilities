@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.2.0 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -1487,6 +1487,9 @@ df[‘xDVar’] = mdl.integer_var_series(df, name = ‘xDVar’)</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-dse_do_utils.plotly_cpd_workaround">
+<span id="dse-do-utils-plotly-cpd-workaround-module"></span><h2>dse_do_utils.plotly_cpd_workaround module<a class="headerlink" href="#module-dse_do_utils.plotly_cpd_workaround" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-dse_do_utils.plotlymanager">
 <span id="dse-do-utils-plotlymanager-module"></span><h2>dse_do_utils.plotlymanager module<a class="headerlink" href="#module-dse_do_utils.plotlymanager" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -1498,14 +1501,16 @@ Pass-in the DM as an input in the constructor.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.plotlymanager.PlotlyManager.get_dash_tab_layout_m">
 <span class="sig-name descname"><span class="pre">get_dash_tab_layout_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/plotlymanager.html#PlotlyManager.get_dash_tab_layout_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.plotlymanager.PlotlyManager.get_dash_tab_layout_m" title="Permalink to this definition">¶</a></dt>
-<dd><p>On the instance <cite>self</cite>, call the method named by get_tab_layout_{page_id}.
+<dd><p>DEPRECATED. Not used in dse_do_dashboard package.
+On the instance <cite>self</cite>, call the method named by get_tab_layout_{page_id}.
 Used in dse_do_dashboard Plotly-Dash dashboards</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m">
 <span class="sig-name descname"><span class="pre">get_plotly_fig_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/plotlymanager.html#PlotlyManager.get_plotly_fig_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m" title="Permalink to this definition">¶</a></dt>
-<dd><p>On the instance <cite>self</cite>, call the method named by id[‘index’]
+<dd><p>DEPRECATED. Not used in dse_do_dashboard package.
+On the instance <cite>self</cite>, call the method named by id[‘index’]
 For use with pattern-matching callbacks. Assumes the id[‘index’] is the name of a method of this class and returns a fig.
 Used in dse_do_dashboard Plotly-Dash dashboards</p>
 </dd></dl>
@@ -1519,13 +1524,17 @@ Used in dse_do_dashboard Plotly-Dash dashboards</p>
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">AutoScenarioDbTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></code></a></p>
-<p>Designed to automatically generate the table definition based on the DataFrame.
-Advantages:
+<p>Designed to automatically generate the table definition based on the DataFrame.</p>
+<p>Main difference with the ‘regular’ ScenarioDbTable definition:
+* At ‘create_schema`, the table will NOT be created. Instead,
+* At ‘insert_table_in_db_bulk’ SQLAlchemy will automatically create a TABLE based on the DataFrame.</p>
+<p>Advantages:
 - No need to define a custom ScenarioDbTable class per table
 - Automatically all columns are inserted
 Disadvantages:
 - No primary and foreign key relations. Thus no checks.
 - Missing relationships means Cognos cannot automatically extract a data model</p>
+<p>TODO: find out what will happen if the DataFrame structure changes and we’re doing a new insert</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata">
 <span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
@@ -1534,12 +1543,13 @@ Disadvantages:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk">
-<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<em>pd.DataFrame</em>) – </p></li>
 <li><p><strong>mgr</strong> (<a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="dse_do_utils.scenariodbmanager.ScenarioDbManager"><em>ScenarioDbManager</em></a>) – </p></li>
+<li><p><strong>connection</strong> – if not None, being run within a transaction</p></li>
 </ul>
 </dd>
 </dl>
@@ -1567,11 +1577,9 @@ Disadvantages:
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioDbManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioDbManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">collections.OrderedDict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_db_tables</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">collections.OrderedDict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_transactions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sqlite_fk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>TODO:
-* Allow insert of tables in inputs/outputs that do not have ScenarioDbTable definitions, like in the original ScenarioDbManager
-These to be inserted after the others. No need for a</p>
+<p>TODO: documentation!</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_scenario_name_to_dfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.add_scenario_name_to_dfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs" title="Permalink to this definition">¶</a></dt>
@@ -1581,41 +1589,14 @@ This avoids to need for the MultiScenarioManager when loading and storing single
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_database_engine">
-<span class="sig-name descname"><span class="pre">create_database_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_database_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_database_engine" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_db2_engine">
-<span class="sig-name descname"><span class="pre">create_db2_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_db2_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_db2_engine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a DB2 engine instance.
-Connection string logic in <cite>get_db2_connection_string</cite></p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema">
 <span class="sig-name descname"><span class="pre">create_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drops all tables and re-creates the schema in the DB.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.create_sqllite_engine">
-<span class="sig-name descname"><span class="pre">create_sqllite_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.create_sqllite_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_sqllite_engine" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db">
-<span class="sig-name descname"><span class="pre">delete_scenario_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.delete_scenario_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deletes all rows associated with a given scenario.
-Note that it only deletes rows from tables defined in the self.db_tables, i.e. will NOT delete rows in ‘auto-inserted’ tables!
-Must do a ‘cascading’ delete to ensure not violating FK constraints. In reverse order of how they are inserted.
-Also deletes entry in scenario table
-TODO: do within one session/cursor, so we don’t have to worry about the order of the delete?</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">delete_scenario_name_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.delete_scenario_name_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">delete_scenario_name_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.delete_scenario_name_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drops the column <cite>scenario_name</cite> from any df in either inputs or outputs.
 This is used to create a inputs/outputs combination similar to loading a single scenario from the DO Experiment.</p>
 </dd></dl>
@@ -1623,80 +1604,38 @@ This is used to create a inputs/outputs combination similar to loading a single 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables">
 <span class="sig-name descname"><span class="pre">drop_all_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.drop_all_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drops all tables as defined in db_tables (if exists)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.get_db2_connection_string">
-<span class="sig-name descname"><span class="pre">get_db2_connection_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.get_db2_connection_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_db2_connection_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a DB2 connection string.</p>
-<p>Needs a work-around for DB2 on cloud.ibm.com.
-Workaround: Pass in your credentials like this:</p>
-<dl class="simple">
-<dt>DB2_credentials = {</dt><dd><p>‘username’: “user1”,
-‘password’: “password1”,
-‘host’: “hostname.databases.appdomain.cloud”,
-‘port’: “30080”,
-‘database’: “bludb”,
-‘schema’: “my_schema”, #&lt;- SCHEMA IN DATABASE
-‘ssl’: “SSL” #&lt;- NOTE: SPECIFY SSL HERE IF TRUE FOR DB2</p>
-</dd>
-</dl>
-<p>}</p>
-<p>The option ‘ssl=True’ doesn’t work. Instead use ‘Security=ssl’.
-See <a class="reference external" href="https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy">https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy</a>.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The schema doesn’t work properly in DB2 Lite version on cloud.ibm.com. Schema names work properly
-with paid versions where you can have multiple schemas</p></li>
-<li><p>SQLAlchemy expects a certain way the SSL is encoded in the connection string.
-This method adapts based on different ways the SSL is defined in the credentials</p></li>
-</ul>
+<dd><p>Drops all tables in the current schema.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df">
 <span class="sig-name descname"><span class="pre">get_scenarios_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.get_scenarios_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all scenarios in df. Result is indexed by <cite>scenario_name</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.initialize_db_tables_metadata">
-<span class="sig-name descname"><span class="pre">initialize_db_tables_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.initialize_db_tables_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.initialize_db_tables_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>To be called from constructor, after engine is ‘created’/connected, after self.metadata, self.multi_scenario have been set.
-This will add the <cite>scenario_name</cite> to the db_table configurations.
-This also allows non-bulk inserts into an existing DB (i.e. without running ‘create_schema’)</p>
+<dd><p>Return all scenarios in df. Result is indexed by <cite>scenario_name</cite>.
+Main API to get all scenarios.
+The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db">
 <span class="sig-name descname"><span class="pre">insert_scenarios_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_scenarios_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_single_scenario_tables_in_db">
-<span class="sig-name descname"><span class="pre">insert_single_scenario_tables_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_single_scenario_tables_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_single_scenario_tables_in_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifically for single scenario replace/insert.
-Does NOT insert into the <cite>scenario</cite> table.
-No <cite>auto_insert</cite>, i.e. only df matching db_tables.</p>
+<dd><p>DEPRECATED. If we need it back, requires re-evaluation and bulk support.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_in_db">
-<span class="sig-name descname"><span class="pre">insert_table_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="dse_do_utils.scenariodbmanager.ScenarioDbTable"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbTable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_table_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_in_db" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db">
-<span class="sig-name descname"><span class="pre">insert_tables_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_insert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_tables_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
-TODO: how to set the schema info without clearing the existing schema and thus the whole DB?</p>
+<span class="sig-name descname"><span class="pre">insert_tables_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_insert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_tables_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED.
+Was attempt to automatically insert a scenario without any schema definition.
+Currently, one would need to use the AutoScenarioDbTable in the constructor.
+If you want to automatically create such schema based on the inputs/outputs, then do that in the constructor. Not here.
+Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">
 <span class="sig-name descname"><span class="pre">read_scenario_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Single scenario load.
+Main API to read a complete scenario.
 Reads all tables for a single scenario.
 Returns all tables in one dict</p>
 </dd></dl>
@@ -1704,16 +1643,27 @@ Returns all tables in one dict</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db">
 <span class="sig-name descname"><span class="pre">read_scenario_table_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_table_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load a single table from the DB.
-:param scenario_name: Name of scenario
-:param scenario_table_name: Name of scenario table (not the DB table name)
-:return:</p>
+<dd><p>Read a single table from the DB.
+Main API to read a single table.
+The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario_name</strong> – Name of scenario</p></li>
+<li><p><strong>scenario_table_name</strong> – Name of scenario table (not the DB table name)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached">
 <span class="sig-name descname"><span class="pre">read_scenario_table_from_db_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_table_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached" title="Permalink to this definition">¶</a></dt>
-<dd><p>For use with Flask caching. Default implementation.
+<dd><p>DEPRECATED - now in DoDashApp
+For use with Flask caching. Default implementation.
 In case no caching has been configured. Simply calls the regular method <cite>read_scenario_table_from_db</cite>.</p>
 <p>For caching:
 1. Specify a callback procedure in <cite>read_scenario_table_from_db_callback</cite> that uses a hard-coded version of a ScenarioDbManager,
@@ -1730,8 +1680,10 @@ If either list is names is None, will load all tables as defined in db_tables co
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached">
 <span class="sig-name descname"><span class="pre">read_scenario_tables_from_db_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_tables_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db_cached" title="Permalink to this definition">¶</a></dt>
-<dd><p>For use with Flask caching. Loads data for selected input and output tables.
-Same as <cite>read_scenario_tables_from_db</cite>, but calls <cite>read_scenario_table_from_db_cached</cite></p>
+<dd><p>DEPRECATED - now in DoDashApp
+For use with Flask caching. Loads data for selected input and output tables.
+Same as <cite>read_scenario_tables_from_db</cite>, but calls <cite>read_scenario_table_from_db_cached</cite>.
+Is called from dse_do_dashboard.DoDashApp to create the PlotlyManager.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1744,7 +1696,9 @@ Reads all tables from set of scenarios</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached">
 <span class="sig-name descname"><span class="pre">read_scenarios_table_from_db_cached</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenarios_table_from_db_cached"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached" title="Permalink to this definition">¶</a></dt>
-<dd><p>For use with Flask caching. Default implementation.
+<dd><p>DEPRECATED - now in DoDashApp
+For use with Flask caching. Default implementation.
+To be called from (typically) a Dash app to use the cached version.
 In case no caching has been configured. Simply calls the regular method <cite>get_scenarios_df</cite>.</p>
 <p>For caching:
 1. Specify a callback procedure in <cite>read_scenarios_table_from_db_callback</cite> that uses a hard-coded version of a ScenarioDbManager,
@@ -1754,24 +1708,37 @@ which in turn calls the regular method <cite>get_scenarios_df</cite></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db">
 <span class="sig-name descname"><span class="pre">replace_scenario_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.replace_scenario_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replace a single full scenario in the DB. If doesn’t exists, will insert.
-Only inserts tables with an entry defined in self.db_tables (i.e. no <cite>auto_insert</cite>).
-Will first delete all rows associated with a scenario_name.
-Will set/overwrite the scenario_name in all dfs, so no need to add in advance.
-Assumes schema has been created.
-Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way.</p>
+<dd><p>Insert or replace a scenario. Main API to insert/update a scenario.
+If the scenario exists, will delete rows first.
+Inserts scenario data in all tables.
+Inserts tables in order specified in OrderedDict. Inputs first, outputs second.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scenario_name</strong> – </p></li>
+<li><p><strong>inputs</strong> – </p></li>
+<li><p><strong>outputs</strong> – </p></li>
+<li><p><strong>bulk</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback">
 <span class="sig-name descname"><span class="pre">set_scenarios_table_read_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenarios_table_read_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.set_scenarios_table_read_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets a callback function to read the scenario table from the DB</p>
+<dd><p>DEPRECATED - now in DoDashApp
+Sets a callback function to read the scenario table from the DB</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback">
 <span class="sig-name descname"><span class="pre">set_table_read_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_read_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.set_table_read_callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets a callback function to read a table from a scenario</p>
+<dd><p>DEPRECATED - now in DoDashApp
+Sets a callback function to read a table from a scenario</p>
 </dd></dl>
 
 </dd></dl>
@@ -1779,7 +1746,7 @@ Note: there is no difference between dfs in inputs or outputs, i.e. they are ins
 <dl class="py class">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariodbmanager.</span></span><span class="sig-name descname"><span class="pre">ScenarioDbTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_metadata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
 Only columns that are specified and included in the DB insert.</p>
 <dl class="py method">
@@ -1818,13 +1785,14 @@ Only columns that are specified and included in the DB insert.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">
-<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert_table_in_db_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mgr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.insert_table_in_db_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert a DataFrame in the DB using ‘bulk’ insert, i.e. with one SQL insert.
 (Instead of row-by-row.)
 :param df:
 :type df: pd.DataFrame
 :param mgr:
-:type mgr: ScenarioDbManager</p>
+:type mgr: ScenarioDbManager
+:param connection: if not None, being run within a transaction</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2659,6 +2627,7 @@ If it is, you may need to add another reload:</p>
 <li><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.multiscenariomanager">dse_do_utils.multiscenariomanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.plotly_cpd_workaround">dse_do_utils.plotly_cpd_workaround module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.plotlymanager">dse_do_utils.plotlymanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariodbmanager">dse_do_utils.scenariodbmanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
@@ -2706,7 +2675,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.2.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
