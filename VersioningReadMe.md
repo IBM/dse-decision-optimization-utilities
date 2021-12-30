@@ -15,10 +15,9 @@ Note that if you added/removed modules, you first need to re-run the sphinx comm
 `sphinx-apidoc -f -o source/ ../dse_do_utils/`
 
 3. For PyPI, build the wheel file.
-a. Delete all files in `./dist`
-b. Open Terminal, from root, run <br>
-`cd ..
-4. `
+   a. Delete all files in `./dist`
+   b. Open Terminal, from root, run <br>
+   `python setup.py sdist bdist_wheel`
 
 5. Upload to PyPI (from PyCharm terminal run):<br>
 `twine upload dist/*  --verbose`

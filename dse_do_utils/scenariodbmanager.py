@@ -209,7 +209,7 @@ class ScenarioDbManager():
     TODO: documentation!
     """
 
-    def __init__(self, input_db_tables: OrderedDict[str, ScenarioDbTable], output_db_tables: OrderedDict[str, ScenarioDbTable],
+    def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True):
         """Create a ScenarioDbManager.
@@ -223,6 +223,7 @@ class ScenarioDbManager():
         :param enable_transactions: If true, uses transactions
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         """
+        # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
         self.schema = schema
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
@@ -242,9 +243,10 @@ class ScenarioDbManager():
     # Initialization. Called from constructor.
     ############################################################################################
 
-    def _add_scenario_db_table(self, input_db_tables: OrderedDict[str, ScenarioDbTable]) -> OrderedDict[str, ScenarioDbTable]:
+    def _add_scenario_db_table(self, input_db_tables: Dict[str, ScenarioDbTable]) -> Dict[str, ScenarioDbTable]:
         """Adds a Scenario table as the first in the OrderedDict (if it doesn't already exist).
         Called from constructor."""
+        # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
         if self.multi_scenario:
             if 'Scenario' not in input_db_tables.keys():
                 input_db_tables.update({'Scenario': ScenarioTable()})
