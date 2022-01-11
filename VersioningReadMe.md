@@ -20,7 +20,7 @@ Note that if you added/removed modules, you first need to re-run the sphinx comm
    `python setup.py sdist bdist_wheel`
 
 5. Upload to PyPI (from PyCharm terminal run):<br>
-`make clean`
+`twine upload dist/*  --verbose`
 Enter username and password when prompted.
 (For TestPyPI use: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`)<br>
 Before the twine upload, you can check the distribution with:<br>
