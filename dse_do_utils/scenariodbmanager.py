@@ -983,7 +983,7 @@ class ScenarioDbManager():
         # 2. Delete all output tables
         for scenario_table_name, db_table in reversed(self.output_db_tables.items()):  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario'):
-                db_table._delete_scenario_table_from_db()
+                db_table._delete_scenario_table_from_db(scenario_name, connection)
         # 3. Insert new data
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and db_table.db_table_name in outputs.keys():  # If in given set of tables to replace
