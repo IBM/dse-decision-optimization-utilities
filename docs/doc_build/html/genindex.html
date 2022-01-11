@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; DSE DO Utils 0.5.3.1 documentation</title>
+    <title>Index &#8212; DSE DO Utils 0.5.4.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.3.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>  
@@ -60,6 +60,7 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
@@ -135,6 +136,8 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data">clear_scenario_data() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.column_name">column_name (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series">continuous_var_series() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s">continuous_var_series_s() (dse_do_utils.optimizationengine.OptimizationEngine static method)</a>
@@ -159,6 +162,8 @@
         <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata">(dse_do_utils.scenariodbmanager.ScenarioDbTable method)</a>
 </li>
       </ul></li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.current_value">current_value (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -167,7 +172,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager">DataManager (class in dse_do_utils.datamanager)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate">DbCellUpdate (class in dse_do_utils.scenariodbmanager)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.default_scenario">default_scenario (dse_do_utils.scenariopicker.ScenarioPicker attribute)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db">delete_scenario_from_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column">delete_scenario_name_column() (dse_do_utils.scenariodbmanager.ScenarioDbManager static method)</a>
 </li>
@@ -303,6 +312,8 @@
         <li><a href="dse_do_utils.html#module-dse_do_utils.version">module</a>
 </li>
       </ul></li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.duplicate_scenario_in_db">duplicate_scenario_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -413,12 +424,12 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table">get_kpi_output_table() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe">get_kpis_table_as_dataframe() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_name_and_url">get_log_file_name_and_url() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_url">get_log_file_url() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_multi_scenario_data">get_multi_scenario_data() (dse_do_utils.multiscenariomanager.MultiScenarioManager method)</a>
@@ -443,6 +454,12 @@
         <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">(dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
       </ul></li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column">get_sa_column() (dse_do_utils.scenariodbmanager.ScenarioDbTable method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_table">get_sa_table() (dse_do_utils.scenariodbmanager.ScenarioDbTable method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenario_db_table">get_scenario_db_table() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_picker_ui">get_scenario_picker_ui() (dse_do_utils.scenariopicker.ScenarioPicker method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.get_scenario_refresh_button">get_scenario_refresh_button() (dse_do_utils.scenariopicker.ScenarioPicker method)</a>
@@ -646,10 +663,10 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table_get_dataframe">post_process_inline_table_get_dataframe() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_interrupted">post_process_interrupted() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_processed">post_process_processed() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">prep_parameters() (dse_do_utils.datamanager.DataManager method)</a>
@@ -659,6 +676,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_input_data_frames">prepare_input_data_frames() (dse_do_utils.datamanager.DataManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_output_data_frames">prepare_output_data_frames() (dse_do_utils.datamanager.DataManager method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.previous_value">previous_value (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.print_hello">print_hello() (dse_do_utils.datamanager.DataManager method)</a>
 </li>
@@ -674,6 +693,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">read_scenario_from_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_input_tables_from_db">read_scenario_input_tables_from_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db">read_scenario_table_from_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db_cached">read_scenario_table_from_db_cached() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
@@ -686,6 +707,8 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_table_from_db_cached">read_scenarios_table_from_db_cached() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.rename_scenario_in_db">rename_scenario_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_in_scenario">replace_data_in_scenario() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
@@ -693,6 +716,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s">replace_data_into_scenario_s() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db">replace_scenario_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_tables_in_db">replace_scenario_tables_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_debug_materials">retrieve_debug_materials() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
@@ -702,12 +727,18 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solve_configuration">retrieve_solve_configuration() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
 </li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.row_idx">row_idx (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.row_index">row_index (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.scenario_name">scenario_name (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager">ScenarioDbManager (class in dse_do_utils.scenariodbmanager)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable">ScenarioDbTable (class in dse_do_utils.scenariodbmanager)</a>
@@ -720,10 +751,10 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioTable">ScenarioTable (class in dse_do_utils.scenariodbmanager)</a>
 </li>
-      <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.set_output_settings_in_solve_configuration">set_output_settings_in_solve_configuration() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.set_output_settings_in_solve_configuration">set_output_settings_in_solve_configuration() (dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21 method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_scenarios_table_read_callback">set_scenarios_table_read_callback() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.set_table_read_callback">set_table_read_callback() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
@@ -743,9 +774,23 @@
   </ul></td>
 </tr></table>
 
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.table_name">table_name (dse_do_utils.scenariodbmanager.DbCellUpdate attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.update_cell_changes_in_db">update_cell_changes_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.update_scenario_output_tables_in_db">update_scenario_output_tables_in_db() (dse_do_utils.scenariodbmanager.ScenarioDbManager method)</a>
+</li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.update_solve_output_into_scenario">update_solve_output_into_scenario() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
   </ul></td>
@@ -814,7 +859,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.3.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>

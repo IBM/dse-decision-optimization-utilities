@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]## [0.5.4.1b]
+
+## [0.5.4.0] - 2022-01-11
+### Changed
+- ScenarioDbManager - Converted text SQL operations to SQLAlchemy operations to support any column-name (i.e. lower, upper, mixed, reserved words)
+- Updated ScenarioDbManager.read_scenario_tables_from_db to selectively read tables from a scenario
+### Added
+- ScenarioDbManager - Edit cells in tables
+- ScenarioDbManager - Duplicate, Rename and Delete scenario
+- ScenarioDbManager.read_scenario_input_tables_from_db main API to read input for solve
+- ScenarioDbManager.update_scenario_output_tables_in_db main API to store solve output
+
 ## [0.5.3.1] - 2021-12-30
 ### Changed
 - (critical) ScenarioDbManager - Replaced OrderedDict with Dict as type. Was causing a syntax error. 
