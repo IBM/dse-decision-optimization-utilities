@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.3.2b]
+## [Unreleased]## [0.5.4.0b]
 ### Changed
+- ScenarioDbManager - Converted text SQL operations to SQLAlchemy operations to support any column-name (i.e. lower, upper, mixed, reserved words)
+### Added
+- ScenarioDbManager - Edit cells in tables
+- ScenarioDbManager - Duplicate, Rename and Delete scenario
 
 ## [0.5.3.1] - 2021-12-30
 ### Changed
