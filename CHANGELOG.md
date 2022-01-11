@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.0b]
 ### Changed
 - ScenarioDbManager - Converted text SQL operations to SQLAlchemy operations to support any column-name (i.e. lower, upper, mixed, reserved words)
+- Updated ScenarioDbManager.read_scenario_tables_from_db to selectively read tables from a scenario
 ### Added
 - ScenarioDbManager - Edit cells in tables
 - ScenarioDbManager - Duplicate, Rename and Delete scenario
