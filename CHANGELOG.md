@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - ScenarioDbManager - Edit cells in tables
 - ScenarioDbManager - Duplicate, Rename and Delete scenario
+- ScenarioDbManager.read_scenario_input_tables_from_db main API to read input for solve
+- ScenarioDbManager.update_scenario_output_tables_in_db main API to store solve output
 
 ## [0.5.3.1] - 2021-12-30
 ### Changed
