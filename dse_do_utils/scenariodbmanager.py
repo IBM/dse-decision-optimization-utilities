@@ -890,7 +890,7 @@ class ScenarioDbManager():
         inputs = {}
         for scenario_table_name, db_table in self.input_db_tables.items():
             if scenario_table_name in input_table_names:
-                inputs[scenario_table_name] = self._read_scenario_table_from_db(scenario_name, db_table, connection=connection)
+                inputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table, connection=connection)
         outputs = {}
         for scenario_table_name, db_table in self.output_db_tables.items():
             if scenario_table_name in output_table_names:
