@@ -6,6 +6,8 @@
 # DataManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
+import types
+
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
 
@@ -56,6 +58,7 @@ class DataManager(object):
 
         """
         pass
+        # self.set_parameters()  # TODO: do we always want to call set_parameter here?
 
     def prepare_output_data_frames(self):
         """Placeholder to process output data frames.
@@ -95,6 +98,21 @@ class DataManager(object):
     #     """
     #     return self.prep_parameters()
 
+    def set_parameters(self):
+        """Set the parameters as properties of the self.param object.
+        This allows for easy access to the parameters, e.g. `dm.param.time_limit`
+        To be overridden. Make sure to call the `super().set_parameters()`
+
+        Creates the self.param SimpleNamespace to be able to add the individual parameter properties.
+        Creates the self.params pd.DataFrame to be able to easily extract the parameter values.
+        """
+        self.params = self.prep_parameters()
+        self.param = types.SimpleNamespace()
+
+        #Examples of extraction of parameters:
+        # self.param.time_limit = self.get_parameter_value(self.params, 'solveTimeLimit', param_type='int', default_value=600)
+        # Supported param_type values are int, float, str, bool, datetime
+
     def prep_parameters(self) -> pd.DataFrame:
         """Pre-process the Parameter(s) input table.
         Assumes the inputs contains a table named `Parameter` or `Parameters` with key `param` and column `value`.
@@ -108,6 +126,7 @@ class DataManager(object):
             params = pd.DataFrame(columns=['param', 'value']).set_index('param')
         # self.params = params
         return params
+
 
     @staticmethod
     def get_parameter_value(params, param_name: str, param_type: Optional[str] = None, default_value=None,

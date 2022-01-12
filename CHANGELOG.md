@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.1b]
 ### Changed
 - Fixed bug in ScenarioDbManager._read_scenario_tables_from_db
+- ### Added
+- Added DataManager.set_parameters()
 
 ## [0.5.4.0] - 2022-01-11
 ### Changed
