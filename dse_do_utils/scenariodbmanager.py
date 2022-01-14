@@ -986,7 +986,7 @@ class ScenarioDbManager():
                 db_table._delete_scenario_table_from_db(scenario_name, connection)
         # 3. Insert new data
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
-            if (scenario_table_name != 'Scenario') and db_table.db_table_name in outputs.keys():  # If in given set of tables to replace
+            if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
                 df = outputs[scenario_table_name]
                 db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)  # The scenario_name is a column in the df
 
