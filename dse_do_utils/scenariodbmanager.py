@@ -18,6 +18,8 @@
 # - Cleanup, small documentation and typing hints
 # - Make 'multi_scenario' the default option
 # -----------------------------------------------------------------------------------
+import pathlib
+import zipfile
 from abc import ABC
 from multiprocessing.pool import ThreadPool
 
@@ -30,6 +32,8 @@ from sqlalchemy import exc
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
 
 #  Typing aliases
+from dse_do_utils import ScenarioManager
+
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
@@ -988,6 +992,7 @@ class ScenarioDbManager():
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
                 df = outputs[scenario_table_name]
+                print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
                 db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)  # The scenario_name is a column in the df
 
     def replace_scenario_tables_in_db(self, scenario_name, inputs={}, outputs={}):
@@ -1197,6 +1202,32 @@ class ScenarioDbManager():
                 # sql = t.delete().where(t.c.scenario_name == scenario_name)
                 # connection.execute(sql)
                 db_table._delete_scenario_table_from_db(scenario_name, connection)
+
+    ############################################################################################
+    # Import from zip
+    ############################################################################################
+    def insert_scenarios_from_zip(self, filepath: str):
+        """Insert (or replace) a set of scenarios from a .zip file into the DB.
+        Zip is assumed to contain one or more .xlsx files. Others will be skipped.
+        Name of .xlsx file will be used as the scenario name.
+
+        :param filepath: filepath of a zip file
+        :return:
+        """
+        with zipfile.ZipFile(filepath, 'r') as zip_file:
+            for info in zip_file.infolist():
+                scenario_name = pathlib.Path(info.filename).stem
+                file_extension = pathlib.Path(info.filename).suffix
+                if file_extension == '.xlsx':
+                    # print(f"file in zip : {info.filename}")
+                    xl = pd.ExcelFile(zip_file.read(info))
+                    inputs, outputs = ScenarioManager.load_data_from_excel_s(xl)
+                    print("Input tables: {}".format(", ".join(inputs.keys())))
+                    print("Output tables: {}".format(", ".join(outputs.keys())))
+                    self.replace_scenario_in_db(scenario_name=scenario_name, inputs=inputs, outputs=outputs)  #
+                    print(f"Uploaded scenario: '{scenario_name}' from '{info.filename}'")
+                else:
+                    print(f"File '{info.filename}' in zip is not a .xlsx. Skipped.")
 
     ############################################################################################
     # Old Read scenario APIs
