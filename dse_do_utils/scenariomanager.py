@@ -8,6 +8,8 @@
 # -----------------------------------------------------------------------------------
 import os
 import glob
+import pathlib
+import zipfile
 
 import docplex
 import pandas as pd
@@ -984,3 +986,21 @@ class ScenarioManager(object):
         # elif self.platform == Platform.CPD25:
         #     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
         return lp_file_path
+
+    def insert_scenarios_from_zip(self, filepath: str):
+        """Insert (or replace) a set of scenarios from a .zip file into the DO Experiment.
+        Zip is assumed to contain one or more .xlsx files. Others will be skipped.
+        Name of .xlsx file will be used as the scenario name."""
+        with zipfile.ZipFile(filepath, 'r') as zip_file:
+            for info in zip_file.infolist():
+                scenario_name = pathlib.Path(info.filename).stem
+                file_extension = pathlib.Path(info.filename).suffix
+                if file_extension == '.xlsx':
+                    #                 print(f"file in zip : {info.filename}")
+                    xl = pd.ExcelFile(zip_file.read(info))
+                    self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
+                    self.print_table_names()
+                    self.write_data_into_scenario_s(self.model_name, scenario_name, self.inputs, self.outputs, self.template_scenario_name)
+                    print(f"Uploaded scenario: '{scenario_name}' from '{info.filename}'")
+                else:
+                    print(f"File '{info.filename}' in zip is not a .xlsx. Skipped.")
