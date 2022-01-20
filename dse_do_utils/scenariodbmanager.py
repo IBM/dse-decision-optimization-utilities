@@ -28,7 +28,7 @@ import pandas as pd
 from typing import Dict, List, NamedTuple, Any, Optional
 from collections import OrderedDict
 import re
-from sqlalchemy import exc
+from sqlalchemy import exc, MetaData
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
 
 #  Typing aliases
@@ -80,8 +80,8 @@ class ScenarioDbTable(ABC):
                 column_names.append(c.name)
         return column_names
 
-    def get_sa_table(self) -> sqlalchemy.Table:
-        """Returns the SQLAlchemy Table"""
+    def get_sa_table(self) -> Optional[sqlalchemy.Table]:
+        """Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code."""
         return self.table_metadata
 
     def get_sa_column(self, db_column_name) -> Optional[sqlalchemy.Column]:
@@ -94,8 +94,11 @@ class ScenarioDbTable(ABC):
             self._sa_column_by_name = {c.name: c for c in self.columns_metadata if isinstance(c, sqlalchemy.Column)}
         return self._sa_column_by_name.get(db_column_name)  # returns None if npt found (?)
 
-    def create_table_metadata(self, metadata, multi_scenario: bool = False) -> sqlalchemy.Table:
-        """If multi_scenario, then add a primary key 'scenario_name'."""
+    def create_table_metadata(self, metadata, engine, schema, multi_scenario: bool = False) -> sqlalchemy.Table:
+        """If multi_scenario, then add a primary key 'scenario_name'.
+
+        engine, schema is used only for AutoScenarioDbTable to get the Table (metadata) by reflection
+        """
         columns_metadata = self.columns_metadata
         constraints_metadata = self.constraints_metadata
 
@@ -201,8 +204,21 @@ class AutoScenarioDbTable(ScenarioDbTable):
         """Need to provide a name for the DB table.
         """
         super().__init__(db_table_name)
+        # metadata and engine are set during initialization
+        self.metadata = None
+        self.engine = None
 
-    def create_table_metadata(self, metadata, multi_scenario: bool = False):
+    def create_table_metadata(self, metadata, engine, schema, multi_scenario: bool = False):
+        """Use the engine to reflect the Table metadata.
+        Called during initialization."""
+        # Store metadata and engine so we can do a dynamic reflect later
+        self.metadata = metadata
+        self.engine = engine
+        self.schema = schema
+
+        # print(f"create_table_metadata: ")
+        if engine is not None:
+            return self._reflect_db_table(metadata, engine, schema)
         return None
 
     def insert_table_in_db_bulk(self, df, mgr, connection=None):
@@ -228,6 +244,33 @@ class AutoScenarioDbTable(ScenarioDbTable):
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
+
+    def get_sa_table(self) -> Optional[sqlalchemy.Table]:
+        """Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code.
+        TODO: automatically reflect if None. Is NOT working yet!
+        """
+        # Get table_metadata from reflection if it doesn't exist
+        # Disabled because reflection doesn't find the table
+        if self.table_metadata is None:
+            self.table_metadata = self._reflect_db_table(self.metadata, self.engine, self.schema)
+
+        return self.table_metadata
+
+    def _reflect_db_table(self, metadata_obj, engine, schema) -> Optional[sqlalchemy.Table]:
+        """Get the Table metadata from reflection.
+        Does NOT WORK with SQLAlchemy 1.4 and ibm_db_sa 0.3.7
+        You do need to specify the schema.
+        For reflection, not sure if we should reuse the existing metadata_obj, or create a new one.
+
+        """
+        try:
+            table = Table(self.db_table_name, metadata_obj, autoload_with=engine)
+            # table = Table(self.db_table_name, MetaData(schema=schema), autoload_with=engine)
+            print(f"AutoScenarioDbTable._reflect_db_table: Found table '{self.db_table_name}'.")
+        except sqlalchemy.exc.NoSuchTableError:
+            table = None
+            print(f"AutoScenarioDbTable._reflect_db_table: Table '{self.db_table_name}' doesn't exist in DB.")
+        return table
 
 
 class DbCellUpdate(NamedTuple):
@@ -273,7 +316,7 @@ class ScenarioDbManager():
         self.db_tables = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
         self.engine = self._create_database_engine(credentials, schema, echo)
-        self.metadata = sqlalchemy.MetaData()
+        self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
         self._initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
         self.read_scenario_table_from_db_callback = None  # For Flask caching
         self.read_scenarios_table_from_db_callback = None # For Flask caching
@@ -444,6 +487,8 @@ class ScenarioDbManager():
         This also allows non-bulk inserts into an existing DB (i.e. without running 'create_schema')"""
         for scenario_table_name, db_table in self.db_tables.items():
             db_table.table_metadata = db_table.create_table_metadata(self.metadata,
+                                                                     self.engine,
+                                                                     self.schema,
                                                                      self.multi_scenario)  # Stores the table schema in the self.metadata
 
     ############################################################################################
