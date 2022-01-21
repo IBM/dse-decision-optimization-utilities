@@ -577,18 +577,38 @@ class ScenarioManager(object):
         #     os.rename(excel_file_path_2, csv_excel_file_path_2)
         return excel_file_path_1
 
-    def add_file_as_data_asset(self, file_path: str, asset_name:str = None):
+    def add_file_as_data_asset(self, file_path: str, asset_name: str = None):
         """Register an existing file as a data asset in CPD.
 
         :param file_path: full path of the file
         :param asset_name: name of asset. If None, will get the name from the file
         :return:
         """
-        ScenarioManager.add_file_as_data_asset_s(file_path, asset_name, self.platform)
+        if asset_name is None:
+            asset_name = os.path.basename(file_path)
+
+        if self.platform in [Platform.CPD40]:
+            self.add_data_file_using_ws_lib_s(file_path, asset_name)
+        elif self.platform in [Platform.CPD25, Platform.CPDaaS]:
+            self.add_data_file_using_project_lib(file_path, asset_name)
+        else:  # i.e Local: do not register as data asset
+            pass
+
+    # def add_file_as_data_asset(self, file_path: str, asset_name:str = None):
+    #     """Register an existing file as a data asset in CPD.
+    #
+    #     :param file_path: full path of the file
+    #     :param asset_name: name of asset. If None, will get the name from the file
+    #     :return:
+    #     """
+    #     ScenarioManager.add_file_as_data_asset_s(file_path, asset_name, self.platform)
+
+
 
     @staticmethod
     def add_file_as_data_asset_s(file_path: str, asset_name: str = None, platform: Platform = None):
         """Register an existing file as a data asset in CPD.
+        VT 2022-01-21: this method is incorrect for CPDaaS. Should use project_lib.
 
         :param file_path: full path of the file
         :param asset_name: name of asset. If None, will get the name from the file
