@@ -8,13 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fixed bug in ScenarioDbManager._read_scenario_tables_from_db
 - Fixed bug in ScenarioDbManager.update_scenario_output_tables_in_db
-- Fixed bug in ScenarioManager.add_file_as_data_asset (when using CPDaaS)
+- Fixed bug in ScenarioManager.add_file_as_data_asset when using CPDaaS
+- Fixed bug in ScenarioManager.load_data_from_excel when using CPDaaS
 ### Added
 - Added DataManager.set_parameters()
 - Added print of num rows and columns inserting in ScenarioDbManager.update_scenario_output_tables_in_db
 - ScenarioDbManager.insert_scenarios_from_zip
 - ScenarioManager.insert_scenarios_from_zip
 - AutoScenarioDbTable reflection to get SQLAlchemy table metadata from DB. Fixes bug using AutoScenarioDbTable.
+- ScenarioManager.load_data_from_excel now accepts excel_file_name with and without `.xlsx` extension
+- ScenarioManager.write_data_to_excel now accepts excel_file_name with and without `.xlsx` extension
 
 ## [0.5.4.0] - 2022-01-11
 ### Changed

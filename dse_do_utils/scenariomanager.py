@@ -516,19 +516,42 @@ class ScenarioManager(object):
     # -----------------------------------------------------------------
     # Read and write from/to Excel - value added-functions
     # -----------------------------------------------------------------
-
     def load_data_from_excel(self, excel_file_name: str) -> InputsOutputs:
         """Load data from an Excel file located in the `datasets` folder of the root directory.
         Convenience method.
         If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor
         """
-        # root_dir = self.get_root_directory()
-        datasets_dir = self.get_data_directory()
-        excel_file_path = os.path.join(datasets_dir, excel_file_name + '.xlsx')
-        xl = pd.ExcelFile(excel_file_path)
+        if pathlib.Path(excel_file_name).suffix == '.xlsx':
+            file_name = excel_file_name
+        else:
+            file_name = excel_file_name + '.xlsx'
+
+        if self.platform == Platform.CPDaaS:
+            # For CPDaaS only: file doesn't exist in /home/wsuser/work/. We have to get it.
+            file = self.project.get_file(file_name)
+            file.seek(0)
+            xl = pd.ExcelFile(file)
+        else:
+            datasets_dir = self.get_data_directory()
+            excel_file_path = os.path.join(datasets_dir, file_name)
+            xl = pd.ExcelFile(excel_file_path)
+
         # Read data from Excel
         self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
         return self.inputs, self.outputs
+
+    # def load_data_from_excel(self, excel_file_name: str) -> InputsOutputs:
+    #     """Load data from an Excel file located in the `datasets` folder of the root directory.
+    #     Convenience method.
+    #     If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor
+    #     """
+    #     # root_dir = self.get_root_directory()
+    #     datasets_dir = self.get_data_directory()
+    #     excel_file_path = os.path.join(datasets_dir, excel_file_name + '.xlsx')
+    #     xl = pd.ExcelFile(excel_file_path)
+    #     # Read data from Excel
+    #     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
+    #     return self.inputs, self.outputs
 
     def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> None:
         """Write inputs and/or outputs to an Excel file in datasets.
@@ -552,14 +575,17 @@ class ScenarioManager(object):
                 raise ValueError("The argument excel_file_name can only be 'None' if both the model_name '{}' and the scenario_name '{}' have been specified.".format(self.model_name, self.scenario_name))
 
         # root_dir = self.get_root_directory()
-        # Save the regular Excel file:
+        # Save the Excel file:
+        if pathlib.Path(excel_file_name).suffix != '.xlsx':
+            excel_file_name = excel_file_name + '.xlsx'
+
         data_dir = self.get_data_directory()
-        excel_file_path_1 = os.path.join(data_dir, excel_file_name + '.xlsx')
+        excel_file_path_1 = os.path.join(data_dir, excel_file_name)
         writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
 
-        self.add_file_as_data_asset(excel_file_path_1, excel_file_name + '.xlsx')
+        self.add_file_as_data_asset(excel_file_path_1, excel_file_name)
 
         # if self.platform == Platform.CPDaaS:
         #     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
