@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from typing import Sequence, List, Dict, Tuple, Optional
-from watson_machine_learning_client import WatsonMachineLearningAPIClient
-from dd_scenario import Client
+from ibm_watson_machine_learning import APIClient
 import os
 import shutil
 import tarfile
+from dse_do_utils.scenariomanager import ScenarioManager
+import time
+import pathlib
 
 
 class DOModelDeployer(object):
@@ -15,27 +17,40 @@ class DOModelDeployer(object):
     Usage::
 
         md = DOModelDeployer(wml_credentials, project, model_name, scenario_name, deployment_name, deployment_description)
-        print(md.client.version)
         deployment_uid = md.deploy_model()
         print(deployment_uid)
 
-    Make sure to use the watson-machine-learning-client-V4: version should look like '1.0.73'
-    (with the last number to be 2 digits, instead of 3 for V3).
-
     """
 
-    def __init__(self, wml_credentials: Dict, project, model_name: str, scenario_name: str,
-                 deployment_name: str, deployment_description: str):
+    def __init__(self, wml_credentials: Dict, model_name: str, scenario_name: str, space_name: str,
+                 package_paths: List[str]=[],
+                 file_paths: List[str]=[],
+                 deployment_name: str = 'xxx', deployment_description: str = 'xxx', project=None):
+        """
+
+        :param package_paths (List[str]): list paths to packages that will be included. The 'stem' of the path, with all included files and folders will be included in the root of the deployment archive. E.g. "/userfs/MyPackageDevFolder/my_package" will result in the folder 'my_package' in the root of the archive. Components can be imported using `from my_package.my_module import MyClass`. WARNING: this feature doesn't work yet due to failing import.
+        :param file_paths (List[str]): list paths to files that will be included along side the model. Components can be imported using `from my_file import MyClass`
+        :param space_name (str): name of deployment space
+        :param project (project_lib.Project): for WS Cloud, not required for CP4D on-prem. See ScenarioManager(). Used to connect to DO Experiment.
+        """
         self.wml_credentials = wml_credentials
         self.project = project
         self.model_name = model_name
         self.scenario_name = scenario_name
+        #         self.space_name = space_name
         self.deployment_name = deployment_name
         self.deployment_description = deployment_description
 
+        self.package_paths = package_paths
+        self.file_paths = file_paths
+
         # Initialize clients
-        self.client = WatsonMachineLearningAPIClient(wml_credentials)
-        self.mb_client = Client(pc=project.project_context)
+        # self.client = WatsonMachineLearningAPIClient(wml_credentials)
+        self.client = APIClient(wml_credentials)
+        space_id = self.guid_from_space_name(space_name)  # TODO: catch error if space_name cannot be found?
+        result = self.client.set.default_space(space_id)
+        #         print(f"client space_id = {space_id}, result={result}")
+        self.scenario_manager = ScenarioManager(model_name=model_name, scenario_name=scenario_name, project=project)
 
         # State
         self.model_uid = None
@@ -43,60 +58,66 @@ class DOModelDeployer(object):
 
         # Code templates
         self.main_header_py = \
-"""
-from docplex.util.environment import get_environment
-from os.path import splitext
-import pandas
-from six import iteritems
-
-def get_all_inputs():
-    '''Utility method to read a list of files and return a tuple with all
-    read data frames.
-    Returns:
-        a map { datasetname: data frame }
-    '''
-    result = {}
-    env = get_environment()
-    for iname in [f for f in os.listdir('.') if splitext(f)[1] == '.csv']:
-        with env.get_input_stream(iname) as in_stream:
-            df = pandas.read_csv(in_stream)
-            datasetname, _ = splitext(iname)
-            result[datasetname] = df
-    return result
-
-def write_all_outputs(outputs):
-    '''Write all dataframes in ``outputs`` as .csv.
-
-    Args:
-        outputs: The map of outputs 'outputname' -> 'output df'
-    '''
-    for (name, df) in iteritems(outputs):
-        csv_file = '%s.csv' % name
-        print(csv_file)
-        with get_environment().get_output_stream(csv_file) as fp:
-            if sys.version_info[0] < 3:
-                fp.write(df.to_csv(index=False, encoding='utf8'))
-            else:
-                fp.write(df.to_csv(index=False).encode(encoding='utf8'))
-    if len(outputs) == 0:
-        print("Warning: no outputs written")
-
-def __iter__(self): return 0
-# Load CSV files into inputs dictionnary
-inputs = get_all_inputs()
-outputs = {}
-
-###########################################################
-# Insert model below
-###########################################################
-"""
+            """
+            from docplex.util.environment import get_environment
+            from os.path import splitext
+            import pandas
+            from six import iteritems
+            
+            def get_all_inputs():
+                '''Utility method to read a list of files and return a tuple with all
+                read data frames.
+                Returns:
+                    a map { datasetname: data frame }
+                '''
+                result = {}
+                env = get_environment()
+                for iname in [f for f in os.listdir('.') if splitext(f)[1] == '.csv']:
+                    with env.get_input_stream(iname) as in_stream:
+                        df = pandas.read_csv(in_stream)
+                        datasetname, _ = splitext(iname)
+                        result[datasetname] = df
+                return result
+            
+            def write_all_outputs(outputs):
+                '''Write all dataframes in ``outputs`` as .csv.
+            
+                Args:
+                    outputs: The map of outputs 'outputname' -> 'output df'
+                '''
+                for (name, df) in iteritems(outputs):
+                    csv_file = '%s.csv' % name
+                    print(csv_file)
+                    with get_environment().get_output_stream(csv_file) as fp:
+                        if sys.version_info[0] < 3:
+                            fp.write(df.to_csv(index=False, encoding='utf8'))
+                        else:
+                            fp.write(df.to_csv(index=False).encode(encoding='utf8'))
+                if len(outputs) == 0:
+                    print("Warning: no outputs written")
+            
+            def __iter__(self): return 0
+            # Load CSV files into inputs dictionnary
+            inputs = get_all_inputs()
+            outputs = {}
+            
+            ###########################################################
+            # Insert model below
+            ###########################################################
+            """
         self.main_footer_py = \
-"""
-###########################################################
-
-# Generate output files
-write_all_outputs(outputs)
-"""
+            """
+            ###########################################################
+            
+            # Generate output files
+            write_all_outputs(outputs)
+            """
+        self.yaml = \
+            """
+            dependencies:
+              - pip:
+                - dse-do-utils==0.5.4.0
+            """
 
     def deploy_model(self) -> str:
         """One call that deploys a model from the Model Builder scenario into WML.
@@ -106,8 +127,9 @@ write_all_outputs(outputs)
         Returns:
             deployment_uid (str): Deployment UID necessary to call the deployment.
         """
-        self.create_model_archive()
-        deployment_uid = self.deploy_archive()
+        model_archive_file_path = self.create_model_archive()
+        yaml_file_path = self.write_yaml_file("./main.yml")
+        deployment_uid = self.deploy_archive(model_archive_file_path, yaml_file_path)
         return deployment_uid
 
     ############################################
@@ -125,7 +147,8 @@ write_all_outputs(outputs)
         path = self.create_model_directory()
         file_path = os.path.join(path, 'main.py')
         self.write_main_file(file_path)
-        self.create_archive()
+        file_path = self.create_archive()
+        return file_path
 
     def create_model_directory(self) -> str:
         """Create a directory in the default path.
@@ -151,11 +174,18 @@ write_all_outputs(outputs)
             f.write(scenario.get_asset_data('model.py').decode('ascii'))
             f.write('\n')
             f.write(self.main_footer_py)
-        pass
+
+    def write_yaml_file(self, file_path: str = './main.yml'):
+        """Write the code for the main.py file.
+        Adds the code template header and footer.
+        """
+        with open(file_path, "w") as f:
+            f.write(self.yaml)
+        return file_path
+
 
     def get_scenario(self):
-        dd_model_builder = self.mb_client.get_model_builder(name=self.model_name)
-        scenario = dd_model_builder.get_scenario(name=self.scenario_name)
+        scenario = self.scenario_manager.get_do_scenario(self.model_name, self.scenario_name)
         return scenario
 
     def create_archive(self):
@@ -168,23 +198,46 @@ write_all_outputs(outputs)
             return tarinfo
         tar = tarfile.open("model.tar.gz", "w:gz")
         tar.add("model/main.py", arcname="main.py", filter=reset)
+
+        def filter_package(tarinfo):
+            tarinfo.uid = tarinfo.gid = 0
+            tarinfo.uname = tarinfo.gname = "root"
+            if pathlib.Path(tarinfo.name).stem == '__pycache__':
+                return None
+            return tarinfo
+
+        for package_path in self.package_paths:
+            package_name = pathlib.Path(package_path).stem
+            print(f"Including package '{package_name}'")
+            tar.add(package_path, arcname=package_name, filter=filter_package)
+
+        for file_path in self.file_paths:
+            file_name = pathlib.Path(file_path).name
+            print(f"Including file '{file_name}'")
+            tar.add(file_path, arcname=file_name, filter=filter_package)
+
         tar.close()
+        file_path = "./model.tar.gz"  # TODO: avoid hard-coding
+        return file_path
 
     #########################################################
     # Deploy model
     #########################################################
-    def deploy_archive(self):
-        self.model_uid = self.wml_store_model()
+    def deploy_archive(self, model_archive_file_path, yaml_file_path):
+        print(f"model_archive_file_path={model_archive_file_path}, yaml_file_path={yaml_file_path}")
+        self.model_uid = self.wml_store_model(model_archive_file_path, yaml_file_path)
         self.deployment_uid = self.wml_create_deployment(self.model_uid)
         return self.deployment_uid
 
-    def wml_store_model(self) -> str:
+    def wml_store_model(self, model_archive_file_path, yaml_file_path) -> str:
         """Stores model in WML
         Returns:
             model_uid
         """
-        mnist_metadata = self.get_wml_create_store_model_meta_props()
-        model_details = self.client.repository.store_model(model='/home/dsxuser/work/model.tar.gz',
+        pkg_ext_id = self.create_package_extension(yaml_file_path)
+        sw_spec_id = self.create_software_specification(pkg_ext_id)
+        mnist_metadata = self.get_wml_create_store_model_meta_props(sw_spec_id)
+        model_details = self.client.repository.store_model(model=model_archive_file_path,
                                                            meta_props=mnist_metadata)
         model_uid = self.client.repository.get_model_uid(model_details)
         return model_uid
@@ -199,15 +252,15 @@ write_all_outputs(outputs)
         deployment_uid = self.client.deployments.get_uid(deployment_details)
         return deployment_uid
 
-    def get_wml_create_store_model_meta_props(self):
+    def get_wml_create_store_model_meta_props(self, sw_spec_id):
         """Return the meta_props for the store of the model
         Separate method, so can easily be overridden
         """
         mnist_metadata = {
             self.client.repository.ModelMetaNames.NAME: self.deployment_name,
             self.client.repository.ModelMetaNames.DESCRIPTION: self.deployment_description,
-            self.client.repository.ModelMetaNames.TYPE: "do-docplex_12.9",
-            self.client.repository.ModelMetaNames.RUNTIME_UID: "do_12.9"
+            self.client.repository.ModelMetaNames.TYPE: "do-docplex_20.1",
+            self.client.repository.ModelMetaNames.SOFTWARE_SPEC_UID: sw_spec_id
         }
         return mnist_metadata
 
@@ -219,9 +272,47 @@ write_all_outputs(outputs)
             self.client.deployments.ConfigurationMetaNames.NAME: self.deployment_name,
             self.client.deployments.ConfigurationMetaNames.DESCRIPTION: self.deployment_description,
             self.client.deployments.ConfigurationMetaNames.BATCH: {},
-            self.client.deployments.ConfigurationMetaNames.COMPUTE: {'name': 'S', 'nodes': 1}
+            self.client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {'name': 'S', 'nodes': 1}
         }
         return meta_props
+
+    #################################################################################
+    def create_package_extension(self, yaml_file_path:str) -> str:
+        current_time = time.asctime()
+        meta_prop_pkg_ext = {
+            self.client.package_extensions.ConfigurationMetaNames.NAME: "conda_ext_" + current_time,
+            self.client.package_extensions.ConfigurationMetaNames.DESCRIPTION: "Pkg extension for conda",
+            self.client.package_extensions.ConfigurationMetaNames.TYPE: "conda_yml",
+        }
+
+        # Storing the package and saving it's uid
+        pkg_ext_id = self.client.package_extensions.get_uid(self.client.package_extensions.store(meta_props=meta_prop_pkg_ext,
+                                                                                                 file_path=yaml_file_path))
+        return pkg_ext_id
+
+    def create_software_specification(self, pkg_ext_id: str = None) -> str:
+        current_time = time.asctime()
+        # Look for the do_20.1 software specification
+        base_sw_id = self.client.software_specifications.get_uid_by_name("do_20.1")
+
+        # Create a new software specification using the default do_20.1 one as the base for it
+        meta_prop_sw_spec = {
+            self.client.software_specifications.ConfigurationMetaNames.NAME: "do_20.1_ext_"+current_time,
+            self.client.software_specifications.ConfigurationMetaNames.DESCRIPTION: "Software specification for DO example",
+            self.client.software_specifications.ConfigurationMetaNames.BASE_SOFTWARE_SPECIFICATION: {"guid": base_sw_id}
+        }
+        sw_spec_id = self.client.software_specifications.get_uid(self.client.software_specifications.store(meta_props=meta_prop_sw_spec)) # Creating the new software specification
+        if pkg_ext_id is not None:
+            self.client.software_specifications.add_package_extension(sw_spec_id, pkg_ext_id) # Adding the previously created package extension to it
+        return sw_spec_id
+
+    ##############################################################################
+    def guid_from_space_name(self, space_name: str) -> str:
+        """Get space_id from deployment space name.
+        TODO: handle exception if space_name not found.
+        """
+        spaces = self.client.spaces.get_details()
+        return (next(item for item in spaces['resources'] if item['entity']["name"] == space_name)['metadata']['id'])
 
 
 

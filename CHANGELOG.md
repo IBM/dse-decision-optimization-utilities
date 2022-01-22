@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed bug in ScenarioDbManager.update_scenario_output_tables_in_db
 - Fixed bug in ScenarioManager.add_file_as_data_asset when using CPDaaS
 - Fixed bug in ScenarioManager.load_data_from_excel when using CPDaaS
+- DOModelDeployer working in CPD4.0.3
 ### Added
 - Added DataManager.set_parameters()
 - Added print of num rows and columns inserting in ScenarioDbManager.update_scenario_output_tables_in_db
