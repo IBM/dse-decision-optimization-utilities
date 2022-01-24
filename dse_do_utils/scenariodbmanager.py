@@ -18,6 +18,8 @@
 # - Cleanup, small documentation and typing hints
 # - Make 'multi_scenario' the default option
 # -----------------------------------------------------------------------------------
+import pathlib
+import zipfile
 from abc import ABC
 from multiprocessing.pool import ThreadPool
 
@@ -26,10 +28,12 @@ import pandas as pd
 from typing import Dict, List, NamedTuple, Any, Optional
 from collections import OrderedDict
 import re
-from sqlalchemy import exc
+from sqlalchemy import exc, MetaData
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
 
 #  Typing aliases
+from dse_do_utils import ScenarioManager
+
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
@@ -76,8 +80,8 @@ class ScenarioDbTable(ABC):
                 column_names.append(c.name)
         return column_names
 
-    def get_sa_table(self) -> sqlalchemy.Table:
-        """Returns the SQLAlchemy Table"""
+    def get_sa_table(self) -> Optional[sqlalchemy.Table]:
+        """Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code."""
         return self.table_metadata
 
     def get_sa_column(self, db_column_name) -> Optional[sqlalchemy.Column]:
@@ -90,8 +94,11 @@ class ScenarioDbTable(ABC):
             self._sa_column_by_name = {c.name: c for c in self.columns_metadata if isinstance(c, sqlalchemy.Column)}
         return self._sa_column_by_name.get(db_column_name)  # returns None if npt found (?)
 
-    def create_table_metadata(self, metadata, multi_scenario: bool = False) -> sqlalchemy.Table:
-        """If multi_scenario, then add a primary key 'scenario_name'."""
+    def create_table_metadata(self, metadata, engine, schema, multi_scenario: bool = False) -> sqlalchemy.Table:
+        """If multi_scenario, then add a primary key 'scenario_name'.
+
+        engine, schema is used only for AutoScenarioDbTable to get the Table (metadata) by reflection
+        """
         columns_metadata = self.columns_metadata
         constraints_metadata = self.constraints_metadata
 
@@ -197,8 +204,21 @@ class AutoScenarioDbTable(ScenarioDbTable):
         """Need to provide a name for the DB table.
         """
         super().__init__(db_table_name)
+        # metadata and engine are set during initialization
+        self.metadata = None
+        self.engine = None
 
-    def create_table_metadata(self, metadata, multi_scenario: bool = False):
+    def create_table_metadata(self, metadata, engine, schema, multi_scenario: bool = False):
+        """Use the engine to reflect the Table metadata.
+        Called during initialization."""
+        # Store metadata and engine so we can do a dynamic reflect later
+        self.metadata = metadata
+        self.engine = engine
+        self.schema = schema
+
+        # print(f"create_table_metadata: ")
+        if engine is not None:
+            return self._reflect_db_table(metadata, engine, schema)
         return None
 
     def insert_table_in_db_bulk(self, df, mgr, connection=None):
@@ -224,6 +244,33 @@ class AutoScenarioDbTable(ScenarioDbTable):
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
+
+    def get_sa_table(self) -> Optional[sqlalchemy.Table]:
+        """Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code.
+        TODO: automatically reflect if None. Is NOT working yet!
+        """
+        # Get table_metadata from reflection if it doesn't exist
+        # Disabled because reflection doesn't find the table
+        if self.table_metadata is None:
+            self.table_metadata = self._reflect_db_table(self.metadata, self.engine, self.schema)
+
+        return self.table_metadata
+
+    def _reflect_db_table(self, metadata_obj, engine, schema) -> Optional[sqlalchemy.Table]:
+        """Get the Table metadata from reflection.
+        Does NOT WORK with SQLAlchemy 1.4 and ibm_db_sa 0.3.7
+        You do need to specify the schema.
+        For reflection, not sure if we should reuse the existing metadata_obj, or create a new one.
+
+        """
+        try:
+            table = Table(self.db_table_name, metadata_obj, autoload_with=engine)
+            # table = Table(self.db_table_name, MetaData(schema=schema), autoload_with=engine)
+            print(f"AutoScenarioDbTable._reflect_db_table: Found table '{self.db_table_name}'.")
+        except sqlalchemy.exc.NoSuchTableError:
+            table = None
+            print(f"AutoScenarioDbTable._reflect_db_table: Table '{self.db_table_name}' doesn't exist in DB.")
+        return table
 
 
 class DbCellUpdate(NamedTuple):
@@ -269,7 +316,7 @@ class ScenarioDbManager():
         self.db_tables = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
         self.engine = self._create_database_engine(credentials, schema, echo)
-        self.metadata = sqlalchemy.MetaData()
+        self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
         self._initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
         self.read_scenario_table_from_db_callback = None  # For Flask caching
         self.read_scenarios_table_from_db_callback = None # For Flask caching
@@ -440,6 +487,8 @@ class ScenarioDbManager():
         This also allows non-bulk inserts into an existing DB (i.e. without running 'create_schema')"""
         for scenario_table_name, db_table in self.db_tables.items():
             db_table.table_metadata = db_table.create_table_metadata(self.metadata,
+                                                                     self.engine,
+                                                                     self.schema,
                                                                      self.multi_scenario)  # Stores the table schema in the self.metadata
 
     ############################################################################################
@@ -890,7 +939,7 @@ class ScenarioDbManager():
         inputs = {}
         for scenario_table_name, db_table in self.input_db_tables.items():
             if scenario_table_name in input_table_names:
-                inputs[scenario_table_name] = self._read_scenario_table_from_db(scenario_name, db_table, connection=connection)
+                inputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table, connection=connection)
         outputs = {}
         for scenario_table_name, db_table in self.output_db_tables.items():
             if scenario_table_name in output_table_names:
@@ -986,8 +1035,9 @@ class ScenarioDbManager():
                 db_table._delete_scenario_table_from_db(scenario_name, connection)
         # 3. Insert new data
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
-            if (scenario_table_name != 'Scenario') and db_table.db_table_name in outputs.keys():  # If in given set of tables to replace
+            if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
                 df = outputs[scenario_table_name]
+                print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
                 db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)  # The scenario_name is a column in the df
 
     def replace_scenario_tables_in_db(self, scenario_name, inputs={}, outputs={}):
@@ -1197,6 +1247,32 @@ class ScenarioDbManager():
                 # sql = t.delete().where(t.c.scenario_name == scenario_name)
                 # connection.execute(sql)
                 db_table._delete_scenario_table_from_db(scenario_name, connection)
+
+    ############################################################################################
+    # Import from zip
+    ############################################################################################
+    def insert_scenarios_from_zip(self, filepath: str):
+        """Insert (or replace) a set of scenarios from a .zip file into the DB.
+        Zip is assumed to contain one or more .xlsx files. Others will be skipped.
+        Name of .xlsx file will be used as the scenario name.
+
+        :param filepath: filepath of a zip file
+        :return:
+        """
+        with zipfile.ZipFile(filepath, 'r') as zip_file:
+            for info in zip_file.infolist():
+                scenario_name = pathlib.Path(info.filename).stem
+                file_extension = pathlib.Path(info.filename).suffix
+                if file_extension == '.xlsx':
+                    # print(f"file in zip : {info.filename}")
+                    xl = pd.ExcelFile(zip_file.read(info))
+                    inputs, outputs = ScenarioManager.load_data_from_excel_s(xl)
+                    print("Input tables: {}".format(", ".join(inputs.keys())))
+                    print("Output tables: {}".format(", ".join(outputs.keys())))
+                    self.replace_scenario_in_db(scenario_name=scenario_name, inputs=inputs, outputs=outputs)  #
+                    print(f"Uploaded scenario: '{scenario_name}' from '{info.filename}'")
+                else:
+                    print(f"File '{info.filename}' in zip is not a .xlsx. Skipped.")
 
     ############################################################################################
     # Old Read scenario APIs
