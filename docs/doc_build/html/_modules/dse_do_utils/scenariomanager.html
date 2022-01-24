@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.4.0 documentation</title>
+    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 
@@ -54,6 +54,8 @@
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
 
 <span class="kn">import</span> <span class="nn">docplex</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -560,19 +562,42 @@
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Read and write from/to Excel - value added-functions</span>
     <span class="c1"># -----------------------------------------------------------------</span>
-
 <div class="viewcode-block" id="ScenarioManager.load_data_from_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Load data from an Excel file located in the `datasets` folder of the root directory.</span>
 <span class="sd">        Convenience method.</span>
 <span class="sd">        If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># root_dir = self.get_root_directory()</span>
-        <span class="n">datasets_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
-        <span class="n">excel_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
-        <span class="n">xl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">excel_file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">excel_file_name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">excel_file_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span><span class="p">:</span>
+            <span class="c1"># For CPDaaS only: file doesn&#39;t exist in /home/wsuser/work/. We have to get it.</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">get_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">xl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">datasets_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
+            <span class="n">excel_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasets_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+            <span class="n">xl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">excel_file_path</span><span class="p">)</span>
+
         <span class="c1"># Read data from Excel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
+
+    <span class="c1"># def load_data_from_excel(self, excel_file_name: str) -&gt; InputsOutputs:</span>
+    <span class="c1">#     &quot;&quot;&quot;Load data from an Excel file located in the `datasets` folder of the root directory.</span>
+    <span class="c1">#     Convenience method.</span>
+    <span class="c1">#     If run not on WS, requires the `root_dir` property passed in the ScenarioManager constructor</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # root_dir = self.get_root_directory()</span>
+    <span class="c1">#     datasets_dir = self.get_data_directory()</span>
+    <span class="c1">#     excel_file_path = os.path.join(datasets_dir, excel_file_name + &#39;.xlsx&#39;)</span>
+    <span class="c1">#     xl = pd.ExcelFile(excel_file_path)</span>
+    <span class="c1">#     # Read data from Excel</span>
+    <span class="c1">#     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)</span>
+    <span class="c1">#     return self.inputs, self.outputs</span>
 
 <div class="viewcode-block" id="ScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to an Excel file in datasets.</span>
@@ -596,14 +621,17 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The argument excel_file_name can only be &#39;None&#39; if both the model_name &#39;</span><span class="si">{}</span><span class="s2">&#39; and the scenario_name &#39;</span><span class="si">{}</span><span class="s2">&#39; have been specified.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">))</span>
 
         <span class="c1"># root_dir = self.get_root_directory()</span>
-        <span class="c1"># Save the regular Excel file:</span>
+        <span class="c1"># Save the Excel file:</span>
+        <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">excel_file_name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">:</span>
+            <span class="n">excel_file_name</span> <span class="o">=</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span>
+
         <span class="n">data_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_directory</span><span class="p">()</span>
-        <span class="n">excel_file_path_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="n">excel_file_path_1</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">)</span>
         <span class="n">writer_1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelWriter</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;xlsxwriter&#39;</span><span class="p">)</span>
         <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_excel_s</span><span class="p">(</span><span class="n">writer_1</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
         <span class="n">writer_1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_file_as_data_asset</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_file_as_data_asset</span><span class="p">(</span><span class="n">excel_file_path_1</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">)</span>
 
         <span class="c1"># if self.platform == Platform.CPDaaS:</span>
         <span class="c1">#     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + &#39;.xlsx&#39;)</span>
@@ -621,18 +649,38 @@
         <span class="c1">#     os.rename(excel_file_path_2, csv_excel_file_path_2)</span>
         <span class="k">return</span> <span class="n">excel_file_path_1</span></div>
 
-<div class="viewcode-block" id="ScenarioManager.add_file_as_data_asset"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset">[docs]</a>    <span class="k">def</span> <span class="nf">add_file_as_data_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioManager.add_file_as_data_asset"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset">[docs]</a>    <span class="k">def</span> <span class="nf">add_file_as_data_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Register an existing file as a data asset in CPD.</span>
 
 <span class="sd">        :param file_path: full path of the file</span>
 <span class="sd">        :param asset_name: name of asset. If None, will get the name from the file</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">asset_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Platform</span><span class="o">.</span><span class="n">CPD40</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_ws_lib_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Platform</span><span class="o">.</span><span class="n">CPD25</span><span class="p">,</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_data_file_using_project_lib</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># i.e Local: do not register as data asset</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1"># def add_file_as_data_asset(self, file_path: str, asset_name:str = None):</span>
+    <span class="c1">#     &quot;&quot;&quot;Register an existing file as a data asset in CPD.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     :param file_path: full path of the file</span>
+    <span class="c1">#     :param asset_name: name of asset. If None, will get the name from the file</span>
+    <span class="c1">#     :return:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     ScenarioManager.add_file_as_data_asset_s(file_path, asset_name, self.platform)</span>
+
+
 
 <div class="viewcode-block" id="ScenarioManager.add_file_as_data_asset_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">asset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">platform</span><span class="p">:</span> <span class="n">Platform</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Register an existing file as a data asset in CPD.</span>
+<span class="sd">        VT 2022-01-21: this method is incorrect for CPDaaS. Should use project_lib.</span>
 
 <span class="sd">        :param file_path: full path of the file</span>
 <span class="sd">        :param asset_name: name of asset. If None, will get the name from the file</span>
@@ -1029,7 +1077,25 @@
         <span class="c1">#     self.add_data_file_using_ws_lib(lp_file_path)</span>
         <span class="c1"># elif self.platform == Platform.CPD25:</span>
         <span class="c1">#     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)</span>
-        <span class="k">return</span> <span class="n">lp_file_path</span></div></div>
+        <span class="k">return</span> <span class="n">lp_file_path</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.insert_scenarios_from_zip"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.insert_scenarios_from_zip">[docs]</a>    <span class="k">def</span> <span class="nf">insert_scenarios_from_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert (or replace) a set of scenarios from a .zip file into the DO Experiment.</span>
+<span class="sd">        Zip is assumed to contain one or more .xlsx files. Others will be skipped.</span>
+<span class="sd">        Name of .xlsx file will be used as the scenario name.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">infolist</span><span class="p">():</span>
+                <span class="n">scenario_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+                <span class="n">file_extension</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+                <span class="k">if</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">:</span>
+                    <span class="c1">#                 print(f&quot;file in zip : {info.filename}&quot;)</span>
+                    <span class="n">xl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">ExcelFile</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_excel_s</span><span class="p">(</span><span class="n">xl</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print_table_names</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">write_data_into_scenario_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_scenario_name</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded scenario: &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File &#39;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; in zip is not a .xlsx. Skipped.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -1061,7 +1127,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 

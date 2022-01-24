@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.0 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -397,6 +397,16 @@ If testing imp.reload, rerun the notebook from the start.</p>
 <span class="sig-name descname"><span class="pre">print_inputs_outputs_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.print_inputs_outputs_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.print_inputs_outputs_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a summary of the input and output data.
 Prints the names of all input and output tables, along with the column names and the number of rows and columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.set_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.set_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters as properties of the self.param object.
+This allows for easy access to the parameters, e.g. <cite>dm.param.time_limit</cite>
+To be overridden. Make sure to call the <cite>super().set_parameters()</cite></p>
+<p>Creates the self.param SimpleNamespace to be able to add the individual parameter properties.
+Creates the self.params pd.DataFrame to be able to easily extract the parameter values.</p>
 </dd></dl>
 
 </dd></dl>
@@ -838,8 +848,148 @@ TODO: test</p>
 </dd></dl>
 
 </div>
-<div class="section" id="dse-do-utils-domodeldeployer-module">
-<h2>dse_do_utils.domodeldeployer module<a class="headerlink" href="#dse-do-utils-domodeldeployer-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-dse_do_utils.domodeldeployer">
+<span id="dse-do-utils-domodeldeployer-module"></span><h2>dse_do_utils.domodeldeployer module<a class="headerlink" href="#module-dse_do_utils.domodeldeployer" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.domodeldeployer.</span></span><span class="sig-name descname"><span class="pre">DOModelDeployer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wml_credentials</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_paths</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_paths</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'xxx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'xxx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Deploys a DO Model in WML. For use in CPD 4.0. Retrieves the model from the DO Model Builder.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">md</span> <span class="o">=</span> <span class="n">DOModelDeployer</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">space_name</span><span class="p">,</span>
+                     <span class="n">deployment_name</span><span class="p">,</span> <span class="n">deployment_description</span><span class="p">)</span>
+<span class="n">deployment_uid</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">deploy_model</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">deployment_uid</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_archive">
+<span class="sig-name descname"><span class="pre">create_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">main_file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create archive.
+For now assume one folder <cite>model</cite> with one file <cite>main.py</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>main_file_path</strong> – file path of main.py file</p></li>
+<li><p><strong>path</strong> – folder where archive will be written</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_model_archive">
+<span class="sig-name descname"><span class="pre">create_model_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_model_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a model archive on the path:
+The archive contains one .py file: the do-model surrounded by boilerplate code to process
+the inputs and outputs dictionaries.
+Steps:
+1. Write a file <cite>path/main.py</cite>
+2. Creates an archive file in path
+3. Adds the main.py
+4. Adds packages
+5. Adds (module) files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_model_directory">
+<span class="sig-name descname"><span class="pre">create_model_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_model_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a directory ‘model’ in the default path.
+Will remove/clear first if exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_package_extension">
+<span class="sig-name descname"><span class="pre">create_package_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_package_extension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_package_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification">
+<span class="sig-name descname"><span class="pre">create_software_specification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkg_ext_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_software_specification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.deploy_archive">
+<span class="sig-name descname"><span class="pre">deploy_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_archive_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.deploy_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_archive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model">
+<span class="sig-name descname"><span class="pre">deploy_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.deploy_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>One call that deploys a model from the Model Builder scenario into WML.
+Creates a model archive from the extracted model code.
+Then uploads into WML and creates a deployment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Deployment UID necessary to call the deployment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>deployment_uid (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_scenario">
+<span class="sig-name descname"><span class="pre">get_scenario</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_scenario" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_deployment_meta_props">
+<span class="sig-name descname"><span class="pre">get_wml_create_deployment_meta_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_wml_create_deployment_meta_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_deployment_meta_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the meta_props for the creation of the deployment
+Separate method, so can easily be overridden</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_store_model_meta_props">
+<span class="sig-name descname"><span class="pre">get_wml_create_store_model_meta_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sw_spec_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_wml_create_store_model_meta_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_store_model_meta_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the meta_props for the store of the model
+Separate method, so can easily be overridden</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.guid_from_space_name">
+<span class="sig-name descname"><span class="pre">guid_from_space_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.guid_from_space_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.guid_from_space_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get space_id from deployment space name.
+TODO: handle exception if space_name not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment">
+<span class="sig-name descname"><span class="pre">wml_create_deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_uid</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.wml_create_deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create deployment in WML
+:returns: deployment_uid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.wml_store_model">
+<span class="sig-name descname"><span class="pre">wml_store_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_archive_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.wml_store_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_store_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores model in WML
+:returns: model_uid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.write_main_file">
+<span class="sig-name descname"><span class="pre">write_main_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.write_main_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_main_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the code for the main.py file.
+Adds the code template header and footer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.write_yaml_file">
+<span class="sig-name descname"><span class="pre">write_yaml_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'./main.yml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.write_yaml_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_yaml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the code for the main.py file.
+Adds the code template header and footer.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-dse_do_utils.domodelexporter">
 <span id="dse-do-utils-domodelexporter-module"></span><h2>dse_do_utils.domodelexporter module<a class="headerlink" href="#module-dse_do_utils.domodelexporter" title="Permalink to this headline">¶</a></h2>
@@ -1537,8 +1687,16 @@ Disadvantages:
 <p>TODO: find out what will happen if the DataFrame structure changes and we’re doing a new insert</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata">
-<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>If multi_scenario, then add a primary key ‘scenario_name’.</p>
+<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the engine to reflect the Table metadata.
+Called during initialization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.AutoScenarioDbTable.get_sa_table">
+<span class="sig-name descname"><span class="pre">get_sa_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Table</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#AutoScenarioDbTable.get_sa_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.get_sa_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code.
+TODO: automatically reflect if None. Is NOT working yet!</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1679,6 +1837,22 @@ This is used to create a inputs/outputs combination similar to loading a single 
 <dd><p>Return all scenarios in df. Result is indexed by <cite>scenario_name</cite>.
 Main API to get all scenarios.
 The API called by a cached procedure in the dse_do_dashboard.DoDashApp.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_from_zip">
+<span class="sig-name descname"><span class="pre">insert_scenarios_from_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.insert_scenarios_from_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_from_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert (or replace) a set of scenarios from a .zip file into the DB.
+Zip is assumed to contain one or more .xlsx files. Others will be skipped.
+Name of .xlsx file will be used as the scenario name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> – filepath of a zip file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1873,8 +2047,9 @@ Only columns that are specified and included in the DB insert.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata">
-<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sqlalchemy.sql.schema.Table</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create_table_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_scenario</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sqlalchemy.sql.schema.Table</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.create_table_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>If multi_scenario, then add a primary key ‘scenario_name’.</p>
+<p>engine, schema is used only for AutoScenarioDbTable to get the Table (metadata) by reflection</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1903,8 +2078,8 @@ Dynamically creates a dict/hashtable for more efficient access.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_table">
-<span class="sig-name descname"><span class="pre">get_sa_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sqlalchemy.sql.schema.Table</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_sa_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the SQLAlchemy Table</p>
+<span class="sig-name descname"><span class="pre">get_sa_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Table</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_sa_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the SQLAlchemy Table. Can be None if table is a AutoScenarioDbTable and not defined in Python code.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2118,7 +2293,8 @@ Could be used in post-processing.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">add_file_as_data_asset_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariomanager.Platform" title="dse_do_utils.scenariomanager.Platform"><span class="pre">dse_do_utils.scenariomanager.Platform</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.add_file_as_data_asset_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register an existing file as a data asset in CPD.</p>
+<dd><p>Register an existing file as a data asset in CPD.
+VT 2022-01-21: this method is incorrect for CPDaaS. Should use project_lib.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2297,6 +2473,14 @@ This table is compatible with the representation in DO4WS and can be updated in 
 <dd><p>Return the root directory of the file system.
 If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
 :raises ValueError if root directory doesn’t exist.:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.insert_scenarios_from_zip">
+<span class="sig-name descname"><span class="pre">insert_scenarios_from_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.insert_scenarios_from_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.insert_scenarios_from_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert (or replace) a set of scenarios from a .zip file into the DO Experiment.
+Zip is assumed to contain one or more .xlsx files. Others will be skipped.
+Name of .xlsx file will be used as the scenario name.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2746,7 +2930,7 @@ If it is, you may need to add another reload:</p>
 <li><a class="reference internal" href="#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.deployeddomodelcpd21">dse_do_utils.deployeddomodelcpd21 module</a></li>
-<li><a class="reference internal" href="#dse-do-utils-domodeldeployer-module">dse_do_utils.domodeldeployer module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.domodeldeployer">dse_do_utils.domodeldeployer module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.multiscenariomanager">dse_do_utils.multiscenariomanager module</a></li>
@@ -2799,7 +2983,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>

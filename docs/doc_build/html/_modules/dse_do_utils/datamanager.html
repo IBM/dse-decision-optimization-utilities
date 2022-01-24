@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.4.0 documentation</title>
+    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
@@ -52,6 +52,8 @@
 <span class="c1"># DataManager</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
@@ -102,6 +104,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+        <span class="c1"># self.set_parameters()  # TODO: do we always want to call set_parameter here?</span>
 
 <div class="viewcode-block" id="DataManager.prepare_output_data_frames"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_output_data_frames">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_output_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Placeholder to process output data frames.</span>
@@ -141,6 +144,21 @@
     <span class="c1">#     &quot;&quot;&quot;</span>
     <span class="c1">#     return self.prep_parameters()</span>
 
+<div class="viewcode-block" id="DataManager.set_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.set_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the parameters as properties of the self.param object.</span>
+<span class="sd">        This allows for easy access to the parameters, e.g. `dm.param.time_limit`</span>
+<span class="sd">        To be overridden. Make sure to call the `super().set_parameters()`</span>
+
+<span class="sd">        Creates the self.param SimpleNamespace to be able to add the individual parameter properties.</span>
+<span class="sd">        Creates the self.params pd.DataFrame to be able to easily extract the parameter values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">SimpleNamespace</span><span class="p">()</span></div>
+
+        <span class="c1">#Examples of extraction of parameters:</span>
+        <span class="c1"># self.param.time_limit = self.get_parameter_value(self.params, &#39;solveTimeLimit&#39;, param_type=&#39;int&#39;, default_value=600)</span>
+        <span class="c1"># Supported param_type values are int, float, str, bool, datetime</span>
+
 <div class="viewcode-block" id="DataManager.prep_parameters"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">prep_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Pre-process the Parameter(s) input table.</span>
 <span class="sd">        Assumes the inputs contains a table named `Parameter` or `Parameters` with key `param` and column `value`.</span>
@@ -154,6 +172,7 @@
             <span class="n">params</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;param&#39;</span><span class="p">)</span>
         <span class="c1"># self.params = params</span>
         <span class="k">return</span> <span class="n">params</span></div>
+
 
 <div class="viewcode-block" id="DataManager.get_parameter_value"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_parameter_value">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">param_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -437,7 +456,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
