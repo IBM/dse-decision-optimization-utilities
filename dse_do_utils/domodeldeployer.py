@@ -9,14 +9,16 @@ import tarfile
 from dse_do_utils.scenariomanager import ScenarioManager
 import time
 import pathlib
+import tempfile
 
 
 class DOModelDeployer(object):
-    """Deploys a DO Model in WML. For use in WS Cloud. Retrieves the model from the DO Model Builder.
+    """Deploys a DO Model in WML. For use in CPD 4.0. Retrieves the model from the DO Model Builder.
 
     Usage::
 
-        md = DOModelDeployer(wml_credentials, project, model_name, scenario_name, deployment_name, deployment_description)
+        md = DOModelDeployer(wml_credentials, model_name, scenario_name, space_name,
+                             deployment_name, deployment_description)
         deployment_uid = md.deploy_model()
         print(deployment_uid)
 
@@ -25,13 +27,19 @@ class DOModelDeployer(object):
     def __init__(self, wml_credentials: Dict, model_name: str, scenario_name: str, space_name: str,
                  package_paths: List[str]=[],
                  file_paths: List[str]=[],
-                 deployment_name: str = 'xxx', deployment_description: str = 'xxx', project=None):
+                 deployment_name: str = 'xxx', deployment_description: str = 'xxx', project=None,
+                 tmp_dir: str = None):
         """
 
+        :param wml_credentials
+        :param model_name (str): name of DO Experiment
+        :param scenario_name (str): name of scenario with the Python model
+        :param space_name (str): name of deployment space
         :param package_paths (List[str]): list paths to packages that will be included. The 'stem' of the path, with all included files and folders will be included in the root of the deployment archive. E.g. "/userfs/MyPackageDevFolder/my_package" will result in the folder 'my_package' in the root of the archive. Components can be imported using `from my_package.my_module import MyClass`. WARNING: this feature doesn't work yet due to failing import.
         :param file_paths (List[str]): list paths to files that will be included along side the model. Components can be imported using `from my_file import MyClass`
         :param space_name (str): name of deployment space
         :param project (project_lib.Project): for WS Cloud, not required for CP4D on-prem. See ScenarioManager(). Used to connect to DO Experiment.
+        :param tmp_dir (str): path to directory where the intermediate files will be written. Make sure this exists. Can be used for debugging to inspect the files. If None, will use `tempfile` to generate a temporary folder that will be cleaned up automatically.
         """
         self.wml_credentials = wml_credentials
         self.project = project
@@ -43,9 +51,9 @@ class DOModelDeployer(object):
 
         self.package_paths = package_paths
         self.file_paths = file_paths
+        self.tmp_dir = tmp_dir
 
         # Initialize clients
-        # self.client = WatsonMachineLearningAPIClient(wml_credentials)
         self.client = APIClient(wml_credentials)
         space_id = self.guid_from_space_name(space_name)  # TODO: catch error if space_name cannot be found?
         result = self.client.set.default_space(space_id)
@@ -127,31 +135,39 @@ class DOModelDeployer(object):
         Returns:
             deployment_uid (str): Deployment UID necessary to call the deployment.
         """
-        model_archive_file_path = self.create_model_archive()
-        yaml_file_path = self.write_yaml_file("./main.yml")
-        deployment_uid = self.deploy_archive(model_archive_file_path, yaml_file_path)
+        if self.tmp_dir is None:
+            with tempfile.TemporaryDirectory() as path:
+                model_archive_file_path = self.create_model_archive(path)
+                yaml_file_path = self.write_yaml_file(os.path.join(path, "main.yml"))
+                deployment_uid = self.deploy_archive(model_archive_file_path, yaml_file_path)
+        else:
+            model_archive_file_path = self.create_model_archive(self.tmp_dir)
+            yaml_file_path = self.write_yaml_file(os.path.join(self.tmp_dir, "main.yml"))
+            deployment_uid = self.deploy_archive(model_archive_file_path, yaml_file_path)
         return deployment_uid
 
     ############################################
     # Create model archive
     ############################################
-    def create_model_archive(self):
-        """Creates a model archive on the default path:
+    def create_model_archive(self, path: str):
+        """Creates a model archive on the path:
         The archive contains one .py file: the do-model surrounded by boilerplate code to process
         the inputs and outputs dictionaries.
         Steps:
-        1. Creates a directory `model`
-        2. Write a file `model/main.py`
-        3. Creates an archive file from the model directory
+        1. Write a file `path/main.py`
+        2. Creates an archive file in path
+        3. Adds the main.py
+        4. Adds packages
+        5. Adds (module) files
         """
-        path = self.create_model_directory()
-        file_path = os.path.join(path, 'main.py')
-        self.write_main_file(file_path)
-        file_path = self.create_archive()
+
+        main_file_path = os.path.join(path, 'main.py')
+        self.write_main_file(main_file_path)
+        file_path = self.create_archive(main_file_path, path)
         return file_path
 
     def create_model_directory(self) -> str:
-        """Create a directory in the default path.
+        """Create a directory 'model' in the default path.
         Will remove/clear first if exists.
 
         Return:
@@ -188,16 +204,21 @@ class DOModelDeployer(object):
         scenario = self.scenario_manager.get_do_scenario(self.model_name, self.scenario_name)
         return scenario
 
-    def create_archive(self):
+    def create_archive(self, main_file_path: str, path: str):
         """Create archive.
         For now assume one folder `model` with one file `main.py`
+
+        :param main_file_path: file path of main.py file
+        :param path: folder where archive will be written
         """
         def reset(tarinfo):
             tarinfo.uid = tarinfo.gid = 0
             tarinfo.uname = tarinfo.gname = "root"
             return tarinfo
-        tar = tarfile.open("model.tar.gz", "w:gz")
-        tar.add("model/main.py", arcname="main.py", filter=reset)
+        tar_file_path = os.path.join(path, "model.tar.gz")
+        tar = tarfile.open(tar_file_path, "w:gz")
+        #         tar.add("model/main.py", arcname="main.py", filter=reset)
+        tar.add(main_file_path, arcname="main.py", filter=reset)
 
         def filter_package(tarinfo):
             tarinfo.uid = tarinfo.gid = 0
@@ -217,8 +238,7 @@ class DOModelDeployer(object):
             tar.add(file_path, arcname=file_name, filter=filter_package)
 
         tar.close()
-        file_path = "./model.tar.gz"  # TODO: avoid hard-coding
-        return file_path
+        return tar_file_path
 
     #########################################################
     # Deploy model
