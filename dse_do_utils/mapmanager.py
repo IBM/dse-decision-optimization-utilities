@@ -6,6 +6,8 @@
 # MapManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
+from typing import List, Tuple
+
 
 class MapManager(object):
     """Base class for building Folium map visualization.
@@ -256,3 +258,21 @@ class MapManager(object):
         popup = folium.Popup(html, parse_html=True, max_width=2650)
         return popup
 
+    @staticmethod
+    def get_tooltip_table(rows: List[Tuple[str,str]]) -> str:
+        """Get a tooltip table, based on the same definition as for `get_popup_table``.
+        Convenience method. Is the same as `MapManager.get_html_table(rows)`.
+        Usage::
+
+            tooltip_table = [
+                ('property_1', 'value_1'),
+                ('property_2', 'value_2'),
+            ]
+            tooltip = MapManager.get_tooltip_table(tooltip_table)
+
+
+        :param rows: list of tuples with name-value pairs
+
+        :returns (str): text for a tooltip in table format
+        """
+        return MapManager.get_html_table(rows)

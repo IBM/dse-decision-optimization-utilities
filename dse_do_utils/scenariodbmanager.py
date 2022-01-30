@@ -900,9 +900,11 @@ class ScenarioDbManager():
 
         return inputs, outputs
 
-    def read_scenario_input_tables_from_db(self, scenario_name: str):
+    def read_scenario_input_tables_from_db(self, scenario_name: str) -> (Inputs, Outputs):
         """Convenience method to load all input tables.
-        Typically used at start if optimization model."""
+        Typically used at start if optimization model.
+        :returns The inputs and outputs. (The outputs are always empty.)
+        """
         return self.read_scenario_tables_from_db(scenario_name, input_table_names=['*'])
 
     def read_scenario_tables_from_db(self, scenario_name: str,
