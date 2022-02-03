@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.2b]
 ### Added
 - MapManager.get_tooltip_table to get a tooltip formatted as table
+- ScenarioDbManager.read_multi_scenario_tables_from_db reads multiple scenarios in same DataFrames (for scenario compare feature)
+- ScenarioDbTable.get_sa_column works also on reflected Table, which supports use of cell-updates with a AutoScenarioDbTable 
 
 ## [0.5.4.1] - 2022-01-24
 ### Changed
