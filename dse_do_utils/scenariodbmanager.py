@@ -316,7 +316,7 @@ class ScenarioDbManager():
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
-        self.schema = schema
+        self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
         self.enable_sqlite_fk = enable_sqlite_fk
@@ -334,6 +334,12 @@ class ScenarioDbManager():
     ############################################################################################
     # Initialization. Called from constructor.
     ############################################################################################
+    def _check_schema_name(self, schema: str):
+        """Checks if schema name is not mixed-case, as this is known to cause issues. Upper-case works well.
+        This is just a warning. It does not change the schema name."""
+        if not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
+            print(f"Warning: using mixed case in the schema name {schema} may cause unexpected DB errors. Use upper-case only.")
+        return schema
 
     def _add_scenario_db_table(self, input_db_tables: Dict[str, ScenarioDbTable]) -> Dict[str, ScenarioDbTable]:
         """Adds a Scenario table as the first in the OrderedDict (if it doesn't already exist).
@@ -913,12 +919,13 @@ class ScenarioDbManager():
 
         return inputs, outputs
 
-    def read_scenario_input_tables_from_db(self, scenario_name: str) -> (Inputs, Outputs):
+    def read_scenario_input_tables_from_db(self, scenario_name: str) -> Inputs:
         """Convenience method to load all input tables.
         Typically used at start if optimization model.
         :returns The inputs and outputs. (The outputs are always empty.)
         """
-        return self.read_scenario_tables_from_db(scenario_name, input_table_names=['*'])
+        inputs, outputs = self.read_scenario_tables_from_db(scenario_name, input_table_names=['*'])
+        return inputs
 
     def read_scenario_tables_from_db(self, scenario_name: str,
                                      input_table_names: Optional[List[str]] = None,

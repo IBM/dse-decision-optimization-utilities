@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]## [0.5.4.2b]
+### Changed
+- ScenarioDManager.read_scenario_input_tables_from_db now only returns Inputs (vs the tuple (Inputs,Outputs)). This could cause some backward incompatibility.
+- OptimizationEngine.get_kpi_output_table now returns Dataframe with capitalized column names: 'NAME' and 'VALUE' to make consistent with DO Experiment kpis.
 ### Added
 - MapManager.get_tooltip_table to get a tooltip formatted as table
 - ScenarioDbManager.read_multi_scenario_tables_from_db reads multiple scenarios in same DataFrames (for scenario compare feature)
 - ScenarioDbTable.get_sa_column works also on reflected Table, which supports use of cell-updates with a AutoScenarioDbTable 
+- ScenarioDbManager._check_schema_name: warns if schema name is mixed case (which is causing problems).
 
 ## [0.5.4.1] - 2022-01-24
 ### Changed
