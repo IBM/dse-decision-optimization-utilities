@@ -97,7 +97,7 @@ class OptimizationEngine(object):
 
     def get_kpi_output_table(self) -> pd.DataFrame:
         all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.iter_kpis()]
-        df_kpis = pd.DataFrame(all_kpis, columns=['kpi', 'value'])
+        df_kpis = pd.DataFrame(all_kpis, columns=['NAME', 'VALUE'])
         return df_kpis
 
     def export_as_lp(self, local_root: Optional[str] = None, copy_to_csv: bool = False) -> str:
