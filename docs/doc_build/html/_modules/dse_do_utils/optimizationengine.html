@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.optimizationengine &#8212; DSE DO Utils 0.5.4.1 documentation</title>
+    <title>dse_do_utils.optimizationengine &#8212; DSE DO Utils 0.5.4.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.optimizationengine</a></li> 
@@ -143,7 +143,7 @@
 
 <div class="viewcode-block" id="OptimizationEngine.get_kpi_output_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_kpi_output_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="n">all_kpis</span> <span class="o">=</span> <span class="p">[(</span><span class="n">kp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">kp</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span> <span class="k">for</span> <span class="n">kp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">iter_kpis</span><span class="p">()]</span>
-        <span class="n">df_kpis</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_kpis</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;kpi&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="n">df_kpis</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">all_kpis</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;VALUE&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">df_kpis</span></div>
 
 <div class="viewcode-block" id="OptimizationEngine.export_as_lp"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_lp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -350,7 +350,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.optimizationengine</a></li> 

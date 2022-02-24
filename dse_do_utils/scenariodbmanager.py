@@ -85,14 +85,20 @@ class ScenarioDbTable(ABC):
         return self.table_metadata
 
     def get_sa_column(self, db_column_name) -> Optional[sqlalchemy.Column]:
-        """Returns the SQLAlchemy column with the specified name.
-        Dynamically creates a dict/hashtable for more efficient access."""
-        # for c in self.columns_metadata:
-        #     if isinstance(c, sqlalchemy.Column) and c.name == db_column_name:
-        #         return c
-        if self._sa_column_by_name is None:
-            self._sa_column_by_name = {c.name: c for c in self.columns_metadata if isinstance(c, sqlalchemy.Column)}
-        return self._sa_column_by_name.get(db_column_name)  # returns None if npt found (?)
+        """Returns the SQLAlchemy.Column with the specified name.
+        Uses the self.table_metadata (i.e. the sqlalchemy.Table), so works both for pre-defined tables and self-reflected tables like AutoScenarioDbTable
+        """
+        # Grab column directly from sqlalchemy.Table, see https://docs.sqlalchemy.org/en/14/core/metadata.html#accessing-tables-and-columns
+        if (self.table_metadata is not None) and (db_column_name in self.table_metadata.c):
+            return self.table_metadata.c[db_column_name]
+        else:
+            return None
+
+        # # Not 100% sure if this is being called after the potential reflection, so also allow generating the self._sa_column_by_name if length is zero
+        # if self._sa_column_by_name is None or len(self._sa_column_by_name) == 0:
+        #     # self._sa_column_by_name = {c.name: c for c in self.columns_metadata if isinstance(c, sqlalchemy.Column)}  # Original way: based on self.columns_metadata
+        #     self._sa_column_by_name = {c.name: c for c in self.table_metadata.c if isinstance(c, sqlalchemy.Column)}  # Works both with normally defined table and reflected table (w. AutoScenarioBdTable)
+        # return self._sa_column_by_name.get(db_column_name)  # returns None if npt found (?)
 
     def create_table_metadata(self, metadata, engine, schema, multi_scenario: bool = False) -> sqlalchemy.Table:
         """If multi_scenario, then add a primary key 'scenario_name'.
@@ -216,9 +222,13 @@ class AutoScenarioDbTable(ScenarioDbTable):
         self.engine = engine
         self.schema = schema
 
+        # TODO: From the reflected Table, also extract the columns_metadata.
+        # We need that for any DB edits
+
         # print(f"create_table_metadata: ")
         if engine is not None:
             return self._reflect_db_table(metadata, engine, schema)
+
         return None
 
     def insert_table_in_db_bulk(self, df, mgr, connection=None):
@@ -306,7 +316,7 @@ class ScenarioDbManager():
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
-        self.schema = schema
+        self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
         self.enable_sqlite_fk = enable_sqlite_fk
@@ -324,6 +334,12 @@ class ScenarioDbManager():
     ############################################################################################
     # Initialization. Called from constructor.
     ############################################################################################
+    def _check_schema_name(self, schema: str):
+        """Checks if schema name is not mixed-case, as this is known to cause issues. Upper-case works well.
+        This is just a warning. It does not change the schema name."""
+        if not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
+            print(f"Warning: using mixed case in the schema name {schema} may cause unexpected DB errors. Use upper-case only.")
+        return schema
 
     def _add_scenario_db_table(self, input_db_tables: Dict[str, ScenarioDbTable]) -> Dict[str, ScenarioDbTable]:
         """Adds a Scenario table as the first in the OrderedDict (if it doesn't already exist).
@@ -484,7 +500,10 @@ class ScenarioDbManager():
     def _initialize_db_tables_metadata(self):
         """To be called from constructor, after engine is 'created'/connected, after self.metadata, self.multi_scenario have been set.
         This will add the `scenario_name` to the db_table configurations.
-        This also allows non-bulk inserts into an existing DB (i.e. without running 'create_schema')"""
+        This also allows non-bulk inserts into an existing DB (i.e. without running 'create_schema')
+
+        TODO: also reflect the columns_metadata. That is required for any table edits
+        """
         for scenario_table_name, db_table in self.db_tables.items():
             db_table.table_metadata = db_table.create_table_metadata(self.metadata,
                                                                      self.engine,
@@ -900,10 +919,13 @@ class ScenarioDbManager():
 
         return inputs, outputs
 
-    def read_scenario_input_tables_from_db(self, scenario_name: str):
+    def read_scenario_input_tables_from_db(self, scenario_name: str) -> Inputs:
         """Convenience method to load all input tables.
-        Typically used at start if optimization model."""
-        return self.read_scenario_tables_from_db(scenario_name, input_table_names=['*'])
+        Typically used at start if optimization model.
+        :returns The inputs and outputs. (The outputs are always empty.)
+        """
+        inputs, outputs = self.read_scenario_tables_from_db(scenario_name, input_table_names=['*'])
+        return inputs
 
     def read_scenario_tables_from_db(self, scenario_name: str,
                                      input_table_names: Optional[List[str]] = None,
@@ -974,6 +996,63 @@ class ScenarioDbManager():
         return df
 
     ############################################################################################
+    # Read multi scenario
+    ############################################################################################
+    def read_multi_scenario_tables_from_db(self, scenario_names: List[str],
+                                     input_table_names: Optional[List[str]] = None,
+                                     output_table_names: Optional[List[str]] = None) -> (Inputs, Outputs):
+        """Read selected set input and output tables from multiple scenarios.
+        If input_table_names/output_table_names contains a '*', then all input/output tables will be read.
+        If empty list or None, then no tables will be read.
+        """
+        if self.enable_transactions:
+            with self.engine.begin() as connection:
+                inputs, outputs = self._read_multi_scenario_tables_from_db(connection, scenario_names, input_table_names, output_table_names)
+        else:
+            inputs, outputs = self._read_multi_scenario_tables_from_db(self.engine, scenario_names, input_table_names, output_table_names)
+        return inputs, outputs
+
+    def _read_multi_scenario_tables_from_db(self, connection, scenario_names: List[str],
+                                      input_table_names: List[str] = None,
+                                      output_table_names: List[str] = None) -> (Inputs, Outputs):
+        """Loads data for selected input and output tables from multiple scenarios.
+        If either list is names is ['*'], will load all tables as defined in db_tables configuration.
+        """
+        if input_table_names is None:  # load no tables by default
+            input_table_names = []
+        elif '*' in input_table_names:
+            input_table_names = list(self.input_db_tables.keys())
+
+        # Add the scenario table
+        if 'Scenario' not in input_table_names:
+            input_table_names.append('Scenario')
+
+        if output_table_names is None:  # load no tables by default
+            output_table_names = []
+        elif '*' in output_table_names:
+            output_table_names = self.output_db_tables.keys()
+
+        inputs = {}
+        for scenario_table_name, db_table in self.input_db_tables.items():
+            if scenario_table_name in input_table_names:
+                inputs[scenario_table_name] = self._read_multi_scenario_db_table_from_db(scenario_names, db_table, connection=connection)
+        outputs = {}
+        for scenario_table_name, db_table in self.output_db_tables.items():
+            if scenario_table_name in output_table_names:
+                outputs[scenario_table_name] = self._read_multi_scenario_db_table_from_db(scenario_names, db_table, connection=connection)
+        return inputs, outputs
+
+    def _read_multi_scenario_db_table_from_db(self, scenario_names: List[str], db_table: ScenarioDbTable, connection) -> pd.DataFrame:
+        """Read one table from the DB for multiple scenarios.
+        Does NOT remove the `scenario_name` column.
+        """
+        t: sqlalchemy.Table = db_table.get_sa_table()  #table_metadata
+        sql = t.select().where(t.c.scenario_name.in_(scenario_names))  # This is NOT a simple string!
+        df = pd.read_sql(sql, con=connection)
+
+        return df
+
+    ############################################################################################
     # Update scenario
     ############################################################################################
     def update_cell_changes_in_db(self, db_cell_updates: List[DbCellUpdate]):
@@ -1006,6 +1085,7 @@ class ScenarioDbManager():
         t: sqlalchemy.Table = db_table.get_sa_table()
         pk_conditions = [(db_table.get_sa_column(pk['column']) == pk['value']) for pk in db_cell_update.row_index]
         target_col: sqlalchemy.Column = db_table.get_sa_column(db_cell_update.column_name)
+        print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
         sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
         # print(f"_update_cell_change_in_db = {sql}")
 
@@ -1421,7 +1501,7 @@ class ScenarioDbManager():
 
 
     def read_scenarios_from_db(self, scenario_names: List[str] = []) -> (Inputs, Outputs):
-        """Multi scenario load.
+        """DEPRECATED. Multi scenario load.
         Reads all tables from set of scenarios
         TODO: avoid use of text SQL. Use SQLAlchemy sql generation.
         """

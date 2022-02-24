@@ -11,6 +11,7 @@ Open Terminal (Alt+F12), `cd docs`, run <br>
 `make html`
 If Powershell:
 `cmd.exe /c make html`
+Or first switch to classic cmd using `cmd`.
 Note that if you added/removed modules, you first need to re-run the sphinx command:
 `sphinx-apidoc -f -o source/ ../dse_do_utils/`
 

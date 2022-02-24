@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.mapmanager &#8212; DSE DO Utils 0.5.4.1 documentation</title>
+    <title>dse_do_utils.mapmanager &#8212; DSE DO Utils 0.5.4.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.mapmanager</a></li> 
@@ -52,6 +52,8 @@
 <span class="c1"># MapManager</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
 
 <div class="viewcode-block" id="MapManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager">[docs]</a><span class="k">class</span> <span class="nc">MapManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for building Folium map visualization.</span>
@@ -300,8 +302,26 @@
         <span class="n">html_text</span> <span class="o">=</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
         <span class="n">html</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Html</span><span class="p">(</span><span class="n">html_text</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">popup</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Popup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">parse_html</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_width</span><span class="o">=</span><span class="mi">2650</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">popup</span></div></div>
+        <span class="k">return</span> <span class="n">popup</span></div>
 
+<div class="viewcode-block" id="MapManager.get_tooltip_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_tooltip_table">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_tooltip_table</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get a tooltip table, based on the same definition as for `get_popup_table``.</span>
+<span class="sd">        Convenience method. Is the same as `MapManager.get_html_table(rows)`.</span>
+<span class="sd">        Usage::</span>
+
+<span class="sd">            tooltip_table = [</span>
+<span class="sd">                (&#39;property_1&#39;, &#39;value_1&#39;),</span>
+<span class="sd">                (&#39;property_2&#39;, &#39;value_2&#39;),</span>
+<span class="sd">            ]</span>
+<span class="sd">            tooltip = MapManager.get_tooltip_table(tooltip_table)</span>
+
+
+<span class="sd">        :param rows: list of tuples with name-value pairs</span>
+
+<span class="sd">        :returns (str): text for a tooltip in table format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -333,7 +353,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.mapmanager</a></li> 
