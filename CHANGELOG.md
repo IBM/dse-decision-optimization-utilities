@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.2b]
+## [Unreleased]## [0.5.4.3b]
+### Changed
+
+## [0.5.4.2] - 2022-02-24
 ### Changed
 - ScenarioDManager.read_scenario_input_tables_from_db now only returns Inputs (vs the tuple (Inputs,Outputs)). This could cause some backward incompatibility.
 - OptimizationEngine.get_kpi_output_table now returns Dataframe with capitalized column names: 'NAME' and 'VALUE' to make consistent with DO Experiment kpis.

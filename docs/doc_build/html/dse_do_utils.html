@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.1 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -1300,6 +1300,29 @@ Unfortunately the option <cite>parse_html=True</cite> does not prevent the probl
 Despite the suggestion in <a class="reference external" href="https://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Popups.ipynb">https://nbviewer.jupyter.org/github/python-visualization/folium/blob/master/examples/Popups.ipynb</a></p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.mapmanager.MapManager.get_tooltip_table">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_tooltip_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.get_tooltip_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.get_tooltip_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a tooltip table, based on the same definition as for <cite>get_popup_table`</cite>.
+Convenience method. Is the same as <cite>MapManager.get_html_table(rows)</cite>.
+Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tooltip_table</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;property_1&#39;</span><span class="p">,</span> <span class="s1">&#39;value_1&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;property_2&#39;</span><span class="p">,</span> <span class="s1">&#39;value_2&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">tooltip</span> <span class="o">=</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_tooltip_table</span><span class="p">(</span><span class="n">tooltip_table</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rows</strong> – list of tuples with name-value pairs</p>
+</dd>
+<dt class="field-even">Returns (str)</dt>
+<dd class="field-even"><p>text for a tooltip in table format</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dse_do_utils.mapmanager.MapManager.kansas_city_coord">
 <span class="sig-name descname"><span class="pre">kansas_city_coord</span></span><em class="property"> <span class="pre">=</span> <span class="pre">[39.085594,</span> <span class="pre">-94.585241]</span></em><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.kansas_city_coord" title="Permalink to this definition">¶</a></dt>
@@ -1872,6 +1895,14 @@ Note: the non-bulk ONLY works if the schema was created! I.e. only when using wi
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_multi_scenario_tables_from_db">
+<span class="sig-name descname"><span class="pre">read_multi_scenario_tables_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_table_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_multi_scenario_tables_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_multi_scenario_tables_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read selected set input and output tables from multiple scenarios.
+If input_table_names/output_table_names contains a ‘*’, then all input/output tables will be read.
+If empty list or None, then no tables will be read.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db">
 <span class="sig-name descname"><span class="pre">read_scenario_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_threaded</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Single scenario load.
@@ -1884,9 +1915,10 @@ Fixed: omit reading scenario table as an input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_input_tables_from_db">
-<span class="sig-name descname"><span class="pre">read_scenario_input_tables_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_input_tables_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_input_tables_from_db" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read_scenario_input_tables_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenario_input_tables_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_input_tables_from_db" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience method to load all input tables.
-Typically used at start if optimization model.</p>
+Typically used at start if optimization model.
+:returns The inputs and outputs. (The outputs are always empty.)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1939,7 +1971,7 @@ Is called from dse_do_dashboard.DoDashApp to create the PlotlyManager.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db">
 <span class="sig-name descname"><span class="pre">read_scenarios_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbManager.read_scenarios_from_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenarios_from_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Multi scenario load.
+<dd><p>DEPRECATED. Multi scenario load.
 Reads all tables from set of scenarios
 TODO: avoid use of text SQL. Use SQLAlchemy sql generation.</p>
 </dd></dl>
@@ -2072,8 +2104,8 @@ Only columns that are specified and included in the DB insert.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column">
 <span class="sig-name descname"><span class="pre">get_sa_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_column_name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_sa_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the SQLAlchemy column with the specified name.
-Dynamically creates a dict/hashtable for more efficient access.</p>
+<dd><p>Returns the SQLAlchemy.Column with the specified name.
+Uses the self.table_metadata (i.e. the sqlalchemy.Table), so works both for pre-defined tables and self-reflected tables like AutoScenarioDbTable</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2983,7 +3015,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
