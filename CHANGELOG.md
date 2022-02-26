@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.3b]
 ### Changed
+- Fixed bug in ScenarioDbManager._check_schema_name if schema is None (e.g. when using SQLite)
 
 ## [0.5.4.2] - 2022-02-24
 ### Changed

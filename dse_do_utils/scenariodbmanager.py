@@ -334,10 +334,10 @@ class ScenarioDbManager():
     ############################################################################################
     # Initialization. Called from constructor.
     ############################################################################################
-    def _check_schema_name(self, schema: str):
+    def _check_schema_name(self, schema: Optional[str]):
         """Checks if schema name is not mixed-case, as this is known to cause issues. Upper-case works well.
         This is just a warning. It does not change the schema name."""
-        if not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
+        if schema is not None and not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
             print(f"Warning: using mixed case in the schema name {schema} may cause unexpected DB errors. Use upper-case only.")
         return schema
 
