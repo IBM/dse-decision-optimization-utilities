@@ -103,7 +103,7 @@ class ScenarioDbTable(ABC):
         constraints_metadata = self.constraints_metadata
 
         if multi_scenario and (self.db_table_name != 'scenario'):
-            columns_metadata.insert(0, Column('scenario_seq', String(256), ForeignKey("scenario.scenario_seq"),
+            columns_metadata.insert(0, Column('scenario_seq', Integer(), ForeignKey("scenario.scenario_seq"),
                                               primary_key=True, index=True))
             constraints_metadata = [ScenarioDbTable.add_scenario_seq_to_fk_constraint(fkc) for fkc in
                                     constraints_metadata]
@@ -167,14 +167,21 @@ class ScenarioDbTable(ABC):
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
 
-    def _delete_scenario_table_from_db(self, scenario_name, connection):
+    def _delete_scenario_table_from_db(self, scenario_name: str, connection, scenario_sa_table: Table):
         """Delete all rows associated with the scenario in the DB table.
         Beware: make sure this is done in the right 'inverse cascading' order to avoid FK violations.
+        Note that if there happen to be multiple entries in the scenario table with the same name
+        (which shouldn't happen), all will be deleted.
         """
-        # sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
+        s = scenario_sa_table
+        # scenario_seqs = [seq for seq in connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))]
+        scenario_seqs = [r.scenario_seq for r in connection.execute(s.select().where(s.c.scenario_name == scenario_name))]
+
         t = self.get_sa_table()  # A Table()
-        sql = t.delete().where(t.c.scenario_name == scenario_name)
-        connection.execute(sql)
+        if t is not None:
+            # Do a join with the scenario table to delete all entries based on the scenario_name
+            sql = t.delete().where(t.c.scenario_seq.in_(scenario_seqs))
+            connection.execute(sql)
 
     @staticmethod
     def sqlcol(df: pd.DataFrame) -> Dict:
@@ -365,6 +372,10 @@ class ScenarioDbManager():
         """Scenario table must be the first in self.input_db_tables"""
         db_table: ScenarioTable = list(self.input_db_tables.values())[0]
         return db_table
+
+    def get_scenario_sa_table(self) -> sqlalchemy.Table:
+        """Returns the SQLAlchemy 'scenario' table. """
+        return self.get_scenario_db_table().get_sa_table()
 
     def _create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
         """Creates a SQLAlchemy engine at initialization.
@@ -648,14 +659,18 @@ class ScenarioDbManager():
         """
         # Step 1: delete scenario if exists
         self._delete_scenario_from_db(scenario_name, connection=connection)
-        # Step 2: add scenario_name to all dfs
-        inputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, inputs)
-        outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
-        # Step 3: insert scenario_name in scenario table
-        # sql = f"INSERT INTO SCENARIO (scenario_name) VALUES ('{scenario_name}')"
-        sa_scenario_table = self.get_scenario_db_table().get_sa_table()
-        sql_insert = sa_scenario_table.insert().values(scenario_name = scenario_name)
-        connection.execute(sql_insert)
+        # Step 2: insert scenario_name in scenario table and get scenario_seq
+        scenario_seq = self._get_or_create_scenario_in_scenario_table(scenario_name, connection)
+
+        # Step 3: add scenario_name to all dfs
+        inputs = ScenarioDbManager.add_scenario_seq_to_dfs(scenario_seq, inputs)
+        outputs = ScenarioDbManager.add_scenario_seq_to_dfs(scenario_seq, outputs)
+
+        # # Step 3: insert scenario_name in scenario table
+        # sa_scenario_table = self.get_scenario_db_table().get_sa_table()
+        # sql_insert = sa_scenario_table.insert().values(scenario_name = scenario_name)
+        # connection.execute(sql_insert)
+
         # Step 4: (bulk) insert scenario
         num_caught_exceptions = self._insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
         # Throw exception if any exceptions caught in 'non-bulk' mode
@@ -968,11 +983,12 @@ class ScenarioDbManager():
         db_table_name = db_table.db_table_name
         # sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
         # db_table.table_metadata is a Table()
+        s: sqlalchemy.Table = self.get_scenario_sa_table()
         t: sqlalchemy.Table = db_table.get_sa_table()  #table_metadata
-        sql = t.select().where(t.c.scenario_name == scenario_name)  # This is NOT a simple string!
+        sql = t.select().where(t.c.scenario_seq == s.c.scenario_seq).where(s.c.scenario_name == scenario_name)  # This is NOT a simple string!
         df = pd.read_sql(sql, con=connection)
         if db_table_name != 'scenario':
-            df = df.drop(columns=['scenario_name'])
+            df = df.drop(columns=['scenario_seq'])
 
         return df
 
@@ -1091,9 +1107,10 @@ class ScenarioDbManager():
         # 1. Add scenario name to dfs:
         outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
         # 2. Delete all output tables
+        scenario_sa_table = self.get_scenario_sa_table()
         for scenario_table_name, db_table in reversed(self.output_db_tables.items()):  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario'):
-                db_table._delete_scenario_table_from_db(scenario_name, connection)
+                db_table._delete_scenario_table_from_db(scenario_name, connection, scenario_sa_table)
         # 3. Insert new data
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
@@ -1119,9 +1136,10 @@ class ScenarioDbManager():
         outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
         dfs = {**inputs, **outputs}
         # 1. Delete tables
+        scenario_sa_table = self.get_scenario_sa_table()
         for scenario_table_name, db_table in reversed(self.db_tables.items()):  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and db_table.db_table_name in dfs.keys():  # If in given set of tables to replace
-                db_table._delete_scenario_table_from_db()
+                db_table._delete_scenario_table_from_db()  #VT 2022-03-05: this cannot work. Incomplete arguments!
         # 2. Insert new data
         for scenario_table_name, db_table in self.db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and db_table.db_table_name in dfs.keys():  # If in given set of tables to replace
@@ -1297,17 +1315,27 @@ class ScenarioDbManager():
         TODO: check with 'auto-inserted' tables
         TODO: batch all sql statements in single execute. Faster? And will that do the defer integrity checks?
         """
-        # batch_sql=False  # Batch=True does NOT work!
         insp = sqlalchemy.inspect(connection)
         tables_in_db = insp.get_table_names(schema=self.schema)
-        # sql_statements = []
+        scenario_sa_table = self.get_scenario_sa_table()
         for scenario_table_name, db_table in reversed(self.db_tables.items()):  # Note this INCLUDES the SCENARIO table!
             if db_table.db_table_name in tables_in_db:
-                # # sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
-                # t = db_table.table_metadata  # A Table()
-                # sql = t.delete().where(t.c.scenario_name == scenario_name)
-                # connection.execute(sql)
-                db_table._delete_scenario_table_from_db(scenario_name, connection)
+                db_table._delete_scenario_table_from_db(scenario_name, connection, scenario_sa_table)
+
+    def _get_or_create_scenario_in_scenario_table(self, scenario_name: str, connection) -> int:
+        """Returns the scenario_seq of (the first) entry matching the scenario_name.
+        If it doesn't exist, will insert a new entry.
+        """
+        s = self.get_scenario_sa_table()
+        r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
+        if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
+            seq = first[0]
+        else:
+            connection.execute(s.insert().values(scenario_name=scenario_name))
+            r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
+            seq = r.first()[0]
+        return seq
+
 
     ############################################################################################
     # Import from zip
