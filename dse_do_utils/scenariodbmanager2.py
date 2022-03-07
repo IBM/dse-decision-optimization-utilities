@@ -407,35 +407,6 @@ class ScenarioDbManager():
                 cursor.execute("PRAGMA foreign_keys=ON;")
                 cursor.close()
 
-    #     def get_db2_connection_string(self, credentials, schema: str):
-    #         """Create a DB2 connection string.
-    #         Needs a work-around for DB2 on cloud.ibm.com.
-    #         The option 'ssl=True' doesn't work. Instead use 'Security=ssl'.
-    #         See https://stackoverflow.com/questions/58952002/using-credentials-from-db2-warehouse-on-cloud-to-initialize-flask-sqlalchemy.
-
-    #         TODO:
-    #         * Not sure the check for the port 50001 is necessary, or if this applies to any `ssl=True`
-    #         * The schema doesn't work properly in db2 on cloud.ibm.com. Instead it automatically creates a schema based on the username.
-    #         * Also tried to use 'schema={schema}', but it didn't work properly.
-    #         * In case ssl=False, do NOT add the option `ssl=False`: doesn't gie an error, but select rows will always return zero rows!
-    #         * TODO: what do we do in case ssl=True, but the port is not 50001?!
-    #         """
-    #         if str(credentials['ssl']).upper() == 'TRUE' and str(credentials['port']) == '50001':
-    #             ssl = '?Security=ssl'  # Instead of 'ssl=True'
-    #         else:
-    #             #         ssl = f"ssl={credentials['ssl']}"  # I.e. 'ssl=True' or 'ssl=False'
-    #             ssl = ''  # For some weird reason, the string `ssl=False` blocks selection from return any rows!!!!
-    #         connection_string = 'db2+ibm_db://{username}:{password}@{host}:{port}/{database}{ssl};currentSchema={schema}'.format(
-    #             username=credentials['username'],
-    #             password=credentials['password'],
-    #             host=credentials['host'],
-    #             port=credentials['port'],
-    #             database=credentials['database'],
-    #             ssl=ssl,
-    #             schema=schema
-    #         )
-    #         return connection_string
-
     def _get_db2_connection_string(self, credentials, schema: str):
         """Create a DB2 connection string.
 
@@ -599,31 +570,6 @@ class ScenarioDbManager():
         else:
             r = connection.execute(sql)
 
-    #####################################################################################
-    # DEPRECATED(?): `insert_scenarios_in_db` and `insert_scenarios_in_db_transaction`
-    #####################################################################################
-    def insert_scenarios_in_db(self, inputs={}, outputs={}, bulk: bool = True):
-        """DEPRECATED. If we need it back, requires re-evaluation and bulk support."""
-        if self.enable_transactions:
-            print("Inserting all tables within a transaction")
-            with self.engine.begin() as connection:
-                self._insert_scenarios_in_db_transaction(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
-        else:
-            self._insert_scenarios_in_db_transaction(inputs=inputs, outputs=outputs, bulk=bulk)
-
-    def _insert_scenarios_in_db_transaction(self, inputs={}, outputs={}, bulk: bool = True, connection=None):
-        """DEPRECATED(?)
-        """
-        num_caught_exceptions=0
-        for table_name, df in inputs.items():
-            num_caught_exceptions += self._insert_table_in_db_by_row(table_name, df, connection=connection)
-        for table_name, df in outputs.items():
-            num_caught_exceptions += self._insert_table_in_db_by_row(table_name, df, connection=connection)
-        # Throw exception if any exceptions caught in 'non-bulk' mode
-        # This will cause a rollback when using a transaction
-        if num_caught_exceptions > 0:
-            raise RuntimeError(f"Multiple ({num_caught_exceptions}) Integrity and/or Statement errors caught. See log. Raising exception to allow for rollback.")
-
     ############################################################################################
     # Insert/replace scenario
     ############################################################################################
@@ -654,23 +600,14 @@ class ScenarioDbManager():
         Will set/overwrite the scenario_name in all dfs, so no need to add in advance.
         Assumes schema has been created.
         Note: there is no difference between dfs in inputs or outputs, i.e. they are inserted the same way.
-
-        TODO: break-out in a delete and an insert. Then we can re-use the insert for the duplicate API
         """
         # Step 1: delete scenario if exists
         self._delete_scenario_from_db(scenario_name, connection=connection)
         # Step 2: insert scenario_name in scenario table and get scenario_seq
         scenario_seq = self._get_or_create_scenario_in_scenario_table(scenario_name, connection)
-
         # Step 3: add scenario_name to all dfs
         inputs = ScenarioDbManager.add_scenario_seq_to_dfs(scenario_seq, inputs)
         outputs = ScenarioDbManager.add_scenario_seq_to_dfs(scenario_seq, outputs)
-
-        # # Step 3: insert scenario_name in scenario table
-        # sa_scenario_table = self.get_scenario_db_table().get_sa_table()
-        # sql_insert = sa_scenario_table.insert().values(scenario_name = scenario_name)
-        # connection.execute(sql_insert)
-
         # Step 4: (bulk) insert scenario
         num_caught_exceptions = self._insert_single_scenario_tables_in_db(inputs=inputs, outputs=outputs, bulk=bulk, connection=connection)
         # Throw exception if any exceptions caught in 'non-bulk' mode
@@ -743,36 +680,6 @@ class ScenarioDbManager():
                     break
         return num_exceptions
 
-    def insert_tables_in_db(self, inputs: Inputs = {}, outputs: Outputs = {},
-                            bulk: bool = True, auto_insert: bool = False, connection=None) -> int:
-        """DEPRECATED.
-        Was attempt to automatically insert a scenario without any schema definition.
-        Currently, one would need to use the AutoScenarioDbTable in the constructor.
-        If you want to automatically create such schema based on the inputs/outputs, then do that in the constructor. Not here.
-        Note: the non-bulk ONLY works if the schema was created! I.e. only when using with self.create_schema.
-        """
-        dfs = {**inputs, **outputs}  # Combine all dfs in one dict
-        completed_dfs = []
-        num_caught_exceptions=0
-        for scenario_table_name, db_table in self.db_tables.items():
-            if scenario_table_name in dfs:
-                completed_dfs.append(scenario_table_name)
-                if bulk:
-                    #                     self.insert_table_in_db_bulk(db_table, dfs[scenario_table_name])
-                    db_table.insert_table_in_db_bulk(dfs[scenario_table_name], self, connection=connection)
-                else:  # Row by row for data checking
-                    num_caught_exceptions += self._insert_table_in_db_by_row(db_table, dfs[scenario_table_name], connection=connection)
-            else:
-                print(f"No table named {scenario_table_name} in inputs or outputs")
-        # Insert any tables not defined in the schema:
-        if auto_insert:
-            for scenario_table_name, df in dfs.items():
-                if scenario_table_name not in completed_dfs:
-                    print(f"Table {scenario_table_name} auto inserted")
-                    db_table = AutoScenarioDbTable(scenario_table_name)
-                    db_table.insert_table_in_db_bulk(df, self, connection=connection)
-        return num_caught_exceptions
-
     ############################################################################################
     # Read scenario
     ############################################################################################
@@ -782,10 +689,13 @@ class ScenarioDbManager():
         The API called by a cached procedure in the dse_do_dashboard.DoDashApp.
         """
         # sql = f"SELECT * FROM SCENARIO"
-        sa_scenario_table = list(self.input_db_tables.values())[0].table_metadata
+        # sa_scenario_table = list(self.input_db_tables.values())[0].table_metadata
+        sa_scenario_table = self.get_scenario_sa_table()
         sql = sa_scenario_table.select()
         if self.enable_transactions:
             with self.engine.begin() as connection:
+                # TODO: Still index by scenario_name, or by scenario_seq? By name keeps it backward compatible.
+                #  But there is a theoretical risk of duplicates
                 df = pd.read_sql(sql, con=connection).set_index(['scenario_name'])
         else:
             df = pd.read_sql(sql, con=self.engine).set_index(['scenario_name'])
@@ -815,41 +725,6 @@ class ScenarioDbManager():
 
         return df
 
-    # def read_scenario_from_db(self, scenario_name: str) -> (Inputs, Outputs):
-    #     """Single scenario load.
-    #     Main API to read a complete scenario.
-    #     Reads all tables for a single scenario.
-    #     Returns all tables in one dict"""
-    #     inputs = {}
-    #     for scenario_table_name, db_table in self.input_db_tables.items():
-    #         inputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table)
-    #
-    #     outputs = {}
-    #     for scenario_table_name, db_table in self.output_db_tables.items():
-    #         outputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table)
-    #
-    #     return inputs, outputs
-
-
-    # def _read_scenario_from_db(self, scenario_name: str, connection) -> (Inputs, Outputs):
-    #     """Single scenario load.
-    #     Main API to read a complete scenario.
-    #     Reads all tables for a single scenario.
-    #     Returns all tables in one dict
-    #     """
-    #     inputs = {}
-    #     for scenario_table_name, db_table in self.input_db_tables.items():
-    #         # print(f"scenario_table_name = {scenario_table_name}")
-    #         if scenario_table_name != 'Scenario':  # Skip the Scenario table as an input
-    #             inputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table, connection=connection)
-    #
-    #     outputs = {}
-    #     for scenario_table_name, db_table in self.output_db_tables.items():
-    #         outputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table, connection=connection)
-    #         # if scenario_table_name == 'kpis':
-    #         #     # print(f"kpis table columns = {outputs[scenario_table_name].columns}")
-    #         #     outputs[scenario_table_name] = outputs[scenario_table_name].rename(columns={'name': 'NAME'})  #HACK!!!!!
-    #     return inputs, outputs
     def read_scenario_from_db(self, scenario_name: str, multi_threaded: bool = False) -> (Inputs, Outputs):
         """Single scenario load.
         Main API to read a complete scenario.
@@ -964,28 +839,16 @@ class ScenarioDbManager():
                 outputs[scenario_table_name] = self._read_scenario_db_table_from_db(scenario_name, db_table, connection=connection)
         return inputs, outputs
 
-    # def _read_scenario_db_table_from_db(self, scenario_name: str, db_table: ScenarioDbTable) -> pd.DataFrame:
-    #     """Read one table from the DB.
-    #     Removes the `scenario_name` column."""
-    #     db_table_name = db_table.db_table_name
-    #     sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
-    #     df = pd.read_sql(sql, con=self.engine)
-    #     if db_table_name != 'scenario':
-    #         df = df.drop(columns=['scenario_name'])
-    #
-    #     return df
     def _read_scenario_db_table_from_db(self, scenario_name: str, db_table: ScenarioDbTable, connection) -> pd.DataFrame:
         """Read one table from the DB.
-        Removes the `scenario_name` column.
-
-        Modification: based on SQLAlchemy syntax. If doing the plain text SQL, then some column names not properly extracted
+        Removes the `scenario_seq` column.
         """
         db_table_name = db_table.db_table_name
         # sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
         # db_table.table_metadata is a Table()
         s: sqlalchemy.Table = self.get_scenario_sa_table()
-        t: sqlalchemy.Table = db_table.get_sa_table()  #table_metadata
-        sql = t.select().where(t.c.scenario_seq == s.c.scenario_seq).where(s.c.scenario_name == scenario_name)  # This is NOT a simple string!
+        t: sqlalchemy.Table = db_table.get_sa_table()
+        sql = t.select().where(t.c.scenario_seq == s.c.scenario_seq).where(s.c.scenario_name == scenario_name)
         df = pd.read_sql(sql, con=connection)
         if db_table_name != 'scenario':
             df = df.drop(columns=['scenario_seq'])
@@ -1044,7 +907,17 @@ class ScenarioDbManager():
         Does NOT remove the `scenario_name` column.
         """
         t: sqlalchemy.Table = db_table.get_sa_table()  #table_metadata
-        sql = t.select().where(t.c.scenario_name.in_(scenario_names))  # This is NOT a simple string!
+        # sql = t.select().where(t.c.scenario_name.in_(scenario_names))  # This is NOT a simple string!
+
+        s = self.get_scenario_sa_table()
+        # TODO: Test of we can do below query in one select (option 1), joining the scenario table, instead of separate selects (option 2)
+        # Option 1: do in one query:
+        sql = t.select().where(t.c.scenario_seq == s.c.scenario_seq).where(s.c.scenario_name.in_(scenario_names))
+
+        # Option2: If not, we can do in 2 selects
+        # scenario_seqs = [r.scenario_seq for r in connection.execute(s.select().where(s.c.scenario_name.in_(scenario_names)))]
+        # sql = t.select().where(t.c.scenario_seq.in_(scenario_seqs))
+
         df = pd.read_sql(sql, con=connection)
 
         return df
@@ -1072,18 +945,13 @@ class ScenarioDbManager():
 
     def _update_cell_change_in_db(self, db_cell_update: DbCellUpdate, connection):
         """Update a single value (cell) change in the DB."""
-        # db_table_name = self.db_tables[db_cell_update.table_name].db_table_name
-        # column_change = f"{db_cell_update.column_name} = '{db_cell_update.current_value}'"
-        # scenario_condition = f"scenario_name = '{db_cell_update.scenario_name}'"
-        # pk_conditions = ' AND '.join([f"{pk['column']} = '{pk['value']}'" for pk in db_cell_update.row_index])
-        # old_sql = f"UPDATE {db_table_name} SET {column_change} WHERE {pk_conditions} AND {scenario_condition};"
-
         db_table: ScenarioDbTable = self.db_tables[db_cell_update.table_name]
         t: sqlalchemy.Table = db_table.get_sa_table()
         pk_conditions = [(db_table.get_sa_column(pk['column']) == pk['value']) for pk in db_cell_update.row_index]
         target_col: sqlalchemy.Column = db_table.get_sa_column(db_cell_update.column_name)
         print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
-        sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
+        # sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
+        sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == db_cell_update.scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
         # print(f"_update_cell_change_in_db = {sql}")
 
         connection.execute(sql)
@@ -1185,9 +1053,6 @@ class ScenarioDbManager():
         else:
             raise ValueError(f"Target name for duplicate scenario '{target_scenario_name}' already exists.")
 
-        # inputs, outputs = self.read_scenario_from_db(source_scenario_name)
-        # self._replace_scenario_in_db_transaction(scenario_name=new_scenario_name, inputs=inputs, outputs=outputs,
-        #                                          bulk=True, connection=connection)
         self._duplicate_scenario_in_db_sql(connection, source_scenario_name, new_scenario_name)
 
     def _duplicate_scenario_in_db_sql(self, connection, source_scenario_name: str, target_scenario_name: str = None):
@@ -1217,45 +1082,30 @@ class ScenarioDbManager():
         else:
             raise ValueError(f"Target name for duplicate scenario '{target_scenario_name}' already exists.")
 
-        batch_sql=False  # BEWARE: batch = True does NOT work!
-        sql_statements = []
+        # TODO: TEST
 
         # 1. Insert scenario in scenario table
-        # sql_insert = f"INSERT INTO SCENARIO (scenario_name) VALUES ('{new_scenario_name}')"  # Old SQL
-        # sa_scenario_table = list(self.input_db_tables.values())[0].get_sa_table()  # Scenario table must be the first
-        sa_scenario_table = self.get_scenario_db_table().get_sa_table()
-        sql_insert = sa_scenario_table.insert().values(scenario_name = new_scenario_name)
-        # print(f"_duplicate_scenario_in_db_sql - Insert SQL = {sql_insert}")
-        if batch_sql:
-            sql_statements.append(sql_insert)
-        else:
-            connection.execute(sql_insert)
+        source_scenario_seq = self._get_or_create_scenario_in_scenario_table(source_scenario_name, connection)
+        new_scenario_seq = self._get_or_create_scenario_in_scenario_table(new_scenario_name, connection)
 
         # 2. Do 'insert into select' to duplicate rows in each table
+        s: sqlalchemy.table = self.get_scenario_sa_table()
         for scenario_table_name, db_table in self.db_tables.items():
             if scenario_table_name == 'Scenario':
                 continue
 
             t: sqlalchemy.table = db_table.table_metadata  # The table at hand
-            s: sqlalchemy.table = sa_scenario_table  # The scenario table
             # print("+++++++++++SQLAlchemy insert-select")
-            select_columns = [s.c.scenario_name if c.name == 'scenario_name' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
+            select_columns = [s.c.scenario_seq if c.name == 'scenario_seq' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
             # print(f"select columns = {select_columns}")
             select_sql = (sqlalchemy.select(select_columns)
-                          .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+                          .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))
             target_columns = [c for c in t.columns]
             sql_insert = t.insert().from_select(target_columns, select_sql)
             # print(f"sql_insert = {sql_insert}")
 
             # sql_insert = f"INSERT INTO {db_table.db_table_name} ({target_columns_txt}) SELECT '{target_scenario_name}',{other_source_columns_txt} FROM {db_table.db_table_name} WHERE scenario_name = '{source_scenario_name}'"
-            if batch_sql:
-                sql_statements.append(sql_insert)
-            else:
-                connection.execute(sql_insert)
-        if batch_sql:
-            batch_sql = ";\n".join(sql_statements)
-            print(batch_sql)
-            connection.execute(batch_sql)
+            connection.execute(sql_insert)
 
     def _find_free_duplicate_scenario_name(self, scenario_name: str, scenarios_df=None) -> Optional[str]:
         """Finds next free scenario name based on pattern '{scenario_name}_copy_n'.
@@ -1301,6 +1151,10 @@ class ScenarioDbManager():
 
         Use of 'insert into select': https://stackoverflow.com/questions/9879830/select-modify-and-insert-into-the-same-table
         """
+        # TODO: just update the scenario_name:
+        # 1. Get the scenario_seq
+        # 2. Update the name
+
         # 1. Duplicate scenario
         self._duplicate_scenario_in_db_sql(connection, source_scenario_name, target_scenario_name)
         # 2. Delete scenario
@@ -1363,196 +1217,9 @@ class ScenarioDbManager():
                 else:
                     print(f"File '{info.filename}' in zip is not a .xlsx. Skipped.")
 
-    ############################################################################################
-    # Old Read scenario APIs
-    ############################################################################################
-    # def read_scenario_table_from_db(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
-    #     """Read a single table from the DB.
-    #     The API called by a cached procedure in the dse_do_dashboard.DoDashApp.
-    #
-    #     :param scenario_name: Name of scenario
-    #     :param scenario_table_name: Name of scenario table (not the DB table name)
-    #     :return:
-    #     """
-    #     # print(f"read table {scenario_table_name}")
-    #     if scenario_table_name in self.input_db_tables:
-    #         db_table = self.input_db_tables[scenario_table_name]
-    #     elif scenario_table_name in self.output_db_tables:
-    #         db_table = self.output_db_tables[scenario_table_name]
-    #     else:
-    #         # error!
-    #         raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot load data from DB.")
-    #
-    #     db_table_name = db_table.db_table_name
-    #     sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
-    #     df = pd.read_sql(sql, con=self.engine)
-    #     if db_table_name != 'scenario':
-    #         df = df.drop(columns=['scenario_name'])
-    #
-    #     return df
-
-    # def read_scenario_from_db(self, scenario_name: str) -> (Inputs, Outputs):
-    #     """Single scenario load.
-    #     Reads all tables for a single scenario.
-    #     Returns all tables in one dict"""
-    #     inputs = {}
-    #     for scenario_table_name, db_table in self.input_db_tables.items():
-    #         db_table_name = db_table.db_table_name
-    #         sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
-    #         df = pd.read_sql(sql, con=self.engine)
-    #         #         print(db_table_name)
-    #         inputs[scenario_table_name] = df
-    #
-    #     outputs = {}
-    #     for scenario_table_name, db_table in self.output_db_tables.items():
-    #         db_table_name = db_table.db_table_name
-    #         sql = f"SELECT * FROM {db_table_name} WHERE scenario_name = '{scenario_name}'"
-    #         df = pd.read_sql(sql, con=self.engine)
-    #         #         print(db_table_name)
-    #         outputs[scenario_table_name] = df
-    #
-    #     inputs, outputs = ScenarioDbManager.delete_scenario_name_column(inputs, outputs)
-    #     return inputs, outputs
-
-    #######################################################################################################
-    # Caching
-    # How it works:
-    # Setup:
-    # 1. DoDashApp defines a procedure `read_xxxx_proc`
-    # 2. DoDashApp applies Flask caching to procedure
-    # 3. DoDashApp registers the procedure as a callback in the ScenarioDbManager.read_xxx_callback using `dbm.set_xxx_callback(read_xxx_callback)`
-    # Operationally (where dbm is a ScenarioDbManager):
-    # 1. In the DoDashApp, call to `dbm.read_xxxx_cached()`
-    # 2. In the `ScenarioDbManager.read_xxxx_cached()` calls the cached callback procedure defined in the DoDashApp (i.e. `read_xxxx_proc`)
-    # 3. The cached procedure calls `dbm.read_xxxx()`
-    #
-    # TODO: why can't the DoDashApp call the `read_xxxx_proc` directly. This would avoid all this registration of callbacks
-    # TODO: migrate all of this caching and callbacks (if applicable) to the DoDashApp to reduce complexity and dependency
-    #######################################################################################################
-    # ScenarioTable
-    def set_scenarios_table_read_callback(self, scenarios_table_read_callback=None):
-        """DEPRECATED - now in DoDashApp
-        Sets a callback function to read the scenario table from the DB
-        """
-        self.read_scenarios_table_from_db_callback = scenarios_table_read_callback
-
-    def read_scenarios_table_from_db_cached(self) -> pd.DataFrame:
-        """DEPRECATED - now in DoDashApp
-        For use with Flask caching. Default implementation.
-        To be called from (typically) a Dash app to use the cached version.
-        In case no caching has been configured. Simply calls the regular method `get_scenarios_df`.
-
-        For caching:
-        1. Specify a callback procedure in `read_scenarios_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
-        which in turn calls the regular method `get_scenarios_df`
-        """
-        if self.read_scenarios_table_from_db_callback is not None:
-            df = self.read_scenarios_table_from_db_callback()  # NOT a method!
-        else:
-            df = self.get_scenarios_df()
-        return df
-
-    # Tables
-    def set_table_read_callback(self, table_read_callback=None):
-        """DEPRECATED - now in DoDashApp
-        Sets a callback function to read a table from a scenario
-        """
-        #     print(f"Set callback to {table_read_callback}")
-        self.read_scenario_table_from_db_callback = table_read_callback
-
-    def read_scenario_table_from_db_cached(self, scenario_name: str, scenario_table_name: str) -> pd.DataFrame:
-        """DEPRECATED - now in DoDashApp
-        For use with Flask caching. Default implementation.
-        In case no caching has been configured. Simply calls the regular method `read_scenario_table_from_db`.
-
-        For caching:
-        1. Specify a callback procedure in `read_scenario_table_from_db_callback` that uses a hard-coded version of a ScenarioDbManager,
-        which in turn calls the regular method `read_scenario_table_from_db`
-        """
-        # 1. Override this method and call a procedure that uses a hard-coded version of a ScenarioDbManager,
-        # which in turn calls the regular method `read_scenario_table_from_db`
-
-        # return self.read_scenario_table_from_db(scenario_name, scenario_table_name)
-        if self.read_scenario_table_from_db_callback is not None:
-            df = self.read_scenario_table_from_db_callback(scenario_name, scenario_table_name)  # NOT a method!
-        else:
-            df = self.read_scenario_table_from_db(scenario_name, scenario_table_name)
-        return df
-
-    def read_scenario_tables_from_db_cached(self, scenario_name: str,
-                                            input_table_names: List[str] = None,
-                                            output_table_names: List[str] = None) -> (Inputs, Outputs):
-        """DEPRECATED - now in DoDashApp
-        For use with Flask caching. Loads data for selected input and output tables.
-        Same as `read_scenario_tables_from_db`, but calls `read_scenario_table_from_db_cached`.
-        Is called from dse_do_dashboard.DoDashApp to create the PlotlyManager."""
-
-        if input_table_names is None:  # load all tables by default
-            input_table_names = list(self.input_db_tables.keys())
-            if 'Scenario' in input_table_names: input_table_names.remove('Scenario')  # Remove the scenario table
-        if output_table_names is None:  # load all tables by default
-            output_table_names = self.output_db_tables.keys()
-
-        inputs = {}
-        for scenario_table_name in input_table_names:
-            # print(f"read input table {scenario_table_name}")
-            inputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
-
-        outputs = {}
-        for scenario_table_name in output_table_names:
-            # print(f"read output table {scenario_table_name}")
-            outputs[scenario_table_name] = self.read_scenario_table_from_db_cached(scenario_name, scenario_table_name)
-        return inputs, outputs
-
-    #######################################################################################################
-    # Review
-    #######################################################################################################
-
-
-    def read_scenarios_from_db(self, scenario_names: List[str] = []) -> (Inputs, Outputs):
-        """DEPRECATED. Multi scenario load.
-        Reads all tables from set of scenarios
-        TODO: avoid use of text SQL. Use SQLAlchemy sql generation.
-        """
-        where_scenarios = ','.join([f"'{n}'" for n in scenario_names])
-
-        inputs = {}
-        for scenario_table_name, db_table in self.input_db_tables.items():
-            db_table_name = db_table.db_table_name
-            sql = f"SELECT * FROM {db_table_name} WHERE scenario_name in ({where_scenarios})"
-            #             print(sql)
-            df = pd.read_sql(sql, con=self.engine)
-            #         print(db_table_name)
-            inputs[scenario_table_name] = df
-            print(f"Read {df.shape[0]} rows and {df.shape[1]} columns into {scenario_table_name}")
-
-        outputs = {}
-        for scenario_table_name, db_table in self.output_db_tables.items():
-            db_table_name = db_table.db_table_name
-            sql = f"SELECT * FROM {db_table_name} WHERE scenario_name in ({where_scenarios})"
-            #             print(sql)
-            df = pd.read_sql(sql, con=self.engine)
-            #         print(db_table_name)
-            outputs[scenario_table_name] = df
-            print(f"Read {df.shape[0]} rows and {df.shape[1]} columns into {scenario_table_name}")
-
-        return inputs, outputs
-
     #######################################################################################################
     # Utils
     #######################################################################################################
-    @staticmethod
-    def add_scenario_name_to_dfs(scenario_name: str, inputs: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
-        """DEPRECATED
-        Adds a `scenario_name` column to each df.
-        Or overwrites all values of that column already exists.
-        This avoids to need for the MultiScenarioManager when loading and storing single scenarios."""
-        outputs = {}
-        for scenario_table_name, df in inputs.items():
-            df['scenario_name'] = scenario_name
-            outputs[scenario_table_name] = df
-        return outputs
-
     @staticmethod
     def add_scenario_seq_to_dfs(scenario_seq: int, inputs: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
         """Adds a `scenario_seq` column to each df.
@@ -1563,24 +1230,6 @@ class ScenarioDbManager():
             df['scenario_seq'] = scenario_seq
             outputs[scenario_table_name] = df
         return outputs
-
-    @staticmethod
-    def delete_scenario_name_column(inputs: Inputs, outputs: Outputs) -> (Inputs, Outputs):
-        """DEPRECATED
-        Drops the column `scenario_name` from any df in either inputs or outputs.
-        This is used to create a inputs/outputs combination similar to loading a single scenario from the DO Experiment.
-        """
-        new_inputs = {}
-        new_outputs = {}
-        for scenario_table_name, df in inputs.items():
-            if 'scenario_name' in df.columns:
-                df = df.drop(columns=['scenario_name'])
-                new_inputs[scenario_table_name] = df
-        for scenario_table_name, df in outputs.items():
-            if 'scenario_name' in df.columns:
-                df = df.drop(columns=['scenario_name'])
-                new_outputs[scenario_table_name] = df
-        return new_inputs, new_outputs
 
     @staticmethod
     def delete_scenario_seq_column(inputs: Inputs, outputs: Outputs) -> (Inputs, Outputs):
@@ -1607,7 +1256,7 @@ class ScenarioTable(ScenarioDbTable):
     def __init__(self, db_table_name: str = 'scenario'):
         columns_metadata = [
             Column('scenario_seq', Integer(), autoincrement=True, primary_key=True),
-            Column('scenario_name', String(256), primary_key=False),
+            Column('scenario_name', String(256), primary_key=False, nullable=False),  # TODO: should we add a 'unique' constraint on the name?
         ]
         super().__init__(db_table_name, columns_metadata)
 
