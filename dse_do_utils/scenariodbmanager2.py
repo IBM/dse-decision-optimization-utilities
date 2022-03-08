@@ -28,7 +28,7 @@ import pandas as pd
 from typing import Dict, List, NamedTuple, Any, Optional
 from collections import OrderedDict
 import re
-from sqlalchemy import exc, MetaData
+from sqlalchemy import exc, MetaData, select
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
 
 #  Typing aliases
@@ -946,15 +946,21 @@ class ScenarioDbManager():
     def _update_cell_change_in_db(self, db_cell_update: DbCellUpdate, connection):
         """Update a single value (cell) change in the DB."""
         db_table: ScenarioDbTable = self.db_tables[db_cell_update.table_name]
+        s = self.get_scenario_sa_table()
         t: sqlalchemy.Table = db_table.get_sa_table()
         pk_conditions = [(db_table.get_sa_column(pk['column']) == pk['value']) for pk in db_cell_update.row_index]
         target_col: sqlalchemy.Column = db_table.get_sa_column(db_cell_update.column_name)
         print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
-        # sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
-        sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == db_cell_update.scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
+
+        if scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection) is not None:
+            sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
+            connection.execute(sql)
+        else:
+            # Error?
+            pass
         # print(f"_update_cell_change_in_db = {sql}")
 
-        connection.execute(sql)
+
 
     ############################################################################################
     # Update/Replace tables in scenario
@@ -1151,14 +1157,20 @@ class ScenarioDbManager():
 
         Use of 'insert into select': https://stackoverflow.com/questions/9879830/select-modify-and-insert-into-the-same-table
         """
-        # TODO: just update the scenario_name:
+        # Just update the scenario_name:
         # 1. Get the scenario_seq
         # 2. Update the name
+        s = self.get_scenario_sa_table()
+        scenario_seq = self._get_scenario_seq(source_scenario_name, connection)
+        if scenario_seq is not None:
+            print(f"Rename scenario name = {source_scenario_name}, seq = {scenario_seq}")
+            sql = s.update().where(s.c.scenario_seq == scenario_seq).values({s.c.scenario_name: target_scenario_name})
+            connection.execute(sql)
 
-        # 1. Duplicate scenario
-        self._duplicate_scenario_in_db_sql(connection, source_scenario_name, target_scenario_name)
-        # 2. Delete scenario
-        self._delete_scenario_from_db(source_scenario_name, connection=connection)
+        # # 1. Duplicate scenario
+        # self._duplicate_scenario_in_db_sql(connection, source_scenario_name, target_scenario_name)
+        # # 2. Delete scenario
+        # self._delete_scenario_from_db(source_scenario_name, connection=connection)
 
     def _delete_scenario_from_db(self, scenario_name: str, connection):
         """Deletes all rows associated with a given scenario.
@@ -1180,14 +1192,31 @@ class ScenarioDbManager():
         """Returns the scenario_seq of (the first) entry matching the scenario_name.
         If it doesn't exist, will insert a new entry.
         """
-        s = self.get_scenario_sa_table()
-        r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
-        if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
-            seq = first[0]
-        else:
+        # s = self.get_scenario_sa_table()
+        # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
+        # if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
+        #     seq = first[0]
+        # else:
+
+        seq = self._get_scenario_seq(scenario_name, connection)
+        if seq is None:
+            s = self.get_scenario_sa_table()
             connection.execute(s.insert().values(scenario_name=scenario_name))
             r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
             seq = r.first()[0]
+        return seq
+
+    def _get_scenario_seq(self, scenario_name: str, connection) -> Optional[int]:
+        """Returns the scenario_seq of (the first) entry matching the scenario_name.
+        """
+        s = self.get_scenario_sa_table()
+        # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
+        r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))
+        if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
+            # print(f"_get_scenario_seq: r={first}")
+            seq = first[0]  # Tuple with values. First (0) is the scenario_seq. TODO: do more structured so we can be sure it is the scenario_seq!
+        else:
+            seq = None
         return seq
 
 
