@@ -317,7 +317,7 @@ class ScenarioDbManager():
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
-                 enable_transactions: bool = True, enable_sqlite_fk: bool = True):
+                 enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_scenario_seq: bool = False):
         """Create a ScenarioDbManager.
 
         :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
@@ -334,6 +334,7 @@ class ScenarioDbManager():
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
         self.enable_sqlite_fk = enable_sqlite_fk
+        self.enable_scenario_seq = enable_scenario_seq
         self.echo = echo
         self.input_db_tables = self._add_scenario_db_table(input_db_tables)
         self.output_db_tables = output_db_tables
@@ -548,6 +549,10 @@ class ScenarioDbManager():
         See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
         See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
         """
+        # # Would this work?:
+        # self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema
+        # self.metadata.drop_all(bind=connection)
+
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
             sql = f"DROP TABLE IF EXISTS {db_table_name}"
