@@ -559,6 +559,9 @@ class ScenarioDbManager():
         See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
         See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
         """
+        # print("+++++++++++++++++Drop all tables+++++++++++++++++")
+        # self.metadata.drop_all(bind=connection)
+
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
             sql = f"DROP TABLE IF EXISTS {db_table_name}"
