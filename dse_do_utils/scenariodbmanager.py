@@ -559,6 +559,9 @@ class ScenarioDbManager():
         See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
         See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
         """
+        # print("+++++++++++++++++Reflect+++++++++++++++++")
+        # Note: the reflect seems to mess things up: when doing the next drop_all we're getting weird errors
+        # self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema
         # print("+++++++++++++++++Drop all tables+++++++++++++++++")
         # self.metadata.drop_all(bind=connection)
 
