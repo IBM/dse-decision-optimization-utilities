@@ -64,7 +64,7 @@ class ScenarioDbTable(ABC):
         if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
             print(f"Warning: using mixed case in the db_table_name {db_table_name} may cause unexpected DB errors. Use lower-case only.")
 
-        reserved_table_names = ['order', 'parameter']  # TODO: add more reserved words for table names
+        reserved_table_names = ['order', 'parameter', 'group']  # TODO: add more reserved words for table names
         if db_table_name in reserved_table_names:
             print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
         self._sa_column_by_name = None  # Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.
