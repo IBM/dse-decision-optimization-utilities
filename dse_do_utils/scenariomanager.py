@@ -81,7 +81,8 @@ class ScenarioManager(object):
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
                  local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
-                 inputs: Inputs = None, outputs: Outputs = None):
+                 inputs: Inputs = None, outputs: Outputs = None,
+                 local_relative_data_path: str = 'assets/data_asset', data_directory: str = None):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
@@ -101,8 +102,10 @@ class ScenarioManager(object):
             project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
             project_access_token (str): When running in WS Cloud, also requires a project_id
             project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
-            template_scenario_name (str): If scenario doesn't exists: create new one. If template_scenario_name is specified, use that as template.
+            template_scenario_name (str): If scenario doesn't exist: create new one. If template_scenario_name is specified, use that as template.
             platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.
+            local_relative_data_path (str): relative directory from the local_root. Used as default data_directory
+            data_directory (str): Full path of data directory. Will override the platform dependent process.
         """
         self.model_name = model_name
         self.scenario_name = scenario_name
@@ -113,6 +116,8 @@ class ScenarioManager(object):
         self.inputs = inputs
         self.outputs = outputs
         self.template_scenario_name = template_scenario_name
+        self.local_relative_data_path = local_relative_data_path
+        self.data_directory = data_directory
         if platform is None:
             platform = ScenarioManager.detect_platform()
         self.platform = platform
@@ -143,6 +148,10 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
+        # Added in v0.5.4.3 to force the data_directory on any platform, e.g. when using StorageVolumes
+        if self.data_directory is not None:
+            return self.data_directory
+
         # Note: first test for wscloud:
         # In CPDaaS the current test for cpd40 returns TRUE!
         if self.platform == Platform.CPDaaS:
@@ -155,7 +164,7 @@ class ScenarioManager(object):
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
         else:  # Local file system
-            data_dir = os.path.join(self.get_root_directory(), 'datasets')
+            data_dir = os.path.join(self.get_root_directory(), self.local_relative_data_path)
         return data_dir
 
     def get_root_directory(self) -> str:

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.3b]
 ### Changed
 - Fixed bug in ScenarioDbManager._check_schema_name if schema is None (e.g. when using SQLite)
+- ScenarioDbTable.insert_table_in_db_bulk selects columns present in both the df and the schema. Avoids error when column is defined in DB but not in df. 
+### Added
+- Added 'group' as reserved table name
+- Added `local_relative_data_path` in ScenarioManager.__init__() to allow more flexibility in defining local paths
+- ScenarioDbManager.__init__ added parameter `enable_astype: bool = True`: If True, force data-type of DataFrame to match schema before (bulk) insert.
 
 ## [0.5.4.2] - 2022-02-24
 ### Changed
