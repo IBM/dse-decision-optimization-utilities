@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.3b]
+## [Unreleased]## [0.5.4.3b0]
 ### Changed
 - Fixed bug in ScenarioDbManager._check_schema_name if schema is None (e.g. when using SQLite)
 - ScenarioDbTable.insert_table_in_db_bulk selects columns present in both the df and the schema. Avoids error when column is defined in DB but not in df. 
