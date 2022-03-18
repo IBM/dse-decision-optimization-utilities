@@ -66,60 +66,60 @@ class DOModelDeployer(object):
 
         # Code templates
         self.main_header_py = \
-            """
-            from docplex.util.environment import get_environment
-            from os.path import splitext
-            import pandas
-            from six import iteritems
-            
-            def get_all_inputs():
-                '''Utility method to read a list of files and return a tuple with all
-                read data frames.
-                Returns:
-                    a map { datasetname: data frame }
-                '''
-                result = {}
-                env = get_environment()
-                for iname in [f for f in os.listdir('.') if splitext(f)[1] == '.csv']:
-                    with env.get_input_stream(iname) as in_stream:
-                        df = pandas.read_csv(in_stream)
-                        datasetname, _ = splitext(iname)
-                        result[datasetname] = df
-                return result
-            
-            def write_all_outputs(outputs):
-                '''Write all dataframes in ``outputs`` as .csv.
-            
-                Args:
-                    outputs: The map of outputs 'outputname' -> 'output df'
-                '''
-                for (name, df) in iteritems(outputs):
-                    csv_file = '%s.csv' % name
-                    print(csv_file)
-                    with get_environment().get_output_stream(csv_file) as fp:
-                        if sys.version_info[0] < 3:
-                            fp.write(df.to_csv(index=False, encoding='utf8'))
-                        else:
-                            fp.write(df.to_csv(index=False).encode(encoding='utf8'))
-                if len(outputs) == 0:
-                    print("Warning: no outputs written")
-            
-            def __iter__(self): return 0
-            # Load CSV files into inputs dictionnary
-            inputs = get_all_inputs()
-            outputs = {}
-            
-            ###########################################################
-            # Insert model below
-            ###########################################################
-            """
+"""
+from docplex.util.environment import get_environment
+from os.path import splitext
+import pandas
+from six import iteritems
+
+def get_all_inputs():
+    '''Utility method to read a list of files and return a tuple with all
+    read data frames.
+    Returns:
+        a map { datasetname: data frame }
+    '''
+    result = {}
+    env = get_environment()
+    for iname in [f for f in os.listdir('.') if splitext(f)[1] == '.csv']:
+        with env.get_input_stream(iname) as in_stream:
+            df = pandas.read_csv(in_stream)
+            datasetname, _ = splitext(iname)
+            result[datasetname] = df
+    return result
+
+def write_all_outputs(outputs):
+    '''Write all dataframes in ``outputs`` as .csv.
+
+    Args:
+        outputs: The map of outputs 'outputname' -> 'output df'
+    '''
+    for (name, df) in iteritems(outputs):
+        csv_file = '%s.csv' % name
+        print(csv_file)
+        with get_environment().get_output_stream(csv_file) as fp:
+            if sys.version_info[0] < 3:
+                fp.write(df.to_csv(index=False, encoding='utf8'))
+            else:
+                fp.write(df.to_csv(index=False).encode(encoding='utf8'))
+    if len(outputs) == 0:
+        print("Warning: no outputs written")
+
+def __iter__(self): return 0
+# Load CSV files into inputs dictionnary
+inputs = get_all_inputs()
+outputs = {}
+
+###########################################################
+# Insert model below
+###########################################################
+"""
         self.main_footer_py = \
-            """
-            ###########################################################
-            
-            # Generate output files
-            write_all_outputs(outputs)
-            """
+"""
+###########################################################
+
+# Generate output files
+write_all_outputs(outputs)
+"""
         self.yaml = \
             """
             dependencies:
