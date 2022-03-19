@@ -30,12 +30,17 @@ class DOModelDeployer(object):
                  deployment_name: str = 'xxx', deployment_description: str = 'xxx', project=None,
                  tmp_dir: str = None):
         """
+        Support for custom packages:
+        1. For packages in conda/PyPI: through the yaml.
+        2. For other custom packages: make sure you have the zip/gz package file (.whl doesn't (yet) work)
+        Specify the path(s) to the zip/gz files in package_paths.
+        Yaml and multiple package files can be combined
 
         :param wml_credentials
         :param model_name (str): name of DO Experiment
         :param scenario_name (str): name of scenario with the Python model
         :param space_name (str): name of deployment space
-        :param package_paths (List[str]): list paths to packages that will be included. The 'stem' of the path, with all included files and folders will be included in the root of the deployment archive. E.g. "/userfs/MyPackageDevFolder/my_package" will result in the folder 'my_package' in the root of the archive. Components can be imported using `from my_package.my_module import MyClass`. WARNING: this feature doesn't work yet due to failing import.
+        :param package_paths (List[str]): list paths to zip/gz packages that will be included.
         :param file_paths (List[str]): list paths to files that will be included along side the model. Components can be imported using `from my_file import MyClass`
         :param space_name (str): name of deployment space
         :param project (project_lib.Project): for WS Cloud, not required for CP4D on-prem. See ScenarioManager(). Used to connect to DO Experiment.
@@ -121,11 +126,11 @@ outputs = {}
 write_all_outputs(outputs)
 """
         self.yaml = \
-            """
-            dependencies:
-              - pip:
-                - dse-do-utils==0.5.4.0
-            """
+"""
+dependencies:
+  - pip:
+    - dse-do-utils==0.5.4.0
+"""
 
     def deploy_model(self) -> str:
         """One call that deploys a model from the Model Builder scenario into WML.
@@ -254,13 +259,35 @@ write_all_outputs(outputs)
         Returns:
             model_uid
         """
-        pkg_ext_id = self.create_package_extension(yaml_file_path)
-        sw_spec_id = self.create_software_specification(pkg_ext_id)
+        yaml_pkg_ext_id = self.create_package_extension(yaml_file_path)  # Rename to `create_yaml_package_extension`
+        pkg_ext_ids=[yaml_pkg_ext_id]
+
+        #Add wheels/zips:
+        for package_zip_filepath in self.package_paths:
+            pkg_ext_ids.append(self.create_zip_package_extension(package_zip_filepath))
+
+        sw_spec_id = self.create_software_specification(pkg_ext_ids)
         mnist_metadata = self.get_wml_create_store_model_meta_props(sw_spec_id)
         model_details = self.client.repository.store_model(model=model_archive_file_path,
                                                            meta_props=mnist_metadata)
         model_uid = self.client.repository.get_model_uid(model_details)
         return model_uid
+
+    def create_zip_package_extension(self, package_zip_filepath: str) -> str:
+        """See https://notebooks.githubusercontent.com/view/ipynb?browser=chrome&color_mode=auto&commit=37188b1a8b48be2bef34b35b55f01cba0d29ed19&device=unknown&enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f49424d2f776174736f6e2d6d616368696e652d6c6561726e696e672d73616d706c65732f333731383862316138623438626532626566333462333562353566303163626130643239656431392f637064342e302f6e6f7465626f6f6b732f707974686f6e5f73646b2f6465706c6f796d656e74732f637573746f6d5f6c6962726172792f5573652532307363696b69742d6c6561726e253230616e64253230637573746f6d2532306c696272617279253230746f2532307072656469637425323074656d70657261747572652e6970796e62&logged_in=false&nwo=IBM%2Fwatson-machine-learning-samples&path=cpd4.0%2Fnotebooks%2Fpython_sdk%2Fdeployments%2Fcustom_library%2FUse+scikit-learn+and+custom+library+to+predict+temperature.ipynb&platform=android&repository_id=277618282&repository_type=Repository&version=98"""
+        package_name = pathlib.Path(package_zip_filepath).stem
+        print(f"Including package '{package_name}'")
+        meta_prop_pkg_extn = {
+            self.client.package_extensions.ConfigurationMetaNames.NAME: package_name,
+            self.client.package_extensions.ConfigurationMetaNames.DESCRIPTION: "Pkg extension for custom lib",
+            self.client.package_extensions.ConfigurationMetaNames.TYPE: "pip_zip"
+        }
+
+        pkg_extn_details = self.client.package_extensions.store(meta_props=meta_prop_pkg_extn, file_path=package_zip_filepath)
+        # print(pkg_extn_details)
+        pkg_extn_uid = self.client.package_extensions.get_uid(pkg_extn_details)
+        #         pkg_extn_url = self.client.package_extensions.get_href(pkg_extn_details)
+        return pkg_extn_uid
 
     def wml_create_deployment(self, model_uid) -> str:
         """Create deployment in WML
@@ -310,7 +337,8 @@ write_all_outputs(outputs)
                                                                                                  file_path=yaml_file_path))
         return pkg_ext_id
 
-    def create_software_specification(self, pkg_ext_id: str = None) -> str:
+    def create_software_specification(self, pkg_ext_ids: List[str] = []) -> str:
+        """Allow for multiple package_extensions"""
         current_time = time.asctime()
         # Look for the do_20.1 software specification
         base_sw_id = self.client.software_specifications.get_uid_by_name("do_20.1")
@@ -322,7 +350,7 @@ write_all_outputs(outputs)
             self.client.software_specifications.ConfigurationMetaNames.BASE_SOFTWARE_SPECIFICATION: {"guid": base_sw_id}
         }
         sw_spec_id = self.client.software_specifications.get_uid(self.client.software_specifications.store(meta_props=meta_prop_sw_spec)) # Creating the new software specification
-        if pkg_ext_id is not None:
+        for pkg_ext_id in pkg_ext_ids:
             self.client.software_specifications.add_package_extension(sw_spec_id, pkg_ext_id) # Adding the previously created package extension to it
         return sw_spec_id
 
