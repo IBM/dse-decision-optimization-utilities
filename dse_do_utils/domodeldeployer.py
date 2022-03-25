@@ -18,9 +18,17 @@ class DOModelDeployer(object):
     Usage::
 
         md = DOModelDeployer(wml_credentials, model_name, scenario_name, space_name,
+                             package_paths, file_paths,
                              deployment_name, deployment_description)
         deployment_uid = md.deploy_model()
         print(deployment_uid)
+
+        How to add Python modules in the root:
+        - Specify paths to modules (.py files) in `file_paths`. These modules are included in the root of the project
+          and can be accessed using `from my_module import MyClass`. This is similar to the additional files in the DO Experiment.
+          These files can be located anywhere in JupyterLab.
+        How to add a Python package:
+        1. From conda
 
     """
 

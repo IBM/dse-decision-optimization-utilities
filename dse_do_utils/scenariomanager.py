@@ -884,8 +884,9 @@ class ScenarioManager(object):
                 os.path.join(csv_directory, csv_name_pattern)):  # os.path.join is safe for both Unix and Win
             # Read csv
             df = pd.read_csv(file_path, **kwargs)
-            head, tail = os.path.split(file_path)
-            table_name = tail[:-4]  # remove the '.csv'
+            table_name = pathlib.Path(file_path).stem
+            # head, tail = os.path.split(file_path)
+            # table_name = tail[:-4]  # remove the '.csv'
             inputs[table_name] = df
         return inputs  # , outputs
 
@@ -934,6 +935,89 @@ class ScenarioManager(object):
                 #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
                 # elif platform in [Platform.CPD25, Platform.CPDaaS]:
                 #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+
+    # -----------------------------------------------------------------
+    # Load data from parquet
+    # -----------------------------------------------------------------
+    def load_data_from_parquet(self, directory: str,
+                               input_name_pattern: str = "*.parquet",
+                               output_name_pattern: Optional[str] = None, **kwargs) -> InputsOutputs:
+        """Load data from matching parquet files in a directory.
+        Uses glob.glob() to pattern-match files in the directory.
+        If you want to load one file, specify the full name including the `.parquet` extension.
+
+        Args:
+            directory (str): Relative directory from the root
+            input_name_pattern (str): name pattern to find matching parquet files for inputs
+            output_name_pattern (str): name pattern to find matching parquet files for outputs
+            **kwargs: Set of optional arguments for the pd.read_parquet() function
+        """
+        root_dir = self.get_root_directory()
+        full_directory = os.path.join(root_dir, directory)
+        # Read data from Excel
+        if input_name_pattern is not None:
+            self.inputs = ScenarioManager.load_data_from_parquet_s(full_directory, input_name_pattern, **kwargs)
+        if output_name_pattern is not None:
+            self.outputs = ScenarioManager.load_data_from_parquet_s(full_directory, output_name_pattern, **kwargs)
+        return self.inputs, self.outputs
+
+    @staticmethod
+    def load_data_from_parquet_s(directory: str, file_name_pattern: str = "*.parquet", **kwargs) -> Dict[str, pd.DataFrame]:
+        """Read data from all matching .parquet files in a directory.
+
+        Args:
+            directory (str): the full path of a directory containing one or more .parquet files.
+            file_name_pattern (str): name pattern to find matching parquet files
+            **kwargs: Set of optional arguments for the pd.read_parquet() function
+
+        Returns:
+            data: dict of DataFrames. Keys are the .parquet file names.
+        """
+        inputs = {}
+        for file_path in glob.glob(
+                os.path.join(directory, file_name_pattern)):  # os.path.join is safe for both Unix and Win
+            # Read parquet
+            df = pd.read_parquet(file_path, **kwargs)
+            table_name = pathlib.Path(file_path).stem
+            inputs[table_name] = df
+        return inputs
+
+    def write_data_to_parquet(self, directory: str,
+                          inputs: Optional[Inputs] = None,
+                          outputs: Optional[Outputs] = None) -> None:
+        """Write inputs and/or outputs to .parquet files in the target folder.
+
+        Args:
+            directory (str): Relative directory from the root
+        Returns: None
+        """
+        root_dir = self.get_root_directory()
+        directory_path = os.path.join(root_dir, directory)
+        ScenarioManager.write_data_to_parquet_s(directory_path, inputs=inputs, outputs=outputs)
+
+    @staticmethod
+    def write_data_to_parquet_s(directory: str,
+                                inputs: Optional[Inputs] = None,
+                                outputs: Optional[Outputs] = None) -> None:
+        """Write data to .parquet files in a directory. Name as name of DataFrame.
+
+        Args:
+            directory (str): the full path of a directory for the .parquet files.
+            inputs (Dict of DataFrames): inputs
+            outputs (Dict of DataFrames): outputs
+
+        Returns: None
+        """
+        if inputs is not None:
+            for table_name, df in inputs.items():
+                file_path = os.path.join(directory, table_name + ".parquet")
+                print("Writing input {}".format(file_path))
+                df.to_parquet(file_path, index=False)
+        if outputs is not None:
+            for table_name, df in outputs.items():
+                file_path = os.path.join(directory, table_name + ".parquet")
+                print("Writing output {}".format(file_path))
+                df.to_parquet(file_path, index=False)
 
     # -----------------------------------------------------------------
     # Utils
