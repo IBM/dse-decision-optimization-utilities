@@ -69,11 +69,10 @@ git commit -s
 ```
 
 ## Communication
-**FIXME** Please feel free to connect with us on our [Slack channel](link).
+Please feel free to connect with us on [email](https://github.com/IBM/dse-decision-optimization-utilities/blob/master/MAINTAINERS.md).
 
 ## Setup
-**FIXME** Please add any special setup instructions for your project to help the developer
-become productive quickly.
+Include dse_do_utilities in the yaml of a CPD custom environment
 
 ## Testing
 **FIXME** Please provide information that helps the developer test any changes they make
