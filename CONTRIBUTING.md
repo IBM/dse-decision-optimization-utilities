@@ -80,5 +80,4 @@ become productive quickly.
 before submitting.
 
 ## Coding style guidelines
-**FIXME** Optional, but recommended: please share any specific style guidelines you might
-have for your project.
+Using Google code and documentation style guidelines.

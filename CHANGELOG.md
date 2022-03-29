@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.3b1]
 ### Changed
 - Fixed indentation bug in domodeldeployer
+- Update of CONTRIBUTING.md
 ### Added
 - DOModelDeployer support for gz/zip package files
 - ScenarioManager.load_data_from_parquet and .write_data_to_parquet
