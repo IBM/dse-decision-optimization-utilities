@@ -954,7 +954,7 @@ class ScenarioManager(object):
         """
         root_dir = self.get_root_directory()
         full_directory = os.path.join(root_dir, directory)
-        # Read data from Excel
+        # Read data from parquet
         if input_name_pattern is not None:
             self.inputs = ScenarioManager.load_data_from_parquet_s(full_directory, input_name_pattern, **kwargs)
         if output_name_pattern is not None:

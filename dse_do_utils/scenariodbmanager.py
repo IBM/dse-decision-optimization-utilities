@@ -332,7 +332,8 @@ class ScenarioDbManager():
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
-                 enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True):
+                 enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
+                 enable_debug_print: bool = False):
         """Create a ScenarioDbManager.
 
         :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
@@ -344,6 +345,7 @@ class ScenarioDbManager():
         :param enable_transactions: If true, uses transactions
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert
+        :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
         self.schema = self._check_schema_name(schema)
@@ -351,6 +353,7 @@ class ScenarioDbManager():
         self.enable_transactions = enable_transactions
         self.enable_sqlite_fk = enable_sqlite_fk
         self.enable_astype = enable_astype
+        self.enable_debug_print = enable_debug_print
         self.echo = echo
         self.input_db_tables = self._add_scenario_db_table(input_db_tables)
         self.output_db_tables = output_db_tables
@@ -518,7 +521,8 @@ class ScenarioDbManager():
                 schema=schema
             )
         # SAVE FOR FUTURE LOGGER MESSAGES...
-        # print("Connection String : " + connection_string)
+        if self.enable_debug_print:
+            print("DB2 Connection String : " + connection_string)
         return connection_string
 
     def _create_db2_engine(self, credentials, schema: str, echo: bool = False):
