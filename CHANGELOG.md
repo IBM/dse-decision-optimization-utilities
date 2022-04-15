@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - DOModelDeployer support for gz/zip package files
 - ScenarioManager.load_data_from_parquet and .write_data_to_parquet
-- ScenarioDbManager.enable_debug_print setting to print connection string
+- ScenarioDbManager.__init__ added parameter `enable_debug_print` to print connection string
 
 ## [Unreleased]## [0.5.4.3b0]
 ### Changed

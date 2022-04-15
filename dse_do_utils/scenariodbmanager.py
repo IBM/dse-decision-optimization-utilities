@@ -272,13 +272,15 @@ class AutoScenarioDbTable(ScenarioDbTable):
             dtype = ScenarioDbTable.sqlcol(df)
         else:
             dtype = self.dtype
+
+        if connection is None:
+            connection = mgr.engine
+
         try:
             # Note that this can use the 'replace', so the table will be dropped automatically and the defintion auto created
             # So no need to drop the table explicitly (?)
-            if connection is None:
-                df.to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='replace', dtype=dtype, index=False)
-            else:
-                df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='replace', dtype=dtype, index=False)
+            # TODO: review the 'replace': does it need to be 'append', as in the regular class?
+            df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='replace', dtype=dtype, index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
@@ -736,7 +738,7 @@ class ScenarioDbManager():
             if scenario_table_name != 'Scenario':
                 if scenario_table_name in dfs:
                     df = dfs[scenario_table_name]
-                    print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
+                    print(f"Inserting {df.shape[0]:,} rows and {df.shape[1]} columns in {scenario_table_name}")
                     #                 display(df.head(3))
                     if bulk:
                         db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
@@ -1158,7 +1160,7 @@ class ScenarioDbManager():
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
                 df = outputs[scenario_table_name]
-                print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
+                print(f"Inserting {df.shape[0]:,} rows and {df.shape[1]} columns in {scenario_table_name}")
                 db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection, enable_astype = self.enable_astype)  # The scenario_name is a column in the df
 
     def replace_scenario_tables_in_db(self, scenario_name, inputs={}, outputs={}):
