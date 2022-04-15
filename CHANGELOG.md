@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Fixed indentation bug in domodeldeployer
 - Update of CONTRIBUTING.md
+- Format thousands for num rows in db-insert progress print message
 ### Added
 - DOModelDeployer support for gz/zip package files
 - ScenarioManager.load_data_from_parquet and .write_data_to_parquet
