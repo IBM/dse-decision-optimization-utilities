@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.domodeldeployer &#8212; DSE DO Utils 0.5.4.2 documentation</title>
+    <title>dse_do_utils.domodeldeployer &#8212; DSE DO Utils 0.5.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.domodeldeployer</a></li> 
@@ -64,9 +64,17 @@
 <span class="sd">    Usage::</span>
 
 <span class="sd">        md = DOModelDeployer(wml_credentials, model_name, scenario_name, space_name,</span>
+<span class="sd">                             package_paths, file_paths,</span>
 <span class="sd">                             deployment_name, deployment_description)</span>
 <span class="sd">        deployment_uid = md.deploy_model()</span>
 <span class="sd">        print(deployment_uid)</span>
+
+<span class="sd">        How to add Python modules in the root:</span>
+<span class="sd">        - Specify paths to modules (.py files) in `file_paths`. These modules are included in the root of the project</span>
+<span class="sd">          and can be accessed using `from my_module import MyClass`. This is similar to the additional files in the DO Experiment.</span>
+<span class="sd">          These files can be located anywhere in JupyterLab.</span>
+<span class="sd">        How to add a Python package:</span>
+<span class="sd">        1. From conda</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -76,12 +84,17 @@
                  <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;xxx&#39;</span><span class="p">,</span> <span class="n">deployment_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;xxx&#39;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">tmp_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Support for custom packages:</span>
+<span class="sd">        1. For packages in conda/PyPI: through the yaml.</span>
+<span class="sd">        2. For other custom packages: make sure you have the zip/gz package file (.whl doesn&#39;t (yet) work)</span>
+<span class="sd">        Specify the path(s) to the zip/gz files in package_paths.</span>
+<span class="sd">        Yaml and multiple package files can be combined</span>
 
 <span class="sd">        :param wml_credentials</span>
 <span class="sd">        :param model_name (str): name of DO Experiment</span>
 <span class="sd">        :param scenario_name (str): name of scenario with the Python model</span>
 <span class="sd">        :param space_name (str): name of deployment space</span>
-<span class="sd">        :param package_paths (List[str]): list paths to packages that will be included. The &#39;stem&#39; of the path, with all included files and folders will be included in the root of the deployment archive. E.g. &quot;/userfs/MyPackageDevFolder/my_package&quot; will result in the folder &#39;my_package&#39; in the root of the archive. Components can be imported using `from my_package.my_module import MyClass`. WARNING: this feature doesn&#39;t work yet due to failing import.</span>
+<span class="sd">        :param package_paths (List[str]): list paths to zip/gz packages that will be included.</span>
 <span class="sd">        :param file_paths (List[str]): list paths to files that will be included along side the model. Components can be imported using `from my_file import MyClass`</span>
 <span class="sd">        :param space_name (str): name of deployment space</span>
 <span class="sd">        :param project (project_lib.Project): for WS Cloud, not required for CP4D on-prem. See ScenarioManager(). Used to connect to DO Experiment.</span>
@@ -112,66 +125,66 @@
 
         <span class="c1"># Code templates</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_header_py</span> <span class="o">=</span> \
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            from docplex.util.environment import get_environment</span>
-<span class="sd">            from os.path import splitext</span>
-<span class="sd">            import pandas</span>
-<span class="sd">            from six import iteritems</span>
-<span class="sd">            </span>
-<span class="sd">            def get_all_inputs():</span>
-<span class="sd">                &#39;&#39;&#39;Utility method to read a list of files and return a tuple with all</span>
-<span class="sd">                read data frames.</span>
-<span class="sd">                Returns:</span>
-<span class="sd">                    a map { datasetname: data frame }</span>
-<span class="sd">                &#39;&#39;&#39;</span>
-<span class="sd">                result = {}</span>
-<span class="sd">                env = get_environment()</span>
-<span class="sd">                for iname in [f for f in os.listdir(&#39;.&#39;) if splitext(f)[1] == &#39;.csv&#39;]:</span>
-<span class="sd">                    with env.get_input_stream(iname) as in_stream:</span>
-<span class="sd">                        df = pandas.read_csv(in_stream)</span>
-<span class="sd">                        datasetname, _ = splitext(iname)</span>
-<span class="sd">                        result[datasetname] = df</span>
-<span class="sd">                return result</span>
-<span class="sd">            </span>
-<span class="sd">            def write_all_outputs(outputs):</span>
-<span class="sd">                &#39;&#39;&#39;Write all dataframes in ``outputs`` as .csv.</span>
-<span class="sd">            </span>
-<span class="sd">                Args:</span>
-<span class="sd">                    outputs: The map of outputs &#39;outputname&#39; -&gt; &#39;output df&#39;</span>
-<span class="sd">                &#39;&#39;&#39;</span>
-<span class="sd">                for (name, df) in iteritems(outputs):</span>
-<span class="sd">                    csv_file = &#39;%s.csv&#39; % name</span>
-<span class="sd">                    print(csv_file)</span>
-<span class="sd">                    with get_environment().get_output_stream(csv_file) as fp:</span>
-<span class="sd">                        if sys.version_info[0] &lt; 3:</span>
-<span class="sd">                            fp.write(df.to_csv(index=False, encoding=&#39;utf8&#39;))</span>
-<span class="sd">                        else:</span>
-<span class="sd">                            fp.write(df.to_csv(index=False).encode(encoding=&#39;utf8&#39;))</span>
-<span class="sd">                if len(outputs) == 0:</span>
-<span class="sd">                    print(&quot;Warning: no outputs written&quot;)</span>
-<span class="sd">            </span>
-<span class="sd">            def __iter__(self): return 0</span>
-<span class="sd">            # Load CSV files into inputs dictionnary</span>
-<span class="sd">            inputs = get_all_inputs()</span>
-<span class="sd">            outputs = {}</span>
-<span class="sd">            </span>
-<span class="sd">            ###########################################################</span>
-<span class="sd">            # Insert model below</span>
-<span class="sd">            ###########################################################</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">from docplex.util.environment import get_environment</span>
+<span class="sd">from os.path import splitext</span>
+<span class="sd">import pandas</span>
+<span class="sd">from six import iteritems</span>
+
+<span class="sd">def get_all_inputs():</span>
+<span class="sd">    &#39;&#39;&#39;Utility method to read a list of files and return a tuple with all</span>
+<span class="sd">    read data frames.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        a map { datasetname: data frame }</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    result = {}</span>
+<span class="sd">    env = get_environment()</span>
+<span class="sd">    for iname in [f for f in os.listdir(&#39;.&#39;) if splitext(f)[1] == &#39;.csv&#39;]:</span>
+<span class="sd">        with env.get_input_stream(iname) as in_stream:</span>
+<span class="sd">            df = pandas.read_csv(in_stream)</span>
+<span class="sd">            datasetname, _ = splitext(iname)</span>
+<span class="sd">            result[datasetname] = df</span>
+<span class="sd">    return result</span>
+
+<span class="sd">def write_all_outputs(outputs):</span>
+<span class="sd">    &#39;&#39;&#39;Write all dataframes in ``outputs`` as .csv.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        outputs: The map of outputs &#39;outputname&#39; -&gt; &#39;output df&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    for (name, df) in iteritems(outputs):</span>
+<span class="sd">        csv_file = &#39;%s.csv&#39; % name</span>
+<span class="sd">        print(csv_file)</span>
+<span class="sd">        with get_environment().get_output_stream(csv_file) as fp:</span>
+<span class="sd">            if sys.version_info[0] &lt; 3:</span>
+<span class="sd">                fp.write(df.to_csv(index=False, encoding=&#39;utf8&#39;))</span>
+<span class="sd">            else:</span>
+<span class="sd">                fp.write(df.to_csv(index=False).encode(encoding=&#39;utf8&#39;))</span>
+<span class="sd">    if len(outputs) == 0:</span>
+<span class="sd">        print(&quot;Warning: no outputs written&quot;)</span>
+
+<span class="sd">def __iter__(self): return 0</span>
+<span class="sd"># Load CSV files into inputs dictionnary</span>
+<span class="sd">inputs = get_all_inputs()</span>
+<span class="sd">outputs = {}</span>
+
+<span class="sd">###########################################################</span>
+<span class="sd"># Insert model below</span>
+<span class="sd">###########################################################</span>
+<span class="sd">&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_footer_py</span> <span class="o">=</span> \
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            ###########################################################</span>
-<span class="sd">            </span>
-<span class="sd">            # Generate output files</span>
-<span class="sd">            write_all_outputs(outputs)</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">###########################################################</span>
+
+<span class="sd"># Generate output files</span>
+<span class="sd">write_all_outputs(outputs)</span>
+<span class="sd">&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> \
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            dependencies:</span>
-<span class="sd">              - pip:</span>
-<span class="sd">                - dse-do-utils==0.5.4.0</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dependencies:</span>
+<span class="sd">  - pip:</span>
+<span class="sd">    - dse-do-utils==0.5.4.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DOModelDeployer.deploy_model"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model">[docs]</a>    <span class="k">def</span> <span class="nf">deploy_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;One call that deploys a model from the Model Builder scenario into WML.</span>
@@ -300,13 +313,35 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            model_uid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pkg_ext_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_package_extension</span><span class="p">(</span><span class="n">yaml_file_path</span><span class="p">)</span>
-        <span class="n">sw_spec_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_software_specification</span><span class="p">(</span><span class="n">pkg_ext_id</span><span class="p">)</span>
+        <span class="n">yaml_pkg_ext_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_package_extension</span><span class="p">(</span><span class="n">yaml_file_path</span><span class="p">)</span>  <span class="c1"># Rename to `create_yaml_package_extension`</span>
+        <span class="n">pkg_ext_ids</span><span class="o">=</span><span class="p">[</span><span class="n">yaml_pkg_ext_id</span><span class="p">]</span>
+
+        <span class="c1">#Add wheels/zips:</span>
+        <span class="k">for</span> <span class="n">package_zip_filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">package_paths</span><span class="p">:</span>
+            <span class="n">pkg_ext_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_zip_package_extension</span><span class="p">(</span><span class="n">package_zip_filepath</span><span class="p">))</span>
+
+        <span class="n">sw_spec_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_software_specification</span><span class="p">(</span><span class="n">pkg_ext_ids</span><span class="p">)</span>
         <span class="n">mnist_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wml_create_store_model_meta_props</span><span class="p">(</span><span class="n">sw_spec_id</span><span class="p">)</span>
         <span class="n">model_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">store_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_archive_file_path</span><span class="p">,</span>
                                                            <span class="n">meta_props</span><span class="o">=</span><span class="n">mnist_metadata</span><span class="p">)</span>
         <span class="n">model_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_model_uid</span><span class="p">(</span><span class="n">model_details</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">model_uid</span></div>
+
+<div class="viewcode-block" id="DOModelDeployer.create_zip_package_extension"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodeldeployer.DOModelDeployer.create_zip_package_extension">[docs]</a>    <span class="k">def</span> <span class="nf">create_zip_package_extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package_zip_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;See https://notebooks.githubusercontent.com/view/ipynb?browser=chrome&amp;color_mode=auto&amp;commit=37188b1a8b48be2bef34b35b55f01cba0d29ed19&amp;device=unknown&amp;enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f49424d2f776174736f6e2d6d616368696e652d6c6561726e696e672d73616d706c65732f333731383862316138623438626532626566333462333562353566303163626130643239656431392f637064342e302f6e6f7465626f6f6b732f707974686f6e5f73646b2f6465706c6f796d656e74732f637573746f6d5f6c6962726172792f5573652532307363696b69742d6c6561726e253230616e64253230637573746f6d2532306c696272617279253230746f2532307072656469637425323074656d70657261747572652e6970796e62&amp;logged_in=false&amp;nwo=IBM%2Fwatson-machine-learning-samples&amp;path=cpd4.0%2Fnotebooks%2Fpython_sdk%2Fdeployments%2Fcustom_library%2FUse+scikit-learn+and+custom+library+to+predict+temperature.ipynb&amp;platform=android&amp;repository_id=277618282&amp;repository_type=Repository&amp;version=98&quot;&quot;&quot;</span>
+        <span class="n">package_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">package_zip_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Including package &#39;</span><span class="si">{</span><span class="n">package_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">meta_prop_pkg_extn</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">package_extensions</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">package_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">package_extensions</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">DESCRIPTION</span><span class="p">:</span> <span class="s2">&quot;Pkg extension for custom lib&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">package_extensions</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">TYPE</span><span class="p">:</span> <span class="s2">&quot;pip_zip&quot;</span>
+        <span class="p">}</span>
+
+        <span class="n">pkg_extn_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">package_extensions</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="o">=</span><span class="n">meta_prop_pkg_extn</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">package_zip_filepath</span><span class="p">)</span>
+        <span class="c1"># print(pkg_extn_details)</span>
+        <span class="n">pkg_extn_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">package_extensions</span><span class="o">.</span><span class="n">get_uid</span><span class="p">(</span><span class="n">pkg_extn_details</span><span class="p">)</span>
+        <span class="c1">#         pkg_extn_url = self.client.package_extensions.get_href(pkg_extn_details)</span>
+        <span class="k">return</span> <span class="n">pkg_extn_uid</span></div>
 
 <div class="viewcode-block" id="DOModelDeployer.wml_create_deployment"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment">[docs]</a>    <span class="k">def</span> <span class="nf">wml_create_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_uid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create deployment in WML</span>
@@ -356,7 +391,8 @@
                                                                                                  <span class="n">file_path</span><span class="o">=</span><span class="n">yaml_file_path</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">pkg_ext_id</span></div>
 
-<div class="viewcode-block" id="DOModelDeployer.create_software_specification"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification">[docs]</a>    <span class="k">def</span> <span class="nf">create_software_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_ext_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DOModelDeployer.create_software_specification"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification">[docs]</a>    <span class="k">def</span> <span class="nf">create_software_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg_ext_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Allow for multiple package_extensions&quot;&quot;&quot;</span>
         <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">asctime</span><span class="p">()</span>
         <span class="c1"># Look for the do_20.1 software specification</span>
         <span class="n">base_sw_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">get_uid_by_name</span><span class="p">(</span><span class="s2">&quot;do_20.1&quot;</span><span class="p">)</span>
@@ -368,7 +404,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">ConfigurationMetaNames</span><span class="o">.</span><span class="n">BASE_SOFTWARE_SPECIFICATION</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;guid&quot;</span><span class="p">:</span> <span class="n">base_sw_id</span><span class="p">}</span>
         <span class="p">}</span>
         <span class="n">sw_spec_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">get_uid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">meta_props</span><span class="o">=</span><span class="n">meta_prop_sw_spec</span><span class="p">))</span> <span class="c1"># Creating the new software specification</span>
-        <span class="k">if</span> <span class="n">pkg_ext_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pkg_ext_id</span> <span class="ow">in</span> <span class="n">pkg_ext_ids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">software_specifications</span><span class="o">.</span><span class="n">add_package_extension</span><span class="p">(</span><span class="n">sw_spec_id</span><span class="p">,</span> <span class="n">pkg_ext_id</span><span class="p">)</span> <span class="c1"># Adding the previously created package extension to it</span>
         <span class="k">return</span> <span class="n">sw_spec_id</span></div>
 
@@ -416,7 +452,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.domodeldeployer</a></li> 

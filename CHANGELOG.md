@@ -4,8 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.3b]
+## [0.5.4.3] - 2022-04-21
 ### Changed
+- Fixed indentation bug in domodeldeployer
+- Update of CONTRIBUTING.md
+- Format thousands for num rows in db-insert progress print message
+### Added
+- DOModelDeployer support for gz/zip package files
+- ScenarioManager.load_data_from_parquet and .write_data_to_parquet
+- ScenarioDbManager.__init__ added parameter `enable_debug_print` to print connection string
+
+## [Unreleased]## [0.5.4.3b0]
+### Changed
+- Fixed bug in ScenarioDbManager._check_schema_name if schema is None (e.g. when using SQLite)
+- ScenarioDbTable.insert_table_in_db_bulk selects columns present in both the df and the schema. Avoids error when column is defined in DB but not in df.
+### Added
+- Added 'group' as reserved table name
+- Added `local_relative_data_path` in ScenarioManager.__init__() to allow more flexibility in defining local paths
+- ScenarioDbManager.__init__ added parameter `enable_astype: bool = True`: If True, force data-type of DataFrame to match schema before (bulk) insert.
 
 ## [0.5.4.2] - 2022-02-24
 ### Changed

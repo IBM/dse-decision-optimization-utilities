@@ -64,7 +64,7 @@ class ScenarioDbTable(ABC):
         if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
             print(f"Warning: using mixed case in the db_table_name {db_table_name} may cause unexpected DB errors. Use lower-case only.")
 
-        reserved_table_names = ['order', 'parameter']  # TODO: add more reserved words for table names
+        reserved_table_names = ['order', 'parameter', 'group']  # TODO: add more reserved words for table names
         if db_table_name in reserved_table_names:
             print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
         self._sa_column_by_name = None  # Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.
@@ -72,11 +72,15 @@ class ScenarioDbTable(ABC):
     def get_db_table_name(self) -> str:
         return self.db_table_name
 
-    def get_df_column_names(self) -> List[str]:
-        """TODO: what to do if the column names in the DB are different from the column names in the DF?"""
+    def get_df_column_names(self, df: pd.DataFrame) -> List[str]:
+        """Get all column names that are both defined in the DB schema and present in the DataFrame df.
+
+        :param df:
+        :return:
+        """
         column_names = []
         for c in self.columns_metadata:
-            if isinstance(c, sqlalchemy.Column):
+            if isinstance(c, sqlalchemy.Column) and c.name in df.columns:
                 column_names.append(c.name)
         return column_names
 
@@ -138,27 +142,52 @@ class ScenarioDbTable(ABC):
         df.columns = [ScenarioDbTable.camel_case_to_snake_case(x) for x in df.columns]
         return df
 
-    def insert_table_in_db_bulk(self, df: pd.DataFrame, mgr, connection=None):
+    def insert_table_in_db_bulk(self, df: pd.DataFrame, mgr, connection=None
+                                , enable_astype: bool = True
+                                ):
         """Insert a DataFrame in the DB using 'bulk' insert, i.e. with one SQL insert.
         (Instead of row-by-row.)
         Args:
             df (pd.DataFrame)
             mgr (ScenarioDbManager)
             connection: if not None, being run within a transaction
+            enable_astype: if True, apply df.column.astype based on datatypes extracted from columns_metadata (i.e. sqlachemy.Column)
         """
+        if connection is None:
+            connection = mgr.engine
         table_name = self.get_db_table_name()
-        columns = self.get_df_column_names()
+        columns = self.get_df_column_names(df=df)
+        # Note: setting the dtype is NOT equivalent to converting the column using an `astype()`
+        # if enable_dtype:
+        #     dtype = self._get_dtypes()
+        # else:
+        #     dtype = None
+        # print(f"insert_table_in_db_bulk, enable_dtype = {enable_dtype} - dtype = {dtype}")
+
+        # Force the data type of a column in the df to match the expectation in the DB
+        if enable_astype:
+            df = self._set_df_column_types(df)
+
         try:
-            if connection is None:
-                df[columns].to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='append', dtype=None,
-                               index=False)
-            else:
-                df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
+            df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
                                    index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
+
+    def _set_df_column_types(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Force the data type of the DataFrame according to the schema.
+        This can avoid errors in DB2, when the column is a mix of types."""
+        for sa_column in self.columns_metadata:
+            df_column_name = sa_column.name
+            df_type = sa_column.type.python_type
+            if type is not None and df_column_name in df.columns:
+                try:
+                    df[df_column_name] = df[df_column_name].astype(df_type)
+                except ValueError as e:
+                    print(f"Failed to convert column {df_column_name} to {df_type}")
+        return df
 
     def _delete_scenario_table_from_db(self, scenario_name, connection):
         """Delete all rows associated with the scenario in the DB table.
@@ -243,13 +272,15 @@ class AutoScenarioDbTable(ScenarioDbTable):
             dtype = ScenarioDbTable.sqlcol(df)
         else:
             dtype = self.dtype
+
+        if connection is None:
+            connection = mgr.engine
+
         try:
             # Note that this can use the 'replace', so the table will be dropped automatically and the defintion auto created
             # So no need to drop the table explicitly (?)
-            if connection is None:
-                df.to_sql(table_name, schema=mgr.schema, con=mgr.engine, if_exists='replace', dtype=dtype, index=False)
-            else:
-                df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='replace', dtype=dtype, index=False)
+            # TODO: review the 'replace': does it need to be 'append', as in the regular class?
+            df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='replace', dtype=dtype, index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
@@ -303,7 +334,8 @@ class ScenarioDbManager():
 
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
-                 enable_transactions: bool = True, enable_sqlite_fk: bool = True):
+                 enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
+                 enable_debug_print: bool = False):
         """Create a ScenarioDbManager.
 
         :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
@@ -314,12 +346,16 @@ class ScenarioDbManager():
         :param multi_scenario: If true, adds SCENARIO table and PK
         :param enable_transactions: If true, uses transactions
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
+        :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert
+        :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
         self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
         self.enable_sqlite_fk = enable_sqlite_fk
+        self.enable_astype = enable_astype
+        self.enable_debug_print = enable_debug_print
         self.echo = echo
         self.input_db_tables = self._add_scenario_db_table(input_db_tables)
         self.output_db_tables = output_db_tables
@@ -334,10 +370,10 @@ class ScenarioDbManager():
     ############################################################################################
     # Initialization. Called from constructor.
     ############################################################################################
-    def _check_schema_name(self, schema: str):
+    def _check_schema_name(self, schema: Optional[str]):
         """Checks if schema name is not mixed-case, as this is known to cause issues. Upper-case works well.
         This is just a warning. It does not change the schema name."""
-        if not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
+        if schema is not None and not schema.islower() and not schema.isupper(): ## I.e. is mixed_case
             print(f"Warning: using mixed case in the schema name {schema} may cause unexpected DB errors. Use upper-case only.")
         return schema
 
@@ -487,7 +523,8 @@ class ScenarioDbManager():
                 schema=schema
             )
         # SAVE FOR FUTURE LOGGER MESSAGES...
-        #print("Connection String : " + connection_string)
+        if self.enable_debug_print:
+            print("DB2 Connection String : " + connection_string)
         return connection_string
 
     def _create_db2_engine(self, credentials, schema: str, echo: bool = False):
@@ -559,6 +596,12 @@ class ScenarioDbManager():
         See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
         See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
         """
+        # print("+++++++++++++++++Reflect+++++++++++++++++")
+        # Note: the reflect seems to mess things up: when doing the next drop_all we're getting weird errors
+        # self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema
+        # print("+++++++++++++++++Drop all tables+++++++++++++++++")
+        # self.metadata.drop_all(bind=connection)
+
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
             sql = f"DROP TABLE IF EXISTS {db_table_name}"
@@ -695,7 +738,7 @@ class ScenarioDbManager():
             if scenario_table_name != 'Scenario':
                 if scenario_table_name in dfs:
                     df = dfs[scenario_table_name]
-                    print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
+                    print(f"Inserting {df.shape[0]:,} rows and {df.shape[1]} columns in {scenario_table_name}")
                     #                 display(df.head(3))
                     if bulk:
                         db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
@@ -718,7 +761,7 @@ class ScenarioDbManager():
         """
         num_exceptions = 0
         max_num_exceptions = 10
-        columns = db_table.get_df_column_names()
+        columns = db_table.get_df_column_names(df=df)
         #         print(columns)
         # df[columns] ensures that the order of columns in the DF matches that of the SQL table definition. If not, the insert will fail
         for row in df[columns].itertuples(index=False):
@@ -1117,8 +1160,8 @@ class ScenarioDbManager():
         for scenario_table_name, db_table in self.output_db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and scenario_table_name in outputs.keys():  # If in given set of tables to replace
                 df = outputs[scenario_table_name]
-                print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
-                db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)  # The scenario_name is a column in the df
+                print(f"Inserting {df.shape[0]:,} rows and {df.shape[1]} columns in {scenario_table_name}")
+                db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection, enable_astype = self.enable_astype)  # The scenario_name is a column in the df
 
     def replace_scenario_tables_in_db(self, scenario_name, inputs={}, outputs={}):
         """Untested"""
@@ -1145,7 +1188,7 @@ class ScenarioDbManager():
         for scenario_table_name, db_table in self.db_tables.items():  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario') and db_table.db_table_name in dfs.keys():  # If in given set of tables to replace
                 df = dfs[scenario_table_name]
-                db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)  # The scenario_name is a column in the df
+                db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection, enable_astype = self.enable_astype)  # The scenario_name is a column in the df
 
     ############################################################################################
     # CRUD operations on scenarios in DB:

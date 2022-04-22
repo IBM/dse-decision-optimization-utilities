@@ -81,7 +81,8 @@ class ScenarioManager(object):
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
                  local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
-                 inputs: Inputs = None, outputs: Outputs = None):
+                 inputs: Inputs = None, outputs: Outputs = None,
+                 local_relative_data_path: str = 'assets/data_asset', data_directory: str = None):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
@@ -101,8 +102,10 @@ class ScenarioManager(object):
             project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
             project_access_token (str): When running in WS Cloud, also requires a project_id
             project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
-            template_scenario_name (str): If scenario doesn't exists: create new one. If template_scenario_name is specified, use that as template.
+            template_scenario_name (str): If scenario doesn't exist: create new one. If template_scenario_name is specified, use that as template.
             platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.
+            local_relative_data_path (str): relative directory from the local_root. Used as default data_directory
+            data_directory (str): Full path of data directory. Will override the platform dependent process.
         """
         self.model_name = model_name
         self.scenario_name = scenario_name
@@ -113,6 +116,8 @@ class ScenarioManager(object):
         self.inputs = inputs
         self.outputs = outputs
         self.template_scenario_name = template_scenario_name
+        self.local_relative_data_path = local_relative_data_path
+        self.data_directory = data_directory
         if platform is None:
             platform = ScenarioManager.detect_platform()
         self.platform = platform
@@ -143,6 +148,10 @@ class ScenarioManager(object):
 
         :return: path to the datasets folder
         """
+        # Added in v0.5.4.3 to force the data_directory on any platform, e.g. when using StorageVolumes
+        if self.data_directory is not None:
+            return self.data_directory
+
         # Note: first test for wscloud:
         # In CPDaaS the current test for cpd40 returns TRUE!
         if self.platform == Platform.CPDaaS:
@@ -155,7 +164,7 @@ class ScenarioManager(object):
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
         else:  # Local file system
-            data_dir = os.path.join(self.get_root_directory(), 'datasets')
+            data_dir = os.path.join(self.get_root_directory(), self.local_relative_data_path)
         return data_dir
 
     def get_root_directory(self) -> str:
@@ -875,8 +884,9 @@ class ScenarioManager(object):
                 os.path.join(csv_directory, csv_name_pattern)):  # os.path.join is safe for both Unix and Win
             # Read csv
             df = pd.read_csv(file_path, **kwargs)
-            head, tail = os.path.split(file_path)
-            table_name = tail[:-4]  # remove the '.csv'
+            table_name = pathlib.Path(file_path).stem
+            # head, tail = os.path.split(file_path)
+            # table_name = tail[:-4]  # remove the '.csv'
             inputs[table_name] = df
         return inputs  # , outputs
 
@@ -925,6 +935,89 @@ class ScenarioManager(object):
                 #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
                 # elif platform in [Platform.CPD25, Platform.CPDaaS]:
                 #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+
+    # -----------------------------------------------------------------
+    # Load data from parquet
+    # -----------------------------------------------------------------
+    def load_data_from_parquet(self, directory: str,
+                               input_name_pattern: str = "*.parquet",
+                               output_name_pattern: Optional[str] = None, **kwargs) -> InputsOutputs:
+        """Load data from matching parquet files in a directory.
+        Uses glob.glob() to pattern-match files in the directory.
+        If you want to load one file, specify the full name including the `.parquet` extension.
+
+        Args:
+            directory (str): Relative directory from the root
+            input_name_pattern (str): name pattern to find matching parquet files for inputs
+            output_name_pattern (str): name pattern to find matching parquet files for outputs
+            **kwargs: Set of optional arguments for the pd.read_parquet() function
+        """
+        root_dir = self.get_root_directory()
+        full_directory = os.path.join(root_dir, directory)
+        # Read data from parquet
+        if input_name_pattern is not None:
+            self.inputs = ScenarioManager.load_data_from_parquet_s(full_directory, input_name_pattern, **kwargs)
+        if output_name_pattern is not None:
+            self.outputs = ScenarioManager.load_data_from_parquet_s(full_directory, output_name_pattern, **kwargs)
+        return self.inputs, self.outputs
+
+    @staticmethod
+    def load_data_from_parquet_s(directory: str, file_name_pattern: str = "*.parquet", **kwargs) -> Dict[str, pd.DataFrame]:
+        """Read data from all matching .parquet files in a directory.
+
+        Args:
+            directory (str): the full path of a directory containing one or more .parquet files.
+            file_name_pattern (str): name pattern to find matching parquet files
+            **kwargs: Set of optional arguments for the pd.read_parquet() function
+
+        Returns:
+            data: dict of DataFrames. Keys are the .parquet file names.
+        """
+        inputs = {}
+        for file_path in glob.glob(
+                os.path.join(directory, file_name_pattern)):  # os.path.join is safe for both Unix and Win
+            # Read parquet
+            df = pd.read_parquet(file_path, **kwargs)
+            table_name = pathlib.Path(file_path).stem
+            inputs[table_name] = df
+        return inputs
+
+    def write_data_to_parquet(self, directory: str,
+                          inputs: Optional[Inputs] = None,
+                          outputs: Optional[Outputs] = None) -> None:
+        """Write inputs and/or outputs to .parquet files in the target folder.
+
+        Args:
+            directory (str): Relative directory from the root
+        Returns: None
+        """
+        root_dir = self.get_root_directory()
+        directory_path = os.path.join(root_dir, directory)
+        ScenarioManager.write_data_to_parquet_s(directory_path, inputs=inputs, outputs=outputs)
+
+    @staticmethod
+    def write_data_to_parquet_s(directory: str,
+                                inputs: Optional[Inputs] = None,
+                                outputs: Optional[Outputs] = None) -> None:
+        """Write data to .parquet files in a directory. Name as name of DataFrame.
+
+        Args:
+            directory (str): the full path of a directory for the .parquet files.
+            inputs (Dict of DataFrames): inputs
+            outputs (Dict of DataFrames): outputs
+
+        Returns: None
+        """
+        if inputs is not None:
+            for table_name, df in inputs.items():
+                file_path = os.path.join(directory, table_name + ".parquet")
+                print("Writing input {}".format(file_path))
+                df.to_parquet(file_path, index=False)
+        if outputs is not None:
+            for table_name, df in outputs.items():
+                file_path = os.path.join(directory, table_name + ".parquet")
+                print("Writing output {}".format(file_path))
+                df.to_parquet(file_path, index=False)
 
     # -----------------------------------------------------------------
     # Utils
