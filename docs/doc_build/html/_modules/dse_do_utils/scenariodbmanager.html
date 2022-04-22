@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.4.2 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -110,7 +110,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: using mixed case in the db_table_name </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2"> may cause unexpected DB errors. Use lower-case only.&quot;</span><span class="p">)</span>
 
-        <span class="n">reserved_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;parameter&#39;</span><span class="p">]</span>  <span class="c1"># TODO: add more reserved words for table names</span>
+        <span class="n">reserved_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">,</span> <span class="s1">&#39;parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">]</span>  <span class="c1"># TODO: add more reserved words for table names</span>
         <span class="k">if</span> <span class="n">db_table_name</span> <span class="ow">in</span> <span class="n">reserved_table_names</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: the db_table_name &#39;</span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&#39; is a reserved word. Do not use as table name.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sa_column_by_name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.</span>
@@ -118,11 +118,15 @@
 <div class="viewcode-block" id="ScenarioDbTable.get_db_table_name"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_table_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span></div>
 
-<div class="viewcode-block" id="ScenarioDbTable.get_df_column_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_df_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;TODO: what to do if the column names in the DB are different from the column names in the DF?&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ScenarioDbTable.get_df_column_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_df_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get all column names that are both defined in the DB schema and present in the DataFrame df.</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">column_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">column_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">column_names</span></div>
 
@@ -184,27 +188,52 @@
         <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">camel_case_to_snake_case</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
-<div class="viewcode-block" id="ScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">mgr</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioDbTable.insert_table_in_db_bulk"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_in_db_bulk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">mgr</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span>
+                                <span class="p">,</span> <span class="n">enable_astype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert a DataFrame in the DB using &#39;bulk&#39; insert, i.e. with one SQL insert.</span>
 <span class="sd">        (Instead of row-by-row.)</span>
 <span class="sd">        Args:</span>
 <span class="sd">            df (pd.DataFrame)</span>
 <span class="sd">            mgr (ScenarioDbManager)</span>
 <span class="sd">            connection: if not None, being run within a transaction</span>
+<span class="sd">            enable_astype: if True, apply df.column.astype based on datatypes extracted from columns_metadata (i.e. sqlachemy.Column)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">engine</span>
         <span class="n">table_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_table_name</span><span class="p">()</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">()</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+        <span class="c1"># Note: setting the dtype is NOT equivalent to converting the column using an `astype()`</span>
+        <span class="c1"># if enable_dtype:</span>
+        <span class="c1">#     dtype = self._get_dtypes()</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     dtype = None</span>
+        <span class="c1"># print(f&quot;insert_table_in_db_bulk, enable_dtype = {enable_dtype} - dtype = {dtype}&quot;)</span>
+
+        <span class="c1"># Force the data type of a column in the df to match the expectation in the DB</span>
+        <span class="k">if</span> <span class="n">enable_astype</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_df_column_types</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                               <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                    <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_df_column_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Force the data type of the DataFrame according to the schema.</span>
+<span class="sd">        This can avoid errors in DB2, when the column is a mix of types.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sa_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span><span class="p">:</span>
+            <span class="n">df_column_name</span> <span class="o">=</span> <span class="n">sa_column</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">df_type</span> <span class="o">=</span> <span class="n">sa_column</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">python_type</span>
+            <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">df_column_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">df_type</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert column </span><span class="si">{</span><span class="n">df_column_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">df_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">def</span> <span class="nf">_delete_scenario_table_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete all rows associated with the scenario in the DB table.</span>
@@ -289,13 +318,15 @@
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">sqlcol</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>
+
+        <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">mgr</span><span class="o">.</span><span class="n">engine</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Note that this can use the &#39;replace&#39;, so the table will be dropped automatically and the defintion auto created</span>
             <span class="c1"># So no need to drop the table explicitly (?)</span>
-            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># TODO: review the &#39;replace&#39;: does it need to be &#39;append&#39;, as in the regular class?</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
@@ -349,7 +380,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
                  <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+                 <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_astype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">enable_debug_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioDbManager.</span>
 
 <span class="sd">        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.</span>
@@ -360,12 +392,16 @@
 <span class="sd">        :param multi_scenario: If true, adds SCENARIO table and PK</span>
 <span class="sd">        :param enable_transactions: If true, uses transactions</span>
 <span class="sd">        :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite</span>
+<span class="sd">        :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert</span>
+<span class="sd">        :param enable_debug_print: If True, print additional debugging statements, like the DB connection string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># WARNING: do NOT use &#39;OrderedDict[str, ScenarioDbTable]&#39; as type. OrderedDict is not subscriptable. Will cause a syntax error.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_schema_name</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span> <span class="o">=</span> <span class="n">multi_scenario</span>  <span class="c1"># If true, will add a primary key &#39;scenario_name&#39; to each table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span> <span class="o">=</span> <span class="n">enable_transactions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_sqlite_fk</span> <span class="o">=</span> <span class="n">enable_sqlite_fk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_astype</span> <span class="o">=</span> <span class="n">enable_astype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enable_debug_print</span> <span class="o">=</span> <span class="n">enable_debug_print</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">echo</span> <span class="o">=</span> <span class="n">echo</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_scenario_db_table</span><span class="p">(</span><span class="n">input_db_tables</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span> <span class="o">=</span> <span class="n">output_db_tables</span>
@@ -380,10 +416,10 @@
     <span class="c1">############################################################################################</span>
     <span class="c1"># Initialization. Called from constructor.</span>
     <span class="c1">############################################################################################</span>
-    <span class="k">def</span> <span class="nf">_check_schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check_schema_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Checks if schema name is not mixed-case, as this is known to cause issues. Upper-case works well.</span>
 <span class="sd">        This is just a warning. It does not change the schema name.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">schema</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">schema</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
+        <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">schema</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">schema</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: using mixed case in the schema name </span><span class="si">{</span><span class="n">schema</span><span class="si">}</span><span class="s2"> may cause unexpected DB errors. Use upper-case only.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">schema</span>
 
@@ -533,7 +569,8 @@
                 <span class="n">schema</span><span class="o">=</span><span class="n">schema</span>
             <span class="p">)</span>
         <span class="c1"># SAVE FOR FUTURE LOGGER MESSAGES...</span>
-        <span class="c1">#print(&quot;Connection String : &quot; + connection_string)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_debug_print</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DB2 Connection String : &quot;</span> <span class="o">+</span> <span class="n">connection_string</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">connection_string</span>
 
     <span class="k">def</span> <span class="nf">_create_db2_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -605,6 +642,12 @@
 <span class="sd">        See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)</span>
 <span class="sd">        See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;+++++++++++++++++Reflect+++++++++++++++++&quot;)</span>
+        <span class="c1"># Note: the reflect seems to mess things up: when doing the next drop_all we&#39;re getting weird errors</span>
+        <span class="c1"># self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema</span>
+        <span class="c1"># print(&quot;+++++++++++++++++Drop all tables+++++++++++++++++&quot;)</span>
+        <span class="c1"># self.metadata.drop_all(bind=connection)</span>
+
         <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -741,7 +784,7 @@
             <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="o">!=</span> <span class="s1">&#39;Scenario&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">:</span>
                     <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="c1">#                 display(df.head(3))</span>
                     <span class="k">if</span> <span class="n">bulk</span><span class="p">:</span>
                         <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
@@ -764,7 +807,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">max_num_exceptions</span> <span class="o">=</span> <span class="mi">10</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">()</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
         <span class="c1">#         print(columns)</span>
         <span class="c1"># df[columns] ensures that the order of columns in the DF matches that of the SQL table definition. If not, the insert will fail</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1163,8 +1206,8 @@
         <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># Note this INCLUDES the SCENARIO table!</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">scenario_table_name</span> <span class="o">!=</span> <span class="s1">&#39;Scenario&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># If in given set of tables to replace</span>
                 <span class="n">df</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>  <span class="c1"># The scenario_name is a column in the df</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inserting </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns in </span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">enable_astype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_astype</span><span class="p">)</span>  <span class="c1"># The scenario_name is a column in the df</span>
 
 <div class="viewcode-block" id="ScenarioDbManager.replace_scenario_tables_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_tables_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">replace_scenario_tables_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">{},</span> <span class="n">outputs</span><span class="o">=</span><span class="p">{}):</span>
         <span class="sd">&quot;&quot;&quot;Untested&quot;&quot;&quot;</span>
@@ -1191,7 +1234,7 @@
         <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># Note this INCLUDES the SCENARIO table!</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">scenario_table_name</span> <span class="o">!=</span> <span class="s1">&#39;Scenario&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span> <span class="ow">in</span> <span class="n">dfs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># If in given set of tables to replace</span>
                 <span class="n">df</span> <span class="o">=</span> <span class="n">dfs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
-                <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>  <span class="c1"># The scenario_name is a column in the df</span>
+                <span class="n">db_table</span><span class="o">.</span><span class="n">insert_table_in_db_bulk</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">mgr</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">enable_astype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_astype</span><span class="p">)</span>  <span class="c1"># The scenario_name is a column in the df</span>
 
     <span class="c1">############################################################################################</span>
     <span class="c1"># CRUD operations on scenarios in DB:</span>
@@ -1679,7 +1722,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
