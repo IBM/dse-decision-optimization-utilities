@@ -1047,7 +1047,7 @@ class ScenarioManager(object):
         return inputs
 
     @staticmethod
-    def write_data_to_zip_csv_s(zip_file_path: str, inputs: Inputs = {}, outputs: Outputs = {}, **kwargs):
+    def write_data_to_zip_csv_s(zip_file_path: str, inputs: Inputs = None, outputs: Outputs = None, **kwargs):
         """Write data as a zip file with .csv files.
         inputs and outputs dictionaries are merged and written in same zip.
 
@@ -1060,13 +1060,17 @@ class ScenarioManager(object):
         Returns:
             None
         """
-        dfs = {**inputs, **outputs}
+        dfs = {}
+        if inputs is not None:
+            dfs = {**dfs, **inputs}
+        if outputs is not None:
+            dfs = {**dfs, **outputs}
         with zipfile.ZipFile(zip_file_path, 'w') as zipMe:
             with tempfile.TemporaryDirectory() as tmpdir:
                 for table_name, df in dfs.items():
                     filename =  table_name + ".csv"
                     file_path = os.path.join(tmpdir, filename)
-                    print(f"Write table {table_name}, rows = {df.shape[0]} as {file_path}")
+                    # print(f"Write table {table_name}, rows = {df.shape[0]} as {file_path}")
                     df.to_csv(file_path, index=False, **kwargs)
                     zipMe.write(file_path, arcname=filename, compress_type=zipfile.ZIP_DEFLATED)
 
