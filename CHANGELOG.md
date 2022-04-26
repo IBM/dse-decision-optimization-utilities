@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.4b0]
 ### Changed
-
+### Added
+- ScenarioManager.load_data_from_zip_csv_s: loading input data from a zipped archive of csv files
+- ScenarioManager.write_data_to_zip_csv_s: writing input/output data as a zipped archive of csv files
+### Removed
+- ScenarioManager.write_data_to_csv_s no longer adds files as data assets
+- 
 ## [0.5.4.3] - 2022-04-21
 ### Changed
 - Fixed indentation bug in domodeldeployer
