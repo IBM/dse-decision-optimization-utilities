@@ -10,12 +10,15 @@ import os
 import glob
 import pathlib
 import zipfile
+import tempfile
 
 import docplex
 import pandas as pd
 from typing import Sequence, List, Dict, Tuple, Optional
 
 #  Typing aliases
+from dse_do_utils.utilities import convert_size
+
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 InputsOutputs = Tuple[Inputs, Outputs]
@@ -920,21 +923,13 @@ class ScenarioManager(object):
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
-                # if platform == Platform.CPD40:
-                #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
-                # elif platform in [Platform.CPD25, Platform.CPDaaS]:
-                #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+                # ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
         if outputs is not None:
             for table_name, df in outputs.items():
                 file_path = os.path.join(csv_directory, table_name + ".csv")
                 print("Writing {}".format(file_path))
                 df.to_csv(file_path, index=False)
-                ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
-                # if platform == Platform.CPD40:
-                #     ScenarioManager.add_data_file_using_ws_lib_s(file_path)
-                # elif platform in [Platform.CPD25, Platform.CPDaaS]:
-                #     ScenarioManager.add_data_file_to_project_s(file_path, table_name + ".csv")
+                # ScenarioManager.add_file_as_data_asset_s(file_path, table_name + ".csv", platform=platform)
 
     # -----------------------------------------------------------------
     # Load data from parquet
@@ -1018,6 +1013,66 @@ class ScenarioManager(object):
                 file_path = os.path.join(directory, table_name + ".parquet")
                 print("Writing output {}".format(file_path))
                 df.to_parquet(file_path, index=False)
+
+    # -----------------------------------------------------------------
+    # Read from / write to zipped set of csv files
+    # -----------------------------------------------------------------
+    @staticmethod
+    def load_data_from_zip_csv_s(zip_file_path: str, file_size_limit: int = None, **kwargs) -> Dict[str, pd.DataFrame]:
+        """Read data from a zip file with .csv files.
+
+        Args:
+            zip_file_path (str): the full path of a zip file containing one or more .csv files.
+            file_size_limit (int): maximum file size in bytes. None implies no limit.
+            **kwargs: Set of optional arguments for the pd.read_csv() function
+
+        Returns:
+            data: dict of DataFrames. Keys are the .csv file names.
+        """
+        inputs = {}
+
+        with zipfile.ZipFile(zip_file_path, "r") as f:
+            for csv_file in f.infolist():
+                if pathlib.Path(csv_file.filename).suffix.lower() == '.csv':
+                    table_name = pathlib.Path(csv_file.filename).stem
+                    # print(f"Reading table = {table_name}. File-size = {convert_size(csv_file.file_size)}")
+                    if file_size_limit is None or csv_file.file_size <= file_size_limit:
+                        df = pd.read_csv(f.open(csv_file.filename), **kwargs)
+                        inputs[table_name] = df
+                        #print(f"Read {table_name}: {df.shape[0]} rows and {df.shape[1]} columns")
+                    else:
+                        pass
+                        #print(f"Read {table_name}: skipped")
+
+        return inputs
+
+    @staticmethod
+    def write_data_to_zip_csv_s(zip_file_path: str, inputs: Inputs = None, outputs: Outputs = None, **kwargs):
+        """Write data as a zip file with .csv files.
+        inputs and outputs dictionaries are merged and written in same zip.
+
+        Args:
+            zip_file_path (str): the full path of a zip file.
+            inputs: dict of input DataFrames
+            outputs: dict of input DataFrames
+            **kwargs: Set of optional arguments for the df.to_csv() function
+
+        Returns:
+            None
+        """
+        dfs = {}
+        if inputs is not None:
+            dfs = {**dfs, **inputs}
+        if outputs is not None:
+            dfs = {**dfs, **outputs}
+        with zipfile.ZipFile(zip_file_path, 'w') as zipMe:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                for table_name, df in dfs.items():
+                    filename =  table_name + ".csv"
+                    file_path = os.path.join(tmpdir, filename)
+                    # print(f"Write table {table_name}, rows = {df.shape[0]} as {file_path}")
+                    df.to_csv(file_path, index=False, **kwargs)
+                    zipMe.write(file_path, arcname=filename, compress_type=zipfile.ZIP_DEFLATED)
 
     # -----------------------------------------------------------------
     # Utils

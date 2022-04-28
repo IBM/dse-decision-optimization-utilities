@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.3 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.4 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -2690,6 +2690,27 @@ Returns empty dict if no tables.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.load_data_from_zip_csv_s">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">load_data_from_zip_csv_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_size_limit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.load_data_from_zip_csv_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_zip_csv_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from a zip file with .csv files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zip_file_path</strong> (<em>str</em>) – the full path of a zip file containing one or more .csv files.</p></li>
+<li><p><strong>file_size_limit</strong> (<em>int</em>) – maximum file size in bytes. None implies no limit.</p></li>
+<li><p><strong>**kwargs</strong> – Set of optional arguments for the pd.read_csv() function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict of DataFrames. Keys are the .csv file names.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.print_table_names">
 <span class="sig-name descname"><span class="pre">print_table_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.print_table_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.print_table_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the names of the input and output tables. For development and debugging.</p>
@@ -2845,6 +2866,26 @@ the original table-name and abbreviated name is recorded in a separate sheet nam
 <p>Returns: None</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_zip_csv_s">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">write_data_to_zip_csv_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_zip_csv_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_zip_csv_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data as a zip file with .csv files.
+inputs and outputs dictionaries are merged and written in same zip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zip_file_path</strong> (<em>str</em>) – the full path of a zip file.</p></li>
+<li><p><strong>inputs</strong> – dict of input DataFrames</p></li>
+<li><p><strong>outputs</strong> – dict of input DataFrames</p></li>
+<li><p><strong>**kwargs</strong> – Set of optional arguments for the df.to_csv() function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -2951,6 +2992,18 @@ Based on: <a class="reference external" href="https://www.oreilly.com/library/vi
 <p>Challenge: in order to use this function, we need to import the dse_do_utils package
 and thus we need to add it’s location it to sys.path!
 This will work better once we can do a pip install dse-do_utils.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dse_do_utils.utilities.convert_size">
+<span class="sig-prename descclassname"><span class="pre">dse_do_utils.utilities.</span></span><span class="sig-name descname"><span class="pre">convert_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/utilities.html#convert_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.utilities.convert_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns string describing file size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size_bytes</strong> (<em>int</em>) – size if file in bytes</p>
+</dd>
+</dl>
+<p>From <a class="reference external" href="https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python">https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python</a></p>
 </dd></dl>
 
 <dl class="py function">
@@ -3106,7 +3159,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>

@@ -36,6 +36,6 @@ $(window).resize(function(){
         $("li.nav-item-0 a").text("Top");
     }
     else {
-        $("li.nav-item-0 a").text("DSE DO Utils 0.5.4.3 documentation");
+        $("li.nav-item-0 a").text("DSE DO Utils 0.5.4.4 documentation");
     }
 });
