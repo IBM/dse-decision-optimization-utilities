@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; DSE DO Utils 0.5.4.3 documentation</title>
+    <title>Index &#8212; DSE DO Utils 0.5.4.4 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>  
@@ -141,6 +141,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series">continuous_var_series() (dse_do_utils.optimizationengine.OptimizationEngine method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s">continuous_var_series_s() (dse_do_utils.optimizationengine.OptimizationEngine static method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.utilities.convert_size">convert_size() (in module dse_do_utils.utilities)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform.CPD25">CPD25 (dse_do_utils.scenariomanager.Platform attribute)</a>
 </li>
@@ -595,10 +597,10 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel_s">load_data_from_excel_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet">load_data_from_parquet() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet_s">load_data_from_parquet_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.load_data_from_scenario">load_data_from_scenario() (dse_do_utils.multiscenariomanager.MultiScenarioManager method)</a>
@@ -608,6 +610,8 @@
 </li>
       </ul></li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s">load_data_from_scenario_s() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_zip_csv_s">load_data_from_zip_csv_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariopicker.ScenarioPicker.load_selected_scenario_data">load_selected_scenario_data() (dse_do_utils.scenariopicker.ScenarioPicker method)</a>
 </li>
@@ -870,10 +874,10 @@
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv">write_data_to_csv() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s">write_data_to_csv_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.write_data_to_excel">write_data_to_excel() (dse_do_utils.multiscenariomanager.MultiScenarioManager method)</a>
 
       <ul>
@@ -885,6 +889,8 @@
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet">write_data_to_parquet() (dse_do_utils.scenariomanager.ScenarioManager method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet_s">write_data_to_parquet_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
+</li>
+      <li><a href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_zip_csv_s">write_data_to_zip_csv_s() (dse_do_utils.scenariomanager.ScenarioManager static method)</a>
 </li>
       <li><a href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file">write_do_model_to_file() (dse_do_utils.domodelexporter.DOModelExporter method)</a>
 </li>
@@ -926,7 +932,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Index</a></li> 
       </ul>
     </div>
