@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.5b0]
 ### Changed
+- ScenarioDbManager._insert_table_in_db_by_row automatically inserts None for columns in defined schema, but missing in DataFrame.
 
 ## [0.5.4.4] - 2022-04-28
 ### Added

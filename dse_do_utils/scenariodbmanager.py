@@ -152,6 +152,8 @@ class ScenarioDbTable(ABC):
             mgr (ScenarioDbManager)
             connection: if not None, being run within a transaction
             enable_astype: if True, apply df.column.astype based on datatypes extracted from columns_metadata (i.e. sqlachemy.Column)
+
+        TODO VT_20220814: allow for optional columns not present in df: only insert intersection of columns
         """
         if connection is None:
             connection = mgr.engine
@@ -169,6 +171,10 @@ class ScenarioDbTable(ABC):
             df = self._set_df_column_types(df)
 
         try:
+            # TODO: try Jihyoung: replace NaN with
+            # df.replace({float('NaN'): None})
+            # df = df[columns].replace({float('NaN'): None})
+            # df.to_sql.....
             df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
                                    index=False)
         except exc.IntegrityError as e:
@@ -758,6 +764,8 @@ class ScenarioDbManager():
         To avoid too many exceptions, the number of exceptions per table is limited to 10.
         After the limit, the insert will be terminated. And the next table will be inserted.
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
+
+        TODO VT_20220814: Allow for optional columns in DataFrame: do not try to insert all columns. Select intersection of columns. Let DB deal with nullable constraint
         """
         num_exceptions = 0
         max_num_exceptions = 10
