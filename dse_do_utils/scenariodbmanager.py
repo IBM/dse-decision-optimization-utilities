@@ -57,8 +57,8 @@ class ScenarioDbTable(ABC):
         :param constraints_metadata:
         """
         self.db_table_name = db_table_name
-            # ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
-        self.columns_metadata = columns_metadata
+        # ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
+        self.columns_metadata = self.resolve_metadata_column_conflicts(columns_metadata)
         self.constraints_metadata = constraints_metadata
         self.dtype = None
         if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
@@ -69,8 +69,50 @@ class ScenarioDbTable(ABC):
             print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
         self._sa_column_by_name = None  # Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.
 
+    def resolve_metadata_column_conflicts(self, columns_metadata: List[sqlalchemy.Column]) -> List[sqlalchemy.Column]:
+        columns_dict = {}
+        for column in reversed(columns_metadata):
+            if isinstance(column, sqlalchemy.Column):
+                if column.name in columns_dict:
+                    print(f"Warning: Conflicts in column definition for column {column.name} in table {self.__class__}. Retained override.")
+                else:
+                    columns_dict[column.name] = column
+            else:
+                print(f"Warning: Column metadata contains non-sqlalchemy in table {self.__class__}. Retained override.")
+        return list(reversed(columns_dict.values()))
+
     def get_db_table_name(self) -> str:
         return self.db_table_name
+
+    def get_df_column_names_2(self, df: pd.DataFrame) -> (List[str], pd.DataFrame):
+        """Get all column names that are defined in the DB schema.
+         If not present in the DataFrame df, adds the missing column with all None values.
+
+         Note 1 (VT 20220829):
+         Note that the `sqlalchemy.insert(db_table.table_metadata).values(row)` does NOT properly handle columns that are missing in the row.
+         It seems to simply truncate the columns if the row length is less than the number of columns.
+         It does NOT match the column names!
+         Thus the need to add columns, so we end up with proper None values in the row for the insert, specifying all columns in the table.
+
+         Note 2 (VT 20220829):
+         Reducing the list of sqlalchemy.Column does NOT work in `sqlalchemy.insert(db_table.table_metadata).values(row)`
+         The db_table.table_metadata is an object, not a List[sqlalchemy.Column]
+
+        :param df:
+        :return:
+        """
+        column_names = []
+        # columns_metadata = []
+        for c in self.columns_metadata:
+            if isinstance(c, sqlalchemy.Column):
+                if c.name in df.columns:
+                    column_names.append(c.name)
+                    # columns_metadata.append(c)
+                else:
+                    column_names.append(c.name)
+                    df[c.name] = None
+
+        return column_names, df
 
     def get_df_column_names(self, df: pd.DataFrame) -> List[str]:
         """Get all column names that are both defined in the DB schema and present in the DataFrame df.
@@ -152,8 +194,6 @@ class ScenarioDbTable(ABC):
             mgr (ScenarioDbManager)
             connection: if not None, being run within a transaction
             enable_astype: if True, apply df.column.astype based on datatypes extracted from columns_metadata (i.e. sqlachemy.Column)
-
-        TODO VT_20220814: allow for optional columns not present in df: only insert intersection of columns
         """
         if connection is None:
             connection = mgr.engine
@@ -171,12 +211,8 @@ class ScenarioDbTable(ABC):
             df = self._set_df_column_types(df)
 
         try:
-            # TODO: try Jihyoung: replace NaN with
-            # df.replace({float('NaN'): None})
-            # df = df[columns].replace({float('NaN'): None})
-            # df.to_sql.....
             df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
-                                   index=False)
+                               index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
@@ -764,19 +800,16 @@ class ScenarioDbManager():
         To avoid too many exceptions, the number of exceptions per table is limited to 10.
         After the limit, the insert will be terminated. And the next table will be inserted.
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
-
-        TODO VT_20220814: Allow for optional columns in DataFrame: do not try to insert all columns. Select intersection of columns. Let DB deal with nullable constraint
         """
         num_exceptions = 0
         max_num_exceptions = 10
-        columns = db_table.get_df_column_names(df=df)
+        columns, df2 = db_table.get_df_column_names_2(df=df)  # Adds missing columns with None values
         #         print(columns)
         # df[columns] ensures that the order of columns in the DF matches that of the SQL table definition. If not, the insert will fail
-        for row in df[columns].itertuples(index=False):
-            #             print(row)
+        for row in df2[columns].itertuples(index=False):
+            # print(row)
             stmt = (
-                sqlalchemy.insert(db_table.table_metadata).
-                    values(row)
+                sqlalchemy.insert(db_table.table_metadata).values(row)
             )
             try:
                 if connection is None:
@@ -1050,8 +1083,8 @@ class ScenarioDbManager():
     # Read multi scenario
     ############################################################################################
     def read_multi_scenario_tables_from_db(self, scenario_names: List[str],
-                                     input_table_names: Optional[List[str]] = None,
-                                     output_table_names: Optional[List[str]] = None) -> (Inputs, Outputs):
+                                           input_table_names: Optional[List[str]] = None,
+                                           output_table_names: Optional[List[str]] = None) -> (Inputs, Outputs):
         """Read selected set input and output tables from multiple scenarios.
         If input_table_names/output_table_names contains a '*', then all input/output tables will be read.
         If empty list or None, then no tables will be read.
@@ -1064,8 +1097,8 @@ class ScenarioDbManager():
         return inputs, outputs
 
     def _read_multi_scenario_tables_from_db(self, connection, scenario_names: List[str],
-                                      input_table_names: List[str] = None,
-                                      output_table_names: List[str] = None) -> (Inputs, Outputs):
+                                            input_table_names: List[str] = None,
+                                            output_table_names: List[str] = None) -> (Inputs, Outputs):
         """Loads data for selected input and output tables from multiple scenarios.
         If either list is names is ['*'], will load all tables as defined in db_tables configuration.
         """
