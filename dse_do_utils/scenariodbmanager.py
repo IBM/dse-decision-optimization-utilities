@@ -74,11 +74,11 @@ class ScenarioDbTable(ABC):
         for column in reversed(columns_metadata):
             if isinstance(column, sqlalchemy.Column):
                 if column.name in columns_dict:
-                    print(f"Warning: Conflicts in column definition for column {column.name} in table {self.__class__}. Retained override.")
+                    print(f"Warning: Conflicts in column definition for column {column.name} in table {self.__class__.__name__}. Retained override.")
                 else:
                     columns_dict[column.name] = column
             else:
-                print(f"Warning: Column metadata contains non-sqlalchemy in table {self.__class__}. Retained override.")
+                print(f"Warning: Column metadata contains non-sqlalchemy in table {self.__class__.__name__}. Retained override.")
         return list(reversed(columns_dict.values()))
 
     def get_db_table_name(self) -> str:
