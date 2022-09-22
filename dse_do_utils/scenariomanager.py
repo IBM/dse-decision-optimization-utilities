@@ -565,7 +565,7 @@ class ScenarioManager(object):
     #     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
     #     return self.inputs, self.outputs
 
-    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> None:
+    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> str:
         """Write inputs and/or outputs to an Excel file in datasets.
         The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager
 

@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.5b0]
+## [Unreleased]## [0.5.4.5b1]
+### Added
+- ScenarioRunner
+
+## [Unreleased]## [0.5.4.5b0] - 2022-09-06
 ### Changed
 - ScenarioDbManager.resolve_metadata_column_conflicts: resolve conflicts where a ScenarioDbTable subclass redefines a column.
 - ScenarioDbManager._insert_table_in_db_by_row automatically inserts None for columns in defined schema, but missing in DataFrame.
