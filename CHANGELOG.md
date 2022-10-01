@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.4.5b1] - 2022-09-22
 ### Added
-- ScenarioRunner
+- ScenarioRunner and ScenarioGenerator
 
 ## [0.5.4.5b0] - 2022-09-06
 ### Changed
