@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.4.4 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.4.5b2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -103,8 +103,8 @@
 <span class="sd">        :param constraints_metadata:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table_name</span>
-            <span class="c1"># ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="o">=</span> <span class="n">columns_metadata</span>
+        <span class="c1"># ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_metadata_column_conflicts</span><span class="p">(</span><span class="n">columns_metadata</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_metadata</span> <span class="o">=</span> <span class="n">constraints_metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
@@ -115,8 +115,50 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: the db_table_name &#39;</span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&#39; is a reserved word. Do not use as table name.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sa_column_by_name</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.</span>
 
+<div class="viewcode-block" id="ScenarioDbTable.resolve_metadata_column_conflicts"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.resolve_metadata_column_conflicts">[docs]</a>    <span class="k">def</span> <span class="nf">resolve_metadata_column_conflicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]:</span>
+        <span class="n">columns_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">columns_metadata</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">columns_dict</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Conflicts in column definition for column </span><span class="si">{</span><span class="n">column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in table </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. Retained override.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">columns_dict</span><span class="p">[</span><span class="n">column</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">column</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Column metadata contains non-sqlalchemy in table </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. Retained override.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">columns_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></div>
+
 <div class="viewcode-block" id="ScenarioDbTable.get_db_table_name"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_table_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span></div>
+
+<div class="viewcode-block" id="ScenarioDbTable.get_df_column_names_2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names_2">[docs]</a>    <span class="k">def</span> <span class="nf">get_df_column_names_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all column names that are defined in the DB schema.</span>
+<span class="sd">         If not present in the DataFrame df, adds the missing column with all None values.</span>
+
+<span class="sd">         Note 1 (VT 20220829):</span>
+<span class="sd">         Note that the `sqlalchemy.insert(db_table.table_metadata).values(row)` does NOT properly handle columns that are missing in the row.</span>
+<span class="sd">         It seems to simply truncate the columns if the row length is less than the number of columns.</span>
+<span class="sd">         It does NOT match the column names!</span>
+<span class="sd">         Thus the need to add columns, so we end up with proper None values in the row for the insert, specifying all columns in the table.</span>
+
+<span class="sd">         Note 2 (VT 20220829):</span>
+<span class="sd">         Reducing the list of sqlalchemy.Column does NOT work in `sqlalchemy.insert(db_table.table_metadata).values(row)`</span>
+<span class="sd">         The db_table.table_metadata is an object, not a List[sqlalchemy.Column]</span>
+
+<span class="sd">        :param df:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">column_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># columns_metadata = []</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">column_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="c1"># columns_metadata.append(c)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">column_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">column_names</span><span class="p">,</span> <span class="n">df</span></div>
 
 <div class="viewcode-block" id="ScenarioDbTable.get_df_column_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_df_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get all column names that are both defined in the DB schema and present in the DataFrame df.</span>
@@ -216,7 +258,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                   <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                               <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
@@ -807,14 +849,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">max_num_exceptions</span> <span class="o">=</span> <span class="mi">10</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_df_column_names</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">columns</span><span class="p">,</span> <span class="n">df2</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_df_column_names_2</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Adds missing columns with None values</span>
         <span class="c1">#         print(columns)</span>
         <span class="c1"># df[columns] ensures that the order of columns in the DF matches that of the SQL table definition. If not, the insert will fail</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="c1">#             print(row)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df2</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># print(row)</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">db_table</span><span class="o">.</span><span class="n">table_metadata</span><span class="p">)</span><span class="o">.</span>
-                    <span class="n">values</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">db_table</span><span class="o">.</span><span class="n">table_metadata</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1088,8 +1129,8 @@
     <span class="c1"># Read multi scenario</span>
     <span class="c1">############################################################################################</span>
 <div class="viewcode-block" id="ScenarioDbManager.read_multi_scenario_tables_from_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_multi_scenario_tables_from_db">[docs]</a>    <span class="k">def</span> <span class="nf">read_multi_scenario_tables_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                                     <span class="n">input_table_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                     <span class="n">output_table_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
+                                           <span class="n">input_table_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                           <span class="n">output_table_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Read selected set input and output tables from multiple scenarios.</span>
 <span class="sd">        If input_table_names/output_table_names contains a &#39;*&#39;, then all input/output tables will be read.</span>
 <span class="sd">        If empty list or None, then no tables will be read.</span>
@@ -1102,8 +1143,8 @@
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div>
 
     <span class="k">def</span> <span class="nf">_read_multi_scenario_tables_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">scenario_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-                                      <span class="n">input_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                      <span class="n">output_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
+                                            <span class="n">input_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">output_table_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads data for selected input and output tables from multiple scenarios.</span>
 <span class="sd">        If either list is names is [&#39;*&#39;], will load all tables as defined in db_tables configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1722,7 +1763,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 

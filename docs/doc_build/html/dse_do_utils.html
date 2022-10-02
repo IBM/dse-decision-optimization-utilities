@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.4 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.4.5b2 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -2125,6 +2125,31 @@ Only columns that are specified and included in the DB insert.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names_2">
+<span class="sig-name descname"><span class="pre">get_df_column_names_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">df:</span> <span class="pre">pandas.core.frame.DataFrame)</span> <span class="pre">-&gt;</span> <span class="pre">(typing.List[str],</span> <span class="pre">&lt;class</span> <span class="pre">'pandas.core.frame.DataFrame'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_df_column_names_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names_2" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Get all column names that are defined in the DB schema.</dt><dd><p>If not present in the DataFrame df, adds the missing column with all None values.</p>
+<p>Note 1 (VT 20220829):
+Note that the <cite>sqlalchemy.insert(db_table.table_metadata).values(row)</cite> does NOT properly handle columns that are missing in the row.
+It seems to simply truncate the columns if the row length is less than the number of columns.
+It does NOT match the column names!
+Thus the need to add columns, so we end up with proper None values in the row for the insert, specifying all columns in the table.</p>
+<p>Note 2 (VT 20220829):
+Reducing the list of sqlalchemy.Column does NOT work in <cite>sqlalchemy.insert(db_table.table_metadata).values(row)</cite>
+The db_table.table_metadata is an object, not a List[sqlalchemy.Column]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column">
 <span class="sig-name descname"><span class="pre">get_sa_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_column_name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.get_sa_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the SQLAlchemy.Column with the specified name.
@@ -2149,6 +2174,11 @@ Uses the self.table_metadata (i.e. the sqlalchemy.Table), so works both for pre-
 :param connection: if not None, being run within a transaction
 :param enable_astype: if True, apply df.column.astype based on datatypes extracted from columns_metadata (i.e. sqlachemy.Column)</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.resolve_metadata_column_conflicts">
+<span class="sig-name descname"><span class="pre">resolve_metadata_column_conflicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns_metadata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">sqlalchemy.sql.schema.Column</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariodbmanager.html#ScenarioDbTable.resolve_metadata_column_conflicts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariodbmanager.ScenarioDbTable.resolve_metadata_column_conflicts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariodbmanager.ScenarioDbTable.sqlcol">
@@ -2802,7 +2832,7 @@ Returns: None</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">
-<span class="sig-name descname"><span class="pre">write_data_to_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_to_csv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_data_to_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_to_csv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariomanager.html#ScenarioManager.write_data_to_excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write inputs and/or outputs to an Excel file in datasets.
 The inputs and outputs as in the attributes <cite>self.inputs</cite> and <cite>self.outputs</cite> of the ScenarioManager</p>
 <p>The copy_to_csv is a work-around for the WS limitation of not being able to download a file from datasets that is not a csv file.
@@ -2979,6 +3009,220 @@ selected by the picker.
 </dd></dl>
 
 </div>
+<div class="section" id="module-dse_do_utils.scenariorunner">
+<span id="dse-do-utils-scenariorunner-module"></span><h2>dse_do_utils.scenariorunner module<a class="headerlink" href="#module-dse_do_utils.scenariorunner" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariorunner.</span></span><span class="sig-name descname"><span class="pre">RunConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insert_inputs_in_db</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_outputs_in_db</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insert_in_do</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_output_to_excel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_data_check</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_data_check_outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_check_bulk_insert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'DEBUG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_lp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_lp_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#RunConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.data_check_bulk_insert">
+<span class="sig-name descname"><span class="pre">data_check_bulk_insert</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.data_check_bulk_insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.do_model_name">
+<span class="sig-name descname"><span class="pre">do_model_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.do_model_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.enable_data_check">
+<span class="sig-name descname"><span class="pre">enable_data_check</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.enable_data_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.enable_data_check_outputs">
+<span class="sig-name descname"><span class="pre">enable_data_check_outputs</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.enable_data_check_outputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.export_lp">
+<span class="sig-name descname"><span class="pre">export_lp</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.export_lp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.export_lp_path">
+<span class="sig-name descname"><span class="pre">export_lp_path</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">''</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.export_lp_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.insert_in_do">
+<span class="sig-name descname"><span class="pre">insert_in_do</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.insert_in_do" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.insert_inputs_in_db">
+<span class="sig-name descname"><span class="pre">insert_inputs_in_db</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.insert_inputs_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.insert_outputs_in_db">
+<span class="sig-name descname"><span class="pre">insert_outputs_in_db</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.insert_outputs_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.log_level">
+<span class="sig-name descname"><span class="pre">log_level</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'DEBUG'</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.log_level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.new_schema">
+<span class="sig-name descname"><span class="pre">new_schema</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.new_schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.template_scenario_name">
+<span class="sig-name descname"><span class="pre">template_scenario_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.template_scenario_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.RunConfig.write_output_to_excel">
+<span class="sig-name descname"><span class="pre">write_output_to_excel</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.RunConfig.write_output_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariorunner.</span></span><span class="sig-name descname"><span class="pre">ScenarioConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'Scenario_x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioConfig.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioConfig.parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioConfig.scenario_name">
+<span class="sig-name descname"><span class="pre">scenario_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'Scenario_x'</span></em><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioConfig.scenario_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioGenerator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariorunner.</span></span><span class="sig-name descname"><span class="pre">ScenarioGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="dse_do_utils.scenariorunner.ScenarioConfig"><span class="pre">dse_do_utils.scenariorunner.ScenarioConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generates a variation of a scenario, i.e. <cite>inputs</cite> dataset, driven by a ScenarioConfig.
+To be subclassed.
+This base class implements overrides of the Parameter table.
+The ScenarioGenerator is typically used in the context of a ScenarioRunner.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyScenarioGenerator</span><span class="p">(</span><span class="n">ScenarioGenerator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">generate_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_inputs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_scenario</span><span class="p">()</span>
+        <span class="n">new_inputs</span><span class="p">[</span><span class="s1">&#39;MyTable1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_my_table1</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">new_inputs</span><span class="p">[</span><span class="s1">&#39;MyTable2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_my_table2</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_inputs</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioGenerator.generate_scenario">
+<span class="sig-name descname"><span class="pre">generate_scenario</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioGenerator.generate_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioGenerator.generate_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a variation of the base_inputs. To be overridden.
+This default implementation changes the Parameter table based on the overrides in the ScenarioConfig.parameters.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_scenario</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">new_inputs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_scenario</span><span class="p">()</span>
+    <span class="n">new_inputs</span><span class="p">[</span><span class="s1">&#39;MyTable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_my_table</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_inputs</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioGenerator.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioGenerator.get_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioGenerator.get_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies overrides to the Parameter table based on the ScenarioConfig.parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.scenariorunner.</span></span><span class="sig-name descname"><span class="pre">ScenarioRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_db_manager</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="dse_do_utils.scenariodbmanager.ScenarioDbManager"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimization_engine_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.optimizationengine.OptimizationEngine" title="dse_do_utils.optimizationengine.OptimizationEngine"><span class="pre">dse_do_utils.optimizationengine.OptimizationEngine</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_manager_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.datamanager.DataManager" title="dse_do_utils.datamanager.DataManager"><span class="pre">dse_do_utils.datamanager.DataManager</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_db_manager_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariodbmanager.ScenarioDbManager" title="dse_do_utils.scenariodbmanager.ScenarioDbManager"><span class="pre">dse_do_utils.scenariodbmanager.ScenarioDbManager</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_generator_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioGenerator" title="dse_do_utils.scenariorunner.ScenarioGenerator"><span class="pre">dse_do_utils.scenariorunner.ScenarioGenerator</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'my_model'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_root</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_platform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_directory</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TODO: remove local_root, local_platform, replace by data_directory? (It seems to be working fine though)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.create_new_db_schema">
+<span class="sig-name descname"><span class="pre">create_new_db_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.create_new_db_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.create_new_db_schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.data_check_inputs">
+<span class="sig-name descname"><span class="pre">data_check_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'data_check'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.data_check_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.data_check_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use SQLite to validate data. Read data back and do a dm.prepare_data_frames.
+Does a deepcopy of the inputs to ensure the DB operations do not alter the inputs.
+Bulk can be set to True once the basic data issues have been resolved and performance needs to be improved.
+Set bulk to False to get more granular DB insert errors, i.e. per record.
+TODO: add a data_check() on the DataManager for additional checks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.data_check_outputs">
+<span class="sig-name descname"><span class="pre">data_check_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'data_check'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.data_check_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.data_check_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use SQLite to validate data. Read data back and do a dm.prepare_data_frames.
+Does a deepcopy of the inputs to ensure the DB operations do not alter the inputs.
+Bulk can be set to True once the basic data issues have been resolved and performance needs to be improved.
+Set bulk to False to get more granular DB insert errors, i.e. per record.
+TODO: add a data_check() on the DataManager for additional checks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.generate_scenario">
+<span class="sig-name descname"><span class="pre">generate_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="dse_do_utils.scenariorunner.ScenarioConfig"><span class="pre">dse_do_utils.scenariorunner.ScenarioConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.generate_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.generate_scenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a derived scenario from a baseline scenario on the
+specifications in the scenario_config.
+:param base_inputs:
+:param scenario_config:
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.insert_in_do">
+<span class="sig-name descname"><span class="pre">insert_in_do</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="dse_do_utils.scenariorunner.ScenarioConfig"><span class="pre">dse_do_utils.scenariorunner.ScenarioConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.insert_in_do"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.insert_in_do" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.insert_inputs_in_db">
+<span class="sig-name descname"><span class="pre">insert_inputs_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.insert_inputs_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.insert_inputs_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.insert_outputs_in_db">
+<span class="sig-name descname"><span class="pre">insert_outputs_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.insert_outputs_in_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.insert_outputs_in_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.load_input_data_from_excel">
+<span class="sig-name descname"><span class="pre">load_input_data_from_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.load_input_data_from_excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.load_input_data_from_excel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.run_model">
+<span class="sig-name descname"><span class="pre">run_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.run_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.run_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main method to run the optimization model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.run_multiple">
+<span class="sig-name descname"><span class="pre">run_multiple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_configs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="dse_do_utils.scenariorunner.ScenarioConfig"><span class="pre">dse_do_utils.scenariorunner.ScenarioConfig</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.run_multiple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.run_multiple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only once create schema and/or load data from Excel.
+Then it will run all scenario_configs, each time applying the ScenarioGenerator on the base inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.run_once">
+<span class="sig-name descname"><span class="pre">run_once</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenario_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.ScenarioConfig" title="dse_do_utils.scenariorunner.ScenarioConfig"><span class="pre">dse_do_utils.scenariorunner.ScenarioConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#dse_do_utils.scenariorunner.RunConfig" title="dse_do_utils.scenariorunner.RunConfig"><span class="pre">dse_do_utils.scenariorunner.RunConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excel_file_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.run_once"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.run_once" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.scenariorunner.ScenarioRunner.write_output_data_to_excel">
+<span class="sig-name descname"><span class="pre">write_output_data_to_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/scenariorunner.html#ScenarioRunner.write_output_data_to_excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.scenariorunner.ScenarioRunner.write_output_data_to_excel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-dse_do_utils.utilities">
 <span id="dse-do-utils-utilities-module"></span><h2>dse_do_utils.utilities module<a class="headerlink" href="#module-dse_do_utils.utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -3116,6 +3360,7 @@ If it is, you may need to add another reload:</p>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariodbmanager">dse_do_utils.scenariodbmanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.scenariopicker">dse_do_utils.scenariopicker module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.scenariorunner">dse_do_utils.scenariorunner module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.utilities">dse_do_utils.utilities module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils.version">dse_do_utils.version module</a></li>
 <li><a class="reference internal" href="#module-dse_do_utils">Module contents</a></li>
@@ -3159,7 +3404,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
