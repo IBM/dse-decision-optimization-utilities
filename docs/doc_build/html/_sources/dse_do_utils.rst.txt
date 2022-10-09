@@ -116,6 +116,14 @@ dse\_do\_utils.scenariopicker module
    :undoc-members:
    :show-inheritance:
 
+dse\_do\_utils.scenariorunner module
+------------------------------------
+
+.. automodule:: dse_do_utils.scenariorunner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dse\_do\_utils.utilities module
 -------------------------------
 

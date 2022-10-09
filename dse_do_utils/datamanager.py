@@ -181,7 +181,7 @@ class DataManager(object):
             else:
                 param = raw_param
         else:
-            print('Warning: {} not in Parameters'.format(param_name))
+            print(f'Warning: {param_name} not in Parameters. Using default value = {default_value}')
             # If datetime, the default value can be a string
             import six  # For Python 2 and 3 compatibility of testing string instance
             if param_type == 'datetime' and isinstance(default_value, six.string_types):

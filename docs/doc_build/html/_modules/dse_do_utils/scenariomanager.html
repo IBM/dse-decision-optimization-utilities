@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.4.2 documentation</title>
+    <title>dse_do_utils.scenariomanager &#8212; DSE DO Utils 0.5.4.5b2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 
@@ -56,12 +56,15 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
 
 <span class="kn">import</span> <span class="nn">docplex</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="c1">#  Typing aliases</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils.utilities</span> <span class="kn">import</span> <span class="n">convert_size</span>
+
 <span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">InputsOutputs</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span><span class="p">]</span>
@@ -127,7 +130,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project_access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">template_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">platform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Platform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+                 <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">local_relative_data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;assets/data_asset&#39;</span><span class="p">,</span> <span class="n">data_directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioManager.</span>
 
 <span class="sd">        Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.</span>
@@ -147,8 +151,10 @@
 <span class="sd">            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token</span>
 <span class="sd">            project_access_token (str): When running in WS Cloud, also requires a project_id</span>
 <span class="sd">            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud</span>
-<span class="sd">            template_scenario_name (str): If scenario doesn&#39;t exists: create new one. If template_scenario_name is specified, use that as template.</span>
+<span class="sd">            template_scenario_name (str): If scenario doesn&#39;t exist: create new one. If template_scenario_name is specified, use that as template.</span>
 <span class="sd">            platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.</span>
+<span class="sd">            local_relative_data_path (str): relative directory from the local_root. Used as default data_directory</span>
+<span class="sd">            data_directory (str): Full path of data directory. Will override the platform dependent process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">=</span> <span class="n">scenario_name</span>
@@ -159,6 +165,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_scenario_name</span> <span class="o">=</span> <span class="n">template_scenario_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_relative_data_path</span> <span class="o">=</span> <span class="n">local_relative_data_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_directory</span> <span class="o">=</span> <span class="n">data_directory</span>
         <span class="k">if</span> <span class="n">platform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">platform</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">detect_platform</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="n">platform</span>
@@ -189,6 +197,10 @@
 
 <span class="sd">        :return: path to the datasets folder</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Added in v0.5.4.3 to force the data_directory on any platform, e.g. when using StorageVolumes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_directory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_directory</span>
+
         <span class="c1"># Note: first test for wscloud:</span>
         <span class="c1"># In CPDaaS the current test for cpd40 returns TRUE!</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="n">Platform</span><span class="o">.</span><span class="n">CPDaaS</span><span class="p">:</span>
@@ -201,7 +213,7 @@
             <span class="c1"># Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder</span>
             <span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/project_data/data_asset&#39;</span>  <span class="c1"># Do NOT use the os.path.join!</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Local file system</span>
-            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+            <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_relative_data_path</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data_dir</span></div>
 
 <div class="viewcode-block" id="ScenarioManager.get_root_directory"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_root_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -599,7 +611,7 @@
     <span class="c1">#     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)</span>
     <span class="c1">#     return self.inputs, self.outputs</span>
 
-<div class="viewcode-block" id="ScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ScenarioManager.write_data_to_excel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excel_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to an Excel file in datasets.</span>
 <span class="sd">        The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager</span>
 
@@ -921,8 +933,9 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">csv_name_pattern</span><span class="p">)):</span>  <span class="c1"># os.path.join is safe for both Unix and Win</span>
             <span class="c1"># Read csv</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-            <span class="n">table_name</span> <span class="o">=</span> <span class="n">tail</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># remove the &#39;.csv&#39;</span>
+            <span class="n">table_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="c1"># head, tail = os.path.split(file_path)</span>
+            <span class="c1"># table_name = tail[:-4]  # remove the &#39;.csv&#39;</span>
             <span class="n">inputs</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
         <span class="k">return</span> <span class="n">inputs</span>  <span class="c1"># , outputs</span></div>
 
@@ -956,21 +969,156 @@
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
                 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">)</span>
-                <span class="c1"># if platform == Platform.CPD40:</span>
-                <span class="c1">#     ScenarioManager.add_data_file_using_ws_lib_s(file_path)</span>
-                <span class="c1"># elif platform in [Platform.CPD25, Platform.CPDaaS]:</span>
-                <span class="c1">#     ScenarioManager.add_data_file_to_project_s(file_path, table_name + &quot;.csv&quot;)</span>
+                <span class="c1"># ScenarioManager.add_file_as_data_asset_s(file_path, table_name + &quot;.csv&quot;, platform=platform)</span>
         <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">csv_directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
-                <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">add_file_as_data_asset_s</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> <span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">)</span></div>
-                <span class="c1"># if platform == Platform.CPD40:</span>
-                <span class="c1">#     ScenarioManager.add_data_file_using_ws_lib_s(file_path)</span>
-                <span class="c1"># elif platform in [Platform.CPD25, Platform.CPDaaS]:</span>
-                <span class="c1">#     ScenarioManager.add_data_file_to_project_s(file_path, table_name + &quot;.csv&quot;)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+                <span class="c1"># ScenarioManager.add_file_as_data_asset_s(file_path, table_name + &quot;.csv&quot;, platform=platform)</span>
+
+    <span class="c1"># -----------------------------------------------------------------</span>
+    <span class="c1"># Load data from parquet</span>
+    <span class="c1"># -----------------------------------------------------------------</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_parquet"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet">[docs]</a>    <span class="k">def</span> <span class="nf">load_data_from_parquet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">input_name_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.parquet&quot;</span><span class="p">,</span>
+                               <span class="n">output_name_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputsOutputs</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load data from matching parquet files in a directory.</span>
+<span class="sd">        Uses glob.glob() to pattern-match files in the directory.</span>
+<span class="sd">        If you want to load one file, specify the full name including the `.parquet` extension.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): Relative directory from the root</span>
+<span class="sd">            input_name_pattern (str): name pattern to find matching parquet files for inputs</span>
+<span class="sd">            output_name_pattern (str): name pattern to find matching parquet files for outputs</span>
+<span class="sd">            **kwargs: Set of optional arguments for the pd.read_parquet() function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="n">full_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+        <span class="c1"># Read data from parquet</span>
+        <span class="k">if</span> <span class="n">input_name_pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_parquet_s</span><span class="p">(</span><span class="n">full_directory</span><span class="p">,</span> <span class="n">input_name_pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_name_pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">load_data_from_parquet_s</span><span class="p">(</span><span class="n">full_directory</span><span class="p">,</span> <span class="n">output_name_pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.load_data_from_parquet_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_data_from_parquet_s</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.parquet&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Read data from all matching .parquet files in a directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): the full path of a directory containing one or more .parquet files.</span>
+<span class="sd">            file_name_pattern (str): name pattern to find matching parquet files</span>
+<span class="sd">            **kwargs: Set of optional arguments for the pd.read_parquet() function</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data: dict of DataFrames. Keys are the .parquet file names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file_name_pattern</span><span class="p">)):</span>  <span class="c1"># os.path.join is safe for both Unix and Win</span>
+            <span class="c1"># Read parquet</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">table_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="n">inputs</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">inputs</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.write_data_to_parquet"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet">[docs]</a>    <span class="k">def</span> <span class="nf">write_data_to_parquet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                          <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Write inputs and/or outputs to .parquet files in the target folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): Relative directory from the root</span>
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_root_directory</span><span class="p">()</span>
+        <span class="n">directory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+        <span class="n">ScenarioManager</span><span class="o">.</span><span class="n">write_data_to_parquet_s</span><span class="p">(</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.write_data_to_parquet_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">write_data_to_parquet_s</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Write data to .parquet files in a directory. Name as name of DataFrame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            directory (str): the full path of a directory for the .parquet files.</span>
+<span class="sd">            inputs (Dict of DataFrames): inputs</span>
+<span class="sd">            outputs (Dict of DataFrames): outputs</span>
+
+<span class="sd">        Returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.parquet&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing input </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.parquet&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing output </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="c1"># -----------------------------------------------------------------</span>
+    <span class="c1"># Read from / write to zipped set of csv files</span>
+    <span class="c1"># -----------------------------------------------------------------</span>
+<div class="viewcode-block" id="ScenarioManager.load_data_from_zip_csv_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_zip_csv_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_data_from_zip_csv_s</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_size_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Read data from a zip file with .csv files.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            zip_file_path (str): the full path of a zip file containing one or more .csv files.</span>
+<span class="sd">            file_size_limit (int): maximum file size in bytes. None implies no limit.</span>
+<span class="sd">            **kwargs: Set of optional arguments for the pd.read_csv() function</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data: dict of DataFrames. Keys are the .csv file names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">csv_file</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">infolist</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">csv_file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+                    <span class="n">table_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">csv_file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+                    <span class="c1"># print(f&quot;Reading table = {table_name}. File-size = {convert_size(csv_file.file_size)}&quot;)</span>
+                    <span class="k">if</span> <span class="n">file_size_limit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">csv_file</span><span class="o">.</span><span class="n">file_size</span> <span class="o">&lt;=</span> <span class="n">file_size_limit</span><span class="p">:</span>
+                        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">csv_file</span><span class="o">.</span><span class="n">filename</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                        <span class="n">inputs</span><span class="p">[</span><span class="n">table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+                        <span class="c1">#print(f&quot;Read {table_name}: {df.shape[0]} rows and {df.shape[1]} columns&quot;)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                        <span class="c1">#print(f&quot;Read {table_name}: skipped&quot;)</span>
+
+        <span class="k">return</span> <span class="n">inputs</span></div>
+
+<div class="viewcode-block" id="ScenarioManager.write_data_to_zip_csv_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_zip_csv_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">write_data_to_zip_csv_s</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Outputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write data as a zip file with .csv files.</span>
+<span class="sd">        inputs and outputs dictionaries are merged and written in same zip.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            zip_file_path (str): the full path of a zip file.</span>
+<span class="sd">            inputs: dict of input DataFrames</span>
+<span class="sd">            outputs: dict of input DataFrames</span>
+<span class="sd">            **kwargs: Set of optional arguments for the df.to_csv() function</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">dfs</span><span class="p">,</span> <span class="o">**</span><span class="n">inputs</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dfs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">dfs</span><span class="p">,</span> <span class="o">**</span><span class="n">outputs</span><span class="p">}</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zipMe</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">filename</span> <span class="o">=</span>  <span class="n">table_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span>
+                    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="c1"># print(f&quot;Write table {table_name}, rows = {df.shape[0]} as {file_path}&quot;)</span>
+                    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">zipMe</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">compress_type</span><span class="o">=</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span></div>
 
     <span class="c1"># -----------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
@@ -1127,7 +1275,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariomanager</a></li> 

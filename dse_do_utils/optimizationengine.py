@@ -6,6 +6,8 @@
 # OptimizationEngine
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
+import pathlib
+
 import docplex
 import pandas as pd
 import os
@@ -30,9 +32,13 @@ except:
 
 
 class OptimizationEngine(object):
-    def __init__(self, data_manager: Optional[DataManager] = None, name: str = "MyOptimizationEngine"):
+    def __init__(self, data_manager: Optional[DataManager] = None, name: str = "MyOptimizationEngine",
+                 solve_kwargs = None, export_lp: bool = False, export_lp_path: str = None):
         self.mdl: Model = Model(name=name)
         self.dm = data_manager
+        self.solve_kwargs = solve_kwargs  # TODO: use in this.solve()
+        self.export_lp = export_lp
+        self.export_lp_path = export_lp_path
 
     def integer_var_series(self, df: pd.DataFrame, **kargs) -> pd.Series:
         """Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.
@@ -78,6 +84,9 @@ class OptimizationEngine(object):
         return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index)
 
     def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
+        # TODO: enable export_as_lp_path()?
+        # self.export_as_lp_path(lp_file_name=self.mdl.name)
+        # TODO: use self.solve_kwargs if **kwargs is empty/None. Or merge them?
         msol = self.mdl.solve(**kwargs)  # log_output=True
         if msol is not None:
             print('Found a solution')
@@ -116,6 +125,21 @@ class OptimizationEngine(object):
             ValueError if root directory can't be established.
         """
         return OptimizationEngine.export_as_lp_s(self.mdl, local_root=local_root, copy_to_csv=copy_to_csv)
+
+    def export_as_lp_path(self, lp_file_name: str = 'my_lp_file') -> str:
+        """Saves .lp file in self.export_lp_path
+        Note: Does not conflict with `OptimizationEngine.export_as_lp()` which has a different signature.
+        :return: file_path
+        """
+        filepath = None
+        if self.export_lp:
+            if pathlib.Path(lp_file_name).suffix != '.lp':
+                lp_file_name = lp_file_name + '.lp'
+            filepath = os.path.join(self.export_lp_path, lp_file_name)
+            # TODO: add logger
+            # self.dm.logger.debug(f"Exporting .lp file: {filepath}")
+            self.mdl.export_as_lp(filepath)
+        return filepath
 
     def export_as_cpo(self, local_root: Optional[str] = None, copy_to_csv: bool = False):
         """Export .cpo file of model in the 'DSX_PROJECT_DIR.datasets' folder.
