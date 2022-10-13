@@ -924,7 +924,6 @@ class ScenarioDbManager():
         # sql = t.select().where(t.c.scenario_seq.in_(scenario_seqs))
 
         df = pd.read_sql(sql, con=connection)
-
         return df
 
     ############################################################################################
