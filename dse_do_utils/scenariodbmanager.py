@@ -68,6 +68,22 @@ class ScenarioDbTable(ABC):
         if db_table_name in reserved_table_names:
             print(f"Warning: the db_table_name '{db_table_name}' is a reserved word. Do not use as table name.")
         self._sa_column_by_name = None  # Dict[str, sqlalchemy.Column] Will be generated dynamically first time it is needed.
+        self._dbm: ScenarioDbManager = None  # To be set from ScenarioDbManager during initialization
+
+    @property
+    def dbm(self):
+        return self._dbm
+
+    @dbm.setter
+    def dbm(self, dbm):
+        self._dbm = dbm
+
+    @property
+    def enable_scenario_seq(self):
+        if self._dbm is not None:
+            return self._dbm.enable_scenario_seq
+        else:
+            return False
 
     def resolve_metadata_column_conflicts(self, columns_metadata: List[sqlalchemy.Column]) -> List[sqlalchemy.Column]:
         columns_dict = {}
@@ -155,10 +171,16 @@ class ScenarioDbTable(ABC):
         constraints_metadata = self.constraints_metadata
 
         if multi_scenario and (self.db_table_name != 'scenario'):
-            columns_metadata.insert(0, Column('scenario_name', String(256), ForeignKey("scenario.scenario_name"),
-                                              primary_key=True, index=True))
-            constraints_metadata = [ScenarioDbTable.add_scenario_name_to_fk_constraint(fkc) for fkc in
+            if self.enable_scenario_seq:
+                columns_metadata.insert(0, Column('scenario_seq', Integer(), ForeignKey("scenario.scenario_seq"),
+                                                  primary_key=True, index=True))
+                constraints_metadata = [ScenarioDbTable.add_scenario_seq_to_fk_constraint(fkc) for fkc in
                                     constraints_metadata]
+            else:
+                columns_metadata.insert(0, Column('scenario_name', String(256), ForeignKey("scenario.scenario_name"),
+                                                  primary_key=True, index=True))
+                constraints_metadata = [ScenarioDbTable.add_scenario_name_to_fk_constraint(fkc) for fkc in
+                                        constraints_metadata]
 
         return Table(self.db_table_name, metadata, *(c for c in (columns_metadata + constraints_metadata)))
 
@@ -171,6 +193,18 @@ class ScenarioDbTable(ABC):
         # Create a new ForeignKeyConstraint by adding the `scenario_name`
         columns.insert(0, 'scenario_name')
         refcolumns.insert(0, f"{table_name}.scenario_name")
+        # TODO: `deferrable=True` doesn't seem to have an effect. Also, deferrable is illegal in DB2!?
+        return ForeignKeyConstraint(columns, refcolumns)  #, deferrable=True
+
+    @staticmethod
+    def add_scenario_seq_to_fk_constraint(fkc: ForeignKeyConstraint):
+        """Creates a new ForeignKeyConstraint by adding the `scenario_seq`."""
+        columns = fkc.column_keys
+        refcolumns = [fk.target_fullname for fk in fkc.elements]
+        table_name = refcolumns[0].split(".")[0]
+        # Create a new ForeignKeyConstraint by adding the `scenario_seq`
+        columns.insert(0, 'scenario_seq')
+        refcolumns.insert(0, f"{table_name}.scenario_seq")
         # TODO: `deferrable=True` doesn't seem to have an effect. Also, deferrable is illegal in DB2!?
         return ForeignKeyConstraint(columns, refcolumns)  #, deferrable=True
 
@@ -235,10 +269,21 @@ class ScenarioDbTable(ABC):
         """Delete all rows associated with the scenario in the DB table.
         Beware: make sure this is done in the right 'inverse cascading' order to avoid FK violations.
         """
-        # sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
-        t = self.get_sa_table()  # A Table()
-        sql = t.delete().where(t.c.scenario_name == scenario_name)
-        connection.execute(sql)
+        if self.enable_scenario_seq:
+            s = self.dbm.get_scenario_sa_table()
+            # scenario_seqs = [seq for seq in connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))]
+            scenario_seqs = [r.scenario_seq for r in connection.execute(s.select().where(s.c.scenario_name == scenario_name))]
+
+            t = self.get_sa_table()  # A Table()
+            if t is not None:
+                # Do a join with the scenario table to delete all entries based on the scenario_name
+                sql = t.delete().where(t.c.scenario_seq.in_(scenario_seqs))
+                connection.execute(sql)
+        else:
+            # sql = f"DELETE FROM {db_table.db_table_name} WHERE scenario_name = '{scenario_name}'"  # Old
+            t = self.get_sa_table()  # A Table()
+            sql = t.delete().where(t.c.scenario_name == scenario_name)
+            connection.execute(sql)
 
     @staticmethod
     def sqlcol(df: pd.DataFrame) -> Dict:
@@ -406,7 +451,7 @@ class ScenarioDbManager():
 
         self.engine = self._create_database_engine(credentials, schema, echo)
         self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
-        self._initialize_db_tables_metadata()  # Needs to be done after self.metadata, self.multi_scenario has been set
+        self._initialize_db_tables()  # Needs to be done after self.metadata, self.multi_scenario has been set
         self.read_scenario_table_from_db_callback = None  # For Flask caching
         self.read_scenarios_table_from_db_callback = None # For Flask caching
 
@@ -585,6 +630,14 @@ class ScenarioDbManager():
         """
         connection_string = self._get_db2_connection_string(credentials, schema)
         return sqlalchemy.create_engine(connection_string, echo=echo)
+
+    def _initialize_db_tables(self):
+        # Register dbm with table so it can have access to settings
+        for scenario_table_name, db_table in self.db_tables.items():
+            db_table.dbm = self
+
+        self._initialize_db_tables_metadata()
+
 
     def _initialize_db_tables_metadata(self):
         """To be called from constructor, after engine is 'created'/connected, after self.metadata, self.multi_scenario have been set.
@@ -1032,11 +1085,14 @@ class ScenarioDbManager():
         if self.enable_scenario_seq:
             s: sqlalchemy.Table = self.get_scenario_sa_table()
             sql = t.select().where(t.c.scenario_seq == s.c.scenario_seq).where(s.c.scenario_name == scenario_name)
+            df = pd.read_sql(sql, con=connection)
+            if db_table_name != 'scenario':
+                df = df.drop(columns=['scenario_seq'])
         else:
             sql = t.select().where(t.c.scenario_name == scenario_name)  # This is NOT a simple string!
-        df = pd.read_sql(sql, con=connection)
-        if db_table_name != 'scenario':
-            df = df.drop(columns=['scenario_name'])
+            df = pd.read_sql(sql, con=connection)
+            if db_table_name != 'scenario':
+                df = df.drop(columns=['scenario_name'])
 
         return df
 
@@ -1167,7 +1223,11 @@ class ScenarioDbManager():
         """Deletes ALL output tables. Then inserts the given set of tables.
         Note that if a defined output table is not included in the outputs, it will still be deleted from the scenario data."""
         # 1. Add scenario name to dfs:
-        outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
+        if self.enable_scenario_seq:
+            scenario_seq = self._get_scenario_seq(scenario_name, connection)
+            outputs = ScenarioDbManager.add_scenario_seq_to_dfs(scenario_seq, outputs)
+        else:
+            outputs = ScenarioDbManager.add_scenario_name_to_dfs(scenario_name, outputs)
         # 2. Delete all output tables
         for scenario_table_name, db_table in reversed(self.output_db_tables.items()):  # Note this INCLUDES the SCENARIO table!
             if (scenario_table_name != 'Scenario'):
@@ -1641,6 +1701,22 @@ class ScenarioDbManager():
             df['scenario_name'] = scenario_name
             outputs[scenario_table_name] = df
         return outputs
+
+    # def _add_scenario_name_to_dfs(self, scenario_name: str, inputs: Dict[str, pd.DataFrame], connection) -> Dict[str, pd.DataFrame]:
+    #     """Adds a `scenario_name` column to each df.
+    #     Or overwrites all values of that column already exists.
+    #     This avoids to need for the MultiScenarioManager when loading and storing single scenarios."""
+    #     outputs = {}
+    #     if self.enable_scenario_seq:
+    #         scenario_seq = self._get_scenario_seq(scenario_name, connection)
+    #         for scenario_table_name, df in inputs.items():
+    #             df['scenario_seq'] = scenario_seq
+    #             outputs[scenario_table_name] = df
+    #     else:
+    #         for scenario_table_name, df in inputs.items():
+    #             df['scenario_name'] = scenario_name
+    #             outputs[scenario_table_name] = df
+    #     return outputs
 
     @staticmethod
     def delete_scenario_name_column(inputs: Inputs, outputs: Outputs) -> (Inputs, Outputs):
