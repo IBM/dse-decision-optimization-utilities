@@ -1194,7 +1194,8 @@ class ScenarioDbManager():
         print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
 
         if self.enable_scenario_seq:
-            if scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection) is not None:
+            if (scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection)) is not None:
+                # print(f"ScenarioSeq = {scenario_seq}")
                 sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
                 connection.execute(sql)
             else:
