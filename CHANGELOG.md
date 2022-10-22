@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]## [0.5.4.5b4]
+### Added
+- OptimizationEngine.create_do_model() to instantiate as CPOptimizer model
+- OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns
 
 ## [0.5.4.5b3] - 2022-10-17
 ### Added
 - Support for scenarioSeq in ScenarioDbManager
-- OptimizationEngine.create_do_model() to instantiate as CPOptimizer model
-- OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns 
 
 ## [0.5.4.5b2] - 2022-10-02
 ### Changed
