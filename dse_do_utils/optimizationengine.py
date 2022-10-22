@@ -14,7 +14,9 @@ import os
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.progress import SolutionListener
 from docplex.mp.model import Model
-from typing import Sequence, List, Dict, Tuple, Optional
+# from docplex.cp.model import CpoModel
+import docplex.cp.model as cp
+from typing import Sequence, List, Dict, Tuple, Optional, Union
 
 # from dse_do_utils import ScenarioManager
 # Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)
@@ -33,12 +35,27 @@ except:
 
 class OptimizationEngine(object):
     def __init__(self, data_manager: Optional[DataManager] = None, name: str = "MyOptimizationEngine",
-                 solve_kwargs = None, export_lp: bool = False, export_lp_path: str = None):
-        self.mdl: Model = Model(name=name)
+                 solve_kwargs = None, export_lp: bool = False, export_lp_path: str = None, is_cpo_model: bool = False):
+        self.is_cpo_model = is_cpo_model
+        # self.mdl: Model = Model(name=name)
+        self.mdl: Union[Model, cp.CpoModel] = self.create_do_model(name=name, is_cpo_model=is_cpo_model)
         self.dm = data_manager
         self.solve_kwargs = solve_kwargs  # TODO: use in this.solve()
         self.export_lp = export_lp
         self.export_lp_path = export_lp_path
+
+    def create_do_model(self, name: str, is_cpo_model: bool = False, **kwargs) -> Union[Model, cp.CpoModel]:
+        """Create a model (.mdl). By default a CPLEX model (mp.Model), or a CP Optimizer model (cp.Model)
+        :param name:
+        :param is_cpo_model: Is True, create a cp.Model
+        :param kwargs: additional kwags for mdl initialization
+        :return: mp.Model or cp.CpoModel
+        """
+        if is_cpo_model:
+            mdl = cp.CpoModel(name=name, **kwargs)
+        else:
+            mdl = Model(name=name, **kwargs)
+        return mdl
 
     def integer_var_series(self, df: pd.DataFrame, **kargs) -> pd.Series:
         """Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.
@@ -271,10 +288,52 @@ class OptimizationEngine(object):
         if solve_phase_kpi_name is not None:
             mdl.add_kpi(lambda mdl, sol: mdl.progress_listener.solve_phase, solve_phase_kpi_name)
 
+    ####################################################
+    #  CP Optimizer methods
+    ####################################################
+    @staticmethod
+    def cp_interval_var_series_s(mdl: cp.CpoModel, df: pd.DataFrame, **kwargs) -> pd.Series:
+        """Returns pd.Series[cp.CpoIntervalVar].
+        For **kargs, see docplex.cp.expression.interval_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html?highlight=interval_var_list#docplex.cp.expression.interval_var_list)"""
+        interval_list = cp.interval_var_list(df.shape[0], **kwargs)
+        #     mdl.add(interval_list)  # Optional: you don't need to add variables to the model. Variables that appear in expressions are automatically added to the model
+        interval_series = pd.Series(interval_list, index=df.index)
+        return interval_series
 
-    ################################################
-    # MyProgress Listener
-    ################################################
+    def cp_interval_var_series(self, df, **kargs) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntervalVar]"""
+        return OptimizationEngine.cp_interval_var_series_s(self.mdl, df=df, **kargs)
+
+    @staticmethod
+    def cp_integer_var_series_s(mdl: cp.CpoModel, df: pd.DataFrame, **kwargs) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntVar].
+        For **kwargs, see docplex.cp.expression.integer_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html#docplex.cp.expression.integer_var_list)"""
+        integer_list = cp.integer_var_list(df.shape[0], **kwargs)
+        #     mdl.add(integer_list)  # Optional: you don't need to add variables to the model. Variables that appear in expressions are automatically added to the model
+        integer_series = pd.Series(integer_list, index=df.index)
+        return integer_series
+
+    def cp_integer_var_series(self, df, **kwargs) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntVar]"""
+        return OptimizationEngine.cp_integer_var_series_s(self.mdl, df=df, **kwargs)
+
+    @staticmethod
+    def cp_binary_var_series_s(mdl: cp.CpoModel, df: pd.DataFrame, **kwargs) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntVar].
+        For **kargs, see docplex.cp.expression.integer_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html#docplex.cp.expression.binary_var_list)"""
+        integer_list = cp.binary_var_list(df.shape[0], **kwargs)
+        #     mdl.add(integer_list)  # Optional: you don't need to add variables to the model. Variables that appear in expressions are automatically added to the model
+        integer_series = pd.Series(integer_list, index=df.index)
+        return integer_series
+
+    def cp_binary_var_series(self, df, **kwargs) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntVar]"""
+        return OptimizationEngine.cp_binary_var_series_s(self.mdl, df=df, **kwargs)
+
+
+################################################
+# MyProgress Listener
+################################################
 
 
 class MyProgressListener(SolutionListener):
@@ -297,3 +356,4 @@ class MyProgressListener(SolutionListener):
         except AttributeError:
             pass
         # self.my_model.outputs = self.post_process()
+
