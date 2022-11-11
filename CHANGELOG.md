@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - OptimizationEngine.create_do_model() to instantiate as CPOptimizer model
 - OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns
+- OptimizationEngine.semicontinuous_var_series
+- OptimizationEngine.semiinteger_var_series 
 
 ## [0.5.4.5b3] - 2022-10-17
 ### Added

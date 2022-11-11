@@ -21,7 +21,7 @@ from typing import Sequence, List, Dict, Tuple, Optional, Union
 # from dse_do_utils import ScenarioManager
 # Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)
 # Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module
-from docplex.mp.vartype import IntegerVarType, ContinuousVarType, BinaryVarType
+from docplex.mp.vartype import IntegerVarType, ContinuousVarType, BinaryVarType, SemiContinuousVarType
 
 try:
     # Import as part of package
@@ -99,6 +99,24 @@ class OptimizationEngine(object):
     def binary_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
         """Returns pd.Series[BinaryVarType]"""
         return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index)
+
+    def semicontinuous_var_series(self, df, lb, **kargs) -> pd.Series:
+        """Returns pd.Series[SemiContinuousVarType]"""
+        return self.semicontinuous_var_series_s(self.mdl, df, lb, **kargs)
+
+    @staticmethod
+    def semicontinuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, lb, **kargs) -> pd.Series:
+        """Returns pd.Series[SemiContinuousVarType]."""
+        return pd.Series(mdl.semicontinuous_var_list(df.index, lb, **kargs), index=df.index)
+
+    def semiinteger_var_series(self, df, lb, **kargs) -> pd.Series:
+        """Returns pd.Series[SemiIntegerVarType]"""
+        return self.semiinteger_var_series_s(self.mdl, df, lb, **kargs)
+
+    @staticmethod
+    def semiinteger_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, lb, **kargs) -> pd.Series:
+        """Returns pd.Series[SemiIntegerVarType]."""
+        return pd.Series(mdl.semiinteger_var_list(df.index, lb, **kargs), index=df.index)
 
     def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
         # TODO: enable export_as_lp_path()?
