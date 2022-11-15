@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns
 - OptimizationEngine.semicontinuous_var_series
 - OptimizationEngine.semiinteger_var_series 
+### Changed
+- ScenarioDbManager: before any DB insert (bulk and row-by-row), replace NaN with None to avoid FK problems in DB2
 
 ## [0.5.4.5b3] - 2022-10-17
 ### Added

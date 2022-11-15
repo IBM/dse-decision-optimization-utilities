@@ -244,6 +244,9 @@ class ScenarioDbTable(ABC):
         if enable_astype:
             df = self._set_df_column_types(df)
 
+        # Replace NaN with None to avoid FK problems:
+        df = df.replace({float('NaN'): None})
+
         try:
             df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
                                index=False)
@@ -846,6 +849,9 @@ class ScenarioDbManager():
         After the limit, the insert will be terminated. And the next table will be inserted.
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
         """
+        # Replace NaN with None to avoid FK problems:
+        df = df.replace({float('NaN'): None})
+
         num_exceptions = 0
         max_num_exceptions = 10
         columns, df2 = db_table.get_df_column_names_2(df=df)  # Adds missing columns with None values
