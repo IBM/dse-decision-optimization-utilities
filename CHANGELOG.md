@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]## [0.5.4.5b5]
+### Changed
+- DeployedDOModel.get_solve_details_objective uses PROGRESS_CURRENT_OBJECTIVE instead of PROGRESS_BEST_OBJECTIVE and adds exception handling
 
 ## [0.5.4.5b4] - 2022-11-15
 ### Added
@@ -14,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OptimizationEngine.semiinteger_var_series 
 ### Changed
 - ScenarioDbManager: before any DB insert (bulk and row-by-row), replace NaN with None to avoid FK problems in DB2
-- DeployedDOModel.get_solve_details_objective uses PROGRESS_CURRENT_OBJECTIVE instead of PROGRESS_BEST_OBJECTIVE and adds exception handling
 
 ## [0.5.4.5b3] - 2022-10-17
 ### Added
