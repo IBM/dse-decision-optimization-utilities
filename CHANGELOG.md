@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.5b5]
 
-## [0.5.4.5b4] - 2022-10-17
+## [0.5.4.5b4] - 2022-11-15
 ### Added
 - OptimizationEngine.create_do_model() to instantiate as CPOptimizer model
 - OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns
