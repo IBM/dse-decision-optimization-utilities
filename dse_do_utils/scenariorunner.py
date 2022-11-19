@@ -104,7 +104,7 @@ class ScenarioRunner:
                  data_directory: Optional[str] = None) -> None:
 
         self.scenario_db_manager: ScenarioDbManager = scenario_db_manager
-        self.optimization_engine_class = optimization_engine_class
+        self.optimization_engine_class: Type[OptimizationEngine] = optimization_engine_class
         self.data_manager_class = data_manager_class
         self.scenario_db_manager_class = scenario_db_manager_class
         self.scenario_generator_class = scenario_generator_class

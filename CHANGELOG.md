@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.5b5]
 ### Changed
 - DeployedDOModel.get_solve_details_objective uses PROGRESS_CURRENT_OBJECTIVE instead of PROGRESS_BEST_OBJECTIVE and adds exception handling
+- setup.py avoids import of dse_do_utils to get __version__
 
 ## [0.5.4.5b4] - 2022-11-15
 ### Added

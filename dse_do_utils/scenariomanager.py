@@ -862,7 +862,9 @@ class ScenarioManager(object):
         """
         root_dir = self.get_root_directory()
         csv_full_directory = os.path.join(root_dir, csv_directory)
-        # Read data from Excel
+        # Read data
+        self.inputs = {}
+        self.outputs = {}
         if input_csv_name_pattern is not None:
             self.inputs = ScenarioManager.load_data_from_csv_s(csv_full_directory, input_csv_name_pattern, **kwargs)
         if output_csv_name_pattern is not None:
