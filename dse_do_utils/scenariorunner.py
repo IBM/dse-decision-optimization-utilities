@@ -30,6 +30,7 @@ class RunConfig:
     data_check_bulk_insert: bool = False  # False implies row-by-row
     log_level: str = 'DEBUG'  # 'DEBUG'
     export_lp: bool = False
+    export_sav: bool = False
     export_lp_path: str = ''
     do_model_name: str = None
     template_scenario_name: Optional[str] = None  # 'TemplateScenario'
@@ -387,6 +388,7 @@ class ScenarioRunner:
             data_manager=self.data_manager,
             name=(run_config.do_model_name if run_config.do_model_name is not None else self.do_model_name),
             export_lp=run_config.export_lp,
+            export_sav=run_config.export_sav,
             export_lp_path=run_config.export_lp_path,
         )
 
