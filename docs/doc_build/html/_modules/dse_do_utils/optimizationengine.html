@@ -2,18 +2,20 @@
 
 <!doctype html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.optimizationengine &#8212; DSE DO Utils 0.5.4.4 documentation</title>
+    <title>dse_do_utils.optimizationengine &#8212; DSE DO Utils 0.5.4.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.optimizationengine</a></li> 
@@ -52,18 +54,22 @@
 <span class="c1"># OptimizationEngine</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
 <span class="kn">import</span> <span class="nn">docplex</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">docplex.mp.conflict_refiner</span> <span class="kn">import</span> <span class="n">ConflictRefiner</span>
 <span class="kn">from</span> <span class="nn">docplex.mp.progress</span> <span class="kn">import</span> <span class="n">SolutionListener</span>
 <span class="kn">from</span> <span class="nn">docplex.mp.model</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="c1"># from docplex.cp.model import CpoModel</span>
+<span class="kn">import</span> <span class="nn">docplex.cp.model</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="c1"># from dse_do_utils import ScenarioManager</span>
 <span class="c1"># Note that when in a package, we need to import from another modules in this package slightly differently (with the dot)</span>
 <span class="c1"># Also, for DO in CPD25, we need to add scenariomanager as an added Python file and import as plain module</span>
-<span class="kn">from</span> <span class="nn">docplex.mp.vartype</span> <span class="kn">import</span> <span class="n">IntegerVarType</span><span class="p">,</span> <span class="n">ContinuousVarType</span><span class="p">,</span> <span class="n">BinaryVarType</span>
+<span class="kn">from</span> <span class="nn">docplex.mp.vartype</span> <span class="kn">import</span> <span class="n">IntegerVarType</span><span class="p">,</span> <span class="n">ContinuousVarType</span><span class="p">,</span> <span class="n">BinaryVarType</span><span class="p">,</span> <span class="n">SemiContinuousVarType</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># Import as part of package</span>
@@ -76,9 +82,29 @@
 
 
 <div class="viewcode-block" id="OptimizationEngine"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine">[docs]</a><span class="k">class</span> <span class="nc">OptimizationEngine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;MyOptimizationEngine&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">:</span> <span class="n">Model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_manager</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;MyOptimizationEngine&quot;</span><span class="p">,</span>
+                 <span class="n">solve_kwargs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">export_lp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">export_sav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">export_lp_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_cpo_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cpo_model</span> <span class="o">=</span> <span class="n">is_cpo_model</span>
+        <span class="c1"># self.mdl: Model = Model(name=name)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_do_model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">is_cpo_model</span><span class="o">=</span><span class="n">is_cpo_model</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">data_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_kwargs</span> <span class="o">=</span> <span class="n">solve_kwargs</span>  <span class="c1"># TODO: use in this.solve()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_lp</span> <span class="o">=</span> <span class="n">export_lp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_sav</span> <span class="o">=</span> <span class="n">export_sav</span>  <span class="c1"># TODO: add export to sav</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_lp_path</span> <span class="o">=</span> <span class="n">export_lp_path</span>
+
+<div class="viewcode-block" id="OptimizationEngine.create_do_model"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.create_do_model">[docs]</a>    <span class="k">def</span> <span class="nf">create_do_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_cpo_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Create a model (.mdl). By default a CPLEX model (mp.Model), or a CP Optimizer model (cp.Model)</span>
+<span class="sd">        :param name:</span>
+<span class="sd">        :param is_cpo_model: Is True, create a cp.Model</span>
+<span class="sd">        :param kwargs: additional kwags for mdl initialization</span>
+<span class="sd">        :return: mp.Model or cp.CpoModel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_cpo_model</span><span class="p">:</span>
+            <span class="n">mdl</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mdl</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mdl</span></div>
 
 <div class="viewcode-block" id="OptimizationEngine.integer_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">integer_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a Series of integer dvar for each row in the DF. Most effective method. Best practice.</span>
@@ -123,7 +149,28 @@
         <span class="sd">&quot;&quot;&quot;Returns pd.Series[BinaryVarType]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">binary_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="OptimizationEngine.semicontinuous_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semicontinuous_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">semicontinuous_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[SemiContinuousVarType]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">semicontinuous_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.semicontinuous_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semicontinuous_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">semicontinuous_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[SemiContinuousVarType].&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">semicontinuous_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.semiinteger_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semiinteger_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">semiinteger_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[SemiIntegerVarType]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">semiinteger_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.semiinteger_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semiinteger_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">semiinteger_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">:</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[SemiIntegerVarType].&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">semiinteger_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">lb</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="OptimizationEngine.solve"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refine_conflict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">docplex</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">solution</span><span class="o">.</span><span class="n">SolveSolution</span><span class="p">:</span>
+        <span class="c1"># TODO: enable export_as_lp_path()?</span>
+        <span class="c1"># self.export_as_lp_path(lp_file_name=self.mdl.name)</span>
+        <span class="c1"># TODO: use self.solve_kwargs if **kwargs is empty/None. Or merge them?</span>
         <span class="n">msol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># log_output=True</span>
         <span class="k">if</span> <span class="n">msol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found a solution&#39;</span><span class="p">)</span>
@@ -162,6 +209,21 @@
 <span class="sd">            ValueError if root directory can&#39;t be established.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">export_as_lp_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">local_root</span><span class="o">=</span><span class="n">local_root</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="o">=</span><span class="n">copy_to_csv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.export_as_lp_path"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_path">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_lp_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;my_lp_file&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Saves .lp file in self.export_lp_path</span>
+<span class="sd">        Note: Does not conflict with `OptimizationEngine.export_as_lp()` which has a different signature.</span>
+<span class="sd">        :return: file_path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_lp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">lp_file_name</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.lp&#39;</span><span class="p">:</span>
+                <span class="n">lp_file_name</span> <span class="o">=</span> <span class="n">lp_file_name</span> <span class="o">+</span> <span class="s1">&#39;.lp&#39;</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">export_lp_path</span><span class="p">,</span> <span class="n">lp_file_name</span><span class="p">)</span>
+            <span class="c1"># TODO: add logger</span>
+            <span class="c1"># self.dm.logger.debug(f&quot;Exporting .lp file: {filepath}&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="o">.</span><span class="n">export_as_lp</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filepath</span></div>
 
 <div class="viewcode-block" id="OptimizationEngine.export_as_cpo"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_cpo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy_to_csv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Export .cpo file of model in the &#39;DSX_PROJECT_DIR.datasets&#39; folder.</span>
@@ -291,12 +353,54 @@
         <span class="k">if</span> <span class="n">solution_count_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solution_count</span><span class="p">,</span> <span class="n">solution_count_kpi_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">solve_phase_kpi_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solve_phase</span><span class="p">,</span> <span class="n">solve_phase_kpi_name</span><span class="p">)</span></div></div>
+            <span class="n">mdl</span><span class="o">.</span><span class="n">add_kpi</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mdl</span><span class="p">,</span> <span class="n">sol</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">progress_listener</span><span class="o">.</span><span class="n">solve_phase</span><span class="p">,</span> <span class="n">solve_phase_kpi_name</span><span class="p">)</span></div>
+
+    <span class="c1">####################################################</span>
+    <span class="c1">#  CP Optimizer methods</span>
+    <span class="c1">####################################################</span>
+<div class="viewcode-block" id="OptimizationEngine.cp_interval_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_interval_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cp_interval_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">:</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[cp.CpoIntervalVar].</span>
+<span class="sd">        For **kargs, see docplex.cp.expression.interval_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html?highlight=interval_var_list#docplex.cp.expression.interval_var_list)&quot;&quot;&quot;</span>
+        <span class="n">interval_list</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">interval_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1">#     mdl.add(interval_list)  # Optional: you don&#39;t need to add variables to the model. Variables that appear in expressions are automatically added to the model</span>
+        <span class="n">interval_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">interval_list</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interval_series</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.cp_interval_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_interval_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">cp_interval_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[docplex.cp.expression.CpoIntervalVar]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">cp_interval_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.cp_integer_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_integer_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cp_integer_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">:</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[docplex.cp.expression.CpoIntVar].</span>
+<span class="sd">        For **kwargs, see docplex.cp.expression.integer_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html#docplex.cp.expression.integer_var_list)&quot;&quot;&quot;</span>
+        <span class="n">integer_list</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">integer_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1">#     mdl.add(integer_list)  # Optional: you don&#39;t need to add variables to the model. Variables that appear in expressions are automatically added to the model</span>
+        <span class="n">integer_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">integer_list</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">integer_series</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.cp_integer_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_integer_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">cp_integer_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[docplex.cp.expression.CpoIntVar]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">cp_integer_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.cp_binary_var_series_s"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_binary_var_series_s">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cp_binary_var_series_s</span><span class="p">(</span><span class="n">mdl</span><span class="p">:</span> <span class="n">cp</span><span class="o">.</span><span class="n">CpoModel</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[docplex.cp.expression.CpoIntVar].</span>
+<span class="sd">        For **kargs, see docplex.cp.expression.integer_var_list (http://ibmdecisionoptimization.github.io/docplex-doc/cp/docplex.cp.expression.py.html#docplex.cp.expression.binary_var_list)&quot;&quot;&quot;</span>
+        <span class="n">integer_list</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">binary_var_list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1">#     mdl.add(integer_list)  # Optional: you don&#39;t need to add variables to the model. Variables that appear in expressions are automatically added to the model</span>
+        <span class="n">integer_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">integer_list</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">integer_series</span></div>
+
+<div class="viewcode-block" id="OptimizationEngine.cp_binary_var_series"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_binary_var_series">[docs]</a>    <span class="k">def</span> <span class="nf">cp_binary_var_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns pd.Series[docplex.cp.expression.CpoIntVar]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OptimizationEngine</span><span class="o">.</span><span class="n">cp_binary_var_series_s</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdl</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-    <span class="c1">################################################</span>
-    <span class="c1"># MyProgress Listener</span>
-    <span class="c1">################################################</span>
+<span class="c1">################################################</span>
+<span class="c1"># MyProgress Listener</span>
+<span class="c1">################################################</span>
 
 
 <div class="viewcode-block" id="MyProgressListener"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.optimizationengine.MyProgressListener">[docs]</a><span class="k">class</span> <span class="nc">MyProgressListener</span><span class="p">(</span><span class="n">SolutionListener</span><span class="p">):</span>
@@ -319,6 +423,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">pass</span></div></div>
         <span class="c1"># self.my_model.outputs = self.post_process()</span>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -336,7 +441,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -350,7 +455,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.optimizationengine</a></li> 
@@ -358,7 +463,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Victor Terpstra.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>

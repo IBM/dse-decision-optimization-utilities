@@ -565,7 +565,7 @@ class ScenarioManager(object):
     #     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
     #     return self.inputs, self.outputs
 
-    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> None:
+    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> str:
         """Write inputs and/or outputs to an Excel file in datasets.
         The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager
 
@@ -862,7 +862,9 @@ class ScenarioManager(object):
         """
         root_dir = self.get_root_directory()
         csv_full_directory = os.path.join(root_dir, csv_directory)
-        # Read data from Excel
+        # Read data
+        self.inputs = {}
+        self.outputs = {}
         if input_csv_name_pattern is not None:
             self.inputs = ScenarioManager.load_data_from_csv_s(csv_full_directory, input_csv_name_pattern, **kwargs)
         if output_csv_name_pattern is not None:

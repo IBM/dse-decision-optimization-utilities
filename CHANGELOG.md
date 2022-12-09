@@ -4,8 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.5b0]
+## [Unreleased]## [0.5.4.6b0]
+
+## [Unreleased]## [0.5.4.5]
 ### Changed
+- DeployedDOModel.get_solve_details_objective uses PROGRESS_CURRENT_OBJECTIVE instead of PROGRESS_BEST_OBJECTIVE and adds exception handling
+- setup.py avoids import of dse_do_utils to get __version__
+## Added
+- RunConfig.export_sav option
+
+## [0.5.4.5b4] - 2022-11-15
+### Added
+- OptimizationEngine.create_do_model() to instantiate as CPOptimizer model
+- OptimizationEngine CPOptimizer methods to create dvar as DataFrame columns
+- OptimizationEngine.semicontinuous_var_series
+- OptimizationEngine.semiinteger_var_series 
+### Changed
+- ScenarioDbManager: before any DB insert (bulk and row-by-row), replace NaN with None to avoid FK problems in DB2
+
+## [0.5.4.5b3] - 2022-10-17
+### Added
+- Support for scenarioSeq in ScenarioDbManager
+
+## [0.5.4.5b2] - 2022-10-02
+### Changed
+- ScenarioRunner and ScenarioGenerator refactoring
+
+## [0.5.4.5b1] - 2022-09-22
+### Added
+- ScenarioRunner and ScenarioGenerator
+
+## [0.5.4.5b0] - 2022-09-06
+### Changed
+- ScenarioDbManager.resolve_metadata_column_conflicts: resolve conflicts where a ScenarioDbTable subclass redefines a column.
+- ScenarioDbManager._insert_table_in_db_by_row automatically inserts None for columns in defined schema, but missing in DataFrame.
 
 ## [0.5.4.4] - 2022-04-28
 ### Added

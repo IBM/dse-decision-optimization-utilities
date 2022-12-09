@@ -276,3 +276,6 @@ class MapManager(object):
         :returns (str): text for a tooltip in table format
         """
         return MapManager.get_html_table(rows)
+
+
+

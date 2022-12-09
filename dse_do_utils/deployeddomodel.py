@@ -234,8 +234,14 @@ class DeployedDOModel(object):
 
     @staticmethod
     def get_solve_details_objective(job_details):
-        """After job has completed"""
-        return job_details['entity']['decision_optimization']['solve_state']['details']['PROGRESS_BEST_OBJECTIVE']
+        """After job has completed.
+        Note: not sure where the objective is. Can be PROGRESS_CURRENT_OBJECTIVE or PROGRESS_BEST_OBJECTIVE"""
+        try:
+            objective = float(job_details['entity']['decision_optimization']['solve_state']['details']['PROGRESS_CURRENT_OBJECTIVE'])
+        except:
+            print("Cannot extract objective value")
+            objective = 0
+        return objective
 
     def get_space_id(self, space_name: str):
         """Find space_id from space_name."""
