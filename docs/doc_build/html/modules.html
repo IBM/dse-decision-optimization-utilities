@@ -2,18 +2,21 @@
 
 <!doctype html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils &#8212; DSE DO Utils 0.5.4.5b2 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>dse_do_utils &#8212; DSE DO Utils 0.5.4.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -39,7 +42,7 @@
         <li class="right" >
           <a href="readme_link.html" title="Read me"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils</a></li> 
       </ul>
     </div>  
@@ -49,35 +52,360 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="dse-do-utils">
-<h1>dse_do_utils<a class="headerlink" href="#dse-do-utils" title="Permalink to this headline">¶</a></h1>
+  <section id="dse-do-utils">
+<h1>dse_do_utils<a class="headerlink" href="#dse-do-utils" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dse_do_utils.html">dse_do_utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.deployeddomodelcpd21">dse_do_utils.deployeddomodelcpd21 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.domodeldeployer">dse_do_utils.domodeldeployer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.multiscenariomanager">dse_do_utils.multiscenariomanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.plotly_cpd_workaround">dse_do_utils.plotly_cpd_workaround module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.plotlymanager">dse_do_utils.plotlymanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariodbmanager">dse_do_utils.scenariodbmanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariopicker">dse_do_utils.scenariopicker module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariorunner">dse_do_utils.scenariorunner module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.utilities">dse_do_utils.utilities module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.cpd25utilities">dse_do_utils.cpd25utilities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_as_data_asset_cpd25"><code class="docutils literal notranslate"><span class="pre">add_file_as_data_asset_cpd25()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_cpd25"><code class="docutils literal notranslate"><span class="pre">add_file_path_as_data_asset_cpd25()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.cpd25utilities.add_file_path_as_data_asset_wsc"><code class="docutils literal notranslate"><span class="pre">add_file_path_as_data_asset_wsc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_cpd25"><code class="docutils literal notranslate"><span class="pre">write_data_asset_as_file_cpd25()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.cpd25utilities.write_data_asset_as_file_wsc"><code class="docutils literal notranslate"><span class="pre">write_data_asset_as_file_wsc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.datamanager">dse_do_utils.datamanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager"><code class="docutils literal notranslate"><span class="pre">DataManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.apply_and_concat"><code class="docutils literal notranslate"><span class="pre">DataManager.apply_and_concat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_ai"><code class="docutils literal notranslate"><span class="pre">DataManager.df_crossjoin_ai()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_mi"><code class="docutils literal notranslate"><span class="pre">DataManager.df_crossjoin_mi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.df_crossjoin_si"><code class="docutils literal notranslate"><span class="pre">DataManager.df_crossjoin_si()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.extract_solution"><code class="docutils literal notranslate"><span class="pre">DataManager.extract_solution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_parameter_value"><code class="docutils literal notranslate"><span class="pre">DataManager.get_parameter_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.get_raw_table_by_name"><code class="docutils literal notranslate"><span class="pre">DataManager.get_raw_table_by_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prep_parameters"><code class="docutils literal notranslate"><span class="pre">DataManager.prep_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_data_frames"><code class="docutils literal notranslate"><span class="pre">DataManager.prepare_data_frames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_input_data_frames"><code class="docutils literal notranslate"><span class="pre">DataManager.prepare_input_data_frames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_output_data_frames"><code class="docutils literal notranslate"><span class="pre">DataManager.prepare_output_data_frames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.print_hello"><code class="docutils literal notranslate"><span class="pre">DataManager.print_hello()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.print_inputs_outputs_summary"><code class="docutils literal notranslate"><span class="pre">DataManager.print_inputs_outputs_summary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.datamanager.DataManager.set_parameters"><code class="docutils literal notranslate"><span class="pre">DataManager.set_parameters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#dse-do-utils-deployeddomodel-module">dse_do_utils.deployeddomodel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.deployeddomodelcpd21">dse_do_utils.deployeddomodelcpd21 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.cleanup"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.cleanup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.execute_model"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.execute_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_dump_name_and_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_debug_dump_name_and_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_debug_file_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_debug_file_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_service_model_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_execution_service_model_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_execution_status"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_execution_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_headers"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_headers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_input_files"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_input_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_job_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_job_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_kill_job_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_kill_job_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_name_and_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_log_file_name_and_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_log_file_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_log_file_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_objective"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_objective()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solution_name_and_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_solution_name_and_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_config"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_solve_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_status"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_solve_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_solve_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_solve_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.get_stop_job_url"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.get_stop_job_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.kill_job"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.kill_job()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.monitor_execution"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.monitor_execution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_container()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_container_get_dataframe"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_container_get_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_failed"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_failed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_inline_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_inline_table_get_dataframe"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_inline_table_get_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_interrupted"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_interrupted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.post_process_processed"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.post_process_processed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_debug_materials"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.retrieve_debug_materials()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_file"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.retrieve_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solution"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.retrieve_solution()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.retrieve_solve_configuration"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.retrieve_solve_configuration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.set_output_settings_in_solve_configuration"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.set_output_settings_in_solve_configuration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.solve"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.solve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.stop_job"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.stop_job()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#dse-do-utils-domodeldeployer-module">dse_do_utils.domodeldeployer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter"><code class="docutils literal notranslate"><span class="pre">DOModelExporter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.export_do_models"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.export_do_models()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_curl"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.get_access_token_curl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_access_token_web"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.get_access_token_web()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_curl"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.get_do_model_export_curl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_do_model_export_web"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.get_do_model_export_web()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.get_project_id"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.get_project_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.domodelexporter.DOModelExporter.write_do_model_to_file"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.write_do_model_to_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager"><code class="docutils literal notranslate"><span class="pre">MapManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_full_screen"><code class="docutils literal notranslate"><span class="pre">MapManager.add_full_screen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_layer_control"><code class="docutils literal notranslate"><span class="pre">MapManager.add_layer_control()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.create_blank_map"><code class="docutils literal notranslate"><span class="pre">MapManager.create_blank_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_arrows"><code class="docutils literal notranslate"><span class="pre">MapManager.get_arrows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_bearing"><code class="docutils literal notranslate"><span class="pre">MapManager.get_bearing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_html_table"><code class="docutils literal notranslate"><span class="pre">MapManager.get_html_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_popup_table"><code class="docutils literal notranslate"><span class="pre">MapManager.get_popup_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.get_tooltip_table"><code class="docutils literal notranslate"><span class="pre">MapManager.get_tooltip_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.mapmanager.MapManager.kansas_city_coord"><code class="docutils literal notranslate"><span class="pre">MapManager.kansas_city_coord</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.multiscenariomanager">dse_do_utils.multiscenariomanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.add_data_file_to_project"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.add_data_file_to_project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.env_is_wscloud"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.env_is_wscloud()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_all_scenario_names"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_all_scenario_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_data_directory"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_data_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_dd_client"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_dd_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_multi_scenario_data"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_multi_scenario_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_root_directory"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_root_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.get_scenarios_df"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.get_scenarios_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.load_data_from_scenario"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.load_data_from_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.merge_scenario_data"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.merge_scenario_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.multiscenariomanager.MultiScenarioManager.write_data_to_excel"><code class="docutils literal notranslate"><span class="pre">MultiScenarioManager.write_data_to_excel()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.optimizationengine">dse_do_utils.optimizationengine module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.MyProgressListener"><code class="docutils literal notranslate"><span class="pre">MyProgressListener</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.MyProgressListener.notify_progress"><code class="docutils literal notranslate"><span class="pre">MyProgressListener.notify_progress()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.add_mip_progress_kpis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.binary_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.binary_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.binary_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.continuous_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.continuous_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.continuous_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_binary_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_binary_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_binary_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_binary_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_integer_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_integer_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_integer_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_integer_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_interval_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_interval_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.cp_interval_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.cp_interval_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.create_do_model"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.create_do_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.export_as_cpo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_cpo_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.export_as_cpo_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.export_as_lp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_path"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.export_as_lp_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.export_as_lp_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.export_as_lp_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.get_kpi_output_table"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.get_kpi_output_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.integer_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.integer_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.integer_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semicontinuous_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.semicontinuous_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semicontinuous_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.semicontinuous_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semiinteger_var_series"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.semiinteger_var_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.semiinteger_var_series_s"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.semiinteger_var_series_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.optimizationengine.OptimizationEngine.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationEngine.solve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#dse-do-utils-plotly-cpd-workaround-module">dse_do_utils.plotly_cpd_workaround module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.plotlymanager">dse_do_utils.plotlymanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager"><code class="docutils literal notranslate"><span class="pre">PlotlyManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager.get_dash_tab_layout_m"><code class="docutils literal notranslate"><span class="pre">PlotlyManager.get_dash_tab_layout_m()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m"><code class="docutils literal notranslate"><span class="pre">PlotlyManager.get_plotly_fig_m()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariodbmanager">dse_do_utils.scenariodbmanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable"><code class="docutils literal notranslate"><span class="pre">AutoScenarioDbTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.create_table_metadata"><code class="docutils literal notranslate"><span class="pre">AutoScenarioDbTable.create_table_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.get_sa_table"><code class="docutils literal notranslate"><span class="pre">AutoScenarioDbTable.get_sa_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.AutoScenarioDbTable.insert_table_in_db_bulk"><code class="docutils literal notranslate"><span class="pre">AutoScenarioDbTable.insert_table_in_db_bulk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.BusinessKpiTable"><code class="docutils literal notranslate"><span class="pre">BusinessKpiTable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.column_name"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.column_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.current_value"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.current_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.previous_value"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.previous_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.row_idx"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.row_idx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.row_index"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.row_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.scenario_name"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.scenario_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.DbCellUpdate.table_name"><code class="docutils literal notranslate"><span class="pre">DbCellUpdate.table_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.KpiTable"><code class="docutils literal notranslate"><span class="pre">KpiTable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ParameterTable"><code class="docutils literal notranslate"><span class="pre">ParameterTable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_name_to_dfs"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.add_scenario_name_to_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.add_scenario_seq_to_dfs"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.add_scenario_seq_to_dfs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.create_schema"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.create_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.delete_scenario_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_name_column"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.delete_scenario_name_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.delete_scenario_seq_column"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.delete_scenario_seq_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.drop_all_tables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.duplicate_scenario_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.duplicate_scenario_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenario_db_table"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.get_scenario_db_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenario_sa_table"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.get_scenario_sa_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenarios_df"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.get_scenarios_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_from_zip"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.insert_scenarios_from_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_scenarios_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.insert_scenarios_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_tables_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.insert_tables_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_multi_scenario_tables_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.read_multi_scenario_tables_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.read_scenario_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_input_tables_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.read_scenario_input_tables_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_table_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.read_scenario_table_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.read_scenario_tables_from_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.read_scenario_tables_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.rename_scenario_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.rename_scenario_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.replace_scenario_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.replace_scenario_tables_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.replace_scenario_tables_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.update_cell_changes_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.update_cell_changes_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.update_scenario_output_tables_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioDbManager.update_scenario_output_tables_in_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.add_scenario_name_to_fk_constraint"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.add_scenario_name_to_fk_constraint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.add_scenario_seq_to_fk_constraint"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.add_scenario_seq_to_fk_constraint()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.camel_case_to_snake_case"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.camel_case_to_snake_case()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.create_table_metadata"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.create_table_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.dbm"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.dbm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.df_column_names_to_snake_case"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.df_column_names_to_snake_case()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.enable_scenario_seq"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.enable_scenario_seq</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_db_table_name"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.get_db_table_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.get_df_column_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_df_column_names_2"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.get_df_column_names_2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_column"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.get_sa_column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.get_sa_table"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.get_sa_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.insert_table_in_db_bulk"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.insert_table_in_db_bulk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.resolve_metadata_column_conflicts"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.resolve_metadata_column_conflicts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.sqlcol"><code class="docutils literal notranslate"><span class="pre">ScenarioDbTable.sqlcol()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioSeqTable"><code class="docutils literal notranslate"><span class="pre">ScenarioSeqTable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioTable"><code class="docutils literal notranslate"><span class="pre">ScenarioTable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariomanager">dse_do_utils.scenariomanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform"><code class="docutils literal notranslate"><span class="pre">Platform</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform.CPD25"><code class="docutils literal notranslate"><span class="pre">Platform.CPD25</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform.CPD40"><code class="docutils literal notranslate"><span class="pre">Platform.CPD40</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform.CPDaaS"><code class="docutils literal notranslate"><span class="pre">Platform.CPDaaS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.Platform.Local"><code class="docutils literal notranslate"><span class="pre">Platform.Local</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager"><code class="docutils literal notranslate"><span class="pre">ScenarioManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_to_project_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_file_to_project_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_project_lib"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_file_using_project_lib()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_file_using_ws_lib()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_file_using_ws_lib_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_file_using_ws_lib_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_into_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_data_into_scenario_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_data_into_scenario_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_file_as_data_asset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.add_file_as_data_asset_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.add_file_as_data_asset_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.clear_scenario_data"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.clear_scenario_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.create_new_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.create_new_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.detect_platform"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.detect_platform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd25"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.env_is_cpd25()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_cpd40"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.env_is_cpd40()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_dsx"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.env_is_dsx()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.env_is_wscloud"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.env_is_wscloud()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.export_model_as_lp"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.export_model_as_lp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_data_directory"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.get_data_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_dd_client"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.get_dd_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_do_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.get_do_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_kpis_table_as_dataframe"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.get_kpis_table_as_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.get_root_directory"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.get_root_directory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.insert_scenarios_from_zip"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.insert_scenarios_from_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_csv_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_csv_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_excel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_excel_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_excel_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_parquet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_parquet_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_parquet_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_scenario_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_scenario_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.load_data_from_zip_csv_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.load_data_from_zip_csv_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.print_table_names"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.print_table_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_in_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.replace_data_in_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.replace_data_into_scenario_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.replace_data_into_scenario_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.update_solve_output_into_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.update_solve_output_into_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_into_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_into_scenario_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_into_scenario_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_csv_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_csv_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_excel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_excel_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_excel_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_parquet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_parquet_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_parquet_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariomanager.ScenarioManager.write_data_to_zip_csv_s"><code class="docutils literal notranslate"><span class="pre">ScenarioManager.write_data_to_zip_csv_s()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#dse-do-utils-scenariopicker-module">dse_do_utils.scenariopicker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.scenariorunner">dse_do_utils.scenariorunner module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig"><code class="docutils literal notranslate"><span class="pre">RunConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.data_check_bulk_insert"><code class="docutils literal notranslate"><span class="pre">RunConfig.data_check_bulk_insert</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.do_model_name"><code class="docutils literal notranslate"><span class="pre">RunConfig.do_model_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.enable_data_check"><code class="docutils literal notranslate"><span class="pre">RunConfig.enable_data_check</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.enable_data_check_outputs"><code class="docutils literal notranslate"><span class="pre">RunConfig.enable_data_check_outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.export_lp"><code class="docutils literal notranslate"><span class="pre">RunConfig.export_lp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.export_lp_path"><code class="docutils literal notranslate"><span class="pre">RunConfig.export_lp_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.export_sav"><code class="docutils literal notranslate"><span class="pre">RunConfig.export_sav</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.insert_in_do"><code class="docutils literal notranslate"><span class="pre">RunConfig.insert_in_do</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.insert_inputs_in_db"><code class="docutils literal notranslate"><span class="pre">RunConfig.insert_inputs_in_db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.insert_outputs_in_db"><code class="docutils literal notranslate"><span class="pre">RunConfig.insert_outputs_in_db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.log_level"><code class="docutils literal notranslate"><span class="pre">RunConfig.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.new_schema"><code class="docutils literal notranslate"><span class="pre">RunConfig.new_schema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.template_scenario_name"><code class="docutils literal notranslate"><span class="pre">RunConfig.template_scenario_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.RunConfig.write_output_to_excel"><code class="docutils literal notranslate"><span class="pre">RunConfig.write_output_to_excel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioConfig"><code class="docutils literal notranslate"><span class="pre">ScenarioConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioConfig.parameters"><code class="docutils literal notranslate"><span class="pre">ScenarioConfig.parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioConfig.scenario_name"><code class="docutils literal notranslate"><span class="pre">ScenarioConfig.scenario_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioGenerator"><code class="docutils literal notranslate"><span class="pre">ScenarioGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioGenerator.generate_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioGenerator.generate_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioGenerator.get_parameters"><code class="docutils literal notranslate"><span class="pre">ScenarioGenerator.get_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.create_new_db_schema"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.create_new_db_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.data_check_inputs"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.data_check_inputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.data_check_outputs"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.data_check_outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.generate_scenario"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.generate_scenario()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.insert_in_do"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.insert_in_do()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.insert_inputs_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.insert_inputs_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.insert_outputs_in_db"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.insert_outputs_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.load_input_data_from_excel"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.load_input_data_from_excel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.run_model"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.run_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.run_multiple"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.run_multiple()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.run_once"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.run_once()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.scenariorunner.ScenarioRunner.write_output_data_to_excel"><code class="docutils literal notranslate"><span class="pre">ScenarioRunner.write_output_data_to_excel()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.utilities">dse_do_utils.utilities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.utilities.add_sys_path"><code class="docutils literal notranslate"><span class="pre">add_sys_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.utilities.convert_size"><code class="docutils literal notranslate"><span class="pre">convert_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.utilities.list_file_hierarchy"><code class="docutils literal notranslate"><span class="pre">list_file_hierarchy()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils.version">dse_do_utils.version module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dse_do_utils.html#module-dse_do_utils">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dse_do_utils.html#dse_do_utils.module_reload"><code class="docutils literal notranslate"><span class="pre">module_reload()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -86,12 +414,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="readme_link.html"
-                        title="previous chapter">Read me</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="dse_do_utils.html"
-                        title="next chapter">dse_do_utils package</a></p>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="readme_link.html"
+                          title="previous chapter">Read me</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="dse_do_utils.html"
+                          title="next chapter">dse_do_utils package</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -108,7 +440,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -128,13 +460,13 @@
         <li class="right" >
           <a href="readme_link.html" title="Read me"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5b2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2019, Victor Terpstra.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.1.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     </div>
   </body>
 </html>
