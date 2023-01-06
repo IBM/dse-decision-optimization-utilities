@@ -258,10 +258,13 @@ class ScenarioDbTable(ABC):
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
 
-    def fixNanNoneNull(self, df) -> pd.DataFrame:
+    @staticmethod
+    def fixNanNoneNull(df) -> pd.DataFrame:
         """Ensure that NaN values are converted to None. Which in turn causes the value to be NULL in the DB.
         Apply before insert df to DB.
-        TODO VT20230106: what other incarnations of 'NaN' do we need to convert?"""
+        TODO VT20230106: what other incarnations of 'NaN' do we need to convert?
+        Potentially:  ['N/A', 'na', 'NaN', 'nan', '', 'None']?
+        """
         df = df.replace({float('NaN'): None, 'nan': None})
         return df
 
@@ -861,7 +864,7 @@ class ScenarioDbManager():
         """
         # Replace NaN with None to avoid FK problems:
         # df = df.replace({float('NaN'): None})
-        df = self.fixNanNoneNull(df)
+        df = ScenarioDbTable.fixNanNoneNull(df)
 
         num_exceptions = 0
         max_num_exceptions = 10
