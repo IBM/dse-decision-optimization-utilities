@@ -43,7 +43,9 @@ class ScenarioDbTable(ABC):
     Only columns that are specified and included in the DB insert.
     """
 
-    def __init__(self, db_table_name: str, columns_metadata: List[sqlalchemy.Column] = [], constraints_metadata=[]):
+    def __init__(self, db_table_name: str,
+                 columns_metadata: List[sqlalchemy.Column] = [],
+                 constraints_metadata: List[ForeignKeyConstraint] = []):
         """
         Warning: Do not use mixed case names for the db_table_name.
         Supplying a mixed-case is not working well and is causing DB FK errors.
@@ -245,7 +247,8 @@ class ScenarioDbTable(ABC):
             df = self._set_df_column_types(df)
 
         # Replace NaN with None to avoid FK problems:
-        df = df.replace({float('NaN'): None})
+        # df = df.replace({float('NaN'): None, 'nan': None})
+        df = self.fixNanNoneNull(df)
 
         try:
             df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
@@ -254,6 +257,13 @@ class ScenarioDbTable(ABC):
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
+
+    def fixNanNoneNull(self, df) -> pd.DataFrame:
+        """Ensure that NaN values are converted to None. Which in turn causes the value to be NULL in the DB.
+        Apply before insert df to DB.
+        TODO VT20230106: what other incarnations of 'NaN' do we need to convert?"""
+        df = df.replace({float('NaN'): None, 'nan': None})
+        return df
 
     def _set_df_column_types(self, df: pd.DataFrame) -> pd.DataFrame:
         """Force the data type of the DataFrame according to the schema.
@@ -850,7 +860,8 @@ class ScenarioDbManager():
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
         """
         # Replace NaN with None to avoid FK problems:
-        df = df.replace({float('NaN'): None})
+        # df = df.replace({float('NaN'): None})
+        df = self.fixNanNoneNull(df)
 
         num_exceptions = 0
         max_num_exceptions = 10
