@@ -671,7 +671,7 @@ class ScenarioDbManager():
         connection_string = self._get_db2_connection_string(credentials, schema)
         return sqlalchemy.create_engine(connection_string, echo=echo)
 
-    def _get_pg_connection_string(self, credentials):
+    def _get_pg_connection_string(self, credentials, schema: str):
         """Create a PostgreSQL connection string.
 ​
         pg_credentials = {
@@ -682,6 +682,8 @@ class ScenarioDbManager():
             "database": "database",
             "schema": "my_schema", #<- SCHEMA IN DATABASE
         }
+
+        TODO (VT): No schema?
         """
         connection_string = "postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}".format(
             username=credentials["username"],
@@ -695,11 +697,11 @@ class ScenarioDbManager():
             print(f"PostgreSQL Connection String : {connection_string}")
         return connection_string
 
-    def _create_pg_engine(self, credentials, echo: bool = False):
+    def _create_pg_engine(self, credentials, schema: str, echo: bool = False):
         """Create a PostgreSQL engine instance.
         Connection string logic in `_get_pg_connection_string`
         """
-        connection_string = self._get_pg_connection_string(credentials)
+        connection_string = self._get_pg_connection_string(credentials, schema)
         return sqlalchemy.create_engine(connection_string, echo=echo)
 
     def _initialize_db_tables(self):
@@ -736,13 +738,14 @@ class ScenarioDbManager():
             self._create_schema_transaction(self.engine)
 
     def _create_schema_transaction(self, connection):
-        """(Re)creates a schema, optionally using a transaction
+        """(Re)creates a schema
         Drops all tables and re-creates the schema in the DB."""
-        # if self.schema is None:
-        #     self.drop_all_tables_transaction(connection=connection)
-        # else:
-        #     self.drop_schema_transaction(self.schema)
-        # DROP SCHEMA isn't working properly, so back to dropping all tables
+
+        # The PostgreSQL connection string has no schema. Do we have to define here?
+        if self.db_type == DatabaseType.PostgreSQL:
+            if not self.engine.dialect.has_schema(self.engine, self.schema):
+                self.engine.execute(sqlalchemy.schema.CreateSchema(self.schema))
+
         self._drop_all_tables_transaction(connection=connection)
         self.metadata.create_all(connection, checkfirst=True)
 
