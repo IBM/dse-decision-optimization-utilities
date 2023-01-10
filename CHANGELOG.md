@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.6b0]
 ## Added
 - ScenarioDbTable.fixNanNoneNull: convert more 'nan' values to None and thus to a correct NULL in DB
+- ScenarioDbManager supports PostgreSQL
 
 ## [0.5.4.5] - 2022-12-08
 ### Changed

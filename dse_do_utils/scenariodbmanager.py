@@ -37,6 +37,14 @@ from dse_do_utils import ScenarioManager
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
+import enum
+
+class DatabaseType(enum.Enum):
+    """Used in ScenarioDbManager.__init__ to specify the type of DB it is connecting to."""
+    SQLite = 0
+    DB2 = 1
+    PostgreSQL = 2
+
 
 class ScenarioDbTable(ABC):
     """Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
@@ -438,7 +446,9 @@ class ScenarioDbManager():
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
-                 enable_debug_print: bool = False, enable_scenario_seq: bool = False):
+                 enable_debug_print: bool = False, enable_scenario_seq: bool = False,
+                 db_type: DatabaseType = DatabaseType.DB2
+                 ):
         """Create a ScenarioDbManager.
 
         :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
@@ -446,13 +456,20 @@ class ScenarioDbManager():
         :param credentials: DB credentials
         :param schema: schema name
         :param echo: if True, SQLAlchemy will produce a lot of debugging output
-        :param multi_scenario: If true, adds SCENARIO table and PK
+        :param multi_scenario: If true, adds SCENARIO table and PK. Deprecated: should always be TRUE
         :param enable_transactions: If true, uses transactions
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert
         :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
+        :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str
+        :param db_type: DatabaseType enum. Configures the type of DB backend
+
+        Regarding the db_type, for backwards compatibility reasons, the logic is:
+        1. If no credentials: create a SQLite DB
+        2. If credentials, then depending on the db_type, create a connection and engine for that type
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
+        self.db_type = db_type
         self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
@@ -465,7 +482,7 @@ class ScenarioDbManager():
         self.output_db_tables = output_db_tables
         self.db_tables: Dict[str, ScenarioDbTable] = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
-        self.engine = self._create_database_engine(credentials, schema, echo)
+        self.engine = self._create_database_engine(credentials, schema, echo, db_type)
         self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
         self._initialize_db_tables()  # Needs to be done after self.metadata, self.multi_scenario has been set
         self.read_scenario_table_from_db_callback = None  # For Flask caching
@@ -508,14 +525,21 @@ class ScenarioDbManager():
         """Returns the SQLAlchemy 'scenario' table. """
         return self.get_scenario_db_table().get_sa_table()
 
-    def _create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
+    def _create_database_engine(self, credentials=None, schema: str = None, echo: bool = False, db_type: DatabaseType=DatabaseType.DB2):
         """Creates a SQLAlchemy engine at initialization.
         If no credentials, creates an in-memory SQLite DB. Which can be used for schema validation of the data.
         """
-        if credentials is not None:
-            engine = self._create_db2_engine(credentials, schema, echo)
-        else:
+        if credentials is None or db_type == DatabaseType.SQLite:
             engine = self._create_sqllite_engine(echo)
+        elif db_type == DatabaseType.DB2:
+            engine = self._create_db2_engine(credentials, schema, echo)
+        elif db_type == DatabaseType.PostgreSQL:
+            engine = self._create_pg_engine(credentials, schema, echo)
+
+        # if credentials is not None:
+        #     engine = self._create_db2_engine(credentials, schema, echo)
+        # else:
+        #     engine = self._create_sqllite_engine(echo)
         return engine
 
     def _create_sqllite_engine(self, echo: bool):
@@ -645,6 +669,37 @@ class ScenarioDbManager():
         Connection string logic in `get_db2_connection_string`
         """
         connection_string = self._get_db2_connection_string(credentials, schema)
+        return sqlalchemy.create_engine(connection_string, echo=echo)
+
+    def _get_pg_connection_string(self, credentials):
+        """Create a PostgreSQL connection string.
+​
+        pg_credentials = {
+            "username": "user1",
+            "password": "password1",
+            "host": "hostname.databases.appdomain.cloud",
+            "port": "5432",
+            "database": "database",
+            "schema": "my_schema", #<- SCHEMA IN DATABASE
+        }
+        """
+        connection_string = "postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}".format(
+            username=credentials["username"],
+            password=credentials["password"],
+            host=credentials["host"],
+            port=credentials["port"],
+            database=credentials["database"],
+        )
+        # SAVE FOR FUTURE LOGGER MESSAGES...
+        if self.enable_debug_print:
+            print(f"PostgreSQL Connection String : {connection_string}")
+        return connection_string
+
+    def _create_pg_engine(self, credentials, echo: bool = False):
+        """Create a PostgreSQL engine instance.
+        Connection string logic in `_get_pg_connection_string`
+        """
+        connection_string = self._get_pg_connection_string(credentials)
         return sqlalchemy.create_engine(connection_string, echo=echo)
 
     def _initialize_db_tables(self):
