@@ -797,11 +797,17 @@ class ScenarioDbManager():
         # print("+++++++++++++++++Drop all tables+++++++++++++++++")
         # self.metadata.drop_all(bind=connection)
 
-        for scenario_table_name, db_table in reversed(self.db_tables.items()):
-            db_table_name = db_table.db_table_name
-            sql = f"DROP TABLE IF EXISTS {db_table_name}"
-            #         print(f"Dropping table {db_table_name}")
-            connection.execute(sql)
+        my_metadata = sqlalchemy.MetaData(schema=self.schema)
+        my_metadata.reflect(connection)
+        for db_table in reversed(my_metadata.sorted_tables):
+            db_table.drop(connection, checkfirst=True)
+        # self.metadata.reflect(connection)
+
+        # for scenario_table_name, db_table in reversed(self.db_tables.items()):
+        #     db_table_name = db_table.db_table_name
+        #     sql = f"DROP TABLE IF EXISTS {db_table_name}"
+        #     #         print(f"Dropping table {db_table_name}")
+        #     connection.execute(sql)
 
     def _drop_schema_transaction(self, schema: str, connection=None):
         """NOT USED. Not working in DB2 Cloud.
