@@ -483,8 +483,24 @@ class ScenarioDbManager():
         self.db_tables: Dict[str, ScenarioDbTable] = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
         self.engine = self._create_database_engine(credentials, schema, echo, db_type)
-        self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
+        # TODO: add constraint naming in MetaData?. See https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
+        # convention = {
+        #     "ix": "ix_%(column_0_label)s",
+        #     "uq": "uq_%(table_name)s_%(column_0_name)s",
+        #     "ck": "ck_%(table_name)s_%(constraint_name)s",
+        #     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+        #     "pk": "pk_%(table_name)s",
+        # }
+        self.metadata = sqlalchemy.MetaData(schema=schema,
+                                            # naming_convention=convention,
+                                            )
+        # VT_20210120: Added schema=schema just for reflection?
+        # VT_20230112: We need schema to be able to do insert and select. E.g. PostgreSQL does NOT use the schema in the connection
+
+
         self._initialize_db_tables()  # Needs to be done after self.metadata, self.multi_scenario has been set
+
+        # TODO VT20230112: Are these callbacks this still relevant. Probabaly not. If so, remove.
         self.read_scenario_table_from_db_callback = None  # For Flask caching
         self.read_scenarios_table_from_db_callback = None # For Flask caching
 
