@@ -798,7 +798,7 @@ class ScenarioDbManager():
         # self.metadata.drop_all(bind=connection)
 
         my_metadata = sqlalchemy.MetaData(schema=self.schema)
-        my_metadata.reflect(connection)
+        my_metadata.reflect(connection,schema=self.schema, resolve_fks=False)
         for db_table in reversed(my_metadata.sorted_tables):
             db_table.drop(connection, checkfirst=True)
         # self.metadata.reflect(connection)
