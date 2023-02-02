@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.6b1]
 ## Added
+### Changed
+- ScenarioDbManager._drop_all_tables_transaction tries 3 methods (in order) to drop all tables using: 1. Reflect, 2. Inspect, 3. self.metadata
 
 ## [0.5.4.6b0]- 2023-01-10
 ## Added
