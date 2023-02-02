@@ -775,39 +775,79 @@ class ScenarioDbManager():
 
     def _drop_all_tables_transaction(self, connection):
         """Drops all tables as defined in db_tables (if exists)
-        TODO: loop over tables as they exist in the DB.
-        This will make sure that however the schema definition has changed, all tables will be cleared.
-        Problem. The following code will loop over all existing tables:
+        Challenge: we want to make sure to drop all tables in the exiting DB schema,
+        which can be diferent from the set of tables in the (new) self.metadata.
+        self.metaData may either have more or less tables than exist in the DB.
+        If there are more, we need the option 'IF EXISTS'
+        If there are less, the missing tables will not be dropped and stay around.
+        This is not a show-stopper, but not elegant either.
+
+        A better way is to delete the tables that actually exist. To get these we can use reflect or the inspector.
+        Reflect will reconstruct the full MetaData based on the existing schema, including FK constraints.
+        Inspect allows us just to get the tables in a sorted list so they can be deleted in the right (reversed) order
+
+        Will use 3 options (in order):
+        1. Using `MetaData.reflect` and then a `MetaData.drop_all` SQLAlchemy APIs. This has shown to be buggy in DB2 on Cloud
+        2. Using `inspect` to get the tables. Then we can do a SQL `DROP TABLE`
+        3. Use SQL 'DROP TABLE` based on the tables in the self.metadata
+
+        Option 1 is the preferred way. Works well with PostgreSQL, but not with DB2. Uses all SQLAlchemy APIs
+        Option 2 works with DB2 (OnCloud at least). Deletes all tables, but uses SQL.
+        Option 3 has been working reliably in the past and is the backup approach. May not delete all tables and uses SQL.
+
+        Note: The following code will loop over all existing tables:
 
             inspector = sqlalchemy.inspect(self.engine)
             for db_table_name in inspector.get_table_names(schema=self.schema):
 
-        However, the order is alphabetically, which causes FK constraint violation
-        Weirdly, this happens in SQLite, not in DB2! With or without transactions
-
-        TODO:
-        1. Use SQLAlchemy to drop table, avoid text SQL
-        2. Drop all tables without having to loop and know all tables
-        See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
-        See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
+        However, the order is alphabetically, which causes FK constraint violations due to not deleting the tables in the right order
         """
-        # print("+++++++++++++++++Reflect+++++++++++++++++")
-        # Note: the reflect seems to mess things up: when doing the next drop_all we're getting weird errors
-        # self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema
-        # print("+++++++++++++++++Drop all tables+++++++++++++++++")
-        # self.metadata.drop_all(bind=connection)
+        try:
+            print(f"Dropping tables using reflect")
+            self._drop_all_tables_transaction_reflect(connection, schema=self.schema)
+        except Exception as e:
+            print(f"+++++++Failed to drop tables using reflect. Trying inspection instead. Exception = {e}")
+            try:
+                self._drop_all_tables_transaction_inspector(connection, schema=self.schema)
+            except Exception as e:
+                print(f"+++++++Failed to drop tables using reflect or inspector. Trying SQL instead. Exception = {e}")
+                self._drop_all_tables_transaction_sql(connection, schema=self.schema)
 
-        my_metadata = sqlalchemy.MetaData(schema=self.schema)
-        my_metadata.reflect(connection,schema=self.schema, resolve_fks=False)
-        for db_table in reversed(my_metadata.sorted_tables):
-            db_table.drop(connection, checkfirst=True)
-        # self.metadata.reflect(connection)
+    def _drop_all_tables_transaction_reflect(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema using the sqlalchemy.MetaData.reflect feature.
+        Inspect returns a list of sorted tables in the current DB."""
+        my_metadata: sqlalchemy.MetaData = sqlalchemy.MetaData(schema=schema)
+        my_metadata.reflect(bind=connection, schema=schema, resolve_fks=False)
+        # for db_table in reversed(my_metadata.sorted_tables):
+        #     print(f"Dropping table {db_table}")
+        #     db_table.drop(connection, checkfirst=True)
+        my_metadata.drop_all(bind=connection)
 
-        # for scenario_table_name, db_table in reversed(self.db_tables.items()):
-        #     db_table_name = db_table.db_table_name
-        #     sql = f"DROP TABLE IF EXISTS {db_table_name}"
-        #     #         print(f"Dropping table {db_table_name}")
-        #     connection.execute(sql)
+    def _drop_all_tables_transaction_inspector(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema using the sqlalchemy.inspect feature.
+        Inspect returns a list of sorted tables in the current DB.
+
+        Note that `insp.get_table_names(schema=schema)` does not return the tables in a properly sorted way to be able to drop."""
+        insp = sqlalchemy.inspect(connection)
+        sorted_tables = [db_table_name for (db_table_name, fkc) in insp.get_sorted_table_and_fkc_names(schema=schema) if db_table_name is not None]
+        # print(f"Sorted tables = {sorted_tables}")
+        for db_table_name in reversed(sorted_tables):
+            # print(f"Drop table = {db_table_name}")
+            sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            connection.execute(sql)
+
+    def _drop_all_tables_transaction_sql(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema by SQL string using DROP TABLE.
+        Disadvantage is that it will only drop the tables in the NEW schema we're trying to re-create.
+        It may not drop tables that are in the current DB, but not in the new schema.
+        Advantage: robust solution"""
+        for scenario_table_name, db_table in reversed(self.db_tables.items()):
+            db_table_name = db_table.db_table_name
+            sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            #         print(f"Dropping table {db_table_name}")
+            connection.execute(sql)
+
+
 
     def _drop_schema_transaction(self, schema: str, connection=None):
         """NOT USED. Not working in DB2 Cloud.
