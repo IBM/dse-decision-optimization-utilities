@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.6b1]
 ## Added
+- ScenarioDbManager support for custom_naming_convention of FK (and other) constraints
 ### Changed
 - ScenarioDbManager._drop_all_tables_transaction tries 3 methods (in order) to drop all tables using: 1. Reflect, 2. Inspect, 3. self.metadata
 

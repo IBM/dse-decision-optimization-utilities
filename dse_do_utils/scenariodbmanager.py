@@ -447,12 +447,13 @@ class ScenarioDbManager():
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
                  enable_debug_print: bool = False, enable_scenario_seq: bool = False,
-                 db_type: DatabaseType = DatabaseType.DB2
+                 db_type: DatabaseType = DatabaseType.DB2,
+                 use_custom_naming_convention: bool = False,
                  ):
         """Create a ScenarioDbManager.
 
-        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
-        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
+        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.
+        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.
         :param credentials: DB credentials
         :param schema: schema name
         :param echo: if True, SQLAlchemy will produce a lot of debugging output
@@ -463,6 +464,9 @@ class ScenarioDbManager():
         :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
         :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str
         :param db_type: DatabaseType enum. Configures the type of DB backend
+        :param use_custom_naming_convention: bool. If True, will call _get_custom_naming_convention_ to name FK constraints etc.
+        Allows for easier to read constraints during data checking.
+        False for backward compatibity reasons. Potentially may cause name conflicts of pattern doesn't generate a unique name.
 
         Regarding the db_type, for backwards compatibility reasons, the logic is:
         1. If no credentials: create a SQLite DB
@@ -483,19 +487,13 @@ class ScenarioDbManager():
         self.db_tables: Dict[str, ScenarioDbTable] = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
         self.engine = self._create_database_engine(credentials, schema, echo, db_type)
-        # TODO: add constraint naming in MetaData?. See https://docs.sqlalchemy.org/en/14/core/constraints.html#configuring-a-naming-convention-for-a-metadata-collection
-        # convention = {
-        #     "ix": "ix_%(column_0_label)s",
-        #     "uq": "uq_%(table_name)s_%(column_0_name)s",
-        #     "ck": "ck_%(table_name)s_%(constraint_name)s",
-        #     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-        #     "pk": "pk_%(table_name)s",
-        # }
+        if use_custom_naming_convention:
+            naming_convention = self._get_custom_naming_convention_()
+        else:
+            naming_convention = None
         self.metadata = sqlalchemy.MetaData(schema=schema,
-                                            # naming_convention=convention,
+                                            naming_convention=naming_convention,
                                             )
-        # VT_20210120: Added schema=schema just for reflection?
-        # VT_20230112: We need schema to be able to do insert and select. E.g. PostgreSQL does NOT use the schema in the connection
 
 
         self._initialize_db_tables()  # Needs to be done after self.metadata, self.multi_scenario has been set
@@ -531,6 +529,24 @@ class ScenarioDbManager():
                 if list(input_db_tables.keys()).index('Scenario') > 0:
                     print("Warning: the `Scenario` table should be the first in the input tables")
         return input_db_tables
+
+    def _get_custom_naming_convention_(self) -> Dict:
+        """Sets a custom naming convention
+        See https://docs.sqlalchemy.org/en/20/core/constraints.html#configuring-constraint-naming-conventions
+        Returns:
+
+        """
+        naming_convention = {
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            # "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "fk": "fk_%(table_name)s__%(column_0_N_name)s__%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+        return naming_convention
+
+    ############################################################################################
 
     def get_scenario_db_table(self) -> ScenarioDbTable:
         """Scenario table must be the first in self.input_db_tables"""
