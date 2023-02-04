@@ -449,6 +449,7 @@ class ScenarioDbManager():
                  enable_debug_print: bool = False, enable_scenario_seq: bool = False,
                  db_type: DatabaseType = DatabaseType.DB2,
                  use_custom_naming_convention: bool = False,
+                 future: bool = True,
                  ):
         """Create a ScenarioDbManager.
 
@@ -464,7 +465,7 @@ class ScenarioDbManager():
         :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
         :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str
         :param db_type: DatabaseType enum. Configures the type of DB backend
-        :param use_custom_naming_convention: bool. If True, will call _get_custom_naming_convention_ to name FK constraints etc.
+        :param use_custom_naming_convention: bool. If True, will call get_custom_naming_convention to name FK constraints etc.
         Allows for easier to read constraints during data checking.
         False for backward compatibity reasons. Potentially may cause name conflicts of pattern doesn't generate a unique name.
 
@@ -474,6 +475,7 @@ class ScenarioDbManager():
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
         self.db_type = db_type
+        self.future = future
         self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
@@ -488,7 +490,7 @@ class ScenarioDbManager():
 
         self.engine = self._create_database_engine(credentials, schema, echo, db_type)
         if use_custom_naming_convention:
-            naming_convention = self._get_custom_naming_convention_()
+            naming_convention = self.get_custom_naming_convention()
         else:
             naming_convention = None
         self.metadata = sqlalchemy.MetaData(schema=schema,
@@ -530,7 +532,7 @@ class ScenarioDbManager():
                     print("Warning: the `Scenario` table should be the first in the input tables")
         return input_db_tables
 
-    def _get_custom_naming_convention_(self) -> Dict:
+    def get_custom_naming_convention(self) -> Dict:
         """Sets a custom naming convention
         See https://docs.sqlalchemy.org/en/20/core/constraints.html#configuring-constraint-naming-conventions
         Returns:
@@ -577,7 +579,7 @@ class ScenarioDbManager():
     def _create_sqllite_engine(self, echo: bool):
         if self.enable_sqlite_fk:
             ScenarioDbManager._enable_sqlite_foreign_key_checks()
-        return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo)
+        return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo, future=self.future)
 
     @staticmethod
     def _enable_sqlite_foreign_key_checks():
@@ -701,7 +703,7 @@ class ScenarioDbManager():
         Connection string logic in `get_db2_connection_string`
         """
         connection_string = self._get_db2_connection_string(credentials, schema)
-        return sqlalchemy.create_engine(connection_string, echo=echo)
+        return sqlalchemy.create_engine(connection_string, echo=echo, future=self.future)
 
     def _get_pg_connection_string(self, credentials, schema: str):
         """Create a PostgreSQL connection string.
@@ -734,7 +736,7 @@ class ScenarioDbManager():
         Connection string logic in `_get_pg_connection_string`
         """
         connection_string = self._get_pg_connection_string(credentials, schema)
-        return sqlalchemy.create_engine(connection_string, echo=echo)
+        return sqlalchemy.create_engine(connection_string, echo=echo, future=self.future)
 
     def _initialize_db_tables(self):
         # Register dbm with table so it can have access to settings
@@ -771,14 +773,25 @@ class ScenarioDbManager():
 
     def _create_schema_transaction(self, connection):
         """(Re)creates a schema
-        Drops all tables and re-creates the schema in the DB."""
+        Drops all tables and re-creates the schema in the DB.
+
+        Note 1 - 20230203: `insp.has_schema(self.schema)` fails with PostgeSQL in SQLAlchemy 1.4 with future=True: AttributeError: 'PGInspector' object has no attribute 'has_schema'
+        Work-around: use `insp.get_schema_names()`
+
+        Note 2 - 20230203: `self.engine.dialect.has_schema` has been deprecated with SQLAlchemay 1.4+future=True
+        """
 
         # The PostgreSQL connection string has no schema. Do we have to define here?
         if self.db_type == DatabaseType.PostgreSQL:
-            if not self.engine.dialect.has_schema(self.engine, self.schema):
-                self.engine.execute(sqlalchemy.schema.CreateSchema(self.schema))
+            insp = sqlalchemy.inspect(connection)
+            # schemas = insp.get_schema_names()
+            if self.schema not in insp.get_schema_names():
+            # if not insp.has_schema(self.schema):
+        #     # if not self.engine.dialect.has_schema(self.engine, self.schema):
+                connection.execute(sqlalchemy.schema.CreateSchema(self.schema))
 
         self._drop_all_tables_transaction(connection=connection)
+        print(f"Creating new schema {self.schema}")
         self.metadata.create_all(connection, checkfirst=True)
 
     def drop_all_tables(self):
@@ -818,16 +831,19 @@ class ScenarioDbManager():
 
         However, the order is alphabetically, which causes FK constraint violations due to not deleting the tables in the right order
         """
+        print(f"Dropping tables")
         try:
-            print(f"Dropping tables using reflect")
             self._drop_all_tables_transaction_reflect(connection, schema=self.schema)
+            print(f"Dropped tables using reflect")
         except Exception as e:
             print(f"+++++++Failed to drop tables using reflect. Trying inspection instead. Exception = {e}")
             try:
                 self._drop_all_tables_transaction_inspector(connection, schema=self.schema)
+                print(f"Dropped tables using inspector")
             except Exception as e:
                 print(f"+++++++Failed to drop tables using reflect or inspector. Trying SQL instead. Exception = {e}")
                 self._drop_all_tables_transaction_sql(connection, schema=self.schema)
+                print(f"Dropped tables using SQL")
 
     def _drop_all_tables_transaction_reflect(self, connection, schema: Optional[str] = None):
         """Drop all tables in the schema using the sqlalchemy.MetaData.reflect feature.
@@ -849,7 +865,8 @@ class ScenarioDbManager():
         # print(f"Sorted tables = {sorted_tables}")
         for db_table_name in reversed(sorted_tables):
             # print(f"Drop table = {db_table_name}")
-            sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            # sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            sql = sqlalchemy.sql.text(f"DROP TABLE IF EXISTS {db_table_name}")
             connection.execute(sql)
 
     def _drop_all_tables_transaction_sql(self, connection, schema: Optional[str] = None):
@@ -859,7 +876,9 @@ class ScenarioDbManager():
         Advantage: robust solution"""
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
-            sql = f"DROP TABLE IF EXISTS {db_table_name}"
+
+            # sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            sql = sqlalchemy.sql.text(f"DROP TABLE IF EXISTS {db_table_name}")
             #         print(f"Dropping table {db_table_name}")
             connection.execute(sql)
 
@@ -1347,7 +1366,7 @@ class ScenarioDbManager():
         t: sqlalchemy.Table = db_table.get_sa_table()
         pk_conditions = [(db_table.get_sa_column(pk['column']) == pk['value']) for pk in db_cell_update.row_index]
         target_col: sqlalchemy.Column = db_table.get_sa_column(db_cell_update.column_name)
-        print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
+        # print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
 
         if self.enable_scenario_seq:
             if (scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection)) is not None:
