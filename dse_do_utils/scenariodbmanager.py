@@ -1543,6 +1543,7 @@ class ScenarioDbManager():
                 # print(f"select columns = {select_columns}")
                 select_sql = (sqlalchemy.select(select_columns)
                               .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+
             target_columns = [c for c in t.columns]
             sql_insert = t.insert().from_select(target_columns, select_sql)
             connection.execute(sql_insert)
@@ -1643,7 +1644,8 @@ class ScenarioDbManager():
         if seq is None:
             s = self.get_scenario_sa_table()
             connection.execute(s.insert().values(scenario_name=scenario_name))
-            r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
+            # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
+            r = connection.execute(s.select().where(s.c.scenario_name==scenario_name))
             seq = r.first()[0]
         return seq
 
