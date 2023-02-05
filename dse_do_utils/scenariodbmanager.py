@@ -1634,18 +1634,19 @@ class ScenarioDbManager():
         Returns the scenario_seq of (the first) entry matching the scenario_name.
         If it doesn't exist, will insert a new entry.
         """
-        # s = self.get_scenario_sa_table()
-        # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
-        # if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
-        #     seq = first[0]
-        # else:
+
+        # Note: there is a big diference between
+        # 1. s.select(s.c.scenario_seq): select all columns from s but with a where condition on the scenario_seq.
+        # This is NOT correct in this use-case!
+        # 2. `sqlalchemy.select(s.c.scenario_seq)`: select only the value of the column scenario_seq
 
         seq = self._get_scenario_seq(scenario_name, connection)
         if seq is None:
             s = self.get_scenario_sa_table()
             connection.execute(s.insert().values(scenario_name=scenario_name))
-            # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
-            r = connection.execute(s.select().where(s.c.scenario_name==scenario_name))
+            # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))  # INCORRECT!
+            # r = connection.execute(s.select().where(s.c.scenario_name==scenario_name))  # Correct, but selects all columns
+            r = connection.execute(sqlalchemy.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))  # Correct, selects only one column
             seq = r.first()[0]
         return seq
 
@@ -1655,7 +1656,8 @@ class ScenarioDbManager():
         """
         s = self.get_scenario_sa_table()
         # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
-        r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))
+        # r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))
+        r = connection.execute(sqlalchemy.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
         if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
             # print(f"_get_scenario_seq: r={first}")
             seq = first[0]  # Tuple with values. First (0) is the scenario_seq. TODO: do more structured so we can be sure it is the scenario_seq!
