@@ -1372,9 +1372,10 @@ class ScenarioDbManager():
             if (scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection)) is not None:
                 # print(f"ScenarioSeq = {scenario_seq}")
                 sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
-                connection.execute(sql)
+                # connection.execute(sql)  # VT20230204: Duplicate execute? Will be done anyway at the end of this method!
             else:
                 # Error?
+                # TODO: print some error/exception
                 pass
         else:
             sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
