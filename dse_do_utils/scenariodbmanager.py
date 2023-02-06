@@ -449,7 +449,7 @@ class ScenarioDbManager():
                  enable_debug_print: bool = False, enable_scenario_seq: bool = False,
                  db_type: DatabaseType = DatabaseType.DB2,
                  use_custom_naming_convention: bool = False,
-                 future: bool = True,
+                 future: bool = False,
                  ):
         """Create a ScenarioDbManager.
 
@@ -466,6 +466,7 @@ class ScenarioDbManager():
         :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str
         :param db_type: DatabaseType enum. Configures the type of DB backend
         :param use_custom_naming_convention: bool. If True, will call get_custom_naming_convention to name FK constraints etc.
+        :param future: bool. The `future` flag set on the SQLAlchemy db engine. Will enforce SQLAlchemy 2.0 API changes.
         Allows for easier to read constraints during data checking.
         False for backward compatibity reasons. Potentially may cause name conflicts of pattern doesn't generate a unique name.
 
