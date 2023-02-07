@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - ScenarioDbManager._drop_all_tables_transaction tries 3 methods (in order) to drop all tables using: 1. Reflect, 2. Inspect, 3. self.metadata
 - ScenarioDbManager supports SQLAlchemy 1.4 with future=True (to prepare for SQLAlchemy 2.0)
+### Fixed
 - Fix insert new scenario with scenarioSeq=True (ScenarioDbManager._get_or_create_scenario_in_scenario_table)
 
 ## [0.5.4.6b0]- 2023-01-10
