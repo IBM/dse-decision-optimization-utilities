@@ -1536,15 +1536,27 @@ class ScenarioDbManager():
             # s: sqlalchemy.table = sa_scenario_table  # The scenario table
             # print("+++++++++++SQLAlchemy insert-select")
             if self.enable_scenario_seq:
-                select_columns = [s.c.scenario_seq if c.name == 'scenario_seq' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
-                # print(f"select columns = {select_columns}")
+                # select_columns = [s.c.scenario_seq if c.name == 'scenario_seq' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
+                # # print(f"select columns = {select_columns}")
+                # select_sql = (sqlalchemy.select(select_columns)
+                #               .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))
+
+                # VT20230206: Below avoids the SQLAlchemy future warning about cartesian product. Simpler.
+                # See https://stackoverflow.com/questions/27239647/what-is-the-way-to-select-a-hard-coded-value-in-a-query
+                select_columns = [sqlalchemy.literal(new_scenario_seq).label('scenario_seq') if c.name == 'scenario_seq' else c for c in t.columns]
                 select_sql = (sqlalchemy.select(select_columns)
-                              .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))
+                              .where(t.c.scenario_seq == source_scenario_seq))
+
             else:
-                select_columns = [s.c.scenario_name if c.name == 'scenario_name' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
-                # print(f"select columns = {select_columns}")
+                # select_columns = [s.c.scenario_name if c.name == 'scenario_name' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
+                # # print(f"select columns = {select_columns}")
+                # select_sql = (sqlalchemy.select(select_columns)
+                #               .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+
+                select_columns = [sqlalchemy.literal(target_scenario_name).label('scenario_name') if c.name == 'scenario_name' else c for c in
+                                  t.columns]
                 select_sql = (sqlalchemy.select(select_columns)
-                              .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+                              .where(t.c.scenario_name == source_scenario_name))
 
             target_columns = [c for c in t.columns]
             sql_insert = t.insert().from_select(target_columns, select_sql)

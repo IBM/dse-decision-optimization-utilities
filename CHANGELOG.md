@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ScenarioDbManager supports SQLAlchemy 1.4 with future=True (to prepare for SQLAlchemy 2.0)
 ### Fixed
 - Fix insert new scenario with scenarioSeq=True (ScenarioDbManager._get_or_create_scenario_in_scenario_table)
+- Fix ScenarioDbManager.duplicate_scenario_in_db when future=True warning about cartesian product.
 
 ## [0.5.4.6b0]- 2023-01-10
 ## Added
