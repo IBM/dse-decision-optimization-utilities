@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dse_do_utils.core with Core01DataManager, Core01OptimizationEngine, Core01EnvironmentManager
 ### Fixed
 - Fix ScenarioDbManager.duplicate_scenario_in_db future warning
+- Fix ScenarioDbManager.get_data_directory using Platform.Local
+- Fix ScenarioDbManager.get_root_directory partially (CPD40 and Local)
 
 ## [0.5.4.6b1]- 2023-02-06
 ## Added

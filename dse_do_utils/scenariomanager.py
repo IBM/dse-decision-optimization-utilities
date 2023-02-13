@@ -155,8 +155,6 @@ class ScenarioManager(object):
         if self.data_directory is not None:
             return self.data_directory
 
-        # Note: first test for wscloud:
-        # In CPDaaS the current test for cpd40 returns TRUE!
         if self.platform == Platform.CPDaaS:
             data_dir = os.environ['PWD']  # '/home/wsuser/work' or use os.environ['PWD']
         elif self.platform == Platform.CPD40:
@@ -166,7 +164,11 @@ class ScenarioManager(object):
         elif self.platform == Platform.CPD25:
             # Note that the data dir in CPD25 is not an actual real directory and is NOT in the hierarchy of the JupyterLab folder
             data_dir = '/project_data/data_asset'  # Do NOT use the os.path.join!
-        else:  # Local file system
+        elif self.platform == Platform.Local:
+            if self.local_root is None:
+                raise ValueError('The local_root should be specified if loading from a file from outside of Watson Studio')
+            data_dir = os.path.join(self.local_root, self.local_relative_data_path)
+        else:  # TODO: get_root_directory requires updates
             data_dir = os.path.join(self.get_root_directory(), self.local_relative_data_path)
         return data_dir
 
@@ -175,15 +177,31 @@ class ScenarioManager(object):
         If system is WS, it will return the DSX root, otherwise the directory specified in the local_root.
         Raises:
             ValueError if root directory doesn't exist.
+
+        TODO: review the options other than Local
         """
-        if ScenarioManager.env_is_cpd25():
-            root_dir = '.'
-        elif ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
-            root_dir = os.environ['DSX_PROJECT_DIR']
-        else:
+        if self.platform == Platform.CPDaaS:
+            root_dir = '.'  # '/home/wsuser/work' or use os.environ['PWD']
+        elif self.platform == Platform.CPD40:
+            root_dir = "/userfs"
+        elif self.platform == Platform.CPD25:
+            root_dir = '.'  # Do NOT use the os.path.join!
+        elif self.platform == Platform.Local:
             if self.local_root is None:
-                raise ValueError('The local_root should be specified if loading from a file from outside of WS')
+                raise ValueError('The local_root should be specified if loading from a file from outside of Watson Studio')
             root_dir = self.local_root
+        else:
+            root_dir = '.'
+
+        # if ScenarioManager.env_is_cpd25():
+        #     root_dir = '.'
+        # elif ScenarioManager.env_is_dsx():  # Note that this is False in DO! So don't run in DO
+        #     root_dir = os.environ['DSX_PROJECT_DIR']
+        # else:
+        #     if self.local_root is None:
+        #         raise ValueError('The local_root should be specified if loading from a file from outside of WS')
+        #     root_dir = self.local_root
+
         # Assert that root_dir actually exists
         if not os.path.isdir(root_dir):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
