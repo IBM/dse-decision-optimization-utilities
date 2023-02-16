@@ -7,7 +7,7 @@ from dse_do_utils.scenariomanager import Platform
 
 
 class Core01EnvironmentManager():
-    def __init__(self, db_connection: str, default_schema: str, project_root: str = None, data_directory: str = None):
+    def __init__(self, db_connection: str = "", default_schema: str = 'DEFAULT_SCHEMA', project_root: str = None, data_directory: str = None):
         self.db_connection = db_connection
         self.default_schema = default_schema
         self.project_root = project_root
