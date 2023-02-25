@@ -5,8 +5,9 @@
 from typing import List, Dict
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint, DateTime, Boolean
 from collections import OrderedDict
+
+from dse_do_utils.core.core01_db_manager import Core01ScenarioDbManager
 from dse_do_utils.scenariodbmanager import ScenarioDbTable, ParameterTable, KpiTable, BusinessKpiTable
-from utils.core.core01_db_manager import Core01ScenarioDbManager
 
 
 class Core02LexOptiLevelTable(ScenarioDbTable):

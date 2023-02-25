@@ -10,8 +10,8 @@ from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.linear import ZeroExpr
 from docplex.mp.solution import SolveSolution
 
-from utils.core.core01_optimization_engine import Core01OptimizationEngine
-from utils.core.core02_data_manager import Core02DataManager
+from dse_do_utils.core.core01_optimization_engine import Core01OptimizationEngine
+from dse_do_utils.core.core02_data_manager import Core02DataManager
 
 
 class LexGoalAgg():

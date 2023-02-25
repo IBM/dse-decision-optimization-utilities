@@ -6,8 +6,9 @@ import types
 from abc import ABC, abstractmethod
 
 import pandas as pd
+
+from dse_do_utils.core.core01_data_manager import Core01DataManager
 from dse_do_utils.datamanager import Outputs
-from utils.core.core01_data_manager import Core01DataManager
 
 
 class Core02DataManager(Core01DataManager, ABC):

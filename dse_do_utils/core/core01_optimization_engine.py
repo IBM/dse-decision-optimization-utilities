@@ -10,8 +10,8 @@ import pandas as pd
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 from dse_do_utils import OptimizationEngine
+from dse_do_utils.core.core01_data_manager import Core01DataManager
 from dse_do_utils.datamanager import Outputs
-from utils.core.core01_data_manager import Core01DataManager
 
 
 class Core01OptimizationEngine(OptimizationEngine):
