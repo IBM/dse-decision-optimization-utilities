@@ -12,6 +12,7 @@ import pandas as pd
 
 
 class LogLevelEnum():
+    """DEPRECATED"""
     CRITICAL: int = logging.CRITICAL
     ERROR: int = logging.ERROR
     WARNING: int = logging.WARNING
@@ -40,7 +41,8 @@ class Core01DataManager(DataManager):
         super().__init__(inputs, outputs)
 
         # Create a custom logger
-        self.logger = self.create_logger(log_level)
+        # self.logger = self.create_logger(log_level)
+        self.logger = logging.getLogger()
 
         # Parameters:
         self.params = None
@@ -53,6 +55,47 @@ class Core01DataManager(DataManager):
         # self.logger.debug("Enter")
 
         self.set_parameters()
+
+    def set_parameters(self):
+        """Core01 parameters:
+            - solveTimeLimit: int = 600
+            - threads: int = 0
+            - removeZeroQuantityOutputRecords: bool = True
+            - enableLPNames: bool = False
+        """
+        super().set_parameters()
+
+        self.param.time_limit = self.get_parameter_value(self.params, 'solveTimeLimit', param_type='int', default_value=600)
+        self.param.threads = self.get_parameter_value(self.params, 'threads', param_type='int', default_value=0)  # default 0 implies no limit
+        self.param.remove_zero_quantity_output_records = self.get_parameter_value(
+            self.params,
+            param_name='removeZeroQuantityOutputRecords',
+            param_type='bool',
+            default_value=False)
+
+        self.param.n_threads = self.get_parameter_value(
+            self.params,
+            param_name='numberThreads',
+            param_type='int',
+            default_value=0)
+
+        self.param.enable_lp_names = self.get_parameter_value(
+            self.params,
+            param_name='enableLPNames',
+            param_type='bool',
+            default_value=False)
+
+        self.param.handle_unscaled_infeasibilities = self.get_parameter_value(
+            self.params,
+            param_name='handleUnscaledInfeasibilities',
+            param_type='bool',
+            default_value=False)
+
+        self.param.log_solution_quality_metrics = self.get_parameter_value(
+            self.params,
+            param_name='logSolutionQualityMetrics',
+            param_type='bool',
+            default_value=False)
 
     def prepare_output_data_frames(self, dtypes=None):
         super().prepare_output_data_frames()
@@ -193,7 +236,7 @@ class Core01DataManager(DataManager):
     # Logger (TODO: review)
     ########################################################################
     def create_logger(self, log_level: int = None) -> logging.Logger:
-        """
+        """DEPRECATED
         Create logger
 
         Args:
@@ -224,7 +267,7 @@ class Core01DataManager(DataManager):
         return logger
 
     def add_logger_handler(self, log_level_enum, log_level, logger):
-        """
+        """DEPRECATED
         Add logger handler
 
         Args:

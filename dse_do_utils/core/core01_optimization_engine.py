@@ -10,8 +10,8 @@ import pandas as pd
 from docplex.mp.conflict_refiner import ConflictRefiner
 
 from dse_do_utils import OptimizationEngine
-from dse_do_utils.core.core01_data_manager import Core01DataManager
 from dse_do_utils.datamanager import Outputs
+from utils.core.core01_data_manager import Core01DataManager
 
 
 class Core01OptimizationEngine(OptimizationEngine):
@@ -60,9 +60,16 @@ class Core01OptimizationEngine(OptimizationEngine):
     def create_constraints(self) -> None:
         pass
 
-    @abstractmethod
     def set_cplex_parameters(self) -> None:
-        pass
+        if int(self.dm.param.n_threads) > 0:
+            self.mdl.parameters.threads = int(self.dm.param.n_threads)
+
+        if self.dm.param.handle_unscaled_infeasibilities:
+            self._set_cplex_parameters_unscaled_infeasibilities()
+
+        if self.dm.param.log_solution_quality_metrics:
+            # Configure the mdl to generate quality metrics, will be available in mdl.solve_details.quality_metrics
+            self.mdl.quality_metrics = True
 
     def solve(self):
         msol = self.mdl.solve(**self.solve_kwargs)
@@ -75,7 +82,7 @@ class Core01OptimizationEngine(OptimizationEngine):
         return msol
 
     @abstractmethod
-    def extract_solution(self) -> None:
+    def extract_solution(self, drop: bool = True) -> None:
         self.dm.logger.debug("Enter")
 
         # KPIs
@@ -182,6 +189,37 @@ class Core01OptimizationEngine(OptimizationEngine):
             self.dm.logger.debug(f"Exporting .sav file: {filepath}")
             self.mdl.export_as_sav(filepath)
         return filepath
+
+    ########################################################
+    # Metrics
+    ########################################################
+    def _set_cplex_parameters_unscaled_infeasibilities(self):
+        """CPLEX Parameters to help handle unscaled infeasibilities
+        See:
+        - https://www.ibm.com/docs/en/icos/22.1.0?topic=infeasibility-coping-ill-conditioned-problem-handling-unscaled-infeasibilities
+        - https://orinanobworld.blogspot.com/2010/08/ill-conditioned-bases-and-numerical.html
+        """
+        self.mdl.parameters.read.scale = 1
+        self.mdl.parameters.simplex.tolerances.markowitz = 0.90
+        self.mdl.parameters.simplex.tolerances.feasibility = 1e-9
+        self.mdl.parameters.emphasis.numerical = 1
+        # self.mdl.parameters.lpmethod = 1  # 1: primal-simplex
+
+    def log_solution_quality_metrics(self):
+        """Log the solution quality metrics
+        :return:
+        """
+        if self.dm.param.log_solution_quality_metrics:
+            self.dm.logger.debug(f"Solution quality metrics:")
+            max_key_length = max([len(key) for key in self.mdl.solve_details.quality_metrics.keys()], default=10)  # `default` option is just to ensure the code doesn't throw an exception in case there are no quality_metrics
+            for key, value in self.mdl.solve_details.quality_metrics.items():
+                self.dm.logger.debug(f"{key.ljust(max_key_length, ' ')} = {value:,}")
+
+    def extract_engine_metrics(self):
+        if self.solver_metrics is not None:
+            return pd.DataFrame(self.solver_metrics).set_index('name')
+        else:
+            return pd.DataFrame(columns=['name', 'value']).set_index('name')
 
 ############################################################
 class CplexSum():

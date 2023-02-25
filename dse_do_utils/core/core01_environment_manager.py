@@ -1,17 +1,21 @@
+import logging
 import os
 from os import environ
 from typing import Dict
-
-from dse_do_utils.scenariomanager import Platform
-# from dse_do_dashboard.dash_app import HostEnvironment
+from dse_do_dashboard.dash_app import HostEnvironment
 
 
 class Core01EnvironmentManager():
-    def __init__(self, db_connection: str = "", default_schema: str = 'DEFAULT_SCHEMA', project_root: str = None, data_directory: str = None):
+    def __init__(self, db_connection: str, default_schema: str,
+                 project_root: str = None, data_directory: str = None,
+                 log_level: str = None):
         self.db_connection = db_connection
         self.default_schema = default_schema
         self.project_root = project_root
         self.data_directory = data_directory
+        self.log_level = log_level
+        if log_level is not None:
+            self.set_root_logger(level=log_level)
 
     def get_project_db_credentials(self, db_connection_name: str = None) -> Dict:
         """Get DB credentials.
@@ -71,27 +75,15 @@ class Core01EnvironmentManager():
         db_credentials['ssl'] = environ.get('DB_SSL')
         return db_credentials
 
-    # def get_host_environment(self) -> HostEnvironment:
-    #     """Detect the host environment, i.e. CP4D or Local workstation.
-    #     Can also be done by detecting linux: `if system().lower() == 'linux'`
-    #     Need to check if this works properly for current cluster version
-    #     """
-    #     if 'PROJECT_NAME' in environ:   # This works in CP4D v4.0.2
-    #         host_env = HostEnvironment.CPD402
-    #     else:
-    #         host_env = HostEnvironment.Local
-    #     return host_env
-
-
-    def get_host_platform(self) -> Platform:
+    def get_host_environment(self) -> HostEnvironment:
         """Detect the host environment, i.e. CP4D or Local workstation.
         Can also be done by detecting linux: `if system().lower() == 'linux'`
         Need to check if this works properly for current cluster version
         """
         if 'PROJECT_NAME' in environ:   # This works in CP4D v4.0.2
-            host_env = Platform.CPD40
+            host_env = HostEnvironment.CPD402
         else:
-            host_env = Platform.Local
+            host_env = HostEnvironment.Local
         return host_env
 
     def get_schema(self) -> str:
@@ -107,8 +99,8 @@ class Core01EnvironmentManager():
         if self.data_directory:
             local_data_directory = self.data_directory
         else:
-            host_env = self.get_host_platform()
-            if host_env == Platform.Local:
+            host_env = self.get_host_environment()
+            if host_env == HostEnvironment.Local:
                 if self.project_root:
                     local_data_directory = os.path.join(self.project_root, 'assets', 'data_asset')
                 else:
@@ -117,3 +109,20 @@ class Core01EnvironmentManager():
             else:
                 local_data_directory = None
         return local_data_directory
+
+    def set_root_logger(self, level: str = 'DEBUG'):
+        """Sets the properties of the root logger.
+        In subsequent code, use `logger = logging.getLogger()`.
+        Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]
+        """
+        logger = logging.getLogger()
+        logger.setLevel(level)
+        c_handler = logging.StreamHandler()
+        # c_handler.setLevel('DEBUG')
+
+        # Create formatters and add it to handlers
+        c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
+        c_handler.setFormatter(c_format)
+
+        # Add handlers to the logger
+        logger.addHandler(c_handler)
