@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - dse_do_utils.core Core01ScenarioDbManager, Core02DataManager, Core02OptimizationEngine, Core02ScenarioDbManager
 ### Changed
 - dse_do_utils.core with Core01DataManager, Core01OptimizationEngine, Core01EnvironmentManager updates
+### Fixed
+- ScenarioDbManager._set_df_column_types handles DateTime column type
 
 ## [0.5.4.6b2]- 2023-02-13
 ## Added

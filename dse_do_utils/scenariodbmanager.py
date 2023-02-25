@@ -281,12 +281,21 @@ class ScenarioDbTable(ABC):
         This can avoid errors in DB2, when the column is a mix of types."""
         for sa_column in self.columns_metadata:
             df_column_name = sa_column.name
-            df_type = sa_column.type.python_type
-            if type is not None and df_column_name in df.columns:
+            if issubclass(type(sa_column.type), sqlalchemy.DateTime):
+                # DateTime doesn't convert in Pandas in the same way as other types
+                # Need to handle as a special case
+                # See https://github.com/pandas-dev/pandas/issues/25730
                 try:
-                    df[df_column_name] = df[df_column_name].astype(df_type)
+                    df[df_column_name] = pd.to_datetime(df[df_column_name])
                 except ValueError as e:
-                    print(f"Failed to convert column {df_column_name} to {df_type}")
+                    print(f"Failed to convert column {df_column_name} to datetime")
+            else:
+                df_type = sa_column.type.python_type
+                if type is not None and df_column_name in df.columns:
+                    try:
+                        df[df_column_name] = df[df_column_name].astype(df_type)
+                    except ValueError as e:
+                        print(f"Failed to convert column {df_column_name} to {df_type}")
         return df
 
     def _delete_scenario_table_from_db(self, scenario_name, connection):
