@@ -4,10 +4,11 @@
 import os
 import pathlib
 from abc import abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import pandas as pd
 from docplex.mp.conflict_refiner import ConflictRefiner
+from docplex.mp.solution import SolveSolution
 
 from dse_do_utils import OptimizationEngine
 from dse_do_utils.core.core01_data_manager import Core01DataManager
@@ -61,8 +62,11 @@ class Core01OptimizationEngine(OptimizationEngine):
         pass
 
     def set_cplex_parameters(self) -> None:
-        if int(self.dm.param.n_threads) > 0:
-            self.mdl.parameters.threads = int(self.dm.param.n_threads)
+        if int(self.dm.param.time_limit) > 0:
+            self.mdl.parameters.timelimit = int(self.dm.param.time_limit)
+
+        if int(self.dm.param.threads) > 0:
+            self.mdl.parameters.threads = int(self.dm.param.threads)
 
         if self.dm.param.handle_unscaled_infeasibilities:
             self._set_cplex_parameters_unscaled_infeasibilities()
@@ -71,7 +75,7 @@ class Core01OptimizationEngine(OptimizationEngine):
             # Configure the mdl to generate quality metrics, will be available in mdl.solve_details.quality_metrics
             self.mdl.quality_metrics = True
 
-    def solve(self):
+    def solve(self) -> Optional[SolveSolution]:
         msol = self.mdl.solve(**self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
         if msol is not None:
@@ -90,7 +94,7 @@ class Core01OptimizationEngine(OptimizationEngine):
 
     @abstractmethod
     def post_processing(self) -> None:
-        pass
+        self.dm.post_processing()
 
     def get_outputs(self) -> Outputs:
         return self.dm.get_outputs()

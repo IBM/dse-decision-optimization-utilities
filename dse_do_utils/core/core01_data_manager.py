@@ -66,18 +66,19 @@ class Core01DataManager(DataManager):
         super().set_parameters()
 
         self.param.time_limit = self.get_parameter_value(self.params, 'solveTimeLimit', param_type='int', default_value=600)
-        self.param.threads = self.get_parameter_value(self.params, 'threads', param_type='int', default_value=0)  # default 0 implies no limit
         self.param.remove_zero_quantity_output_records = self.get_parameter_value(
             self.params,
             param_name='removeZeroQuantityOutputRecords',
             param_type='bool',
             default_value=False)
 
-        self.param.n_threads = self.get_parameter_value(
-            self.params,
-            param_name='numberThreads',
-            param_type='int',
-            default_value=0)
+        self.param.threads = self.get_parameter_value(self.params, 'threads', param_type='int',
+                                                      default_value=0)  # default 0 implies no limit
+        # self.param.n_threads = self.get_parameter_value(
+        #     self.params,
+        #     param_name='numberThreads',
+        #     param_type='int',
+        #     default_value=0)
 
         self.param.enable_lp_names = self.get_parameter_value(
             self.params,
