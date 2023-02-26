@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]## [0.5.4.6b3]
 ## Added
 - dse_do_utils.core Core01ScenarioDbManager, Core02DataManager, Core02OptimizationEngine, Core02ScenarioDbManager
+- ScenarioDbManager.extend_columns_constraints utility method to help avoid mutable default arguments
+- ScenarioManager.write_data_to_excel parameter `unique_file_name: bool = True` writes file with unique name 
+if it is open in Excel and would have caused a PermissionError.
 ### Changed
 - dse_do_utils.core with Core01DataManager, Core01OptimizationEngine, Core01EnvironmentManager updates
 ### Fixed

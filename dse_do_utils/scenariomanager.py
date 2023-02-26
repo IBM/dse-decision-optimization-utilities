@@ -583,19 +583,20 @@ class ScenarioManager(object):
     #     self.inputs, self.outputs = ScenarioManager.load_data_from_excel_s(xl)
     #     return self.inputs, self.outputs
 
-    def write_data_to_excel(self, excel_file_name: str = None, copy_to_csv: bool = False) -> str:
+    def write_data_to_excel(self, excel_file_name: str = None, unique_file_name: bool = True, copy_to_csv: bool = False) -> str:
         """Write inputs and/or outputs to an Excel file in datasets.
         The inputs and outputs as in the attributes `self.inputs` and `self.outputs` of the ScenarioManager
 
-        The copy_to_csv is a work-around for the WS limitation of not being able to download a file from datasets that is not a csv file.
-        Creates a copy of the Excel file as a file named `<excel_file_name>_xlxs.csv` in the datasets folder. This is *not* a csv file!
-        Download this file to your local computer and rename to `<excel_file_name>.xlxs`
-
         If the excel_file_name is None, it will be generated from the model_name and scenario_name: MODEL_NAME + "_" + SCENARIO_NAME + "_output"
+
+        If Excel has a file with the same name opened, it will throw a PermissionError.
+        If so and the flag `unique_file_name` is set to True, it will save the new file with a unique name.
+        I.e., if the file is not opened by Excel, the file is overwritten.
 
         Args:
             excel_file_name (str): The file name for the Excel file.
-            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`.
+            unique_file_name (bool): If True, generates a unique file name in case the existing file is opened(!) by Excel
+            copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`. DEPRECATED, NON-FUNCTIONAL
         """
 
         if excel_file_name is None:
@@ -611,7 +612,15 @@ class ScenarioManager(object):
 
         data_dir = self.get_data_directory()
         excel_file_path_1 = os.path.join(data_dir, excel_file_name)
-        writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
+        if unique_file_name:
+            try:
+                writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
+            except PermissionError:
+                excel_file_path_1 = self.get_unique_file_name(excel_file_path_1)
+                writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
+        else:
+            writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
+
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
         writer_1.save()
 
@@ -632,6 +641,17 @@ class ScenarioManager(object):
         #     writer_2.save()
         #     os.rename(excel_file_path_2, csv_excel_file_path_2)
         return excel_file_path_1
+
+    @staticmethod
+    def get_unique_file_name(path):
+        filename, extension = os.path.splitext(path)
+        counter = 1
+
+        while os.path.exists(path):
+            path = filename + "(" + str(counter) + ")" + extension
+            counter += 1
+
+        return path
 
     def add_file_as_data_asset(self, file_path: str, asset_name: str = None):
         """Register an existing file as a data asset in CPD.
