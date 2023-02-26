@@ -335,6 +335,35 @@ class ScenarioDbTable(ABC):
                 dtypedict.update({i: sqlalchemy.types.INT()})
         return dtypedict
 
+    @staticmethod
+    def extend_columns_constraints(columns: list[Column],
+                                   constraints: list[ForeignKeyConstraint],
+                                   columns_ext: Optional[list[Column]] = None,
+                                   constraints_ext: Optional[list[ForeignKeyConstraint]] = None)\
+            -> tuple[list[Column], list[ForeignKeyConstraint]]:
+        """To be used in ScenarioDbTableSubClass.__init__()
+        Helps to avoid mutable default arguments by allowing columns_ext and constraints_ext to be None.
+
+        Usage::
+
+        class MyTable(ScenarioDbTable):
+            def __init__(self, db_table_name: str = 'my_table',
+                     columns_ext: Optional[list[Column]] = None,
+                     constraints_ext: Optional[list[ForeignKeyConstraint]] = None):
+                columns = [
+                    Column('myKey', Integer(), primary_key=True),
+                    Column('myValue', Integer(), primary_key=False),
+                ]
+                constraints = []
+                columns, constraints = self.extend_columns_constraints(columns, constraints, columns_ext, constraints_ext)
+                super().__init__(db_table_name, columns, constraints)
+        """
+        if columns_ext is not None:
+            columns.extend(columns_ext)
+        if constraints_ext is not None:
+            constraints.extend(constraints_ext)
+        return columns, constraints
+
 
 #########################################################################
 # AutoScenarioDbTable
