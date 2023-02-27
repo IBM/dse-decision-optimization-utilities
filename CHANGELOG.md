@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.6b3]
+## [Unreleased]## [0.5.4.6b4]
+
+## [0.5.4.6b3]- 2023-02-26
 ## Added
 - dse_do_utils.core Core01ScenarioDbManager, Core02DataManager, Core02OptimizationEngine, Core02ScenarioDbManager
 - ScenarioDbManager.extend_columns_constraints utility method to help avoid mutable default arguments
