@@ -42,7 +42,7 @@ class Core01DataManager(DataManager):
 
         # Create a custom logger
         # self.logger = self.create_logger(log_level)
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(self.__module__)
 
         # Parameters:
         self.params = None
