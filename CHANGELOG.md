@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.6b4]
-### Changed
+## [Unreleased]## [0.5.4.6b5]
+
+## [0.5.4.6b4]- 2023-03-03
 ### Fixed
 - ScenarioDbManager.insert_table_in_db_bulk only fix NaNs for known columns.
 
