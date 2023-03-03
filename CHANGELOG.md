@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]## [0.5.4.6b4]
 ### Changed
+### Fixed
+- ScenarioDbManager.insert_table_in_db_bulk only fix NaNs for known columns.
 
 ## [0.5.4.6b3]- 2023-02-26
 ## Added

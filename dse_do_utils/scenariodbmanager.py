@@ -254,12 +254,14 @@ class ScenarioDbTable(ABC):
         if enable_astype:
             df = self._set_df_column_types(df)
 
+        # Only insert known columns:
+        df = df[columns]  # Can prevent issues with the fixNanNoneNull
+
         # Replace NaN with None to avoid FK problems:
-        # df = df.replace({float('NaN'): None, 'nan': None})
         df = self.fixNanNoneNull(df)
 
         try:
-            df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
+            df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
                                index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
