@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.5.0 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -415,8 +415,144 @@ Creates the self.params pd.DataFrame to be able to easily extract the parameter 
 </dd></dl>
 
 </section>
-<section id="dse-do-utils-deployeddomodel-module">
-<h2>dse_do_utils.deployeddomodel module<a class="headerlink" href="#dse-do-utils-deployeddomodel-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-dse_do_utils.deployeddomodel">
+<span id="dse-do-utils-deployeddomodel-module"></span><h2>dse_do_utils.deployeddomodel module<a class="headerlink" href="#module-dse_do_utils.deployeddomodel" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.deployeddomodel.</span></span><span class="sig-name descname"><span class="pre">DeployedDOModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wml_credentials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployed_model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_max_oaas_time_limit_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_max_run_time_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor_loop_delay_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>New DeployedDOModel for CPD3.5 based on ibm_watson_machine_learning.APIClient</p>
+<p>Major steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Create an instance of a DeployedDOModel, configuring parameters</p></li>
+</ol>
+</div></blockquote>
+<p>Internally, the processes uses the APIClient (former WatsonMachineLearningAPIClient) to communicate with the deployed model:</p>
+<blockquote>
+<div><ol class="arabic simple" start="2">
+<li><p>Start the solve job.</p></li>
+<li><p>Monitor the running solve job. Runs in a loop, updates the current state.</p></li>
+<li><p>Once the job completes, get the optimization result.</p></li>
+</ol>
+</div></blockquote>
+<p>In the code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">():</span>
+    <span class="n">solve_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>  <span class="c1"># Convert inputs to payload</span>
+    <span class="n">job_details</span><span class="p">,</span> <span class="n">job_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">(</span><span class="n">solve_payload</span><span class="p">)</span>
+    <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">(</span><span class="n">job_details</span><span class="p">,</span> <span class="n">job_uid</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">extract_solution</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">job_details</span>
+</pre></div>
+</div>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simplest, using all default options:</span>
+<span class="n">mdl</span> <span class="o">=</span> <span class="n">DeployedDOModel</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">,</span> <span class="n">space_name</span><span class="p">,</span> <span class="n">deployed_model_name</span><span class="p">)</span>
+<span class="n">job_details</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Solve status: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">solve_status</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Objective: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">objective</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Output tables: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mdl</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>TODOs:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Debug mode</p></li>
+<li><p>Get the cplex log file?</p></li>
+<li><p>Done - Add kill and stop methods</p></li>
+<li><p>Done - Configure polling interval</p></li>
+</ol>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.execute_model">
+<span class="sig-name descname"><span class="pre">execute_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_oaas_time_limit_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.execute_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution">
+<span class="sig-name descname"><span class="pre">extract_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.extract_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_deployment_id">
+<span class="sig-name descname"><span class="pre">get_deployment_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_deployment_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_deployment_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find deployment_id from model_name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_job_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Job states can be : queued, running, completed, failed, canceled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solve_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solve_details_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_details_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed.
+Note: not sure where the objective is. Can be PROGRESS_CURRENT_OBJECTIVE or PROGRESS_BEST_OBJECTIVE</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload">
+<span class="sig-name descname"><span class="pre">get_solve_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_oaas_time_limit_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_solve_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_solve_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>After job has completed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.get_space_id">
+<span class="sig-name descname"><span class="pre">get_space_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.get_space_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_space_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find space_id from space_name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution">
+<span class="sig-name descname"><span class="pre">monitor_execution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_details</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_run_time_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.monitor_execution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor the model execution by periodically calling the API to get the current execution status.
+Result stored in self.execution_status_json and self.execution_status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.deployeddomodel.DeployedDOModel.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_oaas_time_limit_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_run_time_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/deployeddomodel.html#DeployedDOModel.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.deployeddomodel.DeployedDOModel.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<em>dict</em><em> of </em><em>DataFrames</em>) – input tables</p></li>
+<li><p><strong>max_oaas_time_limit_sec</strong> (<em>int</em>) – will override the default from the constructor</p></li>
+<li><p><strong>max_run_time_sec</strong> (<em>int</em>) – will override the default from the constructor</p></li>
+</ul>
+</dd>
+</dl>
+<p>Calls the following methods (in order):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">retrieve_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_output_settings_in_solve_configuration</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">execute_model</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">retrieve_debug_materials</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-dse_do_utils.deployeddomodelcpd21">
 <span id="dse-do-utils-deployeddomodelcpd21-module"></span><h2>dse_do_utils.deployeddomodelcpd21 module<a class="headerlink" href="#module-dse_do_utils.deployeddomodelcpd21" title="Permalink to this heading">¶</a></h2>
@@ -716,8 +852,163 @@ TODO: test</p>
 </dd></dl>
 
 </section>
-<section id="dse-do-utils-domodeldeployer-module">
-<h2>dse_do_utils.domodeldeployer module<a class="headerlink" href="#dse-do-utils-domodeldeployer-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-dse_do_utils.domodeldeployer">
+<span id="dse-do-utils-domodeldeployer-module"></span><h2>dse_do_utils.domodeldeployer module<a class="headerlink" href="#module-dse_do_utils.domodeldeployer" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.domodeldeployer.</span></span><span class="sig-name descname"><span class="pre">DOModelDeployer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wml_credentials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'xxx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'xxx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Deploys a DO Model in WML. For use in CPD 4.0. Retrieves the model from the DO Model Builder.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>md = DOModelDeployer(wml_credentials, model_name, scenario_name, space_name,
+                     package_paths, file_paths,
+                     deployment_name, deployment_description)
+deployment_uid = md.deploy_model()
+print(deployment_uid)
+
+How to add Python modules in the root:
+- Specify paths to modules (.py files) in `file_paths`. These modules are included in the root of the project
+  and can be accessed using `from my_module import MyClass`. This is similar to the additional files in the DO Experiment.
+  These files can be located anywhere in JupyterLab.
+How to add a Python package:
+1. From conda
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_archive">
+<span class="sig-name descname"><span class="pre">create_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">main_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create archive.
+For now assume one folder <cite>model</cite> with one file <cite>main.py</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>main_file_path</strong> – file path of main.py file</p></li>
+<li><p><strong>path</strong> – folder where archive will be written</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_model_archive">
+<span class="sig-name descname"><span class="pre">create_model_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_model_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a model archive on the path:
+The archive contains one .py file: the do-model surrounded by boilerplate code to process
+the inputs and outputs dictionaries.
+Steps:
+1. Write a file <cite>path/main.py</cite>
+2. Creates an archive file in path
+3. Adds the main.py
+4. Adds packages
+5. Adds (module) files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_model_directory">
+<span class="sig-name descname"><span class="pre">create_model_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_model_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a directory ‘model’ in the default path.
+Will remove/clear first if exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_package_extension">
+<span class="sig-name descname"><span class="pre">create_package_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_package_extension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_package_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification">
+<span class="sig-name descname"><span class="pre">create_software_specification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkg_ext_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_software_specification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow for multiple package_extensions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.create_zip_package_extension">
+<span class="sig-name descname"><span class="pre">create_zip_package_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_zip_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.create_zip_package_extension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_zip_package_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference external" href="https://notebooks.githubusercontent.com/view/ipynb?browser=chrome&amp;color_mode=auto&amp;commit=37188b1a8b48be2bef34b35b55f01cba0d29ed19&amp;device=unknown&amp;enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f49424d2f776174736f6e2d6d616368696e652d6c6561726e696e672d73616d706c65732f333731383862316138623438626532626566333462333562353566303163626130643239656431392f637064342e302f6e6f7465626f6f6b732f707974686f6e5f73646b2f6465706c6f796d656e74732f637573746f6d5f6c6962726172792f5573652532307363696b69742d6c6561726e253230616e64253230637573746f6d2532306c696272617279253230746f2532307072656469637425323074656d70657261747572652e6970796e62&amp;logged_in=false&amp;nwo=IBM%2Fwatson-machine-learning-samples&amp;path=cpd4.0%2Fnotebooks%2Fpython_sdk%2Fdeployments%2Fcustom_library%2FUse+scikit-learn+and+custom+library+to+predict+temperature.ipynb&amp;platform=android&amp;repository_id=277618282&amp;repository_type=Repository&amp;version=98">https://notebooks.githubusercontent.com/view/ipynb?browser=chrome&amp;color_mode=auto&amp;commit=37188b1a8b48be2bef34b35b55f01cba0d29ed19&amp;device=unknown&amp;enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f49424d2f776174736f6e2d6d616368696e652d6c6561726e696e672d73616d706c65732f333731383862316138623438626532626566333462333562353566303163626130643239656431392f637064342e302f6e6f7465626f6f6b732f707974686f6e5f73646b2f6465706c6f796d656e74732f637573746f6d5f6c6962726172792f5573652532307363696b69742d6c6561726e253230616e64253230637573746f6d2532306c696272617279253230746f2532307072656469637425323074656d70657261747572652e6970796e62&amp;logged_in=false&amp;nwo=IBM%2Fwatson-machine-learning-samples&amp;path=cpd4.0%2Fnotebooks%2Fpython_sdk%2Fdeployments%2Fcustom_library%2FUse+scikit-learn+and+custom+library+to+predict+temperature.ipynb&amp;platform=android&amp;repository_id=277618282&amp;repository_type=Repository&amp;version=98</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.deploy_archive">
+<span class="sig-name descname"><span class="pre">deploy_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_archive_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.deploy_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_archive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model">
+<span class="sig-name descname"><span class="pre">deploy_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.deploy_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>One call that deploys a model from the Model Builder scenario into WML.
+Creates a model archive from the extracted model code.
+Then uploads into WML and creates a deployment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Deployment UID necessary to call the deployment.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>deployment_uid (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_scenario">
+<span class="sig-name descname"><span class="pre">get_scenario</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_scenario" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_deployment_meta_props">
+<span class="sig-name descname"><span class="pre">get_wml_create_deployment_meta_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_wml_create_deployment_meta_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_deployment_meta_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the meta_props for the creation of the deployment
+Separate method, so can easily be overridden</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_store_model_meta_props">
+<span class="sig-name descname"><span class="pre">get_wml_create_store_model_meta_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sw_spec_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.get_wml_create_store_model_meta_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_store_model_meta_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the meta_props for the store of the model
+Separate method, so can easily be overridden</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.guid_from_space_name">
+<span class="sig-name descname"><span class="pre">guid_from_space_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.guid_from_space_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.guid_from_space_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get space_id from deployment space name.
+TODO: handle exception if space_name not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment">
+<span class="sig-name descname"><span class="pre">wml_create_deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_uid</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.wml_create_deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create deployment in WML
+:returns: deployment_uid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.wml_store_model">
+<span class="sig-name descname"><span class="pre">wml_store_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_archive_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_file_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.wml_store_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_store_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores model in WML
+:returns: model_uid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.write_main_file">
+<span class="sig-name descname"><span class="pre">write_main_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.write_main_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_main_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the code for the main.py file.
+Adds the code template header and footer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.domodeldeployer.DOModelDeployer.write_yaml_file">
+<span class="sig-name descname"><span class="pre">write_yaml_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./main.yml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/domodeldeployer.html#DOModelDeployer.write_yaml_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_yaml_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the code for the main.py file.
+Adds the code template header and footer.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-dse_do_utils.domodelexporter">
 <span id="dse-do-utils-domodelexporter-module"></span><h2>dse_do_utils.domodelexporter module<a class="headerlink" href="#module-dse_do_utils.domodelexporter" title="Permalink to this heading">¶</a></h2>
@@ -1207,6 +1498,7 @@ current point in the search tree.</p>
 <dt class="sig sig-object py" id="dse_do_utils.optimizationengine.OptimizationEngine">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dse_do_utils.optimizationengine.</span></span><span class="sig-name descname"><span class="pre">OptimizationEngine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dse_do_utils.datamanager.DataManager" title="dse_do_utils.datamanager.DataManager"><span class="pre">DataManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'MyOptimizationEngine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_lp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_sav</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_lp_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_cpo_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TODO: documentation for class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis">
 <span class="sig-name descname"><span class="pre">add_mip_progress_kpis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_gap_kpi_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Gap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve_time_kpi_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Solve</span> <span class="pre">Time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_bound_kpi_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Best</span> <span class="pre">Bound'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_count_kpi_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Solution</span> <span class="pre">Count'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solve_phase_kpi_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Solve</span> <span class="pre">Phase'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/optimizationengine.html#OptimizationEngine.add_mip_progress_kpis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.optimizationengine.OptimizationEngine.add_mip_progress_kpis" title="Permalink to this definition">¶</a></dt>
@@ -3543,7 +3835,24 @@ If it is, you may need to add another reload:</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#dse-do-utils-deployeddomodel-module">dse_do_utils.deployeddomodel module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.deployeddomodel">dse_do_utils.deployeddomodel module</a><ul>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel</span></code></a><ul>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.execute_model()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.extract_solution()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_deployment_id"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_deployment_id()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_job_status()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_outputs()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_solve_details()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_solve_details_objective()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_solve_payload()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_solve_status()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.get_space_id"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.get_space_id()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.monitor_execution()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.deployeddomodel.DeployedDOModel.solve"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel.solve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-dse_do_utils.deployeddomodelcpd21">dse_do_utils.deployeddomodelcpd21 module</a><ul>
 <li><a class="reference internal" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21</span></code></a><ul>
 <li><a class="reference internal" href="#dse_do_utils.deployeddomodelcpd21.DeployedDOModel_CPD21.cleanup"><code class="docutils literal notranslate"><span class="pre">DeployedDOModel_CPD21.cleanup()</span></code></a></li>
@@ -3584,7 +3893,28 @@ If it is, you may need to add another reload:</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#dse-do-utils-domodeldeployer-module">dse_do_utils.domodeldeployer module</a></li>
+<li><a class="reference internal" href="#module-dse_do_utils.domodeldeployer">dse_do_utils.domodeldeployer module</a><ul>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer</span></code></a><ul>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_archive"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_archive()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_archive"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_model_archive()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_model_directory"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_model_directory()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_package_extension"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_package_extension()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_software_specification"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_software_specification()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.create_zip_package_extension"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.create_zip_package_extension()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_archive"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.deploy_archive()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.deploy_model"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.deploy_model()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_scenario"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.get_scenario()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_deployment_meta_props"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.get_wml_create_deployment_meta_props()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.get_wml_create_store_model_meta_props"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.get_wml_create_store_model_meta_props()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.guid_from_space_name"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.guid_from_space_name()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_create_deployment"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.wml_create_deployment()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.wml_store_model"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.wml_store_model()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_main_file"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.write_main_file()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.domodeldeployer.DOModelDeployer.write_yaml_file"><code class="docutils literal notranslate"><span class="pre">DOModelDeployer.write_yaml_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-dse_do_utils.domodelexporter">dse_do_utils.domodelexporter module</a><ul>
 <li><a class="reference internal" href="#dse_do_utils.domodelexporter.DOModelExporter"><code class="docutils literal notranslate"><span class="pre">DOModelExporter</span></code></a><ul>
 <li><a class="reference internal" href="#dse_do_utils.domodelexporter.DOModelExporter.export_do_models"><code class="docutils literal notranslate"><span class="pre">DOModelExporter.export_do_models()</span></code></a></li>
@@ -3971,7 +4301,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>

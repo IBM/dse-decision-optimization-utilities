@@ -6,7 +6,7 @@ import pandas as pd
 # import sys
 # from watson_machine_learning_client import WatsonMachineLearningAPIClient  # Deprecated
 from dse_do_utils.datamanager import Inputs
-from ibm_watson_machine_learning import APIClient  # New client
+# from ibm_watson_machine_learning import APIClient  # New client
 
 
 class DeployedDOModel(object):
@@ -100,6 +100,7 @@ class DeployedDOModel(object):
         self.job_details = None
 
         # Setup and connection to deployed model
+        from ibm_watson_machine_learning import APIClient
         self.client = APIClient(wml_credentials)
 
         # space_id = [x['metadata']['id'] for x in self.client.spaces.get_details()['resources'] if
