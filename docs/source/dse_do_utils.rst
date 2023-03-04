@@ -100,6 +100,14 @@ dse\_do\_utils.scenariodbmanager module
    :undoc-members:
    :show-inheritance:
 
+dse\_do\_utils.scenariodbmanager2 module
+----------------------------------------
+
+.. automodule:: dse_do_utils.scenariodbmanager2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dse\_do\_utils.scenariomanager module
 -------------------------------------
 
