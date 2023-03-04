@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.5.0 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -272,7 +272,7 @@
 
 <div class="viewcode-block" id="ScenarioDbTable.df_column_names_to_snake_case"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.df_column_names_to_snake_case">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">df_column_names_to_snake_case</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;&quot;Change all columns names from camelCase to snake_case.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Change all columns names from camelCase to snake_case.&quot;&quot;&quot;</span>
         <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">camel_case_to_snake_case</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">df</span></div>
 
@@ -281,6 +281,7 @@
                                 <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Insert a DataFrame in the DB using &#39;bulk&#39; insert, i.e. with one SQL insert.</span>
 <span class="sd">        (Instead of row-by-row.)</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            df (pd.DataFrame)</span>
 <span class="sd">            mgr (ScenarioDbManager)</span>
@@ -422,15 +423,16 @@
     <span class="sd">&quot;&quot;&quot;Designed to automatically generate the table definition based on the DataFrame.</span>
 
 <span class="sd">    Main difference with the &#39;regular&#39; ScenarioDbTable definition:</span>
-<span class="sd">    * At &#39;create_schema`, the table will NOT be created. Instead,</span>
-<span class="sd">    * At &#39;insert_table_in_db_bulk&#39; SQLAlchemy will automatically create a TABLE based on the DataFrame.</span>
+<span class="sd">        * At &#39;create_schema`, the table will NOT be created. Instead,</span>
+<span class="sd">        * At &#39;insert_table_in_db_bulk&#39; SQLAlchemy will automatically create a TABLE based on the DataFrame.</span>
 
 <span class="sd">    Advantages:</span>
-<span class="sd">    - No need to define a custom ScenarioDbTable class per table</span>
-<span class="sd">    - Automatically all columns are inserted</span>
+<span class="sd">        - No need to define a custom ScenarioDbTable class per table</span>
+<span class="sd">        - Automatically all columns are inserted</span>
+
 <span class="sd">    Disadvantages:</span>
-<span class="sd">    - No primary and foreign key relations. Thus no checks.</span>
-<span class="sd">    - Missing relationships means Cognos cannot automatically extract a data model</span>
+<span class="sd">        - No primary and foreign key relations. Thus no checks.</span>
+<span class="sd">        - Missing relationships means Cognos cannot automatically extract a data model</span>
 
 <span class="sd">    TODO: find out what will happen if the DataFrame structure changes and we&#39;re doing a new insert</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2127,7 +2129,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 

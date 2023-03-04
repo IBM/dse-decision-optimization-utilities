@@ -224,7 +224,7 @@ class ScenarioDbTable(ABC):
 
     @staticmethod
     def df_column_names_to_snake_case(df: pd.DataFrame) -> pd.DataFrame:
-        """"Change all columns names from camelCase to snake_case."""
+        """Change all columns names from camelCase to snake_case."""
         df.columns = [ScenarioDbTable.camel_case_to_snake_case(x) for x in df.columns]
         return df
 
@@ -233,6 +233,7 @@ class ScenarioDbTable(ABC):
                                 ):
         """Insert a DataFrame in the DB using 'bulk' insert, i.e. with one SQL insert.
         (Instead of row-by-row.)
+
         Args:
             df (pd.DataFrame)
             mgr (ScenarioDbManager)
@@ -374,15 +375,16 @@ class AutoScenarioDbTable(ScenarioDbTable):
     """Designed to automatically generate the table definition based on the DataFrame.
 
     Main difference with the 'regular' ScenarioDbTable definition:
-    * At 'create_schema`, the table will NOT be created. Instead,
-    * At 'insert_table_in_db_bulk' SQLAlchemy will automatically create a TABLE based on the DataFrame.
+        * At 'create_schema`, the table will NOT be created. Instead,
+        * At 'insert_table_in_db_bulk' SQLAlchemy will automatically create a TABLE based on the DataFrame.
 
     Advantages:
-    - No need to define a custom ScenarioDbTable class per table
-    - Automatically all columns are inserted
+        - No need to define a custom ScenarioDbTable class per table
+        - Automatically all columns are inserted
+
     Disadvantages:
-    - No primary and foreign key relations. Thus no checks.
-    - Missing relationships means Cognos cannot automatically extract a data model
+        - No primary and foreign key relations. Thus no checks.
+        - Missing relationships means Cognos cannot automatically extract a data model
 
     TODO: find out what will happen if the DataFrame structure changes and we're doing a new insert
     """
