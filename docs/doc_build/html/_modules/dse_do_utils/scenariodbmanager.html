@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.4.5 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -85,13 +85,23 @@
 <span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 
+<span class="kn">import</span> <span class="nn">enum</span>
+
+<div class="viewcode-block" id="DatabaseType"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.DatabaseType">[docs]</a><span class="k">class</span> <span class="nc">DatabaseType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in ScenarioDbManager.__init__ to specify the type of DB it is connecting to.&quot;&quot;&quot;</span>
+    <span class="n">SQLite</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">DB2</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">PostgreSQL</span> <span class="o">=</span> <span class="mi">2</span></div>
+
 
 <div class="viewcode-block" id="ScenarioDbTable"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable">[docs]</a><span class="k">class</span> <span class="nc">ScenarioDbTable</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.</span>
 <span class="sd">    Only columns that are specified and included in the DB insert.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">constraints_metadata</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+                 <span class="n">constraints_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ForeignKeyConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning: Do not use mixed case names for the db_table_name.</span>
 <span class="sd">        Supplying a mixed-case is not working well and is causing DB FK errors.</span>
@@ -292,28 +302,50 @@
         <span class="k">if</span> <span class="n">enable_astype</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_df_column_types</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
+        <span class="c1"># Only insert known columns:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Can prevent issues with the fixNanNoneNull</span>
+
         <span class="c1"># Replace NaN with None to avoid FK problems:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;NaN&#39;</span><span class="p">):</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fixNanNoneNull</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">mgr</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame insert/append of table &#39;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="ScenarioDbTable.fixNanNoneNull"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.fixNanNoneNull">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fixNanNoneNull</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Ensure that NaN values are converted to None. Which in turn causes the value to be NULL in the DB.</span>
+<span class="sd">        Apply before insert df to DB.</span>
+<span class="sd">        TODO VT20230106: what other incarnations of &#39;NaN&#39; do we need to convert?</span>
+<span class="sd">        Potentially:  [&#39;N/A&#39;, &#39;na&#39;, &#39;NaN&#39;, &#39;nan&#39;, &#39;&#39;, &#39;None&#39;]?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;NaN&#39;</span><span class="p">):</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;nan&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
     <span class="k">def</span> <span class="nf">_set_df_column_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Force the data type of the DataFrame according to the schema.</span>
 <span class="sd">        This can avoid errors in DB2, when the column is a mix of types.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">sa_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span><span class="p">:</span>
             <span class="n">df_column_name</span> <span class="o">=</span> <span class="n">sa_column</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">df_type</span> <span class="o">=</span> <span class="n">sa_column</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">python_type</span>
-            <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">df_column_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">sa_column</span><span class="o">.</span><span class="n">type</span><span class="p">),</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">DateTime</span><span class="p">):</span>
+                <span class="c1"># DateTime doesn&#39;t convert in Pandas in the same way as other types</span>
+                <span class="c1"># Need to handle as a special case</span>
+                <span class="c1"># See https://github.com/pandas-dev/pandas/issues/25730</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">df_type</span><span class="p">)</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">])</span>
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert column </span><span class="si">{</span><span class="n">df_column_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">df_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert column </span><span class="si">{</span><span class="n">df_column_name</span><span class="si">}</span><span class="s2"> to datetime&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df_type</span> <span class="o">=</span> <span class="n">sa_column</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">python_type</span>
+                <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">df_column_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">df_type</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert column </span><span class="si">{</span><span class="n">df_column_name</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">df_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">def</span> <span class="nf">_delete_scenario_table_from_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
@@ -351,7 +383,36 @@
 
             <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
                 <span class="n">dtypedict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">i</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">INT</span><span class="p">()})</span>
-        <span class="k">return</span> <span class="n">dtypedict</span></div></div>
+        <span class="k">return</span> <span class="n">dtypedict</span></div>
+
+<div class="viewcode-block" id="ScenarioDbTable.extend_columns_constraints"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbTable.extend_columns_constraints">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">extend_columns_constraints</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Column</span><span class="p">],</span>
+                                   <span class="n">constraints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForeignKeyConstraint</span><span class="p">],</span>
+                                   <span class="n">columns_ext</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Column</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">constraints_ext</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ForeignKeyConstraint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>\
+            <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Column</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForeignKeyConstraint</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;To be used in ScenarioDbTableSubClass.__init__()</span>
+<span class="sd">        Helps to avoid mutable default arguments by allowing columns_ext and constraints_ext to be None.</span>
+
+<span class="sd">        Usage::</span>
+
+<span class="sd">        class MyTable(ScenarioDbTable):</span>
+<span class="sd">            def __init__(self, db_table_name: str = &#39;my_table&#39;,</span>
+<span class="sd">                     columns_ext: Optional[list[Column]] = None,</span>
+<span class="sd">                     constraints_ext: Optional[list[ForeignKeyConstraint]] = None):</span>
+<span class="sd">                columns = [</span>
+<span class="sd">                    Column(&#39;myKey&#39;, Integer(), primary_key=True),</span>
+<span class="sd">                    Column(&#39;myValue&#39;, Integer(), primary_key=False),</span>
+<span class="sd">                ]</span>
+<span class="sd">                constraints = []</span>
+<span class="sd">                columns, constraints = self.extend_columns_constraints(columns, constraints, columns_ext, constraints_ext)</span>
+<span class="sd">                super().__init__(db_table_name, columns, constraints)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">columns_ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">columns_ext</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">constraints_ext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">constraints_ext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">columns</span><span class="p">,</span> <span class="n">constraints</span></div></div>
 
 
 <span class="c1">#########################################################################</span>
@@ -473,21 +534,37 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
                  <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_astype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">enable_debug_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_scenario_seq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+                 <span class="n">enable_debug_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_scenario_seq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">db_type</span><span class="p">:</span> <span class="n">DatabaseType</span> <span class="o">=</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">DB2</span><span class="p">,</span>
+                 <span class="n">use_custom_naming_convention</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">future</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioDbManager.</span>
 
-<span class="sd">        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.</span>
-<span class="sd">        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.</span>
+<span class="sd">        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.</span>
+<span class="sd">        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.</span>
 <span class="sd">        :param credentials: DB credentials</span>
 <span class="sd">        :param schema: schema name</span>
 <span class="sd">        :param echo: if True, SQLAlchemy will produce a lot of debugging output</span>
-<span class="sd">        :param multi_scenario: If true, adds SCENARIO table and PK</span>
+<span class="sd">        :param multi_scenario: If true, adds SCENARIO table and PK. Deprecated: should always be TRUE</span>
 <span class="sd">        :param enable_transactions: If true, uses transactions</span>
 <span class="sd">        :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite</span>
 <span class="sd">        :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert</span>
 <span class="sd">        :param enable_debug_print: If True, print additional debugging statements, like the DB connection string</span>
+<span class="sd">        :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str</span>
+<span class="sd">        :param db_type: DatabaseType enum. Configures the type of DB backend</span>
+<span class="sd">        :param use_custom_naming_convention: bool. If True, will call get_custom_naming_convention to name FK constraints etc.</span>
+<span class="sd">        :param future: bool. The `future` flag set on the SQLAlchemy db engine. Will enforce SQLAlchemy 2.0 API changes.</span>
+<span class="sd">        Allows for easier to read constraints during data checking.</span>
+<span class="sd">        False for backward compatibity reasons. Potentially may cause name conflicts of pattern doesn&#39;t generate a unique name.</span>
+
+<span class="sd">        Regarding the db_type, for backwards compatibility reasons, the logic is:</span>
+<span class="sd">        1. If no credentials: create a SQLite DB</span>
+<span class="sd">        2. If credentials, then depending on the db_type, create a connection and engine for that type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># WARNING: do NOT use &#39;OrderedDict[str, ScenarioDbTable]&#39; as type. OrderedDict is not subscriptable. Will cause a syntax error.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_type</span> <span class="o">=</span> <span class="n">db_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">future</span> <span class="o">=</span> <span class="n">future</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_schema_name</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multi_scenario</span> <span class="o">=</span> <span class="n">multi_scenario</span>  <span class="c1"># If true, will add a primary key &#39;scenario_name&#39; to each table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span> <span class="o">=</span> <span class="n">enable_transactions</span>
@@ -500,9 +577,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output_db_tables</span> <span class="o">=</span> <span class="n">output_db_tables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">output_db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>  <span class="c1"># {**input_db_tables, **output_db_tables}  # For compatibility reasons</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_database_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">MetaData</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># VT_20210120: Added schema=schema just for reflection? Not sure what are the implications</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_database_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">,</span> <span class="n">db_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_custom_naming_convention</span><span class="p">:</span>
+            <span class="n">naming_convention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_custom_naming_convention</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">naming_convention</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">MetaData</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span>
+                                            <span class="n">naming_convention</span><span class="o">=</span><span class="n">naming_convention</span><span class="p">,</span>
+                                            <span class="p">)</span>
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_db_tables</span><span class="p">()</span>  <span class="c1"># Needs to be done after self.metadata, self.multi_scenario has been set</span>
+
+        <span class="c1"># TODO VT20230112: Are these callbacks this still relevant. Probabaly not. If so, remove.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_scenario_table_from_db_callback</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># For Flask caching</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_scenarios_table_from_db_callback</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># For Flask caching</span>
 
@@ -534,6 +621,24 @@
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: the `Scenario` table should be the first in the input tables&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">input_db_tables</span>
 
+<div class="viewcode-block" id="ScenarioDbManager.get_custom_naming_convention"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_custom_naming_convention">[docs]</a>    <span class="k">def</span> <span class="nf">get_custom_naming_convention</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets a custom naming convention</span>
+<span class="sd">        See https://docs.sqlalchemy.org/en/20/core/constraints.html#configuring-constraint-naming-conventions</span>
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">naming_convention</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ix&quot;</span><span class="p">:</span> <span class="s2">&quot;ix_</span><span class="si">%(column_0_label)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uq&quot;</span><span class="p">:</span> <span class="s2">&quot;uq_</span><span class="si">%(table_name)s</span><span class="s2">_</span><span class="si">%(column_0_name)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ck&quot;</span><span class="p">:</span> <span class="s2">&quot;ck_</span><span class="si">%(table_name)s</span><span class="s2">_</span><span class="si">%(constraint_name)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="c1"># &quot;fk&quot;: &quot;fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s&quot;,</span>
+            <span class="s2">&quot;fk&quot;</span><span class="p">:</span> <span class="s2">&quot;fk_</span><span class="si">%(table_name)s</span><span class="s2">__</span><span class="si">%(column_0_N_name)s</span><span class="s2">__</span><span class="si">%(referred_table_name)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pk&quot;</span><span class="p">:</span> <span class="s2">&quot;pk_</span><span class="si">%(table_name)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">naming_convention</span></div>
+
+    <span class="c1">############################################################################################</span>
+
 <div class="viewcode-block" id="ScenarioDbManager.get_scenario_db_table"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.get_scenario_db_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_scenario_db_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScenarioDbTable</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Scenario table must be the first in self.input_db_tables&quot;&quot;&quot;</span>
         <span class="n">db_table</span><span class="p">:</span> <span class="n">ScenarioDbTable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_db_tables</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
@@ -543,20 +648,27 @@
         <span class="sd">&quot;&quot;&quot;Returns the SQLAlchemy &#39;scenario&#39; table. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenario_db_table</span><span class="p">()</span><span class="o">.</span><span class="n">get_sa_table</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_create_database_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_create_database_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">db_type</span><span class="p">:</span> <span class="n">DatabaseType</span><span class="o">=</span><span class="n">DatabaseType</span><span class="o">.</span><span class="n">DB2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates a SQLAlchemy engine at initialization.</span>
 <span class="sd">        If no credentials, creates an in-memory SQLite DB. Which can be used for schema validation of the data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_db2_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">credentials</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">db_type</span> <span class="o">==</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">SQLite</span><span class="p">:</span>
             <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sqllite_engine</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">db_type</span> <span class="o">==</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">DB2</span><span class="p">:</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_db2_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">db_type</span> <span class="o">==</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">PostgreSQL</span><span class="p">:</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_pg_engine</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">echo</span><span class="p">)</span>
+
+        <span class="c1"># if credentials is not None:</span>
+        <span class="c1">#     engine = self._create_db2_engine(credentials, schema, echo)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     engine = self._create_sqllite_engine(echo)</span>
         <span class="k">return</span> <span class="n">engine</span>
 
     <span class="k">def</span> <span class="nf">_create_sqllite_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_sqlite_fk</span><span class="p">:</span>
             <span class="n">ScenarioDbManager</span><span class="o">.</span><span class="n">_enable_sqlite_foreign_key_checks</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;sqlite:///:memory:&#39;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;sqlite:///:memory:&#39;</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">future</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_enable_sqlite_foreign_key_checks</span><span class="p">():</span>
@@ -680,7 +792,40 @@
 <span class="sd">        Connection string logic in `get_db2_connection_string`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">connection_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_db2_connection_string</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">future</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_pg_connection_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a PostgreSQL connection string.</span>
+<span class="sd">​</span>
+<span class="sd">        pg_credentials = {</span>
+<span class="sd">            &quot;username&quot;: &quot;user1&quot;,</span>
+<span class="sd">            &quot;password&quot;: &quot;password1&quot;,</span>
+<span class="sd">            &quot;host&quot;: &quot;hostname.databases.appdomain.cloud&quot;,</span>
+<span class="sd">            &quot;port&quot;: &quot;5432&quot;,</span>
+<span class="sd">            &quot;database&quot;: &quot;database&quot;,</span>
+<span class="sd">            &quot;schema&quot;: &quot;my_schema&quot;, #&lt;- SCHEMA IN DATABASE</span>
+<span class="sd">        }</span>
+
+<span class="sd">        TODO (VT): No schema?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection_string</span> <span class="o">=</span> <span class="s2">&quot;postgresql+psycopg2://</span><span class="si">{username}</span><span class="s2">:</span><span class="si">{password}</span><span class="s2">@</span><span class="si">{host}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2">/</span><span class="si">{database}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">credentials</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">],</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">credentials</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">],</span>
+            <span class="n">host</span><span class="o">=</span><span class="n">credentials</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">],</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">credentials</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">],</span>
+            <span class="n">database</span><span class="o">=</span><span class="n">credentials</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># SAVE FOR FUTURE LOGGER MESSAGES...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_debug_print</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PostgreSQL Connection String : </span><span class="si">{</span><span class="n">connection_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">connection_string</span>
+
+    <span class="k">def</span> <span class="nf">_create_pg_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a PostgreSQL engine instance.</span>
+<span class="sd">        Connection string logic in `_get_pg_connection_string`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">connection_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pg_connection_string</span><span class="p">(</span><span class="n">credentials</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">connection_string</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="n">echo</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">future</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_initialize_db_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Register dbm with table so it can have access to settings</span>
@@ -716,14 +861,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_schema_transaction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_create_schema_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;(Re)creates a schema, optionally using a transaction</span>
-<span class="sd">        Drops all tables and re-creates the schema in the DB.&quot;&quot;&quot;</span>
-        <span class="c1"># if self.schema is None:</span>
-        <span class="c1">#     self.drop_all_tables_transaction(connection=connection)</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     self.drop_schema_transaction(self.schema)</span>
-        <span class="c1"># DROP SCHEMA isn&#39;t working properly, so back to dropping all tables</span>
+        <span class="sd">&quot;&quot;&quot;(Re)creates a schema</span>
+<span class="sd">        Drops all tables and re-creates the schema in the DB.</span>
+
+<span class="sd">        Note 1 - 20230203: `insp.has_schema(self.schema)` fails with PostgeSQL in SQLAlchemy 1.4 with future=True: AttributeError: &#39;PGInspector&#39; object has no attribute &#39;has_schema&#39;</span>
+<span class="sd">        Work-around: use `insp.get_schema_names()`</span>
+
+<span class="sd">        Note 2 - 20230203: `self.engine.dialect.has_schema` has been deprecated with SQLAlchemay 1.4+future=True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># The PostgreSQL connection string has no schema. Do we have to define here?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_type</span> <span class="o">==</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">PostgreSQL</span><span class="p">:</span>
+            <span class="n">insp</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+            <span class="c1"># schemas = insp.get_schema_names()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">insp</span><span class="o">.</span><span class="n">get_schema_names</span><span class="p">():</span>
+            <span class="c1"># if not insp.has_schema(self.schema):</span>
+        <span class="c1">#     # if not self.engine.dialect.has_schema(self.engine, self.schema):</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">CreateSchema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction</span><span class="p">(</span><span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating new schema </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">checkfirst</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ScenarioDbManager.drop_all_tables"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.drop_all_tables">[docs]</a>    <span class="k">def</span> <span class="nf">drop_all_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -736,33 +893,85 @@
 
     <span class="k">def</span> <span class="nf">_drop_all_tables_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Drops all tables as defined in db_tables (if exists)</span>
-<span class="sd">        TODO: loop over tables as they exist in the DB.</span>
-<span class="sd">        This will make sure that however the schema definition has changed, all tables will be cleared.</span>
-<span class="sd">        Problem. The following code will loop over all existing tables:</span>
+<span class="sd">        Challenge: we want to make sure to drop all tables in the exiting DB schema,</span>
+<span class="sd">        which can be diferent from the set of tables in the (new) self.metadata.</span>
+<span class="sd">        self.metaData may either have more or less tables than exist in the DB.</span>
+<span class="sd">        If there are more, we need the option &#39;IF EXISTS&#39;</span>
+<span class="sd">        If there are less, the missing tables will not be dropped and stay around.</span>
+<span class="sd">        This is not a show-stopper, but not elegant either.</span>
+
+<span class="sd">        A better way is to delete the tables that actually exist. To get these we can use reflect or the inspector.</span>
+<span class="sd">        Reflect will reconstruct the full MetaData based on the existing schema, including FK constraints.</span>
+<span class="sd">        Inspect allows us just to get the tables in a sorted list so they can be deleted in the right (reversed) order</span>
+
+<span class="sd">        Will use 3 options (in order):</span>
+<span class="sd">        1. Using `MetaData.reflect` and then a `MetaData.drop_all` SQLAlchemy APIs. This has shown to be buggy in DB2 on Cloud</span>
+<span class="sd">        2. Using `inspect` to get the tables. Then we can do a SQL `DROP TABLE`</span>
+<span class="sd">        3. Use SQL &#39;DROP TABLE` based on the tables in the self.metadata</span>
+
+<span class="sd">        Option 1 is the preferred way. Works well with PostgreSQL, but not with DB2. Uses all SQLAlchemy APIs</span>
+<span class="sd">        Option 2 works with DB2 (OnCloud at least). Deletes all tables, but uses SQL.</span>
+<span class="sd">        Option 3 has been working reliably in the past and is the backup approach. May not delete all tables and uses SQL.</span>
+
+<span class="sd">        Note: The following code will loop over all existing tables:</span>
 
 <span class="sd">            inspector = sqlalchemy.inspect(self.engine)</span>
 <span class="sd">            for db_table_name in inspector.get_table_names(schema=self.schema):</span>
 
-<span class="sd">        However, the order is alphabetically, which causes FK constraint violation</span>
-<span class="sd">        Weirdly, this happens in SQLite, not in DB2! With or without transactions</span>
-
-<span class="sd">        TODO:</span>
-<span class="sd">        1. Use SQLAlchemy to drop table, avoid text SQL</span>
-<span class="sd">        2. Drop all tables without having to loop and know all tables</span>
-<span class="sd">        See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)</span>
-<span class="sd">        See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all</span>
+<span class="sd">        However, the order is alphabetically, which causes FK constraint violations due to not deleting the tables in the right order</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># print(&quot;+++++++++++++++++Reflect+++++++++++++++++&quot;)</span>
-        <span class="c1"># Note: the reflect seems to mess things up: when doing the next drop_all we&#39;re getting weird errors</span>
-        <span class="c1"># self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema</span>
-        <span class="c1"># print(&quot;+++++++++++++++++Drop all tables+++++++++++++++++&quot;)</span>
-        <span class="c1"># self.metadata.drop_all(bind=connection)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropping tables&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction_reflect</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped tables using reflect&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;+++++++Failed to drop tables using reflect. Trying inspection instead. Exception = </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction_inspector</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped tables using inspector&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;+++++++Failed to drop tables using reflect or inspector. Trying SQL instead. Exception = </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_drop_all_tables_transaction_sql</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped tables using SQL&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_drop_all_tables_transaction_reflect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop all tables in the schema using the sqlalchemy.MetaData.reflect feature.</span>
+<span class="sd">        Inspect returns a list of sorted tables in the current DB.&quot;&quot;&quot;</span>
+        <span class="n">my_metadata</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">MetaData</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">MetaData</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">my_metadata</span><span class="o">.</span><span class="n">reflect</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">resolve_fks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># for db_table in reversed(my_metadata.sorted_tables):</span>
+        <span class="c1">#     print(f&quot;Dropping table {db_table}&quot;)</span>
+        <span class="c1">#     db_table.drop(connection, checkfirst=True)</span>
+        <span class="n">my_metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_drop_all_tables_transaction_inspector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop all tables in the schema using the sqlalchemy.inspect feature.</span>
+<span class="sd">        Inspect returns a list of sorted tables in the current DB.</span>
+
+<span class="sd">        Note that `insp.get_table_names(schema=schema)` does not return the tables in a properly sorted way to be able to drop.&quot;&quot;&quot;</span>
+        <span class="n">insp</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="n">sorted_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">db_table_name</span> <span class="k">for</span> <span class="p">(</span><span class="n">db_table_name</span><span class="p">,</span> <span class="n">fkc</span><span class="p">)</span> <span class="ow">in</span> <span class="n">insp</span><span class="o">.</span><span class="n">get_sorted_table_and_fkc_names</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span> <span class="k">if</span> <span class="n">db_table_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="c1"># print(f&quot;Sorted tables = {sorted_tables}&quot;)</span>
+        <span class="k">for</span> <span class="n">db_table_name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sorted_tables</span><span class="p">):</span>
+            <span class="c1"># print(f&quot;Drop table = {db_table_name}&quot;)</span>
+            <span class="c1"># sql = f&quot;DROP TABLE IF EXISTS {db_table_name}&quot;</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_drop_all_tables_transaction_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop all tables in the schema by SQL string using DROP TABLE.</span>
+<span class="sd">        Disadvantage is that it will only drop the tables in the NEW schema we&#39;re trying to re-create.</span>
+<span class="sd">        It may not drop tables that are in the current DB, but not in the new schema.</span>
+<span class="sd">        Advantage: robust solution&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">db_table</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">db_table_name</span>
-            <span class="n">sql</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="c1"># sql = f&quot;DROP TABLE IF EXISTS {db_table_name}&quot;</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">sql</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DROP TABLE IF EXISTS </span><span class="si">{</span><span class="n">db_table_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="c1">#         print(f&quot;Dropping table {db_table_name}&quot;)</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+
 
     <span class="k">def</span> <span class="nf">_drop_schema_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;NOT USED. Not working in DB2 Cloud.</span>
@@ -898,7 +1107,8 @@
 <span class="sd">        Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Replace NaN with None to avoid FK problems:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;NaN&#39;</span><span class="p">):</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="c1"># df = df.replace({float(&#39;NaN&#39;): None})</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">ScenarioDbTable</span><span class="o">.</span><span class="n">fixNanNoneNull</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="n">num_exceptions</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">max_num_exceptions</span> <span class="o">=</span> <span class="mi">10</span>
@@ -1245,15 +1455,16 @@
         <span class="n">t</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Table</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_table</span><span class="p">()</span>
         <span class="n">pk_conditions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_column</span><span class="p">(</span><span class="n">pk</span><span class="p">[</span><span class="s1">&#39;column&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pk</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">db_cell_update</span><span class="o">.</span><span class="n">row_index</span><span class="p">]</span>
         <span class="n">target_col</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_column</span><span class="p">(</span><span class="n">db_cell_update</span><span class="o">.</span><span class="n">column_name</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_update_cell_change_in_db - target_col = </span><span class="si">{</span><span class="n">target_col</span><span class="si">}</span><span class="s2"> for db_cell_update.column_name=</span><span class="si">{</span><span class="n">db_cell_update</span><span class="o">.</span><span class="n">column_name</span><span class="si">}</span><span class="s2">, pk_conditions=</span><span class="si">{</span><span class="n">pk_conditions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}&quot;)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_scenario_seq</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">scenario_seq</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">db_cell_update</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># print(f&quot;ScenarioSeq = {scenario_seq}&quot;)</span>
                 <span class="n">sql</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">scenario_seq</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">({</span><span class="n">target_col</span><span class="p">:</span><span class="n">db_cell_update</span><span class="o">.</span><span class="n">current_value</span><span class="p">})</span>
-                <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+                <span class="c1"># connection.execute(sql)  # VT20230204: Duplicate execute? Will be done anyway at the end of this method!</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Error?</span>
+                <span class="c1"># TODO: print some error/exception</span>
                 <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sql</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">db_cell_update</span><span class="o">.</span><span class="n">scenario_name</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">({</span><span class="n">target_col</span><span class="p">:</span><span class="n">db_cell_update</span><span class="o">.</span><span class="n">current_value</span><span class="p">})</span>
@@ -1413,15 +1624,28 @@
             <span class="c1"># s: sqlalchemy.table = sa_scenario_table  # The scenario table</span>
             <span class="c1"># print(&quot;+++++++++++SQLAlchemy insert-select&quot;)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_scenario_seq</span><span class="p">:</span>
-                <span class="n">select_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;scenario_seq&#39;</span> <span class="k">else</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value</span>
-                <span class="c1"># print(f&quot;select columns = {select_columns}&quot;)</span>
+                <span class="c1"># select_columns = [s.c.scenario_seq if c.name == &#39;scenario_seq&#39; else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value</span>
+                <span class="c1"># # print(f&quot;select columns = {select_columns}&quot;)</span>
+                <span class="c1"># select_sql = (sqlalchemy.select(select_columns)</span>
+                <span class="c1">#               .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))</span>
+
+                <span class="c1"># VT20230206: Below avoids the SQLAlchemy future warning about cartesian product. Simpler.</span>
+                <span class="c1"># See https://stackoverflow.com/questions/27239647/what-is-the-way-to-select-a-hard-coded-value-in-a-query</span>
+                <span class="n">select_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">literal</span><span class="p">(</span><span class="n">new_scenario_seq</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;scenario_seq&#39;</span> <span class="k">else</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
                 <span class="n">select_sql</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">select_columns</span><span class="p">)</span>
-                              <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">source_scenario_seq</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">new_scenario_seq</span><span class="p">)))</span>
+                              <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">source_scenario_seq</span><span class="p">))</span>
+
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">select_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;scenario_name&#39;</span> <span class="k">else</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value</span>
-                <span class="c1"># print(f&quot;select columns = {select_columns}&quot;)</span>
+                <span class="c1"># select_columns = [s.c.scenario_name if c.name == &#39;scenario_name&#39; else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value</span>
+                <span class="c1"># # print(f&quot;select columns = {select_columns}&quot;)</span>
+                <span class="c1"># select_sql = (sqlalchemy.select(select_columns)</span>
+                <span class="c1">#               .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))</span>
+
+                <span class="n">select_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">literal</span><span class="p">(</span><span class="n">target_scenario_name</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s1">&#39;scenario_name&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;scenario_name&#39;</span> <span class="k">else</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span>
+                                  <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
                 <span class="n">select_sql</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">select_columns</span><span class="p">)</span>
-                              <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">target_scenario_name</span><span class="p">)))</span>
+                              <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">source_scenario_name</span><span class="p">))</span>
+
             <span class="n">target_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
             <span class="n">sql_insert</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span><span class="o">.</span><span class="n">from_select</span><span class="p">(</span><span class="n">target_columns</span><span class="p">,</span> <span class="n">select_sql</span><span class="p">)</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_insert</span><span class="p">)</span>
@@ -1512,17 +1736,19 @@
 <span class="sd">        Returns the scenario_seq of (the first) entry matching the scenario_name.</span>
 <span class="sd">        If it doesn&#39;t exist, will insert a new entry.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># s = self.get_scenario_sa_table()</span>
-        <span class="c1"># r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))</span>
-        <span class="c1"># if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!</span>
-        <span class="c1">#     seq = first[0]</span>
-        <span class="c1"># else:</span>
+
+        <span class="c1"># Note: there is a big diference between</span>
+        <span class="c1"># 1. s.select(s.c.scenario_seq): select all columns from s but with a where condition on the scenario_seq.</span>
+        <span class="c1"># This is NOT correct in this use-case!</span>
+        <span class="c1"># 2. `sqlalchemy.select(s.c.scenario_seq)`: select only the value of the column scenario_seq</span>
 
         <span class="n">seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">seq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenario_sa_table</span><span class="p">()</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">))</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span><span class="o">==</span><span class="n">scenario_name</span><span class="p">))</span>
+            <span class="c1"># r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))  # INCORRECT!</span>
+            <span class="c1"># r = connection.execute(s.select().where(s.c.scenario_name==scenario_name))  # Correct, but selects all columns</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span><span class="o">==</span><span class="n">scenario_name</span><span class="p">))</span>  <span class="c1"># Correct, selects only one column</span>
             <span class="n">seq</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">first</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">seq</span>
 
@@ -1532,7 +1758,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scenario_sa_table</span><span class="p">()</span>
         <span class="c1"># r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">scenario_name</span><span class="p">))</span>
+        <span class="c1"># r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">scenario_name</span><span class="p">))</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">((</span><span class="n">first</span> <span class="o">:=</span> <span class="n">r</span><span class="o">.</span><span class="n">first</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>  <span class="c1"># Walrus operator!</span>
             <span class="c1"># print(f&quot;_get_scenario_seq: r={first}&quot;)</span>
             <span class="n">seq</span> <span class="o">=</span> <span class="n">first</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Tuple with values. First (0) is the scenario_seq. TODO: do more structured so we can be sure it is the scenario_seq!</span>
@@ -1900,7 +2127,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.4.5 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
