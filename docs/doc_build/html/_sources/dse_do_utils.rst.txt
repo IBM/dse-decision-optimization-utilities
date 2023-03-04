@@ -28,14 +28,6 @@ dse\_do\_utils.deployeddomodel module
    :undoc-members:
    :show-inheritance:
 
-dse\_do\_utils.deployeddomodelcpd21 module
-------------------------------------------
-
-.. automodule:: dse_do_utils.deployeddomodelcpd21
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dse\_do\_utils.domodeldeployer module
 -------------------------------------
 
@@ -96,14 +88,6 @@ dse\_do\_utils.scenariodbmanager module
 ---------------------------------------
 
 .. automodule:: dse_do_utils.scenariodbmanager
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dse\_do\_utils.scenariodbmanager2 module
-----------------------------------------
-
-.. automodule:: dse_do_utils.scenariodbmanager2
    :members:
    :undoc-members:
    :show-inheritance:
