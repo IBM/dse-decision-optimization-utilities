@@ -4,7 +4,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]## [0.5.4.6b0]
+## [0.5.5.0]- 2023-03-04
+### Changed
+- Bumping version to 0.5.5.0 given the amount of changes and additions
+
+## [0.5.4.6b4]- 2023-03-03
+### Fixed
+- ScenarioDbManager.insert_table_in_db_bulk only fix NaNs for known columns.
+
+## [0.5.4.6b3]- 2023-02-26
+## Added
+- dse_do_utils.core Core01ScenarioDbManager, Core02DataManager, Core02OptimizationEngine, Core02ScenarioDbManager
+- ScenarioDbManager.extend_columns_constraints utility method to help avoid mutable default arguments
+- ScenarioManager.write_data_to_excel parameter `unique_file_name: bool = True` writes file with unique name 
+if it is open in Excel and would have caused a PermissionError.
+### Changed
+- dse_do_utils.core with Core01DataManager, Core01OptimizationEngine, Core01EnvironmentManager updates
+### Fixed
+- ScenarioDbManager._set_df_column_types handles DateTime column type
+
+## [0.5.4.6b2]- 2023-02-13
+## Added
+- dse_do_utils.core with Core01DataManager, Core01OptimizationEngine, Core01EnvironmentManager
+### Fixed
+- Fix ScenarioDbManager.duplicate_scenario_in_db future warning
+- Fix ScenarioDbManager.get_data_directory using Platform.Local
+- Fix ScenarioDbManager.get_root_directory partially (CPD40 and Local)
+
+## [0.5.4.6b1]- 2023-02-06
+## Added
+- ScenarioDbManager support for custom_naming_convention of FK (and other) constraints
+### Changed
+- ScenarioDbManager._drop_all_tables_transaction tries 3 methods (in order) to drop all tables using: 1. Reflect, 2. Inspect, 3. self.metadata
+- ScenarioDbManager supports SQLAlchemy 1.4 with future=True (to prepare for SQLAlchemy 2.0)
+### Fixed
+- Fix insert new scenario with scenarioSeq=True (ScenarioDbManager._get_or_create_scenario_in_scenario_table)
+- Fix ScenarioDbManager.duplicate_scenario_in_db when future=True warning about cartesian product.
+
+## [0.5.4.6b0]- 2023-01-10
+## Added
+- ScenarioDbTable.fixNanNoneNull: convert more 'nan' values to None and thus to a correct NULL in DB
+- ScenarioDbManager supports PostgreSQL
 
 ## [0.5.4.5] - 2022-12-08
 ### Changed

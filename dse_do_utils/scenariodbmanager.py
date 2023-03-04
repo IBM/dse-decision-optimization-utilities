@@ -37,13 +37,23 @@ from dse_do_utils import ScenarioManager
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
+import enum
+
+class DatabaseType(enum.Enum):
+    """Used in ScenarioDbManager.__init__ to specify the type of DB it is connecting to."""
+    SQLite = 0
+    DB2 = 1
+    PostgreSQL = 2
+
 
 class ScenarioDbTable(ABC):
     """Abstract class. Subclass to be able to define table schema definition, i.e. column name, data types, primary and foreign keys.
     Only columns that are specified and included in the DB insert.
     """
 
-    def __init__(self, db_table_name: str, columns_metadata: List[sqlalchemy.Column] = [], constraints_metadata=[]):
+    def __init__(self, db_table_name: str,
+                 columns_metadata: List[sqlalchemy.Column] = [],
+                 constraints_metadata: List[ForeignKeyConstraint] = []):
         """
         Warning: Do not use mixed case names for the db_table_name.
         Supplying a mixed-case is not working well and is causing DB FK errors.
@@ -244,28 +254,50 @@ class ScenarioDbTable(ABC):
         if enable_astype:
             df = self._set_df_column_types(df)
 
+        # Only insert known columns:
+        df = df[columns]  # Can prevent issues with the fixNanNoneNull
+
         # Replace NaN with None to avoid FK problems:
-        df = df.replace({float('NaN'): None})
+        df = self.fixNanNoneNull(df)
 
         try:
-            df[columns].to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
+            df.to_sql(table_name, schema=mgr.schema, con=connection, if_exists='append', dtype=None,
                                index=False)
         except exc.IntegrityError as e:
             print("++++++++++++Integrity Error+++++++++++++")
             print(f"DataFrame insert/append of table '{table_name}'")
             print(e)
 
+    @staticmethod
+    def fixNanNoneNull(df) -> pd.DataFrame:
+        """Ensure that NaN values are converted to None. Which in turn causes the value to be NULL in the DB.
+        Apply before insert df to DB.
+        TODO VT20230106: what other incarnations of 'NaN' do we need to convert?
+        Potentially:  ['N/A', 'na', 'NaN', 'nan', '', 'None']?
+        """
+        df = df.replace({float('NaN'): None, 'nan': None})
+        return df
+
     def _set_df_column_types(self, df: pd.DataFrame) -> pd.DataFrame:
         """Force the data type of the DataFrame according to the schema.
         This can avoid errors in DB2, when the column is a mix of types."""
         for sa_column in self.columns_metadata:
             df_column_name = sa_column.name
-            df_type = sa_column.type.python_type
-            if type is not None and df_column_name in df.columns:
+            if issubclass(type(sa_column.type), sqlalchemy.DateTime):
+                # DateTime doesn't convert in Pandas in the same way as other types
+                # Need to handle as a special case
+                # See https://github.com/pandas-dev/pandas/issues/25730
                 try:
-                    df[df_column_name] = df[df_column_name].astype(df_type)
+                    df[df_column_name] = pd.to_datetime(df[df_column_name])
                 except ValueError as e:
-                    print(f"Failed to convert column {df_column_name} to {df_type}")
+                    print(f"Failed to convert column {df_column_name} to datetime")
+            else:
+                df_type = sa_column.type.python_type
+                if type is not None and df_column_name in df.columns:
+                    try:
+                        df[df_column_name] = df[df_column_name].astype(df_type)
+                    except ValueError as e:
+                        print(f"Failed to convert column {df_column_name} to {df_type}")
         return df
 
     def _delete_scenario_table_from_db(self, scenario_name, connection):
@@ -304,6 +336,35 @@ class ScenarioDbTable(ABC):
             if "int" in str(j):
                 dtypedict.update({i: sqlalchemy.types.INT()})
         return dtypedict
+
+    @staticmethod
+    def extend_columns_constraints(columns: list[Column],
+                                   constraints: list[ForeignKeyConstraint],
+                                   columns_ext: Optional[list[Column]] = None,
+                                   constraints_ext: Optional[list[ForeignKeyConstraint]] = None)\
+            -> tuple[list[Column], list[ForeignKeyConstraint]]:
+        """To be used in ScenarioDbTableSubClass.__init__()
+        Helps to avoid mutable default arguments by allowing columns_ext and constraints_ext to be None.
+
+        Usage::
+
+        class MyTable(ScenarioDbTable):
+            def __init__(self, db_table_name: str = 'my_table',
+                     columns_ext: Optional[list[Column]] = None,
+                     constraints_ext: Optional[list[ForeignKeyConstraint]] = None):
+                columns = [
+                    Column('myKey', Integer(), primary_key=True),
+                    Column('myValue', Integer(), primary_key=False),
+                ]
+                constraints = []
+                columns, constraints = self.extend_columns_constraints(columns, constraints, columns_ext, constraints_ext)
+                super().__init__(db_table_name, columns, constraints)
+        """
+        if columns_ext is not None:
+            columns.extend(columns_ext)
+        if constraints_ext is not None:
+            constraints.extend(constraints_ext)
+        return columns, constraints
 
 
 #########################################################################
@@ -425,21 +486,37 @@ class ScenarioDbManager():
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
-                 enable_debug_print: bool = False, enable_scenario_seq: bool = False):
+                 enable_debug_print: bool = False, enable_scenario_seq: bool = False,
+                 db_type: DatabaseType = DatabaseType.DB2,
+                 use_custom_naming_convention: bool = False,
+                 future: bool = False,
+                 ):
         """Create a ScenarioDbManager.
 
-        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
-        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and sub-class of ScenarioDbTable. Need to be in correct order.
+        :param input_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.
+        :param output_db_tables: OrderedDict[str, ScenarioDbTable] of name and subclass of ScenarioDbTable. Need to be in correct order.
         :param credentials: DB credentials
         :param schema: schema name
         :param echo: if True, SQLAlchemy will produce a lot of debugging output
-        :param multi_scenario: If true, adds SCENARIO table and PK
+        :param multi_scenario: If true, adds SCENARIO table and PK. Deprecated: should always be TRUE
         :param enable_transactions: If true, uses transactions
         :param enable_sqlite_fk: If True, enables FK constraint checks in SQLite
         :param enable_astype: If True, force data-type of DataFrame to match schema before (bulk) insert
         :param enable_debug_print: If True, print additional debugging statements, like the DB connection string
+        :param enable_scenario_seq: If True, uses a scenarioSeq: int as the foreign-key to a scenario table instead of the scenarioName: str
+        :param db_type: DatabaseType enum. Configures the type of DB backend
+        :param use_custom_naming_convention: bool. If True, will call get_custom_naming_convention to name FK constraints etc.
+        :param future: bool. The `future` flag set on the SQLAlchemy db engine. Will enforce SQLAlchemy 2.0 API changes.
+        Allows for easier to read constraints during data checking.
+        False for backward compatibity reasons. Potentially may cause name conflicts of pattern doesn't generate a unique name.
+
+        Regarding the db_type, for backwards compatibility reasons, the logic is:
+        1. If no credentials: create a SQLite DB
+        2. If credentials, then depending on the db_type, create a connection and engine for that type
         """
         # WARNING: do NOT use 'OrderedDict[str, ScenarioDbTable]' as type. OrderedDict is not subscriptable. Will cause a syntax error.
+        self.db_type = db_type
+        self.future = future
         self.schema = self._check_schema_name(schema)
         self.multi_scenario = multi_scenario  # If true, will add a primary key 'scenario_name' to each table
         self.enable_transactions = enable_transactions
@@ -452,9 +529,19 @@ class ScenarioDbManager():
         self.output_db_tables = output_db_tables
         self.db_tables: Dict[str, ScenarioDbTable] = OrderedDict(list(input_db_tables.items()) + list(output_db_tables.items()))  # {**input_db_tables, **output_db_tables}  # For compatibility reasons
 
-        self.engine = self._create_database_engine(credentials, schema, echo)
-        self.metadata = sqlalchemy.MetaData(schema=schema)  # VT_20210120: Added schema=schema just for reflection? Not sure what are the implications
+        self.engine = self._create_database_engine(credentials, schema, echo, db_type)
+        if use_custom_naming_convention:
+            naming_convention = self.get_custom_naming_convention()
+        else:
+            naming_convention = None
+        self.metadata = sqlalchemy.MetaData(schema=schema,
+                                            naming_convention=naming_convention,
+                                            )
+
+
         self._initialize_db_tables()  # Needs to be done after self.metadata, self.multi_scenario has been set
+
+        # TODO VT20230112: Are these callbacks this still relevant. Probabaly not. If so, remove.
         self.read_scenario_table_from_db_callback = None  # For Flask caching
         self.read_scenarios_table_from_db_callback = None # For Flask caching
 
@@ -486,6 +573,24 @@ class ScenarioDbManager():
                     print("Warning: the `Scenario` table should be the first in the input tables")
         return input_db_tables
 
+    def get_custom_naming_convention(self) -> Dict:
+        """Sets a custom naming convention
+        See https://docs.sqlalchemy.org/en/20/core/constraints.html#configuring-constraint-naming-conventions
+        Returns:
+
+        """
+        naming_convention = {
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            # "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "fk": "fk_%(table_name)s__%(column_0_N_name)s__%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+        return naming_convention
+
+    ############################################################################################
+
     def get_scenario_db_table(self) -> ScenarioDbTable:
         """Scenario table must be the first in self.input_db_tables"""
         db_table: ScenarioDbTable = list(self.input_db_tables.values())[0]
@@ -495,20 +600,27 @@ class ScenarioDbManager():
         """Returns the SQLAlchemy 'scenario' table. """
         return self.get_scenario_db_table().get_sa_table()
 
-    def _create_database_engine(self, credentials=None, schema: str = None, echo: bool = False):
+    def _create_database_engine(self, credentials=None, schema: str = None, echo: bool = False, db_type: DatabaseType=DatabaseType.DB2):
         """Creates a SQLAlchemy engine at initialization.
         If no credentials, creates an in-memory SQLite DB. Which can be used for schema validation of the data.
         """
-        if credentials is not None:
-            engine = self._create_db2_engine(credentials, schema, echo)
-        else:
+        if credentials is None or db_type == DatabaseType.SQLite:
             engine = self._create_sqllite_engine(echo)
+        elif db_type == DatabaseType.DB2:
+            engine = self._create_db2_engine(credentials, schema, echo)
+        elif db_type == DatabaseType.PostgreSQL:
+            engine = self._create_pg_engine(credentials, schema, echo)
+
+        # if credentials is not None:
+        #     engine = self._create_db2_engine(credentials, schema, echo)
+        # else:
+        #     engine = self._create_sqllite_engine(echo)
         return engine
 
     def _create_sqllite_engine(self, echo: bool):
         if self.enable_sqlite_fk:
             ScenarioDbManager._enable_sqlite_foreign_key_checks()
-        return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo)
+        return sqlalchemy.create_engine('sqlite:///:memory:', echo=echo, future=self.future)
 
     @staticmethod
     def _enable_sqlite_foreign_key_checks():
@@ -632,7 +744,40 @@ class ScenarioDbManager():
         Connection string logic in `get_db2_connection_string`
         """
         connection_string = self._get_db2_connection_string(credentials, schema)
-        return sqlalchemy.create_engine(connection_string, echo=echo)
+        return sqlalchemy.create_engine(connection_string, echo=echo, future=self.future)
+
+    def _get_pg_connection_string(self, credentials, schema: str):
+        """Create a PostgreSQL connection string.
+​
+        pg_credentials = {
+            "username": "user1",
+            "password": "password1",
+            "host": "hostname.databases.appdomain.cloud",
+            "port": "5432",
+            "database": "database",
+            "schema": "my_schema", #<- SCHEMA IN DATABASE
+        }
+
+        TODO (VT): No schema?
+        """
+        connection_string = "postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}".format(
+            username=credentials["username"],
+            password=credentials["password"],
+            host=credentials["host"],
+            port=credentials["port"],
+            database=credentials["database"],
+        )
+        # SAVE FOR FUTURE LOGGER MESSAGES...
+        if self.enable_debug_print:
+            print(f"PostgreSQL Connection String : {connection_string}")
+        return connection_string
+
+    def _create_pg_engine(self, credentials, schema: str, echo: bool = False):
+        """Create a PostgreSQL engine instance.
+        Connection string logic in `_get_pg_connection_string`
+        """
+        connection_string = self._get_pg_connection_string(credentials, schema)
+        return sqlalchemy.create_engine(connection_string, echo=echo, future=self.future)
 
     def _initialize_db_tables(self):
         # Register dbm with table so it can have access to settings
@@ -668,14 +813,26 @@ class ScenarioDbManager():
             self._create_schema_transaction(self.engine)
 
     def _create_schema_transaction(self, connection):
-        """(Re)creates a schema, optionally using a transaction
-        Drops all tables and re-creates the schema in the DB."""
-        # if self.schema is None:
-        #     self.drop_all_tables_transaction(connection=connection)
-        # else:
-        #     self.drop_schema_transaction(self.schema)
-        # DROP SCHEMA isn't working properly, so back to dropping all tables
+        """(Re)creates a schema
+        Drops all tables and re-creates the schema in the DB.
+
+        Note 1 - 20230203: `insp.has_schema(self.schema)` fails with PostgeSQL in SQLAlchemy 1.4 with future=True: AttributeError: 'PGInspector' object has no attribute 'has_schema'
+        Work-around: use `insp.get_schema_names()`
+
+        Note 2 - 20230203: `self.engine.dialect.has_schema` has been deprecated with SQLAlchemay 1.4+future=True
+        """
+
+        # The PostgreSQL connection string has no schema. Do we have to define here?
+        if self.db_type == DatabaseType.PostgreSQL:
+            insp = sqlalchemy.inspect(connection)
+            # schemas = insp.get_schema_names()
+            if self.schema not in insp.get_schema_names():
+            # if not insp.has_schema(self.schema):
+        #     # if not self.engine.dialect.has_schema(self.engine, self.schema):
+                connection.execute(sqlalchemy.schema.CreateSchema(self.schema))
+
         self._drop_all_tables_transaction(connection=connection)
+        print(f"Creating new schema {self.schema}")
         self.metadata.create_all(connection, checkfirst=True)
 
     def drop_all_tables(self):
@@ -688,33 +845,85 @@ class ScenarioDbManager():
 
     def _drop_all_tables_transaction(self, connection):
         """Drops all tables as defined in db_tables (if exists)
-        TODO: loop over tables as they exist in the DB.
-        This will make sure that however the schema definition has changed, all tables will be cleared.
-        Problem. The following code will loop over all existing tables:
+        Challenge: we want to make sure to drop all tables in the exiting DB schema,
+        which can be diferent from the set of tables in the (new) self.metadata.
+        self.metaData may either have more or less tables than exist in the DB.
+        If there are more, we need the option 'IF EXISTS'
+        If there are less, the missing tables will not be dropped and stay around.
+        This is not a show-stopper, but not elegant either.
+
+        A better way is to delete the tables that actually exist. To get these we can use reflect or the inspector.
+        Reflect will reconstruct the full MetaData based on the existing schema, including FK constraints.
+        Inspect allows us just to get the tables in a sorted list so they can be deleted in the right (reversed) order
+
+        Will use 3 options (in order):
+        1. Using `MetaData.reflect` and then a `MetaData.drop_all` SQLAlchemy APIs. This has shown to be buggy in DB2 on Cloud
+        2. Using `inspect` to get the tables. Then we can do a SQL `DROP TABLE`
+        3. Use SQL 'DROP TABLE` based on the tables in the self.metadata
+
+        Option 1 is the preferred way. Works well with PostgreSQL, but not with DB2. Uses all SQLAlchemy APIs
+        Option 2 works with DB2 (OnCloud at least). Deletes all tables, but uses SQL.
+        Option 3 has been working reliably in the past and is the backup approach. May not delete all tables and uses SQL.
+
+        Note: The following code will loop over all existing tables:
 
             inspector = sqlalchemy.inspect(self.engine)
             for db_table_name in inspector.get_table_names(schema=self.schema):
 
-        However, the order is alphabetically, which causes FK constraint violation
-        Weirdly, this happens in SQLite, not in DB2! With or without transactions
-
-        TODO:
-        1. Use SQLAlchemy to drop table, avoid text SQL
-        2. Drop all tables without having to loop and know all tables
-        See: https://stackoverflow.com/questions/35918605/how-to-delete-a-table-in-sqlalchemy)
-        See https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.MetaData.drop_all
+        However, the order is alphabetically, which causes FK constraint violations due to not deleting the tables in the right order
         """
-        # print("+++++++++++++++++Reflect+++++++++++++++++")
-        # Note: the reflect seems to mess things up: when doing the next drop_all we're getting weird errors
-        # self.metadata.reflect(bind=connection)  # To reflect any tables in the DB, but not in the current schema
-        # print("+++++++++++++++++Drop all tables+++++++++++++++++")
-        # self.metadata.drop_all(bind=connection)
+        print(f"Dropping tables")
+        try:
+            self._drop_all_tables_transaction_reflect(connection, schema=self.schema)
+            print(f"Dropped tables using reflect")
+        except Exception as e:
+            print(f"+++++++Failed to drop tables using reflect. Trying inspection instead. Exception = {e}")
+            try:
+                self._drop_all_tables_transaction_inspector(connection, schema=self.schema)
+                print(f"Dropped tables using inspector")
+            except Exception as e:
+                print(f"+++++++Failed to drop tables using reflect or inspector. Trying SQL instead. Exception = {e}")
+                self._drop_all_tables_transaction_sql(connection, schema=self.schema)
+                print(f"Dropped tables using SQL")
 
+    def _drop_all_tables_transaction_reflect(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema using the sqlalchemy.MetaData.reflect feature.
+        Inspect returns a list of sorted tables in the current DB."""
+        my_metadata: sqlalchemy.MetaData = sqlalchemy.MetaData(schema=schema)
+        my_metadata.reflect(bind=connection, schema=schema, resolve_fks=False)
+        # for db_table in reversed(my_metadata.sorted_tables):
+        #     print(f"Dropping table {db_table}")
+        #     db_table.drop(connection, checkfirst=True)
+        my_metadata.drop_all(bind=connection)
+
+    def _drop_all_tables_transaction_inspector(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema using the sqlalchemy.inspect feature.
+        Inspect returns a list of sorted tables in the current DB.
+
+        Note that `insp.get_table_names(schema=schema)` does not return the tables in a properly sorted way to be able to drop."""
+        insp = sqlalchemy.inspect(connection)
+        sorted_tables = [db_table_name for (db_table_name, fkc) in insp.get_sorted_table_and_fkc_names(schema=schema) if db_table_name is not None]
+        # print(f"Sorted tables = {sorted_tables}")
+        for db_table_name in reversed(sorted_tables):
+            # print(f"Drop table = {db_table_name}")
+            # sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            sql = sqlalchemy.sql.text(f"DROP TABLE IF EXISTS {db_table_name}")
+            connection.execute(sql)
+
+    def _drop_all_tables_transaction_sql(self, connection, schema: Optional[str] = None):
+        """Drop all tables in the schema by SQL string using DROP TABLE.
+        Disadvantage is that it will only drop the tables in the NEW schema we're trying to re-create.
+        It may not drop tables that are in the current DB, but not in the new schema.
+        Advantage: robust solution"""
         for scenario_table_name, db_table in reversed(self.db_tables.items()):
             db_table_name = db_table.db_table_name
-            sql = f"DROP TABLE IF EXISTS {db_table_name}"
+
+            # sql = f"DROP TABLE IF EXISTS {db_table_name}"
+            sql = sqlalchemy.sql.text(f"DROP TABLE IF EXISTS {db_table_name}")
             #         print(f"Dropping table {db_table_name}")
             connection.execute(sql)
+
+
 
     def _drop_schema_transaction(self, schema: str, connection=None):
         """NOT USED. Not working in DB2 Cloud.
@@ -850,7 +1059,8 @@ class ScenarioDbManager():
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
         """
         # Replace NaN with None to avoid FK problems:
-        df = df.replace({float('NaN'): None})
+        # df = df.replace({float('NaN'): None})
+        df = ScenarioDbTable.fixNanNoneNull(df)
 
         num_exceptions = 0
         max_num_exceptions = 10
@@ -1197,15 +1407,16 @@ class ScenarioDbManager():
         t: sqlalchemy.Table = db_table.get_sa_table()
         pk_conditions = [(db_table.get_sa_column(pk['column']) == pk['value']) for pk in db_cell_update.row_index]
         target_col: sqlalchemy.Column = db_table.get_sa_column(db_cell_update.column_name)
-        print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
+        # print(f"_update_cell_change_in_db - target_col = {target_col} for db_cell_update.column_name={db_cell_update.column_name}, pk_conditions={pk_conditions}")
 
         if self.enable_scenario_seq:
             if (scenario_seq := self._get_scenario_seq(db_cell_update.scenario_name, connection)) is not None:
                 # print(f"ScenarioSeq = {scenario_seq}")
                 sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values({target_col:db_cell_update.current_value})
-                connection.execute(sql)
+                # connection.execute(sql)  # VT20230204: Duplicate execute? Will be done anyway at the end of this method!
             else:
                 # Error?
+                # TODO: print some error/exception
                 pass
         else:
             sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == db_cell_update.scenario_name), *pk_conditions)).values({target_col:db_cell_update.current_value})
@@ -1365,15 +1576,28 @@ class ScenarioDbManager():
             # s: sqlalchemy.table = sa_scenario_table  # The scenario table
             # print("+++++++++++SQLAlchemy insert-select")
             if self.enable_scenario_seq:
-                select_columns = [s.c.scenario_seq if c.name == 'scenario_seq' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
-                # print(f"select columns = {select_columns}")
+                # select_columns = [s.c.scenario_seq if c.name == 'scenario_seq' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
+                # # print(f"select columns = {select_columns}")
+                # select_sql = (sqlalchemy.select(select_columns)
+                #               .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))
+
+                # VT20230206: Below avoids the SQLAlchemy future warning about cartesian product. Simpler.
+                # See https://stackoverflow.com/questions/27239647/what-is-the-way-to-select-a-hard-coded-value-in-a-query
+                select_columns = [sqlalchemy.literal(new_scenario_seq).label('scenario_seq') if c.name == 'scenario_seq' else c for c in t.columns]
                 select_sql = (sqlalchemy.select(select_columns)
-                              .where(sqlalchemy.and_(t.c.scenario_seq == source_scenario_seq, s.c.scenario_seq == new_scenario_seq)))
+                              .where(t.c.scenario_seq == source_scenario_seq))
+
             else:
-                select_columns = [s.c.scenario_name if c.name == 'scenario_name' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
-                # print(f"select columns = {select_columns}")
+                # select_columns = [s.c.scenario_name if c.name == 'scenario_name' else c for c in t.columns]  # Replace the t.c.scenario_name with s.c.scenario_name, so we get the new value
+                # # print(f"select columns = {select_columns}")
+                # select_sql = (sqlalchemy.select(select_columns)
+                #               .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+
+                select_columns = [sqlalchemy.literal(target_scenario_name).label('scenario_name') if c.name == 'scenario_name' else c for c in
+                                  t.columns]
                 select_sql = (sqlalchemy.select(select_columns)
-                              .where(sqlalchemy.and_(t.c.scenario_name == source_scenario_name, s.c.scenario_name == target_scenario_name)))
+                              .where(t.c.scenario_name == source_scenario_name))
+
             target_columns = [c for c in t.columns]
             sql_insert = t.insert().from_select(target_columns, select_sql)
             connection.execute(sql_insert)
@@ -1464,17 +1688,19 @@ class ScenarioDbManager():
         Returns the scenario_seq of (the first) entry matching the scenario_name.
         If it doesn't exist, will insert a new entry.
         """
-        # s = self.get_scenario_sa_table()
-        # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
-        # if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
-        #     seq = first[0]
-        # else:
+
+        # Note: there is a big diference between
+        # 1. s.select(s.c.scenario_seq): select all columns from s but with a where condition on the scenario_seq.
+        # This is NOT correct in this use-case!
+        # 2. `sqlalchemy.select(s.c.scenario_seq)`: select only the value of the column scenario_seq
 
         seq = self._get_scenario_seq(scenario_name, connection)
         if seq is None:
             s = self.get_scenario_sa_table()
             connection.execute(s.insert().values(scenario_name=scenario_name))
-            r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))
+            # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))  # INCORRECT!
+            # r = connection.execute(s.select().where(s.c.scenario_name==scenario_name))  # Correct, but selects all columns
+            r = connection.execute(sqlalchemy.select(s.c.scenario_seq).where(s.c.scenario_name==scenario_name))  # Correct, selects only one column
             seq = r.first()[0]
         return seq
 
@@ -1484,7 +1710,8 @@ class ScenarioDbManager():
         """
         s = self.get_scenario_sa_table()
         # r = connection.execute(s.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
-        r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))
+        # r = connection.execute(s.select().where(s.c.scenario_name == scenario_name))
+        r = connection.execute(sqlalchemy.select(s.c.scenario_seq).where(s.c.scenario_name == scenario_name))
         if (r is not None) and ((first := r.first()) is not None):  # Walrus operator!
             # print(f"_get_scenario_seq: r={first}")
             seq = first[0]  # Tuple with values. First (0) is the scenario_seq. TODO: do more structured so we can be sure it is the scenario_seq!
