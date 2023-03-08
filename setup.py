@@ -57,7 +57,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/IBM/dse-decision-optimization-utilities",
-    packages=setuptools.find_packages(),
+    # packages=setuptools.find_packages(),
+    packages=['dse_do_utils', 'dse_do_utils.core'],
+
     classifiers=[
         "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",

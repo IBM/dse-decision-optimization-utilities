@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Read me &#8212; DSE DO Utils 0.5.5.0 documentation</title>
+    <title>Read me &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to DSE DO Utils documentation!"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Read me</a></li> 
       </ul>
     </div>  
@@ -82,54 +82,33 @@ Also contains some functions to create dvars and export .lp files.</p></li>
 <li><p>MapManager. For creating map visualizations using Folium.</p></li>
 </ol>
 </section>
-<section id="installation-on-cpdv4-0">
-<h2>Installation on CPDv4.0<a class="headerlink" href="#installation-on-cpdv4-0" title="Permalink to this heading">¶</a></h2>
-<p>For Cloud Pak for Data v4.0.</p>
+<section id="installation-on-cpdv4-5">
+<h2>Installation on CPDv4.5<a class="headerlink" href="#installation-on-cpdv4-5" title="Permalink to this heading">¶</a></h2>
+<p>For Cloud Pak for Data v4.5.</p>
 <section id="install-in-customized-environment">
 <h3>Install in customized environment<a class="headerlink" href="#install-in-customized-environment" title="Permalink to this heading">¶</a></h3>
-<p>CPDv4.0 allows for easy customization of environments.
+<p>CPDv4.5 allows for easy customization of environments.
 Add the following to the customization configuration:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span><span class="p">:</span>
-  <span class="o">-</span> <span class="n">fake</span>     <span class="c1"># or empty</span>
-  <span class="o">-</span> <span class="n">nodefaults</span>
-
 <span class="n">dependencies</span><span class="p">:</span>
   <span class="o">-</span> <span class="n">pip</span>
   <span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">dse</span><span class="o">-</span><span class="n">do</span><span class="o">-</span><span class="n">utils</span><span class="o">==</span><span class="mf">0.5.0.0</span>
-    <span class="o">-</span> <span class="n">decision</span><span class="o">-</span><span class="n">optimization</span><span class="o">-</span><span class="n">client</span><span class="o">==</span><span class="mf">1.0.0</span>
-</pre></div>
-</div>
-<p>This automatically downloads dse-do-utils from PyPI and installs the package.
-(Note: the <code class="docutils literal notranslate"><span class="pre">fake</span></code> / <code class="docutils literal notranslate"><span class="pre">nodefaults</span></code> is a hack to avoid installation of pip itself. This will greatly improve the installation performance.)</p>
-</section>
-</section>
-<section id="installation-cpdv2-5">
-<h2>Installation (CPDv2.5)<a class="headerlink" href="#installation-cpdv2-5" title="Permalink to this heading">¶</a></h2>
-<p>(For Cloud Pak for Data v2.5)</p>
-<p>CPDv2.5 is very different from the previous versions and it has a significant impact on how the dse-do-utils can be installed and used.</p>
-<p>Options:</p>
-<ol class="arabic simple">
-<li><p>Install using pip in a customized environment. This applies to both Jupyter and JupyterLab.</p></li>
-<li><p>Install as a package in JupyterLab.</p></li>
-<li><p>Install as modules in Jupyter</p></li>
-<li><p>Install/use as modules in the DO Model Builder</p></li>
-</ol>
-<section id="id1">
-<h3>Install in customized environment<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
-<p>CPDv2.5 allows for easy customization of environments.
-Add the following to the customization configuration:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">dse</span><span class="o">-</span><span class="n">do</span><span class="o">-</span><span class="n">utils</span><span class="o">=</span><span class="mf">0.3.0.0</span>
+    <span class="o">-</span> <span class="n">dse</span><span class="o">-</span><span class="n">do</span><span class="o">-</span><span class="n">utils</span><span class="o">==</span><span class="mf">0.5.5.0</span>
+    <span class="o">-</span> <span class="n">decision</span><span class="o">-</span><span class="n">optimization</span><span class="o">-</span><span class="n">client</span><span class="o">==</span><span class="mf">1.1.0</span>
 </pre></div>
 </div>
 <p>This automatically downloads dse-do-utils from PyPI and installs the package.</p>
 <p>For air-gapped systems that have no access to PyPI:</p>
 <ol class="arabic simple">
 <li><p>Download the package from PyPI/Conda from an internet connected system as a wheel/zip file</p></li>
-<li><p>Upload the wheel/zip as a data asset</p></li>
-<li><p>Install package from wheel/zip</p></li>
+<li><p>Upload the wheel/zip as a data asset, or place in any location in the JupyterLab file system</p></li>
+<li><p>Add a pip dependency in the environment yaml:</p></li>
 </ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dependencies</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">pip</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">userfs</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">dse_do_utils</span><span class="o">-</span><span class="mf">0.5.4.5</span><span class="n">b4</span><span class="o">-</span><span class="n">py3</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="nb">any</span><span class="o">.</span><span class="n">whl</span>
+</pre></div>
+</div>
 <p>This downloads the package as a wheel/zip and puts it in the data assets</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!pip download dse-do-utils -d /project_data/data_asset/
 </pre></div>
@@ -150,10 +129,8 @@ See the <code class="docutils literal notranslate"><span class="pre">Installatio
 <h2>Target environments<a class="headerlink" href="#target-environments" title="Permalink to this heading">¶</a></h2>
 <p>To be used within:</p>
 <ol class="arabic simple">
-<li><p>CPDv2.1 (version 0.2.2.3 is preferred. But version 0.3.0.0 should be backwards compatible.)</p></li>
-<li><p>CPDv2.5 (version 0.3.0.0 and up)</p></li>
-<li><p>WSLv1.2.3 with Python 2.7 (version 0.2.2.3 only)</p></li>
-<li><p>WS Cloud (version 0.4.0.0 and up)</p></li>
+<li><p>CP4D on-prem v4.0 and up</p></li>
+<li><p>CP4DaaS / WS Cloud (version 0.4.0.0 and up)</p></li>
 </ol>
 </section>
 <section id="do-model-builder-and-wml-environments">
@@ -164,36 +141,20 @@ See the <code class="docutils literal notranslate"><span class="pre">Installatio
 <li><p>The DO Model Builder environment.</p></li>
 <li><p>The WML deployment environment.</p></li>
 </ol>
-<p>In CPDv2.5:</p>
-<ul class="simple">
-<li><p>Only the notebook environment can be regularly customized with the dse-do-utils.</p></li>
-<li><p>The Model Builder environment cannot be customized. But, it has a feature to add ‘files’.
-The dse-do-utils internal modules have been refactored to be able to be uploaded separately as individual modules.</p></li>
-<li><p>The WML environment cannot be customized. But the same work-around for adding modules/files to the MB model can be used.</p></li>
-</ul>
-<p>In CPDv3.0:</p>
-<ul class="simple">
-<li><p>The WML environment can be customized using APIs.</p></li>
-</ul>
-<p>In future releases of CPD:</p>
-<ul class="simple">
-<li><p>The DO Model Builder will also allow for environment customization</p></li>
-</ul>
+<p>From CP4D 4.6, all environments can be customized from PyPI packages and wheel files</p>
 </section>
 <section id="scope-of-classes-modules">
 <h2>Scope of classes/modules<a class="headerlink" href="#scope-of-classes-modules" title="Permalink to this heading">¶</a></h2>
 <p>The classes <code class="docutils literal notranslate"><span class="pre">OptimizationEngine</span></code> and  <code class="docutils literal notranslate"><span class="pre">DataManager</span></code> are intended to be used within the optimization model code
 that will run in the Model Builder and WML deployment. All other classes, in particular the <code class="docutils literal notranslate"><span class="pre">ScenarioManager</span></code> are
 designed to be used outside of the Model Builder or WML, e.g. within <code class="docutils literal notranslate"><span class="pre">#dd-ignore</span></code> cells.</p>
-<p>Therefore, the limitations in customizing environments can, for the moment, be avoided by not using
-the classes <code class="docutils literal notranslate"><span class="pre">OptimizationEngine</span></code> and  <code class="docutils literal notranslate"><span class="pre">DataManager</span></code>.</p>
 </section>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">¶</a></h2>
 <p>This package requires:</p>
 <ol class="arabic simple">
-<li><p><a class="reference external" href="https://pages.github.ibm.com/IBMDecisionOptimization/dd-scenario-api/dd-scenario-client-python/doc/build/html/">dd-scenario</a>. This package provides an interface to the DO scenarios.
-This package is only available within WSL and ICPd. It cannot be pip installed in other environments.</p></li>
+<li><p><a class="reference external" href="https://ibmdecisionoptimization.github.io/decision-optimization-client-doc/">decision-optimization-client</a>. This package provides an interface to the DO scenarios.
+This package is available in PyPI, however it only runs within CP4D/CP4DaaS.</p></li>
 <li><p><a class="reference external" href="http://ibmdecisionoptimization.github.io/docplex-doc/mp/index.html">docplex</a>. This package interfaces with the CPLEX and CP Optimizer optimization engines.</p></li>
 <li><p><a class="reference external" href="https://github.com/python-visualization/folium">folium</a>. Map visualization. Only for the MapManager.</p></li>
 </ol>
@@ -214,12 +175,8 @@ This package is only available within WSL and ICPd. It cannot be pip installed i
 <li><a class="reference internal" href="#dse-do-utils">DSE_DO_Utils</a><ul>
 <li><a class="reference internal" href="#important">Important</a></li>
 <li><a class="reference internal" href="#main-classes">Main classes:</a></li>
-<li><a class="reference internal" href="#installation-on-cpdv4-0">Installation on CPDv4.0</a><ul>
+<li><a class="reference internal" href="#installation-on-cpdv4-5">Installation on CPDv4.5</a><ul>
 <li><a class="reference internal" href="#install-in-customized-environment">Install in customized environment</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#installation-cpdv2-5">Installation (CPDv2.5)</a><ul>
-<li><a class="reference internal" href="#id1">Install in customized environment</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#import">Import</a></li>
@@ -278,7 +235,7 @@ This package is only available within WSL and ICPd. It cannot be pip installed i
         <li class="right" >
           <a href="index.html" title="Welcome to DSE DO Utils documentation!"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Read me</a></li> 
       </ul>
     </div>

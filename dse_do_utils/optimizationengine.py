@@ -27,7 +27,7 @@ try:
     # Import as part of package
     from .scenariomanager import ScenarioManager
     from .datamanager import DataManager
-except:
+except ImportError:
     # import as part of DO Model Builder
     from scenariomanager import ScenarioManager
     from datamanager import DataManager

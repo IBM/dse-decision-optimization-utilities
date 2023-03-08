@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from typing import Sequence, List, Dict, Tuple, Optional
-from ibm_watson_machine_learning import APIClient
+# from ibm_watson_machine_learning import APIClient
 import os
 import shutil
 import tarfile
@@ -67,6 +67,7 @@ class DOModelDeployer(object):
         self.tmp_dir = tmp_dir
 
         # Initialize clients
+        from ibm_watson_machine_learning import APIClient
         self.client = APIClient(wml_credentials)
         space_id = self.guid_from_space_name(space_name)  # TODO: catch error if space_name cannot be found?
         result = self.client.set.default_space(space_id)
