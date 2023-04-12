@@ -89,17 +89,17 @@ class OptimizationEngine(object):
     @staticmethod
     def integer_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
         """Returns pd.Series[IntegerVarType]"""
-        return pd.Series(mdl.integer_var_list(df.index, **kargs), index=df.index)
+        return pd.Series(mdl.integer_var_list(df.index, **kargs), index=df.index, dtype='object')
 
     @staticmethod
     def continuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
         """Returns pd.Series[ContinuousVarType]."""
-        return pd.Series(mdl.continuous_var_list(df.index, **kargs), index=df.index)
+        return pd.Series(mdl.continuous_var_list(df.index, **kargs), index=df.index, dtype='object')
 
     @staticmethod
     def binary_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, **kargs) -> pd.Series:
         """Returns pd.Series[BinaryVarType]"""
-        return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index)
+        return pd.Series(mdl.binary_var_list(df.index, **kargs), index=df.index, dtype='object')
 
     def semicontinuous_var_series(self, df, lb, **kargs) -> pd.Series:
         """Returns pd.Series[SemiContinuousVarType]"""
@@ -108,7 +108,7 @@ class OptimizationEngine(object):
     @staticmethod
     def semicontinuous_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, lb, **kargs) -> pd.Series:
         """Returns pd.Series[SemiContinuousVarType]."""
-        return pd.Series(mdl.semicontinuous_var_list(df.index, lb, **kargs), index=df.index)
+        return pd.Series(mdl.semicontinuous_var_list(df.index, lb, **kargs), index=df.index, dtype='object')
 
     def semiinteger_var_series(self, df, lb, **kargs) -> pd.Series:
         """Returns pd.Series[SemiIntegerVarType]"""
@@ -117,7 +117,7 @@ class OptimizationEngine(object):
     @staticmethod
     def semiinteger_var_series_s(mdl: docplex.mp.model, df: pd.DataFrame, lb, **kargs) -> pd.Series:
         """Returns pd.Series[SemiIntegerVarType]."""
-        return pd.Series(mdl.semiinteger_var_list(df.index, lb, **kargs), index=df.index)
+        return pd.Series(mdl.semiinteger_var_list(df.index, lb, **kargs), index=df.index, dtype='object')
 
     def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
         # TODO: enable export_as_lp_path()?

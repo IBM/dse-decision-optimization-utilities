@@ -1,8 +1,18 @@
+import enum
 import logging
 import os
 from os import environ
 from typing import Dict
-from dse_do_dashboard.dash_app import HostEnvironment
+# from dse_do_dashboard.dash_app import HostEnvironment
+
+
+class HostEnvironment(enum.IntEnum):
+    """
+    TODO: this HostEnvironment needs to match the from dse_do_dashboard.dash_app import HostEnvironment
+    However, we should avoid circular dependencies
+    """
+    Local = 1
+    CPD402 = 2  
 
 
 class Core01EnvironmentManager():
@@ -79,6 +89,8 @@ class Core01EnvironmentManager():
         """Detect the host environment, i.e. CP4D or Local workstation.
         Can also be done by detecting linux: `if system().lower() == 'linux'`
         Need to check if this works properly for current cluster version
+        TODO: this HostEnvironment needs to match the from dse_do_dashboard.dash_app import HostEnvironment
+        Tis needs to be replaced in the dse_do_dashboard.dash_app using the dse_do_utils.scenariomanager.Platform
         """
         if 'PROJECT_NAME' in environ:   # This works in CP4D v4.0.2
             host_env = HostEnvironment.CPD402

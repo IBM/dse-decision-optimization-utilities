@@ -1,5 +1,5 @@
 # DSE_DO_Utils
-Decision Optimization utilities for IBM Watson Studio Local and ICPd projects.
+Decision Optimization utilities for IBM Cloud Pak for Data projects.
 
 [Source (GitHub)](https://github.com/IBM/dse-decision-optimization-utilities)<br>
 [Documentation (GitHubPages)](https://ibm.github.io/dse-decision-optimization-utilities/)
