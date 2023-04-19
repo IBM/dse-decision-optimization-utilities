@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - core01_environment_manager.HostEnvironment is now an enum.IntEnum to allow comparing integer values
 - OptimizationEngine.integer_var_series_s etc. define the dtype='object' to avoid FutureWarning
+- ScenarioManager.write_data_to_excel switch from pd.ExcelWriter.save() to .close() to avoid FutureWarning
 
 ## [0.5.5.1]- 2023-03-06
 ### Changed

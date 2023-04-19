@@ -622,7 +622,7 @@ class ScenarioManager(object):
             writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
 
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
-        writer_1.save()
+        writer_1.close()  # .save()
 
         self.add_file_as_data_asset(excel_file_path_1, excel_file_name)
 
