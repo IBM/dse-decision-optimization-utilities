@@ -347,7 +347,8 @@ class DataManager(object):
     #             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)
 
     @staticmethod
-    def extract_solution(df, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None, drop: bool = True):
+    def extract_solution(df: object, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None,
+                         drop: bool = True) -> object:
         """Generalized routine to extract a solution value.
         Can remove the dvar column from the df to be able to have a clean df for export into scenario."""
         if extract_dvar_names is not None:

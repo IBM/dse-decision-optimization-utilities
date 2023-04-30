@@ -32,14 +32,18 @@ except ImportError:
     from scenariomanager import ScenarioManager
     from datamanager import DataManager
 
+from typing import TypeVar, Generic
 
-class OptimizationEngine(object):
-    def __init__(self, data_manager: Optional[DataManager] = None, name: str = "MyOptimizationEngine",
+DM = TypeVar('DM', bound='DataManager')
+
+
+class OptimizationEngine(Generic[DM]):
+    def __init__(self, data_manager: Optional[DM] = None, name: str = "MyOptimizationEngine",
                  solve_kwargs = None, export_lp: bool = False, export_sav: bool = False, export_lp_path: str = None, is_cpo_model: bool = False):
         self.is_cpo_model = is_cpo_model
         # self.mdl: Model = Model(name=name)
         self.mdl: Union[Model, cp.CpoModel] = self.create_do_model(name=name, is_cpo_model=is_cpo_model)
-        self.dm = data_manager
+        self.dm: DM = data_manager
         self.solve_kwargs = solve_kwargs  # TODO: use in this.solve()
         self.export_lp = export_lp
         self.export_sav = export_sav  # TODO: add export to sav

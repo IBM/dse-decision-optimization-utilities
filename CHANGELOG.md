@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.5.2b0]
+### Added
+- DataManager class generics to OptimizationEngine, Core01OptimizationEngine
 ### Changed
 - core01_environment_manager.HostEnvironment is now an enum.IntEnum to allow comparing integer values
 - OptimizationEngine.integer_var_series_s etc. define the dtype='object' to avoid FutureWarning
