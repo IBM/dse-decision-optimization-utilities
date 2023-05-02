@@ -18,7 +18,7 @@ from typing import TypeVar, Generic
 DM = TypeVar('DM', bound='Core01DataManager')
 
 
-class Core01OptimizationEngine(Generic[DM], OptimizationEngine):
+class Core01OptimizationEngine(OptimizationEngine):
     def __init__(self, data_manager: DM, name: str = None, solve_kwargs: Dict = {"log_output": True},
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
                  enable_refine_conflict: bool = False):
