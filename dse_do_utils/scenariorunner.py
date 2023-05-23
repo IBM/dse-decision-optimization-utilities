@@ -5,6 +5,9 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 import pandas as pd
+from dse_do_utils.core.core01_optimization_engine import Core01OptimizationEngine
+
+from dse_do_utils.core.core01_data_manager import Core01DataManager
 
 from dse_do_utils import ScenarioManager, OptimizationEngine
 from dse_do_utils.datamanager import Inputs, Outputs, DataManager
@@ -31,6 +34,7 @@ class RunConfig:
     log_level: str = 'DEBUG'  # 'DEBUG'
     export_lp: bool = False
     export_sav: bool = False
+    enable_refine_conflict: bool = False
     export_lp_path: str = ''
     do_model_name: str = None
     template_scenario_name: Optional[str] = None  # 'TemplateScenario'
@@ -93,8 +97,8 @@ class ScenarioRunner:
     """
     def __init__(self,
                  scenario_db_manager: ScenarioDbManager,
-                 optimization_engine_class: Type[OptimizationEngine],
-                 data_manager_class: Type[DataManager],
+                 optimization_engine_class: Type[Core01OptimizationEngine],
+                 data_manager_class: Type[Core01DataManager],
                  scenario_db_manager_class: Type[ScenarioDbManager],  # For the SQLite data check
                  scenario_generator_class: Optional[Type[ScenarioGenerator]] = None,
                  do_model_name: str = 'my_model',
@@ -105,14 +109,14 @@ class ScenarioRunner:
                  data_directory: Optional[str] = None) -> None:
 
         self.scenario_db_manager: ScenarioDbManager = scenario_db_manager
-        self.optimization_engine_class: Type[OptimizationEngine] = optimization_engine_class
-        self.data_manager_class = data_manager_class
+        self.optimization_engine_class: Type[Core01OptimizationEngine] = optimization_engine_class
+        self.data_manager_class: Type[Core01DataManager] = data_manager_class
         self.scenario_db_manager_class = scenario_db_manager_class
         self.scenario_generator_class = scenario_generator_class
 
-        self.optimization_engine: OptimizationEngine = None  # To be set in run.
-        self.data_manager: DataManager = None  # To be set in run.
-        self.sqlite_scenario_db_manager: ScenarioDbManager = None  # To be set in run.
+        self.optimization_engine: Optional[OptimizationEngine] = None  # To be set in run.
+        self.data_manager: Optional[DataManager] = None  # To be set in run.
+        self.sqlite_scenario_db_manager: Optional[ScenarioDbManager] = None  # To be set in run.
 
         self._logger: Logger = getLogger(self.__class__.__name__)
         self.schema: Optional[str] = schema
@@ -390,6 +394,7 @@ class ScenarioRunner:
             export_lp=run_config.export_lp,
             export_sav=run_config.export_sav,
             export_lp_path=run_config.export_lp_path,
+            enable_refine_conflict=run_config.enable_refine_conflict
         )
 
         return self.optimization_engine.run()

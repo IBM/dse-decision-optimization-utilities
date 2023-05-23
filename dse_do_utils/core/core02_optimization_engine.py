@@ -29,8 +29,11 @@ class Core02OptimizationEngine(Core01OptimizationEngine):
     """
 
     def __init__(self, data_manager: Core02DataManager, name: str = None, solve_kwargs: Dict = {"log_output": True},
-                 export_lp: bool = False, export_sav: bool = False, export_lp_path: str = ''):
-        super().__init__(data_manager, name=name, solve_kwargs=solve_kwargs, export_lp=export_lp, export_sav=export_sav, export_lp_path=export_lp_path)
+                 export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
+                 enable_refine_conflict: bool = False):
+        super().__init__(data_manager, name=name, solve_kwargs=solve_kwargs,
+                         export_lp=export_lp, export_sav=export_sav, export_lp_path=export_lp_path,
+                         enable_refine_conflict=enable_refine_conflict)
         # self.solver_metrics = None
         self.lex_opti_metrics_list: List[Dict] = []
 
@@ -226,7 +229,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine):
             crefiner = ConflictRefiner()  # Create an instance of the ConflictRefiner
             conflicts = crefiner.refine_conflict(self.mdl, display=True)  # Run the conflict refiner
             # ConflictRefiner.display_conflicts(conflicts) #Display the results
-            conflict_reporting_limit = 10
+            conflict_reporting_limit = 100
             if len(conflicts) > conflict_reporting_limit:
                 self.dm.logger.warning(f"Number of conflicts {len(conflicts)} exceeds reporting limit ({conflict_reporting_limit})")
             i = 0
