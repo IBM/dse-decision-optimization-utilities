@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.5.2b2]
 ### Changed
+- Core01OptimizationEngine, Core02OptimizationEngine - added support for DataManager generics
+- Core01DataManager logger now uses `__name__`
+- Core01DataManager - removed deprecated logger methods
 
 ## [0.5.5.2b1]- 2023-05-23
 ### Changed

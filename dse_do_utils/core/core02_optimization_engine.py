@@ -2,7 +2,7 @@
 # IBM Confidential Source Code Materials
 # This Source Code is subject to the license and security terms contained in the License.txt file contained in this source code package.
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, TypeVar
 
 import docplex
 import pandas as pd
@@ -23,8 +23,9 @@ class LexGoalAgg():
     def __call__(self, group):
         return self.mdl.sum(group.expr * group.weight)
 
+DM = TypeVar('DM', bound='Core02DataManager')
 
-class Core02OptimizationEngine(Core01OptimizationEngine):
+class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
     """Adds Lexicographical Optimization
     """
 

@@ -42,7 +42,15 @@ class Core01DataManager(DataManager):
 
         # Create a custom logger
         # self.logger = self.create_logger(log_level)
-        self.logger = logging.getLogger(self.__module__)
+
+        # `__name__` returns `dse_do_utils.core.core01_data_manager`
+        # `self.__name__` returns an error
+        # `self.__module__` returns `fruit.data_manager`
+        # `self.__class__.__name__` returns `FruitDataManager`
+        # `self.__class__.__module__` returns `fruit.data_manager` (same as `self.__module__`)
+
+        # VT20230607: changed to __name__ from self.__module__
+        self.logger = logging.getLogger(__name__)  # `__name__` is Python best practice
 
         # Parameters:
         self.params = None
@@ -236,51 +244,51 @@ class Core01DataManager(DataManager):
     ########################################################################
     # Logger (TODO: review)
     ########################################################################
-    def create_logger(self, log_level: int = None) -> logging.Logger:
-        """DEPRECATED
-        Create logger
+    # def create_logger(self, log_level: int = None) -> logging.Logger:
+    #     """DEPRECATED
+    #     Create logger
+    #
+    #     Args:
+    #         log_level: log level, by default log_level is None
+    #                    and a logger set to CRITICAL log level will be created
+    #                    otherwise, a logger is set to the level specified
+    #                    by log_level
+    #     """
+    #     log_level_enum = LogLevelEnum()
+    #     logger = logging.getLogger(self.__class__.__name__)
+    #
+    #     if log_level is None or log_level not in log_level_enum.LEVELS.keys():
+    #         log_level = 'CRITICAL'
+    #
+    #     logger.setLevel(getattr(log_level_enum, log_level))
+    #
+    #     # Create handlers
+    #     # Stop progagate custom handler settings to root logger
+    #     logger.propagate = False
+    #     n_handlers = len(logger.handlers[:])
+    #     if n_handlers == 0:
+    #         self.add_logger_handler(log_level_enum, log_level, logger=logger)
+    #     else:
+    #         for handler in logger.handlers[:]:
+    #             logger.removeHandler(handler)
+    #
+    #         self.add_logger_handler(log_level_enum, log_level, logger=logger)
+    #     return logger
 
-        Args:
-            log_level: log level, by default log_level is None
-                       and a logger set to CRITICAL log level will be created
-                       otherwise, a logger is set to the level specified
-                       by log_level
-        """
-        log_level_enum = LogLevelEnum()
-        logger = logging.getLogger(self.__class__.__name__)
-
-        if log_level is None or log_level not in log_level_enum.LEVELS.keys():
-            log_level = 'CRITICAL'
-
-        logger.setLevel(getattr(log_level_enum, log_level))
-
-        # Create handlers
-        # Stop progagate custom handler settings to root logger
-        logger.propagate = False
-        n_handlers = len(logger.handlers[:])
-        if n_handlers == 0:
-            self.add_logger_handler(log_level_enum, log_level, logger=logger)
-        else:
-            for handler in logger.handlers[:]:
-                logger.removeHandler(handler)
-
-            self.add_logger_handler(log_level_enum, log_level, logger=logger)
-        return logger
-
-    def add_logger_handler(self, log_level_enum, log_level, logger):
-        """DEPRECATED
-        Add logger handler
-
-        Args:
-            log_level_enum: log level enum object
-            log_level: log level
-        """
-        c_handler = logging.StreamHandler()
-        c_handler.setLevel(getattr(log_level_enum, log_level))
-
-        # Create formatters and add it to handlers
-        c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
-        c_handler.setFormatter(c_format)
-
-        # Add handlers to the logger
-        logger.addHandler(c_handler)
+    # def add_logger_handler(self, log_level_enum, log_level, logger):
+    #     """DEPRECATED
+    #     Add logger handler
+    #
+    #     Args:
+    #         log_level_enum: log level enum object
+    #         log_level: log level
+    #     """
+    #     c_handler = logging.StreamHandler()
+    #     c_handler.setLevel(getattr(log_level_enum, log_level))
+    #
+    #     # Create formatters and add it to handlers
+    #     c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
+    #     c_handler.setFormatter(c_format)
+    #
+    #     # Add handlers to the logger
+    #     logger.addHandler(c_handler)

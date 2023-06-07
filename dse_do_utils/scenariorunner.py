@@ -59,7 +59,7 @@ class ScenarioGenerator():
     def __init__(self,
                  inputs: Inputs,
                  scenario_config: ScenarioConfig) -> None:
-        self._logger: Logger = getLogger(self.__class__.__name__)
+        self._logger: Logger = getLogger(__name__)
         self.inputs: Inputs = inputs.copy()  # Only copy of dict
         self.scenario_config: ScenarioConfig = scenario_config
 
@@ -118,7 +118,8 @@ class ScenarioRunner:
         self.data_manager: Optional[DataManager] = None  # To be set in run.
         self.sqlite_scenario_db_manager: Optional[ScenarioDbManager] = None  # To be set in run.
 
-        self._logger: Logger = getLogger(self.__class__.__name__)
+        # self._logger: Logger = getLogger(self.__class__.__name__)
+        self._logger: Logger = getLogger(__name__)
         self.schema: Optional[str] = schema
         self.do_model_name: str = do_model_name
         # self.use_scenario_db: bool = use_scenario_db  # TODO: VT20220906: remove, doesn't seem to be used?
