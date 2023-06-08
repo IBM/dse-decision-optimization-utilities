@@ -2,7 +2,9 @@ import enum
 import logging
 import os
 from os import environ
-from typing import Dict
+from typing import Dict, Optional, List
+
+
 # from dse_do_dashboard.dash_app import HostEnvironment
 
 
@@ -17,15 +19,16 @@ class HostEnvironment(enum.IntEnum):
 
 class Core01EnvironmentManager():
     def __init__(self, db_connection: str, default_schema: str,
-                 project_root: str = None, data_directory: str = None,
-                 log_level: str = None):
+                 project_root: Optional[str] = None, data_directory: Optional[str] = None,
+                 log_level: Optional[str] = None,
+                 log_scope: Optional[List[str]] = ['']):
         self.db_connection = db_connection
         self.default_schema = default_schema
         self.project_root = project_root
         self.data_directory = data_directory
         self.log_level = log_level
         if log_level is not None:
-            self.set_root_logger(level=log_level)
+            self.set_loggers(level=log_level, scope=log_scope)
 
     def get_project_db_credentials(self, db_connection_name: str = None) -> Dict:
         """Get DB credentials.
@@ -122,19 +125,56 @@ class Core01EnvironmentManager():
                 local_data_directory = None
         return local_data_directory
 
-    def set_root_logger(self, level: str = 'DEBUG'):
-        """Sets the properties of the root logger.
-        In subsequent code, use `logger = logging.getLogger()`.
+    # def set_root_logger(self, level: str = 'DEBUG'):
+    #     """Sets the properties of the root logger.
+    #     In subsequent code, use `logger = logging.getLogger()`.
+    #     Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]
+    #     """
+    #     logger = logging.getLogger()
+    #     logger.setLevel(level)
+    #     c_handler = logging.StreamHandler()
+    #     c_handler.setLevel(level)
+    #
+    #     # Create formatters and add it to handlers
+    #     c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
+    #     c_handler.setFormatter(c_format)
+    #
+    #     # Add handlers to the logger
+    #     logger.addHandler(c_handler)
+
+    def set_loggers(self, level: str = 'DEBUG', scope: Optional[List[str]] = ['']):
+        """Sets the properties of loggers.
+        Typically, log messages are created by `logger = logging.getLogger(__name__)`.
         Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]
+        scope is a list of logger names for which we add handlers and the log-level
+        An empty string is the root logger.
+        Logger names use a hierarchical name space.
+        In the dse_do_utils, grabbing logging.getLogger(__name__) woyuld have a name like `dse_do_utils.xxxxx.yyyy`
+        Messages are propagated up in the hierarchy, so we can set properties of the logger named `dse_do_utils`.
+        If you use a custom package that has classes subclassing from dse_do_utils, use a list like
+        ['fruit', 'ds_do_utils'] to receive all log messages.
+        If scope is None, no hanlders are added.
+        The default sets the properties of the root logger.
+        This will mean that messages from other packages, like docplex, will be included in the log
         """
-        logger = logging.getLogger()
-        logger.setLevel(level)
+        # logger = logging.getLogger()
+        # logger.setLevel(level)
         c_handler = logging.StreamHandler()
-        # c_handler.setLevel('DEBUG')
+        c_handler.setLevel(level)
 
         # Create formatters and add it to handlers
         c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
         c_handler.setFormatter(c_format)
 
         # Add handlers to the logger
-        logger.addHandler(c_handler)
+        # logger.addHandler(c_handler)
+
+        if scope is not None:
+            for logger_name in scope: #['fruit', 'dse_do_utils']:
+                logger = logging.getLogger(logger_name)
+                logger.setLevel(level)
+
+                # Remove all handlers (See https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers)
+                while logger.hasHandlers():
+                    logger.removeHandler(logger.handlers[0])
+                logger.addHandler(c_handler)
