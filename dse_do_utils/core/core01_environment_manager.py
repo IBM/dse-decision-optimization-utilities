@@ -21,7 +21,9 @@ class Core01EnvironmentManager():
     def __init__(self, db_connection: str, default_schema: str,
                  project_root: Optional[str] = None, data_directory: Optional[str] = None,
                  log_level: Optional[str] = None,
-                 log_scope: Optional[List[str]] = ['']):
+                 log_scope: Optional[List[str]] = None):
+        if log_scope is None:
+            log_scope = ['']  # Implies the root logger. If you don't want logger, specify log_scope as an empty list
         self.db_connection = db_connection
         self.default_schema = default_schema
         self.project_root = project_root
@@ -142,7 +144,7 @@ class Core01EnvironmentManager():
     #     # Add handlers to the logger
     #     logger.addHandler(c_handler)
 
-    def set_loggers(self, level: str = 'DEBUG', scope: Optional[List[str]] = ['']):
+    def set_loggers(self, level: str = 'DEBUG', scope: Optional[List[str]] = None):
         """Sets the properties of loggers.
         Typically, log messages are created by `logger = logging.getLogger(__name__)`.
         Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]
@@ -153,28 +155,25 @@ class Core01EnvironmentManager():
         Messages are propagated up in the hierarchy, so we can set properties of the logger named `dse_do_utils`.
         If you use a custom package that has classes subclassing from dse_do_utils, use a list like
         ['fruit', 'ds_do_utils'] to receive all log messages.
-        If scope is None, no hanlders are added.
+        If scope is None, the root hanlder is added. If you don't want logger, specify log_scope as an empty list
         The default sets the properties of the root logger.
         This will mean that messages from other packages, like docplex, will be included in the log
         """
-        # logger = logging.getLogger()
-        # logger.setLevel(level)
+        if scope is None:
+            scope = ['']  # Implies the root logger. If you don't want logger, specify log_scope as an empty list
         c_handler = logging.StreamHandler()
-        c_handler.setLevel(level)
+        # c_handler.setLevel(level)
 
         # Create formatters and add it to handlers
         c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
         c_handler.setFormatter(c_format)
 
-        # Add handlers to the logger
-        # logger.addHandler(c_handler)
-
         if scope is not None:
-            for logger_name in scope: #['fruit', 'dse_do_utils']:
+            for logger_name in scope: # e.g. ['fruit', 'dse_do_utils']:
                 logger = logging.getLogger(logger_name)
                 logger.setLevel(level)
 
-                # Remove all handlers (See https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers)
+                # Remove all existing handlers (See https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers)
                 while logger.hasHandlers():
                     logger.removeHandler(logger.handlers[0])
                 logger.addHandler(c_handler)

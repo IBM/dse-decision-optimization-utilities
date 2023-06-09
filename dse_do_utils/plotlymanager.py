@@ -1,5 +1,6 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+from typing import Generic, TypeVar
 
 # from typing import List, Dict, Tuple, Optional
 from dse_do_utils.datamanager import DataManager
@@ -19,13 +20,14 @@ from dse_do_utils.datamanager import DataManager
 #     display(HTML(html))
 # go.Figure._show = _show
 
+DM = TypeVar('DM', bound='DataManager')
 
-class PlotlyManager():
+class PlotlyManager(Generic[DM]):
     """Holds method that create Plotly charts.
     Pass-in the DM as an input in the constructor.
     """
-    def __init__(self, dm:DataManager):
-        self.dm = dm
+    def __init__(self, dm: DM):
+        self.dm: DM = dm
 
     def get_plotly_fig_m(self, id):
         """DEPRECATED. Not used in dse_do_dashboard package.

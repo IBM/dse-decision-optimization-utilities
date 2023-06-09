@@ -13,7 +13,9 @@ from dse_do_utils import ScenarioManager, OptimizationEngine
 from dse_do_utils.datamanager import Inputs, Outputs, DataManager
 from dse_do_utils.scenariodbmanager import ScenarioDbManager
 from logging import Logger, getLogger
-from typing import Any, Dict, Optional, Tuple, NamedTuple, Type, List
+from typing import Any, Dict, Optional, Tuple, NamedTuple, Type, List, Union
+
+from dse_do_utils.scenariomanager import Platform
 
 
 @dataclass  # (frozen=True)
@@ -105,7 +107,7 @@ class ScenarioRunner:
                  schema: Optional[str] = None,
                  # use_scenario_db: bool = True,
                  local_root: Optional[str] = None,
-                 local_platform: Optional[int] = None,
+                 local_platform: Optional[Union[int, Platform]] = None,
                  data_directory: Optional[str] = None) -> None:
 
         self.scenario_db_manager: ScenarioDbManager = scenario_db_manager
@@ -176,7 +178,7 @@ class ScenarioRunner:
         #         'Either base_inputs or excel_file_name should be provided.')
 
         # Generate scenario
-        self._logger.info(f'Generating scenario {scenario_name}')
+        self._logger.debug(f'Generating scenario {scenario_name}')
         inputs = self.generate_scenario(base_inputs, scenario_config)
 
         # Data check
@@ -204,7 +206,7 @@ class ScenarioRunner:
         if run_config.write_output_to_excel:
             self.write_output_data_to_excel(inputs, outputs, scenario_name)
 
-        self._logger.info(f'Done with {scenario_config.scenario_name}')
+        self._logger.debug(f'Done with {scenario_config.scenario_name}')
 
         return outputs
 
