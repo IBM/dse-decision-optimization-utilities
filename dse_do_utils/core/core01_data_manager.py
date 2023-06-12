@@ -168,17 +168,19 @@ class Core01DataManager(DataManager):
             df: dataframe
             index_columns: index column names
             value_columns: value column names
-            dtypes: map of column data types
+            dtypes: map of column data types. Adds and overrides values in self.dtypes
             data_specs_key: data specs key
             verify_integrity: flag to verify integrity when setting the index
 
         Returns:
             df: dataframe
-
-        TODO: move to CoreDataManager
         """
 
-        dtypes = dtypes if dtypes is not None else self.dtypes
+        # dtypes = dtypes if dtypes is not None else self.dtypes
+        # Merge local and global dtypes:
+        default_dtypes = self.dtypes if self.dtypes is not None else {}
+        override_dtypes = dtypes if dtypes is not None else {}
+        dtypes = default_dtypes | override_dtypes  # merge of dicts, where values in override take priority
 
         if df is not None:
             # Processing on existing dataframe
