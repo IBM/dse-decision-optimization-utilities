@@ -5,13 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.5.2b3]
+### Added
+- Core01EnvironmentManager.find_project_root_directory
+### Changed
+- Core01DataManager.prepare_df now merges local dtypes with self.dtypes, where overlapping local dtypes take priority
 
 ## [0.5.5.2b2]- 2023-06-08
-### Changed
+### Added
 - Core01OptimizationEngine, Core02OptimizationEngine, PlotlyManager - added support for DataManager generics
+- Core01EnvironmentManager can define logging scope
+### Changed
 - Core01DataManager logger now uses `__name__`
 - Core01DataManager - removed deprecated logger methods
-- Core01EnvironmentManager can define logging scope
+
 
 ## [0.5.5.2b1]- 2023-05-23
 ### Changed

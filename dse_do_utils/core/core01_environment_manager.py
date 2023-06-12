@@ -2,6 +2,7 @@ import enum
 import logging
 import os
 from os import environ
+from pathlib import Path
 from typing import Dict, Optional, List
 
 
@@ -126,6 +127,31 @@ class Core01EnvironmentManager():
             else:
                 local_data_directory = None
         return local_data_directory
+
+    @staticmethod
+    def find_project_root_directory(file, max_depth: int = 10):
+        """Look in the file hierarchy of the file to detect a directory that contains `/assets/data_asset`
+
+        Args:
+            file: the starting point for the search. Typically, should be the `__file__`
+            max_depth (int): is the maximum number of parent levels to traverse before cancelling the search
+        Returns:
+            project_root (Path): a parent directory that contains `/assets/data_asset`. None if not found.
+        Usage::
+
+            PROJECT_ROOT_DIR = StorePlannerEnvironmentManager().find_project_root_directory(__file__)
+        """
+        p = Path(file)
+        for i in range(max_depth):
+            p_test = Path(p, 'assets', 'data_asset')
+            if p_test.exists():
+                return p
+            else:
+                p = p.parent
+                # TODO: will this cause an exception when p.parent doesn't exist?
+                # A: No, but will simply return p, so we do need the max_depth to prevent an infinite loop
+        return None
+
 
     # def set_root_logger(self, level: str = 'DEBUG'):
     #     """Sets the properties of the root logger.
