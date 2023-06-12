@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.plotlymanager &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
+    <title>dse_do_utils.plotlymanager &#8212; DSE DO Utils 0.5.5.2b2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.plotlymanager</a></li> 
@@ -48,6 +48,7 @@
   <h1>Source code for dse_do_utils.plotlymanager</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="c1"># from typing import List, Dict, Tuple, Optional</span>
 <span class="kn">from</span> <span class="nn">dse_do_utils.datamanager</span> <span class="kn">import</span> <span class="n">DataManager</span>
@@ -67,13 +68,14 @@
 <span class="c1">#     display(HTML(html))</span>
 <span class="c1"># go.Figure._show = _show</span>
 
+<span class="n">DM</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;DM&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">&#39;DataManager&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PlotlyManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager">[docs]</a><span class="k">class</span> <span class="nc">PlotlyManager</span><span class="p">():</span>
+<div class="viewcode-block" id="PlotlyManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager">[docs]</a><span class="k">class</span> <span class="nc">PlotlyManager</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">DM</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Holds method that create Plotly charts.</span>
 <span class="sd">    Pass-in the DM as an input in the constructor.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">:</span><span class="n">DataManager</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">dm</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dm</span><span class="p">:</span> <span class="n">DM</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">:</span> <span class="n">DM</span> <span class="o">=</span> <span class="n">dm</span>
 
 <div class="viewcode-block" id="PlotlyManager.get_plotly_fig_m"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.plotlymanager.PlotlyManager.get_plotly_fig_m">[docs]</a>    <span class="k">def</span> <span class="nf">get_plotly_fig_m</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;DEPRECATED. Not used in dse_do_dashboard package.</span>
@@ -120,7 +122,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b2 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.plotlymanager</a></li> 
