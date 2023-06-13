@@ -8,6 +8,9 @@
 # -----------------------------------------------------------------------------------
 from typing import List, Tuple
 
+from folium import folium
+from folium.plugins import BeautifyIcon
+
 
 class MapManager(object):
     """Base class for building Folium map visualization.
@@ -276,6 +279,50 @@ class MapManager(object):
         :returns (str): text for a tooltip in table format
         """
         return MapManager.get_html_table(rows)
+
+
+    def add_bar_chart_in_map(self, m, coord,
+                             quantities=None, tooltips=None,
+                             bar_width=20, bar_height_per_unit=1,
+                             border_colors: List = None, background_colors: List = None
+                             ):
+        """Draws a bar chart at the coord. Anchor on the botton-left. Bars expand to the right.
+        Will add as many bars as there are quantities, cycling through pre-defined colors.
+
+        See also:
+        https://stackoverflow.com/questions/60131314/folium-draw-star-marker
+        https://python-visualization.github.io/folium/plugins.html#folium.plugins.BeautifyIcon
+        """
+        # Colors per bar:
+        if tooltips is None:
+            tooltips = []
+        if quantities is None:
+            quantities = []
+        if border_colors is None:
+            import plotly.express as px
+            border_colors=px.colors.qualitative.Dark2  #['green', 'blue', 'red']
+        if background_colors is None:
+            import plotly.express as px
+            background_colors=px.colors.qualitative.Set2  #['lightgreen', 'lightblue', 'lightred']
+
+        bar_anchor_x = 0
+        for i in range(len(quantities)):
+            bar_height = round(quantities[i] * bar_height_per_unit)
+            icon = BeautifyIcon(
+                icon_shape='rectangle-dot',
+                border_color=border_colors[i%len(border_colors)], # cycle back through colors
+                background_color=background_colors[i%len(background_colors)], # cycle back through colors
+                border_width=1,
+                icon_size=[bar_width, bar_height],
+                icon_anchor=[bar_anchor_x, bar_height]
+            )
+            bar_anchor_x -= bar_width
+            # folium.Marker(coord, tooltip=f"demand = {quantities[i]}", icon=icon).add_to(m)
+            if i < len(tooltips):
+                tooltip = tooltips[i]
+            else:
+                tooltip = f"value = {quantities[i]}"
+            folium.Marker(coord, tooltip=tooltip, icon=icon).add_to(m)
 
 
 

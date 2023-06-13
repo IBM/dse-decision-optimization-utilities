@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.5.2b3]
 ### Added
 - Core01EnvironmentManager.find_project_root_directory
+- MapManager.add_bar_chart_in_map
 ### Changed
 - Core01DataManager.prepare_df now merges local dtypes with self.dtypes, where overlapping local dtypes take priority
 
