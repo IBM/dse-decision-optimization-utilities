@@ -22,7 +22,7 @@ class Core01EnvironmentManager():
     def __init__(self, db_connection: str, default_schema: str,
                  project_root: Optional[str] = None, data_directory: Optional[str] = None,
                  log_level: Optional[str] = None,
-                 log_scope: Optional[List[str]] = None):
+                 log_scope: Optional[tuple[str]] = None):
         if log_scope is None:
             log_scope = ['']  # Implies the root logger. If you don't want logger, specify log_scope as an empty list
         self.db_connection = db_connection
@@ -129,7 +129,7 @@ class Core01EnvironmentManager():
         return local_data_directory
 
     @staticmethod
-    def find_project_root_directory(file, max_depth: int = 10):
+    def find_project_root_directory(file=None, max_depth: int = 10):
         """Look in the file hierarchy of the file to detect a directory that contains `/assets/data_asset`
 
         Args:
@@ -139,8 +139,10 @@ class Core01EnvironmentManager():
             project_root (Path): a parent directory that contains `/assets/data_asset`. None if not found.
         Usage::
 
-            PROJECT_ROOT_DIR = StorePlannerEnvironmentManager().find_project_root_directory(__file__)
+            PROJECT_ROOT_DIR = Core01EnvironmentManager.find_project_root_directory(__file__)
         """
+        if file is None:
+            file = os.path.abspath('')
         p = Path(file)
         for i in range(max_depth):
             p_test = Path(p, 'assets', 'data_asset')
@@ -148,7 +150,7 @@ class Core01EnvironmentManager():
                 return p
             else:
                 p = p.parent
-                # TODO: will this cause an exception when p.parent doesn't exist?
+                # Q: will this cause an exception when p.parent doesn't exist?
                 # A: No, but will simply return p, so we do need the max_depth to prevent an infinite loop
         return None
 
@@ -170,7 +172,7 @@ class Core01EnvironmentManager():
     #     # Add handlers to the logger
     #     logger.addHandler(c_handler)
 
-    def set_loggers(self, level: str = 'DEBUG', scope: Optional[List[str]] = None):
+    def set_loggers(self, level: str = 'DEBUG', scope: Optional[tuple[str]] = None):
         """Sets the properties of loggers.
         Typically, log messages are created by `logger = logging.getLogger(__name__)`.
         Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]

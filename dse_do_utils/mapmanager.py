@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------------
 from typing import List, Tuple
 
-from folium import folium
+from folium import folium, Marker
 from folium.plugins import BeautifyIcon
 
 
@@ -322,7 +322,7 @@ class MapManager(object):
                 tooltip = tooltips[i]
             else:
                 tooltip = f"value = {quantities[i]}"
-            folium.Marker(coord, tooltip=tooltip, icon=icon).add_to(m)
+            Marker(coord, tooltip=tooltip, icon=icon).add_to(m)
 
 
 

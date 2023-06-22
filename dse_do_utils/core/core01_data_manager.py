@@ -107,6 +107,11 @@ class Core01DataManager(DataManager):
             default_value=False)
 
     def prepare_output_data_frames(self, dtypes=None):
+        """
+        TODO: remove dtypes argument. Beware that this can break existing code
+        :param dtypes:
+        :return:
+        """
         super().prepare_output_data_frames()
         self.logger.debug("Enter")
 
@@ -114,7 +119,7 @@ class Core01DataManager(DataManager):
             self.outputs.get('kpis'),
             index_columns=['NAME'],
             value_columns=['VALUE'],
-            dtypes=dtypes
+            dtypes=None,
         )
 
     @abstractmethod
