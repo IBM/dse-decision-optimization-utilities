@@ -246,6 +246,7 @@ class Core01DataManager(DataManager):
         """Return a Dict with default dtypes by column-name (key).
         To be overridden. Make sure to extend with call to super.
         dtypes = super().get_default_dtypes()
+        dtypes.update({'my_key':'my_value})
         """
         return {}
     ########################################################################

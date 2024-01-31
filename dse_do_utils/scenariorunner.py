@@ -404,7 +404,7 @@ class ScenarioRunner:
 
     def insert_outputs_in_db(self, inputs: Inputs, outputs: Outputs, run_config: RunConfig, scenario_name: str):
         self._logger.info('Inserting outputs into the database')
-        if run_config.insert_inputs_in_db:
+        if run_config.insert_outputs_in_db:
             self.scenario_db_manager.update_scenario_output_tables_in_db(scenario_name, outputs)
         else:
             self.scenario_db_manager.replace_scenario_in_db(scenario_name, inputs, outputs)
