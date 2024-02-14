@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.5.2b4]
+### Added
+- DataManager.extract_solution argument `round_decimals` to allow rounding of solution value
+- ScenarioRunner logs Excel input file name
 ### Fixed
 - Small error in ScenarioRunner.insert_outputs_in_db
 

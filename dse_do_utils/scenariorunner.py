@@ -217,7 +217,7 @@ class ScenarioRunner:
     def _load_base_inputs(self, excel_file_name, base_inputs):
         # Load base inputs
         if excel_file_name and not base_inputs:
-            self._logger.info('Loading data from the excel file')
+            self._logger.info(f'Loading data from the excel file {excel_file_name}')
             inputs = self.load_input_data_from_excel(excel_file_name)
         elif not excel_file_name and base_inputs:
             inputs = base_inputs

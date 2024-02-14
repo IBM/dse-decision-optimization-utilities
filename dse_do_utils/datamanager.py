@@ -348,7 +348,7 @@ class DataManager(object):
 
     @staticmethod
     def extract_solution(df: pd.DataFrame, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None,
-                         drop: bool = True, epsilon: float = None) -> pd.DataFrame:
+                         drop: bool = True, epsilon: float = None, round_decimals: int = None) -> pd.DataFrame:
         """Generalized routine to extract a solution value.
         Can remove the dvar column from the df to be able to have a clean df for export into scenario.
 
@@ -356,12 +356,18 @@ class DataManager(object):
         If epsilon has a value, this method will drop these small values to zero.
         And it will assume the values need to be positive, so it clips negative values at zero.
 
+        In some case, CPLEX extracted values for integer dvars can have very small values from the rounded integer value.
+        If round_decimals is set to 0, the solution values will be rounded to the nearest integer.
+        Use values larger than zero to round continuous dvars to their required precision.
+
         Args:
             df: DataFrame
             extract_dvar_names: list of column names with CPLEX dvars
             drop_column_names: columns to be dropped (can be different and in addition to drop)
             drop: if True drops all columns in extract_dvar_names
             epsilon (float): if not None, drop values below threshold to zero and clip negative values at zero
+            round_decimals (int): round the solution value by number of decimals. If None, no rounding.
+            If 0, rounding to integer value.
 
         """
         if extract_dvar_names is not None:
@@ -374,6 +380,8 @@ class DataManager(object):
                     if epsilon is not None:
                         df.loc[df[solution_column_name] < epsilon, solution_column_name] = 0
                         df[solution_column_name] = df[solution_column_name].clip(lower=0)
+                    if round_decimals is not None:
+                        df[solution_column_name] = df[solution_column_name].round(round_decimals)
         if drop and drop_column_names is not None:
             for column in drop_column_names:
                 if column in df.columns:
