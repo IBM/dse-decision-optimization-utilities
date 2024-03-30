@@ -23,10 +23,22 @@ class LexGoalAgg():
     def __call__(self, group):
         return self.mdl.sum(group.expr * group.weight)
 
+
 DM = TypeVar('DM', bound='Core02DataManager')
+
 
 class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
     """Adds Lexicographical Optimization
+
+    How To enable Lexicographical Optimization:
+    1. Add tables `LexOptiLevel` and `LexOptiGoal` to the spreadsheet (if applicable, include in __index__!)
+    2. Subclass the optimization-engine, data-manager and scenario-db-manager from their Core2 classes
+    3. In OptimizationEngine, override the method `lex_get_goal_expr()`
+    4. In DataManager, override abstract methods `get_default_lex_opti_level_table` and `get_default_lex_opti_goal_table`
+    4. In ScenarioDBManager, add the
+        `('LexOptiLevel', Core02LexOptiLevelTable()),
+         ('LexOptiGoal', Core02LexOptiGoalTable()),`
+        to the input_db_tables
     """
 
     def __init__(self, data_manager: Core02DataManager, name: str = None, solve_kwargs: Dict = {"log_output": True},
@@ -109,6 +121,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
     #     self.solver_metrics['value'].append(self.mdl.parameters.timelimit.value)
 
     def solve_with_lex_goals(self, **kwargs) -> Optional[SolveSolution]:
+        msol = None
         self.dm.logger.debug("Enter")
         levels_df = self.get_lex_optimization_levels()
         self.lex_c = []
@@ -168,6 +181,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
         return msol
 
     def lex_get_goal_expr(self, goal_id):
+        """ABSTRACT method. TO BE OVERRIDDEN!"""
         # if goal_id == 'backlogCost':
         #     return self.backlog_cost
         # elif goal_id == 'unfulfilledDemandCost':
