@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.5.2b4]
 ### Added
 - DataManager.extract_solution argument `round_decimals` to allow rounding of solution value
+- DataManager.extract_solution argument `extract_dvar_names` can also be a `Dict[str, str]` where the value if the solumn column name. 
+- DataManager.extract_solution argument `solution_column_name_post_fix` to allow custom post fix (instead of hard-coded 'Sol')
 - ScenarioRunner logs Excel input file name
 ### Fixed
 - Small error in ScenarioRunner.insert_outputs_in_db

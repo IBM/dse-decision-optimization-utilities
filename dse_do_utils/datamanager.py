@@ -1,5 +1,6 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -347,8 +348,9 @@ class DataManager(object):
     #             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)
 
     @staticmethod
-    def extract_solution(df: pd.DataFrame, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None,
-                         drop: bool = True, epsilon: float = None, round_decimals: int = None) -> pd.DataFrame:
+    def extract_solution(df: pd.DataFrame, extract_dvar_names: Optional[List[str] | Dict[str, str]] = None, drop_column_names: List[str] = None,
+                         drop: bool = True, epsilon: float = None, round_decimals: int = None,
+                         solution_column_name_post_fix: str = 'Sol') -> pd.DataFrame:
         """Generalized routine to extract a solution value.
         Can remove the dvar column from the df to be able to have a clean df for export into scenario.
 
@@ -362,18 +364,29 @@ class DataManager(object):
 
         Args:
             df: DataFrame
-            extract_dvar_names: list of column names with CPLEX dvars
+            extract_dvar_names: list of column names with CPLEX dvars, or a Dict[str, str]
+                                where the keys are the dvar column names and the values the name of the solution column
             drop_column_names: columns to be dropped (can be different and in addition to drop)
             drop: if True drops all columns in extract_dvar_names
             epsilon (float): if not None, drop values below threshold to zero and clip negative values at zero
             round_decimals (int): round the solution value by number of decimals. If None, no rounding.
             If 0, rounding to integer value.
+            solution_column_name_post_fix (str): Postfix for the name of the solution column. Default = 'Sol'
 
         """
+
+
         if extract_dvar_names is not None:
-            for xDVarName in extract_dvar_names:
+            if isinstance(extract_dvar_names, list):
+                dvar_column_dict = {dvar_name: f'{dvar_name}{solution_column_name_post_fix}' for dvar_name in extract_dvar_names}
+            elif isinstance(extract_dvar_names, dict):
+                dvar_column_dict = extract_dvar_names
+            else:
+                # dvar_column_dict = {}
+                raise TypeError("Input argument 'extract_dvar_names' must be either a List[str] or a Dict[str, str]")
+            for xDVarName, solution_column_name in dvar_column_dict.items():
                 if xDVarName in df.columns:
-                    solution_column_name = f'{xDVarName}Sol'
+                    # solution_column_name = f'{xDVarName}Sol'
                     df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]
                     if drop:
                         df = df.drop([xDVarName], axis=1)
@@ -382,6 +395,23 @@ class DataManager(object):
                         df[solution_column_name] = df[solution_column_name].clip(lower=0)
                     if round_decimals is not None:
                         df[solution_column_name] = df[solution_column_name].round(round_decimals)
+                else:
+                    # Note (VT_20240401): for backward compatibility reasons, for now, do not throw an exception or print a warning
+                    # print(f"Warning: The column {xDVarName} doesn't exist in the DataFrame. Valid column: {df.columns}")
+                    pass
+
+        # if extract_dvar_names is not None:
+        #     for xDVarName in extract_dvar_names:
+        #         if xDVarName in df.columns:
+        #             solution_column_name = f'{xDVarName}Sol'
+        #             df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]
+        #             if drop:
+        #                 df = df.drop([xDVarName], axis=1)
+        #             if epsilon is not None:
+        #                 df.loc[df[solution_column_name] < epsilon, solution_column_name] = 0
+        #                 df[solution_column_name] = df[solution_column_name].clip(lower=0)
+        #             if round_decimals is not None:
+        #                 df[solution_column_name] = df[solution_column_name].round(round_decimals)
         if drop and drop_column_names is not None:
             for column in drop_column_names:
                 if column in df.columns:
