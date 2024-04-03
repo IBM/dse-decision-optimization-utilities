@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DataManager.extract_solution argument `solution_column_name_post_fix` to allow custom post fix (instead of hard-coded 'Sol')
 - ScenarioRunner logs Excel input file name
 - utils.df_itertuples_with_index_names()
+- Core02ScenarioGenerator and Core02ScenarioConfig: configure LexOptiLevels and LexOptiGoals
 ### Fixed
 - Small error in ScenarioRunner.insert_outputs_in_db
 
