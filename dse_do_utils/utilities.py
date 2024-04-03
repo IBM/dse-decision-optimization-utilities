@@ -1,5 +1,9 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+from collections import namedtuple
+
+import pandas as pd
+
 
 # General utilities module
 # Contains functions
@@ -84,4 +88,38 @@ def convert_size(size_bytes: int):
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
     return "%s %s" % (s, size_name[i])
+
+
+def df_itertuples_with_index_names(df: pd.DataFrame):
+    """Alternative for df.itertuples() where we add the index as named attributes to the tuple.
+    This allows access to the index column in the same way as a regular column.
+    This will make it much easier to access the values of the named index.
+
+    Normally with df.itertuples() one must access the values of the Index by position, e.g.::
+
+        for row in df.itertuples():
+            (index_a, index_b) = row.Index
+            print(index_a)
+
+    One would have to ensure to extract all index columns and know the order in the Index.
+    However, with this function we can do::
+
+        for row in df_itertuples_with_index_names(df):
+            print(row.index_a)
+
+    Test::
+
+        # Create a sample df
+        index = pd.MultiIndex.from_product([range(2), range(3)], names=['index_a', 'index_b'])
+        df = pd.DataFrame({'my_column': range(len(index))}, index=index)
+        # Loop over itertuples alternative:
+        for row in df_itertuples_with_index_names(df):
+            print(row.index_a)
+
+    Index columns are added at the tail of the tuple, so to be compatible with code that uses the position of the fields in the tuple.
+    Inspired by https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names.
+    """
+    Row = namedtuple("Row", ['Index', *df.columns, *df.index.names])
+    for row in df.itertuples():
+        yield Row(*(row + row.Index))
 
