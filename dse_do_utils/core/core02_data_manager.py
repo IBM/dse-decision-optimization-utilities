@@ -86,6 +86,12 @@ class Core02DataManager(Core01DataManager, ABC):
 
         Returns:
             df: lex_opti_levels
+
+        Note (VT_20240403): `isActive` cannot be an optional column: inserting `None` in a PostgressDB reads `False`.
+        Thus applying the fillna in this method won't work after any DB insert/read, which the ScenarioRunner typically does.
+        Not sure if this is a Postgress issue and if and how this can be fixed.
+        For now, assume `isActive` cannot be an optional
+        TODO: move 'isActive' to the value_columns. Not done so far as to avoid any backward compatibility issues.
         """
         input_table_name='LexOptiLevel'
         df = self.inputs.get(input_table_name)
@@ -97,7 +103,7 @@ class Core02DataManager(Core01DataManager, ABC):
             df,
             index_columns=['lexOptiLevelId'],
             value_columns=['priority', 'timeLimit', 'mipGap'], # Note that 'absTol' is not required
-            optional_columns=['relTol', 'absTol', 'isActive'],  #
+            optional_columns=['relTol', 'absTol', 'isActive'],  # TODO: `isActive` should NOT be optional
             dtypes={
                 **self.dtypes,  # later entries will override any entries in in self.dtypes
                 # 'isActive': bool,

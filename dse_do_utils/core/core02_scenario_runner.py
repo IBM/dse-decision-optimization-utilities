@@ -38,7 +38,7 @@ class Core02ScenarioGenerator(ScenarioGenerator):
         new_inputs = super().generate_scenario()  # Does the Parameter table
 
         new_inputs['LexOptiLevel'] = self.get_lex_opti_levels()
-        new_inputs['LexOptiGoals'] = self.get_lex_opti_goals()
+        new_inputs['LexOptiGoal'] = self.get_lex_opti_goals()
 
         return new_inputs
 
