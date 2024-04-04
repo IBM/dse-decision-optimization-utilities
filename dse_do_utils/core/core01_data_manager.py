@@ -249,6 +249,37 @@ class Core01DataManager(DataManager):
         dtypes.update({'my_key':'my_value})
         """
         return {}
+
+    def remove_zero_quantity_output(self, df: pd.DataFrame, column_name: str, table_name: str = 'unspecified',
+                                    threshold: float = 0) -> pd.DataFrame:
+        """Removes rows from df where a (solution) column has zero values, or less than the threshold.
+        Uses parameter `remove_zero_quantity_output_records`. If False, will not remove rows.
+        Logs (`INFO`) number and percentage of removed rows.
+
+        Usage::
+            def post_processing(self):
+                self.my_table_output = self.remove_zero_quantity_output(df=self.my_table_output,
+                                                                      column_name='my_sol',
+                                                                      table_name='MyTableOutput')
+
+        Args:
+            df (pd.DataFrame): a df, typically an output table
+            column_name (str): name of column in df. Typically represents the solution of a dvar
+            table_name (str): name of the df/output table. Only used for debugging and logging.
+            threshold (float): threshold value. Default zero.
+
+        Returns:
+            df (pd.DataFrame): df with rows removed
+        """
+        if self.param.remove_zero_quantity_output_records:
+            mask = df.eval(f"{column_name} <= {threshold}")
+            self.logger.info(
+                f"Removing {mask.sum():,} zero-quantity out of total of {df.shape[0]:,} "
+                f"rows from {table_name}. New size = {df[~mask].shape[0]:,} == "
+                f"{df[~mask].shape[0] / df.shape[0]:.1%} of original")
+            df = df[~mask]
+        return df
+
     ########################################################################
     # Logger (TODO: review)
     ########################################################################
