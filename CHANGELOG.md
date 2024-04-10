@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - utils.df_itertuples_with_index_names()
 - Core02ScenarioGenerator and Core02ScenarioConfig: configure LexOptiLevels and LexOptiGoals
 - Core01DataManager.remove_zero_quantity_output to filter rows from a df where a solution column is less than the threshold
+- DataManager.get_parameter_value improved handling of datetime when reading directly from Excel
 ### Fixed
 - Small error in ScenarioRunner.insert_outputs_in_db
 

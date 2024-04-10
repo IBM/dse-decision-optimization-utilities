@@ -178,7 +178,14 @@ class DataManager(object):
                 # param = (str(raw_param) == 'True')
                 param = (str(raw_param).lower() in ['true', 'yes', 'y', 't', '1', '1.0'])
             elif param_type == 'datetime':
-                param = datetime.strptime(raw_param, value_format)
+                # Make more robust:
+                # 1. Remove any excess quotes if a string (When forcing a value to be a quoted string in Excel)
+                # 2. If it already is a datetime, do not convert (Excel read may return a datetime already)
+                if isinstance(raw_param, datetime):
+                    param = raw_param
+                else:
+                    raw_param = raw_param.strip('"')
+                    param = datetime.strptime(raw_param, value_format)
             else:
                 param = raw_param
         else:
