@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.5.2b2 documentation</title>
+    <title>dse_do_utils package &#8212; DSE DO Utils 0.5.5.2b4 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
     
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.2b2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.2b4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>
@@ -311,9 +311,31 @@ See <a class="reference external" href="https://mkonrad.net/2016/04/16/cross-joi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.datamanager.DataManager.extract_solution">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extract_dvar_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_column_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.extract_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.extract_solution" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extract_dvar_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_column_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solution_column_name_post_fix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Sol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="_modules/dse_do_utils/datamanager.html#DataManager.extract_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.datamanager.DataManager.extract_solution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized routine to extract a solution value.
 Can remove the dvar column from the df to be able to have a clean df for export into scenario.</p>
+<p>In some cases, CPLEX extracted values for continuous dvars can have very small values instead of zeros.
+If epsilon has a value, this method will drop these small values to zero.
+And it will assume the values need to be positive, so it clips negative values at zero.</p>
+<p>In some case, CPLEX extracted values for integer dvars can have very small values from the rounded integer value.
+If round_decimals is set to 0, the solution values will be rounded to the nearest integer.
+Use values larger than zero to round continuous dvars to their required precision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame</p></li>
+<li><p><strong>extract_dvar_names</strong> – list of column names with CPLEX dvars, or a Dict[str, str]
+where the keys are the dvar column names and the values the name of the solution column</p></li>
+<li><p><strong>drop_column_names</strong> – columns to be dropped (can be different and in addition to drop)</p></li>
+<li><p><strong>drop</strong> – if True drops all columns in extract_dvar_names</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em>) – if not None, drop values below threshold to zero and clip negative values at zero</p></li>
+<li><p><strong>round_decimals</strong> (<em>int</em>) – round the solution value by number of decimals. If None, no rounding.</p></li>
+<li><p><strong>0</strong> (<em>If</em>) – </p></li>
+<li><p><strong>value.</strong> (<em>rounding to integer</em>) – </p></li>
+<li><p><strong>solution_column_name_post_fix</strong> (<em>str</em>) – Postfix for the name of the solution column. Default = ‘Sol’</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -912,6 +934,16 @@ Stores result as a Data Asset</p>
 <p>Tooltip doesn’t yet work in 0.50.0:&lt;br&gt;
 <a class="reference external" href="https://github.com/python-visualization/folium/issues/785">https://github.com/python-visualization/folium/issues/785</a>
 Update: in 0.6.0 (WSL1.2.3) it does seem to work!</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dse_do_utils.mapmanager.MapManager.add_bar_chart_in_map">
+<span class="sig-name descname"><span class="pre">add_bar_chart_in_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltips</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_height_per_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.add_bar_chart_in_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.add_bar_chart_in_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a bar chart at the coord. Anchor on the botton-left. Bars expand to the right.
+Will add as many bars as there are quantities, cycling through pre-defined colors.</p>
+<p>See also:
+<a class="reference external" href="https://stackoverflow.com/questions/60131314/folium-draw-star-marker">https://stackoverflow.com/questions/60131314/folium-draw-star-marker</a>
+<a class="reference external" href="https://python-visualization.github.io/folium/plugins.html#folium.plugins.BeautifyIcon">https://python-visualization.github.io/folium/plugins.html#folium.plugins.BeautifyIcon</a></p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dse_do_utils.mapmanager.MapManager.add_full_screen">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_full_screen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/mapmanager.html#MapManager.add_full_screen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.mapmanager.MapManager.add_full_screen" title="Permalink to this definition">¶</a></dt>
@@ -3124,6 +3156,37 @@ This will work better once we can do a pip install dse-do_utils.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dse_do_utils.utilities.df_itertuples_with_index_names">
+<span class="sig-prename descclassname"><span class="pre">dse_do_utils.utilities.</span></span><span class="sig-name descname"><span class="pre">df_itertuples_with_index_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dse_do_utils/utilities.html#df_itertuples_with_index_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.utilities.df_itertuples_with_index_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative for df.itertuples() where we add the index as named attributes to the tuple.
+This allows access to the index column in the same way as a regular column.
+This will make it much easier to access the values of the named index.</p>
+<p>Normally with df.itertuples() one must access the values of the Index by position, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+    <span class="p">(</span><span class="n">index_a</span><span class="p">,</span> <span class="n">index_b</span><span class="p">)</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">Index</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">index_a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One would have to ensure to extract all index columns and know the order in the Index.
+However, with this function we can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_itertuples_with_index_names</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">index_a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sample df</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;index_a&#39;</span><span class="p">,</span> <span class="s1">&#39;index_b&#39;</span><span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;my_column&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">))},</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+<span class="c1"># Loop over itertuples alternative:</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_itertuples_with_index_names</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">index_a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Index columns are added at the tail of the tuple, so to be compatible with code that uses the position of the fields in the tuple.
+Inspired by <a class="reference external" href="https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names">https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names</a>.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dse_do_utils.utilities.list_file_hierarchy">
 <span class="sig-prename descclassname"><span class="pre">dse_do_utils.utilities.</span></span><span class="sig-name descname"><span class="pre">list_file_hierarchy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/dse_do_utils/utilities.html#list_file_hierarchy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dse_do_utils.utilities.list_file_hierarchy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hierarchically print the contents of the folder tree, starting with the <cite>startpath</cite>.</p>
@@ -3303,6 +3366,7 @@ If it is, you may need to add another reload:</p>
 </li>
 <li><a class="reference internal" href="#module-dse_do_utils.mapmanager">dse_do_utils.mapmanager module</a><ul>
 <li><a class="reference internal" href="#dse_do_utils.mapmanager.MapManager"><code class="docutils literal notranslate"><span class="pre">MapManager</span></code></a><ul>
+<li><a class="reference internal" href="#dse_do_utils.mapmanager.MapManager.add_bar_chart_in_map"><code class="docutils literal notranslate"><span class="pre">MapManager.add_bar_chart_in_map()</span></code></a></li>
 <li><a class="reference internal" href="#dse_do_utils.mapmanager.MapManager.add_full_screen"><code class="docutils literal notranslate"><span class="pre">MapManager.add_full_screen()</span></code></a></li>
 <li><a class="reference internal" href="#dse_do_utils.mapmanager.MapManager.add_layer_control"><code class="docutils literal notranslate"><span class="pre">MapManager.add_layer_control()</span></code></a></li>
 <li><a class="reference internal" href="#dse_do_utils.mapmanager.MapManager.create_blank_map"><code class="docutils literal notranslate"><span class="pre">MapManager.create_blank_map()</span></code></a></li>
@@ -3578,6 +3642,7 @@ If it is, you may need to add another reload:</p>
 <li><a class="reference internal" href="#module-dse_do_utils.utilities">dse_do_utils.utilities module</a><ul>
 <li><a class="reference internal" href="#dse_do_utils.utilities.add_sys_path"><code class="docutils literal notranslate"><span class="pre">add_sys_path()</span></code></a></li>
 <li><a class="reference internal" href="#dse_do_utils.utilities.convert_size"><code class="docutils literal notranslate"><span class="pre">convert_size()</span></code></a></li>
+<li><a class="reference internal" href="#dse_do_utils.utilities.df_itertuples_with_index_names"><code class="docutils literal notranslate"><span class="pre">df_itertuples_with_index_names()</span></code></a></li>
 <li><a class="reference internal" href="#dse_do_utils.utilities.list_file_hierarchy"><code class="docutils literal notranslate"><span class="pre">list_file_hierarchy()</span></code></a></li>
 </ul>
 </li>
@@ -3629,7 +3694,7 @@ If it is, you may need to add another reload:</p>
         <li class="right" >
           <a href="modules.html" title="dse_do_utils"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.2b2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">DSE DO Utils 0.5.5.2b4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils package</a></li> 
       </ul>

@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.utilities &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
+    <title>dse_do_utils.utilities &#8212; DSE DO Utils 0.5.5.2b4 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.utilities</a></li> 
@@ -48,6 +48,10 @@
   <h1>Source code for dse_do_utils.utilities</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
 
 <span class="c1"># General utilities module</span>
 <span class="c1"># Contains functions</span>
@@ -133,6 +137,40 @@
     <span class="n">s</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">size_bytes</span> <span class="o">/</span> <span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">size_name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
 
+
+<div class="viewcode-block" id="df_itertuples_with_index_names"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.utilities.df_itertuples_with_index_names">[docs]</a><span class="k">def</span> <span class="nf">df_itertuples_with_index_names</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Alternative for df.itertuples() where we add the index as named attributes to the tuple.</span>
+<span class="sd">    This allows access to the index column in the same way as a regular column.</span>
+<span class="sd">    This will make it much easier to access the values of the named index.</span>
+
+<span class="sd">    Normally with df.itertuples() one must access the values of the Index by position, e.g.::</span>
+
+<span class="sd">        for row in df.itertuples():</span>
+<span class="sd">            (index_a, index_b) = row.Index</span>
+<span class="sd">            print(index_a)</span>
+
+<span class="sd">    One would have to ensure to extract all index columns and know the order in the Index.</span>
+<span class="sd">    However, with this function we can do::</span>
+
+<span class="sd">        for row in df_itertuples_with_index_names(df):</span>
+<span class="sd">            print(row.index_a)</span>
+
+<span class="sd">    Test::</span>
+
+<span class="sd">        # Create a sample df</span>
+<span class="sd">        index = pd.MultiIndex.from_product([range(2), range(3)], names=[&#39;index_a&#39;, &#39;index_b&#39;])</span>
+<span class="sd">        df = pd.DataFrame({&#39;my_column&#39;: range(len(index))}, index=index)</span>
+<span class="sd">        # Loop over itertuples alternative:</span>
+<span class="sd">        for row in df_itertuples_with_index_names(df):</span>
+<span class="sd">            print(row.index_a)</span>
+
+<span class="sd">    Index columns are added at the tail of the tuple, so to be compatible with code that uses the position of the fields in the tuple.</span>
+<span class="sd">    Inspired by https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Row</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="o">*</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
+        <span class="k">yield</span> <span class="n">Row</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">Index</span><span class="p">))</span></div>
+
 </pre></div>
 
             <div class="clearer"></div>
@@ -164,7 +202,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.utilities</a></li> 
