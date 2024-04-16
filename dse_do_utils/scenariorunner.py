@@ -87,7 +87,10 @@ class ScenarioGenerator():
         if self.scenario_config.parameters is None:
             df = self.inputs['Parameter']
         else:
-            df = self.inputs['Parameter'].copy().set_index(['param'])
+            if 'Parameter' in self.inputs.keys():
+                df = self.inputs['Parameter'].copy().set_index(['param'])
+            else:
+                df = pd.DataFrame(columns=['param', 'value']).set_index('param')
             for param, value in self.scenario_config.parameters.items():
                 df.at[param, 'value'] = value
         return df

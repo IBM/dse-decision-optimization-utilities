@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.5.2b5]
+### Fixed
+- ScenarioRunner.get_parameters can handle case where inputs do not (yet) have a 'Parameter' table.
 
 ## [0.5.5.2b4] - 2024-04-10
 ### Added
