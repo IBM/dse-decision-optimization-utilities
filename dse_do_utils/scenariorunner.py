@@ -85,10 +85,17 @@ class ScenarioGenerator():
         """Applies overrides to the Parameter table based on the ScenarioConfig.parameters.
         """
         if self.scenario_config.parameters is None:
-            df = self.inputs['Parameter']
+            if 'Parameter' in self.inputs.keys():
+                df = self.inputs['Parameter']
+            elif 'Parameters' in self.inputs.keys():
+                df = self.inputs['Parameters']
+            else:
+                df = pd.DataFrame(columns=['param', 'value']).set_index('param')
         else:
             if 'Parameter' in self.inputs.keys():
                 df = self.inputs['Parameter'].copy().set_index(['param'])
+            elif 'Parameters' in self.inputs.keys():
+                df = self.inputs['Parameters'].copy().set_index(['param'])
             else:
                 df = pd.DataFrame(columns=['param', 'value']).set_index('param')
             for param, value in self.scenario_config.parameters.items():
