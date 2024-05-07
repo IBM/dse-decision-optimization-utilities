@@ -1502,21 +1502,22 @@ class ScenarioDbManager():
             self._delete_scenario_from_db(scenario_name=scenario_name, connection=self.engine)
 
     ##########################################################
-    def duplicate_scenario_in_db(self, source_scenario_name: str, target_scenario_name: str):
+    def duplicate_scenario_in_db(self, source_scenario_name: str, target_scenario_name: Optional[str] = None) -> str:
         """Duplicate a scenario. Uses a transaction (when enabled)."""
         if self.enable_transactions:
             print("Duplicate scenario within a transaction")
             with self.engine.begin() as connection:
-                self._duplicate_scenario_in_db(connection, source_scenario_name, target_scenario_name)
+                new_scenario_name = self._duplicate_scenario_in_db(connection, source_scenario_name, target_scenario_name)
         else:
-            self._duplicate_scenario_in_db(self.engine, source_scenario_name, target_scenario_name)
+            new_scenario_name = self._duplicate_scenario_in_db(self.engine, source_scenario_name, target_scenario_name)
+        return new_scenario_name
 
-    def _duplicate_scenario_in_db(self, connection, source_scenario_name: str, target_scenario_name: str = None):
+    def _duplicate_scenario_in_db(self, connection, source_scenario_name: str, target_scenario_name: Optional[str] = None) -> str:
         """Is fully done in DB using SQL in one SQL execute statement
         :param source_scenario_name:
         :param target_scenario_name:
         :param connection:
-        :return:
+        :return: new_scenario_name
         """
         if target_scenario_name is None:
             new_scenario_name = self._find_free_duplicate_scenario_name(source_scenario_name)
@@ -1529,6 +1530,7 @@ class ScenarioDbManager():
         # self._replace_scenario_in_db_transaction(scenario_name=new_scenario_name, inputs=inputs, outputs=outputs,
         #                                          bulk=True, connection=connection)
         self._duplicate_scenario_in_db_sql(connection, source_scenario_name, new_scenario_name)
+        return new_scenario_name
 
     def _duplicate_scenario_in_db_sql(self, connection, source_scenario_name: str, target_scenario_name: str = None):
         """

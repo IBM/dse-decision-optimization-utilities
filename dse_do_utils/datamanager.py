@@ -402,6 +402,8 @@ class DataManager(object):
                         df[solution_column_name] = df[solution_column_name].clip(lower=0)
                     if round_decimals is not None:
                         df[solution_column_name] = df[solution_column_name].round(round_decimals)
+                        if round_decimals == 0:
+                            df[solution_column_name] = df[solution_column_name].astype(int)
                 else:
                     # Note (VT_20240401): for backward compatibility reasons, for now, do not throw an exception or print a warning
                     # print(f"Warning: The column {xDVarName} doesn't exist in the DataFrame. Valid column: {df.columns}")
