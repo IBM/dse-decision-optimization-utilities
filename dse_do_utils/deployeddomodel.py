@@ -186,7 +186,8 @@ class DeployedDOModel(object):
         while job_status not in ['completed', 'failed', 'canceled']:
             print(f"{job_status}.... run-time={elapsed_time:.1f}")
             time.sleep(self.monitor_loop_delay_sec)
-            job_details = self.client.deployments.get_job_details(job_uid)
+            # Just specifying include='status' reduces the payload significantly. If not, it will in,cude all the input tables
+            job_details = self.client.deployments.get_job_details(job_uid, include="status")
             job_status = DeployedDOModel.get_job_status(job_details)
             elapsed_time = time.time() - start_time
             if max_run_time_sec is not None and elapsed_time > max_run_time_sec:
@@ -195,6 +196,8 @@ class DeployedDOModel(object):
                 self.solve_status = 'JOB DELETED'
                 break
 
+        # Make sure to get the full job_details. In the above loop we only get the status
+        job_details = self.client.deployments.get_job_details(job_uid)
         self.run_time = elapsed_time
         #         print(job_status)
         print(f"End monitor_execution with job_status = {job_status}, run-time={elapsed_time:.1f}")
