@@ -6,20 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.5.2b6]
 ### Added
-- DeployedDOModel.monitor_execution efficiency improvement: only polls for the 'status'
+- DeployedDOModel.monitor_execution_v1 efficiency improvement: only polls for the 'status'
+- DeployedDOModel.solve refactoring
 
 ## [0.5.5.2b5] - 2024-05-07
 ### Added
 - ScenarioDbManager.duplicate_scenario_in_db returns scenario_name
 ### Fixed
 - ScenarioRunner.get_parameters can handle case where inputs do not (yet) have a 'Parameter' or 'Parameters' tab
-- DataManager.extract_solution if argument `round_decimals` = 0 then convert column type to int 
+- DataManager.extract_solution_v1 if argument `round_decimals` = 0 then convert column type to int 
 
 ## [0.5.5.2b4] - 2024-04-10
 ### Added
-- DataManager.extract_solution argument `round_decimals` to allow rounding of solution value
-- DataManager.extract_solution argument `extract_dvar_names` can also be a `Dict[str, str]` where the value if the solumn column name. 
-- DataManager.extract_solution argument `solution_column_name_post_fix` to allow custom post fix (instead of hard-coded 'Sol')
+- DataManager.extract_solution_v1 argument `round_decimals` to allow rounding of solution value
+- DataManager.extract_solution_v1 argument `extract_dvar_names` can also be a `Dict[str, str]` where the value if the solumn column name. 
+- DataManager.extract_solution_v1 argument `solution_column_name_post_fix` to allow custom post fix (instead of hard-coded 'Sol')
 - ScenarioRunner logs Excel input file name
 - utils.df_itertuples_with_index_names()
 - Core02ScenarioGenerator and Core02ScenarioConfig: configure LexOptiLevels and LexOptiGoals
@@ -32,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Core01EnvironmentManager.find_project_root_directory
 - MapManager.add_bar_chart_in_map
-- DataManager.extract_solution adds option to drop small values to zero
+- DataManager.extract_solution_v1 adds option to drop small values to zero
 ### Changed
 - Core01DataManager.prepare_df now merges local dtypes with self.dtypes, where overlapping local dtypes take priority
 
@@ -244,7 +245,7 @@ if it is open in Excel and would have caused a PermissionError.
 - Data asset folder location in CP4D v4.0.2 (with new git)
 - Save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2 in ScenarioManager
 ### Added
-- DataManager.extract_solution static method
+- DataManager.extract_solution_v1 static method
 - DataManager.get_raw_table_by_name method
 
 ## [0.5.0.1] - 2021-10-29
