@@ -672,12 +672,15 @@ dependencies:
     def get_wml_create_deployment_meta_props(self):
         """Return the meta_props for the creation of the deployment
         Separate method, so can easily be overridden
+
+        Note that 1 node is too slow: somehow causes extended running overhead, where the CPLEX model itself can solve quickly
+        Also, 2 nodes still only gives CPLEX one thread.
         """
         meta_props = {
             self.client.deployments.ConfigurationMetaNames.NAME: self.deployment_name,
             self.client.deployments.ConfigurationMetaNames.DESCRIPTION: self.deployment_description,
             self.client.deployments.ConfigurationMetaNames.BATCH: {},
-            self.client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {'name': 'S', 'nodes': 1}
+            self.client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {'name': 'S', 'nodes': 2}  # 1 CPU is very slow
         }
         return meta_props
 
