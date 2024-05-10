@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DeployedDOModel.monitor_execution_v1 efficiency improvement: only polls for the 'status'
 - DeployedDOModel.solve refactoring
 - DeployedDOModel retrieves the full log file
+- DeployedDOModel increased default hardware spec nodes
 - DOModelDeployerLocal to deploy DO model in WML from a local (non-CP4D/wx.ai) machine
 
 ## [0.5.5.2b5] - 2024-05-07

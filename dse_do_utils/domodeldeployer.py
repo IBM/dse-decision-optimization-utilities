@@ -328,7 +328,7 @@ dependencies:
             self.client.deployments.ConfigurationMetaNames.NAME: self.deployment_name,
             self.client.deployments.ConfigurationMetaNames.DESCRIPTION: self.deployment_description,
             self.client.deployments.ConfigurationMetaNames.BATCH: {},
-            self.client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {'name': 'S', 'nodes': 1}
+            self.client.deployments.ConfigurationMetaNames.HARDWARE_SPEC: {'name': 'S', 'nodes': 2}
         }
         return meta_props
 
