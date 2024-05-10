@@ -624,7 +624,8 @@ dependencies:
         mnist_metadata = self.get_wml_create_store_model_meta_props(sw_spec_id)
         model_details = self.client.repository.store_model(model=model_archive_file_path,
                                                            meta_props=mnist_metadata)
-        model_uid = self.client.repository.get_model_uid(model_details)  # TODO: deprecated: use get_model_id
+        # model_uid = self.client.repository.get_model_uid(model_details)  # deprecated: use get_model_id
+        model_uid = self.client.repository.get_model_id(model_details)
         return model_uid
 
     def create_zip_package_extension(self, package_zip_filepath: str) -> str:

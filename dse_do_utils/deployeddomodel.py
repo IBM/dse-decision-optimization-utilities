@@ -1,6 +1,9 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-from typing import Optional
+import os
+from typing import Optional, List
+import base64
+import io
 
 import pandas as pd
 # import sys
@@ -100,6 +103,7 @@ class DeployedDOModel(object):
         self.outputs = {}
         self.run_time = 0  # Run-time of job in seconds
         self.job_details: dict = None
+        self.log_lines: List[str] = None
 
         # Setup and connection to deployed model
         from ibm_watson_machine_learning import APIClient
@@ -136,7 +140,10 @@ class DeployedDOModel(object):
 
     def get_solve_payload(self, inputs: Inputs, max_oaas_time_limit_sec: Optional[int] = None):
         input_data = [{"id": f"{table_name}.csv", "values": df} for table_name, df in inputs.items()]
-        output_data = [{"id": ".*\.csv"}]
+        output_data = [
+            {"id": ".*\.csv"},
+            {"id": "log.txt"},  # Ensures the log.txt is added to the job_details output_data
+                       ]
         solve_parameters = {"oaas.logTailEnabled": "true",
                             "oaas.logLimit": 20_000,
                             "oaas.logAttachmentName": 'log.txt'}
@@ -320,6 +327,7 @@ class DeployedDOModel(object):
             self.objective = self.get_solve_details_objective(job_details)
             self.outputs = self.get_outputs(job_details)
             self.solve_details = self.get_solve_details(job_details)
+            self.log_lines = self.get_log(job_details)
         else:
             print(f"Job_status not 'completed': cannot extract solution")
         return job_details
@@ -343,16 +351,38 @@ class DeployedDOModel(object):
             Job state can be : queued, running, completed, failed, canceled."""
         return job_details['entity']['decision_optimization']['status']['state']
 
-
-
     @staticmethod
     def get_outputs(job_details: dict) -> Outputs:
         outputs = {}
         for output_table in job_details['entity']['decision_optimization']['output_data']:
-            table_name = output_table['id'][:-4]  # strips the '.csv'
-            df = pd.DataFrame(output_table['values'], columns=output_table['fields'])
-            outputs[table_name] = df
+            # table_name = output_table['id'][:-4]  # strips the '.csv'
+            output_id = output_table['id']
+            filename, file_extension = os.path.splitext(output_id)
+            if file_extension == '.csv':
+                df = pd.DataFrame(output_table['values'], columns=output_table['fields'])
+                outputs[filename] = df
+            # if output_id == 'log.txt':
+            #     print(f"Detected log.txt in job_details:") #: {output_table['content']}")
+
+
         return outputs
+
+    @staticmethod
+    def get_log(job_details: dict) -> List[str]:
+        """Extracts the log.txt from the job_details, if it exists.
+
+        Returns:
+            log_lines: List[str] - the lines of the log.txt
+        """
+        log_lines = []
+        for output_table in job_details['entity']['decision_optimization']['output_data']:
+            output_id = output_table['id']
+            if output_id == 'log.txt':
+                print(f"Detected log.txt in job_details:")
+                for line in io.BytesIO(base64.b64decode(output_table['content'])):
+                    log_lines.append(str(line))
+                    print(line)
+        return log_lines
 
     @staticmethod
     def get_solve_status(job_details: dict) -> str:
