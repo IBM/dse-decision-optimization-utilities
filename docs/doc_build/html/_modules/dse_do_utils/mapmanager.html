@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.mapmanager &#8212; DSE DO Utils 0.5.5.1b0 documentation</title>
+    <title>dse_do_utils.mapmanager &#8212; DSE DO Utils 0.5.6.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.mapmanager</a></li> 
@@ -55,6 +55,9 @@
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="c1"># -----------------------------------------------------------------------------------</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">folium</span> <span class="kn">import</span> <span class="n">folium</span><span class="p">,</span> <span class="n">Marker</span>
+<span class="kn">from</span> <span class="nn">folium.plugins</span> <span class="kn">import</span> <span class="n">BeautifyIcon</span>
 
 
 <div class="viewcode-block" id="MapManager"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager">[docs]</a><span class="k">class</span> <span class="nc">MapManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -323,7 +326,51 @@
 
 <span class="sd">        :returns (str): text for a tooltip in table format</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">MapManager</span><span class="o">.</span><span class="n">get_html_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MapManager.add_bar_chart_in_map"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.mapmanager.MapManager.add_bar_chart_in_map">[docs]</a>    <span class="k">def</span> <span class="nf">add_bar_chart_in_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span>
+                             <span class="n">quantities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltips</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">bar_width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">bar_height_per_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">border_colors</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">background_colors</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span>
+                             <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draws a bar chart at the coord. Anchor on the botton-left. Bars expand to the right.</span>
+<span class="sd">        Will add as many bars as there are quantities, cycling through pre-defined colors.</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">        https://stackoverflow.com/questions/60131314/folium-draw-star-marker</span>
+<span class="sd">        https://python-visualization.github.io/folium/plugins.html#folium.plugins.BeautifyIcon</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Colors per bar:</span>
+        <span class="k">if</span> <span class="n">tooltips</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tooltips</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">quantities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">quantities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">border_colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+            <span class="n">border_colors</span><span class="o">=</span><span class="n">px</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">qualitative</span><span class="o">.</span><span class="n">Dark2</span>  <span class="c1">#[&#39;green&#39;, &#39;blue&#39;, &#39;red&#39;]</span>
+        <span class="k">if</span> <span class="n">background_colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+            <span class="n">background_colors</span><span class="o">=</span><span class="n">px</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">qualitative</span><span class="o">.</span><span class="n">Set2</span>  <span class="c1">#[&#39;lightgreen&#39;, &#39;lightblue&#39;, &#39;lightred&#39;]</span>
+
+        <span class="n">bar_anchor_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)):</span>
+            <span class="n">bar_height</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">quantities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">bar_height_per_unit</span><span class="p">)</span>
+            <span class="n">icon</span> <span class="o">=</span> <span class="n">BeautifyIcon</span><span class="p">(</span>
+                <span class="n">icon_shape</span><span class="o">=</span><span class="s1">&#39;rectangle-dot&#39;</span><span class="p">,</span>
+                <span class="n">border_color</span><span class="o">=</span><span class="n">border_colors</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">border_colors</span><span class="p">)],</span> <span class="c1"># cycle back through colors</span>
+                <span class="n">background_color</span><span class="o">=</span><span class="n">background_colors</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">background_colors</span><span class="p">)],</span> <span class="c1"># cycle back through colors</span>
+                <span class="n">border_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">icon_size</span><span class="o">=</span><span class="p">[</span><span class="n">bar_width</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">],</span>
+                <span class="n">icon_anchor</span><span class="o">=</span><span class="p">[</span><span class="n">bar_anchor_x</span><span class="p">,</span> <span class="n">bar_height</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">bar_anchor_x</span> <span class="o">-=</span> <span class="n">bar_width</span>
+            <span class="c1"># folium.Marker(coord, tooltip=f&quot;demand = {quantities[i]}&quot;, icon=icon).add_to(m)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tooltips</span><span class="p">):</span>
+                <span class="n">tooltip</span> <span class="o">=</span> <span class="n">tooltips</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tooltip</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;value = </span><span class="si">{</span><span class="n">quantities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">Marker</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="n">tooltip</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="n">icon</span><span class="p">)</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div></div>
 
 
 
@@ -358,7 +405,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.1b0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.mapmanager</a></li> 

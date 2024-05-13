@@ -53,7 +53,7 @@ setuptools.setup(
     version=get_version("dse_do_utils/version.py"),
     author="Victor Terpstra",
     author_email="vterpstra@us.ibm.com",
-    description="Decision Optimization utilities for IBM Watson Studio projects",
+    description="Decision Optimization utilities for IBM Cloud Pak for Data projects",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/IBM/dse-decision-optimization-utilities",
@@ -63,7 +63,7 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Topic :: Documentation :: Sphinx"

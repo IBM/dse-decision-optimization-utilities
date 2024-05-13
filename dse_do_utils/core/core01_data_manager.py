@@ -42,7 +42,15 @@ class Core01DataManager(DataManager):
 
         # Create a custom logger
         # self.logger = self.create_logger(log_level)
-        self.logger = logging.getLogger(self.__module__)
+
+        # `__name__` returns `dse_do_utils.core.core01_data_manager`
+        # `self.__name__` returns an error
+        # `self.__module__` returns `fruit.data_manager`
+        # `self.__class__.__name__` returns `FruitDataManager`
+        # `self.__class__.__module__` returns `fruit.data_manager` (same as `self.__module__`)
+
+        # VT20230607: changed to __name__ from self.__module__
+        self.logger = logging.getLogger(__name__)  # `__name__` is Python best practice
 
         # Parameters:
         self.params = None
@@ -99,6 +107,11 @@ class Core01DataManager(DataManager):
             default_value=False)
 
     def prepare_output_data_frames(self, dtypes=None):
+        """
+        TODO: remove dtypes argument. Beware that this can break existing code
+        :param dtypes:
+        :return:
+        """
         super().prepare_output_data_frames()
         self.logger.debug("Enter")
 
@@ -106,7 +119,7 @@ class Core01DataManager(DataManager):
             self.outputs.get('kpis'),
             index_columns=['NAME'],
             value_columns=['VALUE'],
-            dtypes=dtypes
+            dtypes=None,
         )
 
     @abstractmethod
@@ -160,17 +173,19 @@ class Core01DataManager(DataManager):
             df: dataframe
             index_columns: index column names
             value_columns: value column names
-            dtypes: map of column data types
+            dtypes: map of column data types. Adds and overrides values in self.dtypes
             data_specs_key: data specs key
             verify_integrity: flag to verify integrity when setting the index
 
         Returns:
             df: dataframe
-
-        TODO: move to CoreDataManager
         """
 
-        dtypes = dtypes if dtypes is not None else self.dtypes
+        # dtypes = dtypes if dtypes is not None else self.dtypes
+        # Merge local and global dtypes:
+        default_dtypes = self.dtypes if self.dtypes is not None else {}
+        override_dtypes = dtypes if dtypes is not None else {}
+        dtypes = default_dtypes | override_dtypes  # merge of dicts, where values in override take priority
 
         if df is not None:
             # Processing on existing dataframe
@@ -231,56 +246,88 @@ class Core01DataManager(DataManager):
         """Return a Dict with default dtypes by column-name (key).
         To be overridden. Make sure to extend with call to super.
         dtypes = super().get_default_dtypes()
+        dtypes.update({'my_key':'my_value})
         """
         return {}
+
+    def remove_zero_quantity_output(self, df: pd.DataFrame, column_name: str, table_name: str = 'unspecified',
+                                    threshold: float = 0) -> pd.DataFrame:
+        """Removes rows from df where a (solution) column has zero values, or less than the threshold.
+        Uses parameter `remove_zero_quantity_output_records`. If False, will not remove rows.
+        Logs (`INFO`) number and percentage of removed rows.
+
+        Usage::
+            def post_processing(self):
+                self.my_table_output = self.remove_zero_quantity_output(df=self.my_table_output,
+                                                                      column_name='my_sol',
+                                                                      table_name='MyTableOutput')
+
+        Args:
+            df (pd.DataFrame): a df, typically an output table
+            column_name (str): name of column in df. Typically represents the solution of a dvar
+            table_name (str): name of the df/output table. Only used for debugging and logging.
+            threshold (float): threshold value. Default zero.
+
+        Returns:
+            df (pd.DataFrame): df with rows removed
+        """
+        if self.param.remove_zero_quantity_output_records:
+            mask = df.eval(f"{column_name} <= {threshold}")
+            self.logger.info(
+                f"Removing {mask.sum():,} zero-quantity out of total of {df.shape[0]:,} "
+                f"rows from {table_name}. New size = {df[~mask].shape[0]:,} == "
+                f"{df[~mask].shape[0] / df.shape[0]:.1%} of original")
+            df = df[~mask]
+        return df
+
     ########################################################################
     # Logger (TODO: review)
     ########################################################################
-    def create_logger(self, log_level: int = None) -> logging.Logger:
-        """DEPRECATED
-        Create logger
+    # def create_logger(self, log_level: int = None) -> logging.Logger:
+    #     """DEPRECATED
+    #     Create logger
+    #
+    #     Args:
+    #         log_level: log level, by default log_level is None
+    #                    and a logger set to CRITICAL log level will be created
+    #                    otherwise, a logger is set to the level specified
+    #                    by log_level
+    #     """
+    #     log_level_enum = LogLevelEnum()
+    #     logger = logging.getLogger(self.__class__.__name__)
+    #
+    #     if log_level is None or log_level not in log_level_enum.LEVELS.keys():
+    #         log_level = 'CRITICAL'
+    #
+    #     logger.setLevel(getattr(log_level_enum, log_level))
+    #
+    #     # Create handlers
+    #     # Stop progagate custom handler settings to root logger
+    #     logger.propagate = False
+    #     n_handlers = len(logger.handlers[:])
+    #     if n_handlers == 0:
+    #         self.add_logger_handler(log_level_enum, log_level, logger=logger)
+    #     else:
+    #         for handler in logger.handlers[:]:
+    #             logger.removeHandler(handler)
+    #
+    #         self.add_logger_handler(log_level_enum, log_level, logger=logger)
+    #     return logger
 
-        Args:
-            log_level: log level, by default log_level is None
-                       and a logger set to CRITICAL log level will be created
-                       otherwise, a logger is set to the level specified
-                       by log_level
-        """
-        log_level_enum = LogLevelEnum()
-        logger = logging.getLogger(self.__class__.__name__)
-
-        if log_level is None or log_level not in log_level_enum.LEVELS.keys():
-            log_level = 'CRITICAL'
-
-        logger.setLevel(getattr(log_level_enum, log_level))
-
-        # Create handlers
-        # Stop progagate custom handler settings to root logger
-        logger.propagate = False
-        n_handlers = len(logger.handlers[:])
-        if n_handlers == 0:
-            self.add_logger_handler(log_level_enum, log_level, logger=logger)
-        else:
-            for handler in logger.handlers[:]:
-                logger.removeHandler(handler)
-
-            self.add_logger_handler(log_level_enum, log_level, logger=logger)
-        return logger
-
-    def add_logger_handler(self, log_level_enum, log_level, logger):
-        """DEPRECATED
-        Add logger handler
-
-        Args:
-            log_level_enum: log level enum object
-            log_level: log level
-        """
-        c_handler = logging.StreamHandler()
-        c_handler.setLevel(getattr(log_level_enum, log_level))
-
-        # Create formatters and add it to handlers
-        c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
-        c_handler.setFormatter(c_format)
-
-        # Add handlers to the logger
-        logger.addHandler(c_handler)
+    # def add_logger_handler(self, log_level_enum, log_level, logger):
+    #     """DEPRECATED
+    #     Add logger handler
+    #
+    #     Args:
+    #         log_level_enum: log level enum object
+    #         log_level: log level
+    #     """
+    #     c_handler = logging.StreamHandler()
+    #     c_handler.setLevel(getattr(log_level_enum, log_level))
+    #
+    #     # Create formatters and add it to handlers
+    #     c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s')
+    #     c_handler.setFormatter(c_format)
+    #
+    #     # Add handlers to the logger
+    #     logger.addHandler(c_handler)

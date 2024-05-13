@@ -16,6 +16,7 @@ requests~=2.25.1
 urllib3~=1.26.3
 SQLAlchemy~=1.4
 setuptools~=54.0.0
+folium
 
 # To avoid documentation generation errors:
 IPython

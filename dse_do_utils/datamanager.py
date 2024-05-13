@@ -1,5 +1,6 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -177,7 +178,14 @@ class DataManager(object):
                 # param = (str(raw_param) == 'True')
                 param = (str(raw_param).lower() in ['true', 'yes', 'y', 't', '1', '1.0'])
             elif param_type == 'datetime':
-                param = datetime.strptime(raw_param, value_format)
+                # Make more robust:
+                # 1. Remove any excess quotes if a string (When forcing a value to be a quoted string in Excel)
+                # 2. If it already is a datetime, do not convert (Excel read may return a datetime already)
+                if isinstance(raw_param, datetime):
+                    param = raw_param
+                else:
+                    raw_param = raw_param.strip('"')
+                    param = datetime.strptime(raw_param, value_format)
             else:
                 param = raw_param
         else:
@@ -347,20 +355,93 @@ class DataManager(object):
     #             lambda row: pd.Series(func(row, **kwargs), index=column_names), axis=1)), axis=1, sort=False)
 
     @staticmethod
-    def extract_solution(df, extract_dvar_names: List[str] = None, drop_column_names: List[str] = None, drop: bool = True):
+    def extract_solution(df: pd.DataFrame, extract_dvar_names: Optional[List[str] | Dict[str, str]] = None, drop_column_names: List[str] = None,
+                         drop: bool = True, epsilon: float = None, round_decimals: int = None,
+                         solution_column_name_post_fix: str = 'Sol') -> pd.DataFrame:
         """Generalized routine to extract a solution value.
-        Can remove the dvar column from the df to be able to have a clean df for export into scenario."""
+        Can remove the dvar column from the df to be able to have a clean df for export into scenario.
+
+        In some cases, CPLEX extracted values for continuous dvars can have very small values instead of zeros.
+        If epsilon has a value, this method will drop these small values to zero.
+        And it will assume the values need to be positive, so it clips negative values at zero.
+
+        In some case, CPLEX extracted values for integer dvars can have very small values from the rounded integer value.
+        If round_decimals is set to 0, the solution values will be rounded to the nearest integer.
+        Use values larger than zero to round continuous dvars to their required precision.
+
+        Args:
+            df: DataFrame
+            extract_dvar_names: list of column names with CPLEX dvars, or a Dict[str, str]
+                                where the keys are the dvar column names and the values the name of the solution column
+            drop_column_names: columns to be dropped (can be different and in addition to drop)
+            drop: if True drops all columns in extract_dvar_names
+            epsilon (float): if not None, drop values below threshold to zero and clip negative values at zero
+            round_decimals (int): round the solution value by number of decimals. If None, no rounding.
+            If 0, rounding to integer value.
+            solution_column_name_post_fix (str): Postfix for the name of the solution column. Default = 'Sol'
+
+        """
+
+
         if extract_dvar_names is not None:
-            for xDVarName in extract_dvar_names:
+            if isinstance(extract_dvar_names, list):
+                dvar_column_dict = {dvar_name: f'{dvar_name}{solution_column_name_post_fix}' for dvar_name in extract_dvar_names}
+            elif isinstance(extract_dvar_names, dict):
+                dvar_column_dict = extract_dvar_names
+            else:
+                # dvar_column_dict = {}
+                raise TypeError("Input argument 'extract_dvar_names' must be either a List[str] or a Dict[str, str]")
+            for xDVarName, solution_column_name in dvar_column_dict.items():
                 if xDVarName in df.columns:
-                    df[f'{xDVarName}Sol'] = [dvar.solution_value for dvar in df[xDVarName]]
+                    # solution_column_name = f'{xDVarName}Sol'
+                    df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]
                     if drop:
                         df = df.drop([xDVarName], axis=1)
+                    if epsilon is not None:
+                        df.loc[df[solution_column_name] < epsilon, solution_column_name] = 0
+                        df[solution_column_name] = df[solution_column_name].clip(lower=0)
+                    if round_decimals is not None:
+                        df[solution_column_name] = df[solution_column_name].round(round_decimals)
+                        if round_decimals == 0:
+                            df[solution_column_name] = df[solution_column_name].astype(int)
+                else:
+                    # Note (VT_20240401): for backward compatibility reasons, for now, do not throw an exception or print a warning
+                    # print(f"Warning: The column {xDVarName} doesn't exist in the DataFrame. Valid column: {df.columns}")
+                    pass
+
+        # if extract_dvar_names is not None:
+        #     for xDVarName in extract_dvar_names:
+        #         if xDVarName in df.columns:
+        #             solution_column_name = f'{xDVarName}Sol'
+        #             df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]
+        #             if drop:
+        #                 df = df.drop([xDVarName], axis=1)
+        #             if epsilon is not None:
+        #                 df.loc[df[solution_column_name] < epsilon, solution_column_name] = 0
+        #                 df[solution_column_name] = df[solution_column_name].clip(lower=0)
+        #             if round_decimals is not None:
+        #                 df[solution_column_name] = df[solution_column_name].round(round_decimals)
         if drop and drop_column_names is not None:
             for column in drop_column_names:
                 if column in df.columns:
                     df = df.drop([column], axis=1)
         return df
+
+    # def drop_small_epsilon_values(self, df: pd.DataFrame, columns: List[str], epsilon: float = 0.0001) -> pd.DataFrame:
+    #     """Drops small values of extracted CPLEX continuous dvar solutions to zero.
+    #     In some cases, CPLEX extracted values can have very small values instead of zeros.
+    #     This method drops these small values to zero.
+    #     It also assumes the values need to be positive, so it clips all negative values at zero.
+    #     Args:
+    #         df: DataFrame
+    #         columns: List of column names
+    #         epsilon: threshold value
+    #     """
+    #     for col in columns:
+    #         if col in df.columns:
+    #             df.loc[df[col] < epsilon, col] = 0
+    #             df[col] = df[col].clip(lower=0)
+    #     return df
 
     def get_raw_table_by_name(self, table_name: str) -> Optional[pd.DataFrame]:
         """Get the 'raw' (non-indexed) table from inputs or outputs."""

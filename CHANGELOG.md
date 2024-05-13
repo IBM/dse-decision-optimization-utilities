@@ -4,7 +4,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[//]: # ([Unreleased]## [0.5.5.2b0])
+[Unreleased]## [0.5.5.2b7]
+
+## [0.5.6.0]- 2023-05-13
+### Changed
+- Bumping version to 0.5.6.0 given the amount of changes and additions
+
+## [0.5.5.2b6] - 2024-05-12
+### Added
+- DeployedDOModel.monitor_execution_v1 efficiency improvement: only polls for the 'status'
+- DeployedDOModel.solve refactoring
+- DeployedDOModel retrieves the full log file
+- DeployedDOModel increased default hardware spec nodes
+- DOModelDeployerLocal to deploy DO model in WML from a local (non-CP4D/wx.ai) machine
+
+## [0.5.5.2b5] - 2024-05-07
+### Added
+- ScenarioDbManager.duplicate_scenario_in_db returns scenario_name
+### Fixed
+- ScenarioRunner.get_parameters can handle case where inputs do not (yet) have a 'Parameter' or 'Parameters' tab
+- DataManager.extract_solution_v1 if argument `round_decimals` = 0 then convert column type to int 
+
+## [0.5.5.2b4] - 2024-04-10
+### Added
+- DataManager.extract_solution_v1 argument `round_decimals` to allow rounding of solution value
+- DataManager.extract_solution_v1 argument `extract_dvar_names` can also be a `Dict[str, str]` where the value if the solumn column name. 
+- DataManager.extract_solution_v1 argument `solution_column_name_post_fix` to allow custom post fix (instead of hard-coded 'Sol')
+- ScenarioRunner logs Excel input file name
+- utils.df_itertuples_with_index_names()
+- Core02ScenarioGenerator and Core02ScenarioConfig: configure LexOptiLevels and LexOptiGoals
+- Core01DataManager.remove_zero_quantity_output to filter rows from a df where a solution column is less than the threshold
+- DataManager.get_parameter_value improved handling of datetime when reading directly from Excel
+### Fixed
+- Small error in ScenarioRunner.insert_outputs_in_db
+
+## [0.5.5.2b3]- 2023-07-05
+### Added
+- Core01EnvironmentManager.find_project_root_directory
+- MapManager.add_bar_chart_in_map
+- DataManager.extract_solution_v1 adds option to drop small values to zero
+### Changed
+- Core01DataManager.prepare_df now merges local dtypes with self.dtypes, where overlapping local dtypes take priority
+
+## [0.5.5.2b2]- 2023-06-08
+### Added
+- Core01OptimizationEngine, Core02OptimizationEngine, PlotlyManager - added support for DataManager generics
+- Core01EnvironmentManager can define logging scope
+### Changed
+- Core01DataManager logger now uses `__name__`
+- Core01DataManager - removed deprecated logger methods
+
+## [0.5.5.2b1]- 2023-05-23
+### Changed
+- Support enable_refine_conflict in Core02OptimizationEngine and ScenarioRunner
+- Requires Pandas 2.0 which fixes an issue with SQLAlchemy 2.0 Future
+
+## [0.5.5.2b0]- 2023-05-02
+### Added
+- DataManager class generics to OptimizationEngine, Core01OptimizationEngine
+### Changed
+- core01_environment_manager.HostEnvironment is now an enum.IntEnum to allow comparing integer values
+- OptimizationEngine.integer_var_series_s etc. define the dtype='object' to avoid FutureWarning
+- ScenarioManager.write_data_to_excel switch from pd.ExcelWriter.save() to .close() to avoid FutureWarning
 
 ## [0.5.5.1]- 2023-03-06
 ### Changed
@@ -193,7 +254,7 @@ if it is open in Excel and would have caused a PermissionError.
 - Data asset folder location in CP4D v4.0.2 (with new git)
 - Save Excel/lp/csv files using ibm_watson_studio_lib in CPD v4.0.2 in ScenarioManager
 ### Added
-- DataManager.extract_solution static method
+- DataManager.extract_solution_v1 static method
 - DataManager.get_raw_table_by_name method
 
 ## [0.5.0.1] - 2021-10-29

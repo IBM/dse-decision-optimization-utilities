@@ -13,10 +13,28 @@ from docplex.mp.solution import SolveSolution
 from dse_do_utils import OptimizationEngine
 from dse_do_utils.core.core01_data_manager import Core01DataManager
 from dse_do_utils.datamanager import Outputs
+from typing import TypeVar, Generic
+
+DM = TypeVar('DM', bound='Core01DataManager')
 
 
-class Core01OptimizationEngine(OptimizationEngine):
-    def __init__(self, data_manager: Core01DataManager, name: str = None, solve_kwargs: Dict = {"log_output": True},
+class Core01OptimizationEngine(OptimizationEngine[DM]):
+    """
+    This class supports Python generics to specify the class of the DataManager.
+    This allows an IDE like PyCharm and VSCode to check for methods and attributes
+    and allows more easy navigation (i.e. control-click on name)
+
+    Usage 1 - Define a use-case specific OptimizationEngine class::
+
+        DM = TypeVar('DM', bound='FruitDataManager')
+        class FruitOptimizationEngine(Core01OptimizationEngine[DM]):
+            pass
+
+    Usage 2 - When creating an instance::
+
+        engine = FruitOptimizationEngine[FruitDataManager]
+    """
+    def __init__(self, data_manager: DM, name: str = None, solve_kwargs: Dict = {"log_output": True},
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
                  enable_refine_conflict: bool = False):
         super().__init__(data_manager=data_manager, name=name)

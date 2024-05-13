@@ -1,0 +1,512 @@
+
+
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dse_do_utils.deployeddomodel &#8212; DSE DO Utils 0.5.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.deployeddomodel</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dse_do_utils.deployeddomodel</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright IBM All Rights Reserved.</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1"># import sys</span>
+<span class="c1"># from watson_machine_learning_client import WatsonMachineLearningAPIClient  # Deprecated</span>
+<span class="kn">from</span> <span class="nn">dse_do_utils.datamanager</span> <span class="kn">import</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">Outputs</span>
+
+
+<span class="c1"># from ibm_watson_machine_learning import APIClient  # New client</span>
+
+
+<div class="viewcode-block" id="DeployedDOModel"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel">[docs]</a><span class="k">class</span> <span class="nc">DeployedDOModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    New DeployedDOModel for CPD3.5 based on ibm_watson_machine_learning.APIClient</span>
+
+<span class="sd">    Major steps:</span>
+
+<span class="sd">        1. Create an instance of a DeployedDOModel, configuring parameters</span>
+
+<span class="sd">    Internally, the processes uses the APIClient (former WatsonMachineLearningAPIClient) to communicate with the deployed model:</span>
+
+<span class="sd">        2. Start the solve job.</span>
+<span class="sd">        3. Monitor the running solve job. Runs in a loop, updates the current state.</span>
+<span class="sd">        4. Once the job completes, get the optimization result.</span>
+
+
+<span class="sd">    In the code::</span>
+
+<span class="sd">        mdl.solve():</span>
+<span class="sd">            solve_payload = self.get_solve_payload(inputs)  # Convert inputs to payload</span>
+<span class="sd">            job_details, job_uid = self.execute_model_v1(solve_payload)</span>
+<span class="sd">            job_details = self.monitor_execution_v1(job_details, job_uid)</span>
+<span class="sd">            self.extract_solution_v1(job_details)</span>
+<span class="sd">            return job_details</span>
+
+
+<span class="sd">    Usage::</span>
+
+<span class="sd">        # Simplest, using all default options:</span>
+<span class="sd">        mdl = DeployedDOModel(wml_credentials, space_name, deployed_model_name)</span>
+<span class="sd">        job_details = mdl.solve(inputs)</span>
+<span class="sd">        print(&quot;Solve status: {}&quot;.format(mdl.solve_status))</span>
+<span class="sd">        print(&quot;Objective: {}&quot;.format(mdl.objective))</span>
+<span class="sd">        print(&quot;Output tables: {}&quot;.format(mdl.outputs.keys()))</span>
+
+
+<span class="sd">    TODOs:</span>
+
+<span class="sd">        1. Debug mode</span>
+<span class="sd">        2. Get the cplex log file?</span>
+<span class="sd">        3. Done - Add kill and stop methods</span>
+<span class="sd">        4. Done - Configure polling interval</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wml_credentials</span><span class="p">,</span>
+                 <span class="n">space_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">deployed_model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">deployment_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">default_max_oaas_time_limit_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default_max_run_time_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span> <span class="mi">600</span><span class="p">,</span> <span class="n">monitor_loop_delay_sec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the interface object.</span>
+<span class="sd">        If the deployment_uuid is specified (WS Cloud), the space_name and model_name are optional.</span>
+<span class="sd">        Note: on IBM Cloud, both the deployment_id and space_name are required.</span>
+<span class="sd">        If no deployment_uuid (CPD), specify both the model and space name.</span>
+<span class="sd">        Will find UUID based on space and deployed model id.</span>
+<span class="sd">        In CPDv3.5, always define the space_name, in combination with either the model_name, or the deployment_id.</span>
+<span class="sd">        Providing the deployment_id is more efficient. If proving the name, the DeployedDOModel will look for the DeploymentID based on the model name.</span>
+
+<span class="sd">        Time limits:</span>
+<span class="sd">        - Both are optional: if no value, no time-limit is imposed</span>
+<span class="sd">        - These are default values. Can be overridden in solve method</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deployed_model_name (str): name of deployed model (CPD)</span>
+<span class="sd">            space_name (str): name of deployment space (CPD)</span>
+<span class="sd">            deployment_id (str): Deployment UUID (WS Cloud)</span>
+<span class="sd">            default_max_oaas_time_limit_sec (int): default oaas.timeLimit in seconds.</span>
+<span class="sd">            default_max_run_time_sec (int): default maximum run time in seconds. Includes the queueing time.</span>
+<span class="sd">            monitor_loop_delay_sec (int): delay in seconds in monitoring/polling loop</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wml_credentials</span> <span class="o">=</span> <span class="n">wml_credentials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">space_name</span> <span class="o">=</span> <span class="n">space_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">deployed_model_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="n">deployment_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_max_oaas_time_limit_sec</span> <span class="o">=</span> <span class="n">default_max_oaas_time_limit_sec</span>  <span class="c1"># In seconds! None implies no time timit. Note the original oaas.timeLimit is in milli-seconds!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_max_run_time_sec</span> <span class="o">=</span> <span class="n">default_max_run_time_sec</span>  <span class="c1">#60  # In seconds: Job will be deleted. None implies no time timit.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_loop_delay_sec</span> <span class="o">=</span> <span class="n">monitor_loop_delay_sec</span>  <span class="c1"># In seconds</span>
+        <span class="c1"># self.time_limit = 600  # in milliseconds. timeLimit for DO model cancel</span>
+        <span class="c1">#         self.inputs = inputs</span>
+        <span class="c1">#         self.debug = debug</span>
+        <span class="c1">#         self.debug_file_dir = debug_file_dir</span>
+        <span class="c1">#         self.log_file_name = log_file_name</span>
+
+        <span class="c1"># State:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_details</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Run-time of job in seconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Setup and connection to deployed model</span>
+        <span class="kn">from</span> <span class="nn">ibm_watson_machine_learning</span> <span class="kn">import</span> <span class="n">APIClient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">wml_credentials</span><span class="p">)</span>
+
+        <span class="c1"># space_id = [x[&#39;metadata&#39;][&#39;id&#39;] for x in self.client.spaces.get_details()[&#39;resources&#39;] if</span>
+        <span class="c1">#             x[&#39;entity&#39;][&#39;name&#39;] == space_name][0]</span>
+        <span class="n">space_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_space_id</span><span class="p">(</span><span class="n">space_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="o">.</span><span class="n">default_space</span><span class="p">(</span><span class="n">space_id</span><span class="p">)</span>  <span class="c1"># Also required when using deployment_id</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deployment_id</span><span class="p">(</span><span class="n">deployed_model_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeployedDOModel.solve"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_run_time_sec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (dict of DataFrames): input tables</span>
+<span class="sd">            max_oaas_time_limit_sec (int): will override the default from the constructor</span>
+<span class="sd">            max_run_time_sec (int): will override the default from the constructor</span>
+
+<span class="sd">        Calls the following methods (in order)::</span>
+
+<span class="sd">            self.retrieve_solve_configuration()</span>
+<span class="sd">            self.set_output_settings_in_solve_configuration()</span>
+<span class="sd">            self.execute_model_v1()</span>
+<span class="sd">            self.monitor_execution_v1()</span>
+<span class="sd">            self.retrieve_debug_materials()</span>
+<span class="sd">            self.cleanup()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_v2</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">,</span> <span class="n">max_run_time_sec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_details</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_payload"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_payload">[docs]</a>    <span class="k">def</span> <span class="nf">get_solve_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">}</span> <span class="k">for</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;.*\.csv&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;log.txt&quot;</span><span class="p">},</span>  <span class="c1"># Ensures the log.txt is added to the job_details output_data</span>
+                       <span class="p">]</span>
+        <span class="n">solve_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;oaas.logTailEnabled&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;oaas.logLimit&quot;</span><span class="p">:</span> <span class="mi">20_000</span><span class="p">,</span>
+                            <span class="s2">&quot;oaas.logAttachmentName&quot;</span><span class="p">:</span> <span class="s1">&#39;log.txt&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">max_oaas_time_limit_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solve_parameters</span><span class="p">[</span><span class="s1">&#39;oaas.timeLimit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_oaas_time_limit_sec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># oaas.timeLimit needs to be specified in milli-seconds</span>
+        <span class="n">solve_payload</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">DecisionOptimizationMetaNames</span><span class="o">.</span><span class="n">INPUT_DATA</span><span class="p">:</span> <span class="n">input_data</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">DecisionOptimizationMetaNames</span><span class="o">.</span><span class="n">OUTPUT_DATA</span><span class="p">:</span> <span class="n">output_data</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">DecisionOptimizationMetaNames</span><span class="o">.</span><span class="n">SOLVE_PARAMETERS</span><span class="p">:</span> <span class="n">solve_parameters</span>
+                         <span class="c1">#                              {&quot;oaas.timeLimit&quot;: max_oaas_time_limit_sec * 1000,  # oaas.timeLimit needs to be specified in milli-seconds</span>
+                         <span class="c1">#                               &quot;oaas.logTailEnabled&quot;: &quot;true&quot;,</span>
+                         <span class="c1">#                               &quot;oaas.logLimit&quot;: 10000,</span>
+                         <span class="c1">#                               &quot;oaas.logAttachmentName&quot;: &#39;log.txt&#39;}</span>
+                         <span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max_oaas_time_limit_sec = </span><span class="si">{</span><span class="n">max_oaas_time_limit_sec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">solve_payload</span></div>
+
+
+    <span class="c1"># def solve_v1(self, inputs: Inputs, max_oaas_time_limit_sec: int = None, max_run_time_sec: int = None):</span>
+    <span class="c1">#     &quot;&quot;&quot;DEPRECATED</span>
+    <span class="c1">#     Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         inputs (dict of DataFrames): input tables</span>
+    <span class="c1">#         max_oaas_time_limit_sec (int): will override the default from the constructor</span>
+    <span class="c1">#         max_run_time_sec (int): will override the default from the constructor</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Calls the following methods (in order)::</span>
+    <span class="c1">#</span>
+    <span class="c1">#         self.retrieve_solve_configuration()</span>
+    <span class="c1">#         self.set_output_settings_in_solve_configuration()</span>
+    <span class="c1">#         self.execute_model_v1()</span>
+    <span class="c1">#         self.monitor_execution_v1()</span>
+    <span class="c1">#         self.retrieve_debug_materials()</span>
+    <span class="c1">#         self.cleanup()</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if max_run_time_sec is None:</span>
+    <span class="c1">#         max_run_time_sec = self.default_max_run_time_sec</span>
+    <span class="c1">#     if max_oaas_time_limit_sec is None:</span>
+    <span class="c1">#         max_oaas_time_limit_sec = self.default_max_oaas_time_limit_sec</span>
+    <span class="c1">#     from time import sleep</span>
+    <span class="c1">#     job_details = self.execute_model_v1(inputs, max_oaas_time_limit_sec)</span>
+    <span class="c1">#     sleep(0.5)  # Give a little time for the job to start</span>
+    <span class="c1">#     job_details = self.monitor_execution_v1(job_details, max_run_time_sec)</span>
+    <span class="c1">#     self.extract_solution_v1(job_details)</span>
+    <span class="c1">#     return job_details</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># def execute_model_v1(self, inputs: Inputs, max_oaas_time_limit_sec: Optional[int]):</span>
+    <span class="c1">#     &quot;&quot;&quot;DEPRECATED&quot;&quot;&quot;</span>
+    <span class="c1">#     solve_payload = self.get_solve_payload(inputs, max_oaas_time_limit_sec)</span>
+    <span class="c1">#     job_details = self.client.deployments.create_job(self.deployment_id, solve_payload)</span>
+    <span class="c1">#     return job_details</span>
+    <span class="c1">#</span>
+    <span class="c1"># def monitor_execution_v1(self, job_details, max_run_time_sec: Optional[int] = None):</span>
+    <span class="c1">#     &quot;&quot;&quot;DEPRECATED</span>
+    <span class="c1">#     Monitor the model execution by periodically calling the API to get the current execution status.</span>
+    <span class="c1">#     Result stored in self.execution_status_json and self.execution_status.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import time</span>
+    <span class="c1">#     # from time import sleep</span>
+    <span class="c1">#     start_time = time.time()  # in seconds</span>
+    <span class="c1">#     # your code</span>
+    <span class="c1">#     elapsed_time = 0</span>
+    <span class="c1">#     job_uid = self.client.deployments.get_job_uid(job_details)</span>
+    <span class="c1">#     job_status = DeployedDOModel.get_job_status(job_details)</span>
+    <span class="c1">#     while job_status not in [&#39;completed&#39;, &#39;failed&#39;, &#39;canceled&#39;]:</span>
+    <span class="c1">#         print(f&quot;{job_status}.... run-time={elapsed_time:.1f}&quot;)</span>
+    <span class="c1">#         time.sleep(self.monitor_loop_delay_sec)</span>
+    <span class="c1">#         # Just specifying include=&#39;status&#39; reduces the payload significantly. If not, it will in,cude all the input tables</span>
+    <span class="c1">#         job_details = self.client.deployments.get_job_details(job_uid, include=&quot;status&quot;)</span>
+    <span class="c1">#         job_status = DeployedDOModel.get_job_status(job_details)</span>
+    <span class="c1">#         elapsed_time = time.time() - start_time</span>
+    <span class="c1">#         if max_run_time_sec is not None and elapsed_time &gt; max_run_time_sec:</span>
+    <span class="c1">#             self.client.deployments.delete_job(job_uid, hard_delete=True)</span>
+    <span class="c1">#             print(f&quot;Job deleted due to run-time exceeding maximum limit of {max_run_time_sec} seconds&quot;)</span>
+    <span class="c1">#             self.solve_status = &#39;JOB DELETED&#39;</span>
+    <span class="c1">#             break</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Make sure to get the full job_details. In the above loop we only get the status</span>
+    <span class="c1">#     job_details = self.client.deployments.get_job_details(job_uid)</span>
+    <span class="c1">#     self.run_time = elapsed_time</span>
+    <span class="c1">#     #         print(job_status)</span>
+    <span class="c1">#     print(f&quot;End monitor_execution_v1 with job_status = {job_status}, run-time={elapsed_time:.1f}&quot;)</span>
+    <span class="c1">#     return job_details</span>
+    <span class="c1">#</span>
+    <span class="c1"># def extract_solution_v1(self, job_details):</span>
+    <span class="c1">#     self.job_details = job_details</span>
+    <span class="c1">#     job_status = DeployedDOModel.get_job_status(job_details)</span>
+    <span class="c1">#     if job_status == &#39;completed&#39;:</span>
+    <span class="c1">#         self.solve_status = self.get_solve_status(job_details)</span>
+    <span class="c1">#         self.objective = self.get_solve_details_objective(job_details)</span>
+    <span class="c1">#         self.outputs = self.get_outputs(job_details)</span>
+    <span class="c1">#         self.solve_details = self.get_solve_details(job_details)</span>
+
+<div class="viewcode-block" id="DeployedDOModel.solve_v2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.solve_v2">[docs]</a>    <span class="k">def</span> <span class="nf">solve_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_run_time_sec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (dict of DataFrames): input tables</span>
+<span class="sd">            max_oaas_time_limit_sec (int): will override the default from the constructor</span>
+<span class="sd">            max_run_time_sec (int): will override the default from the constructor</span>
+
+<span class="sd">        Calls the following methods (in order)::</span>
+
+<span class="sd">            self.retrieve_solve_configuration()</span>
+<span class="sd">            self.set_output_settings_in_solve_configuration()</span>
+<span class="sd">            self.execute_model_v1()</span>
+<span class="sd">            self.monitor_execution_v1()</span>
+<span class="sd">            self.retrieve_debug_materials()</span>
+<span class="sd">            self.cleanup()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">max_run_time_sec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_run_time_sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_max_run_time_sec</span>
+        <span class="k">if</span> <span class="n">max_oaas_time_limit_sec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_oaas_time_limit_sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_max_oaas_time_limit_sec</span>
+        <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+        <span class="n">job_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_model_v2</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">)</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># Give a little time for the job to start</span>
+        <span class="n">job_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_execution_v2</span><span class="p">(</span><span class="n">job_uid</span><span class="p">,</span> <span class="n">max_run_time_sec</span><span class="p">)</span>
+        <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_solution_v2</span><span class="p">(</span><span class="n">job_uid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_details</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.execute_model_v2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.execute_model_v2">[docs]</a>    <span class="k">def</span> <span class="nf">execute_model_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inputs: inputs dict</span>
+<span class="sd">            max_oaas_time_limit_sec: int - number of seconds for the WML job time limit.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            job_uid: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solve_payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_payload</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_oaas_time_limit_sec</span><span class="p">)</span>
+        <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_id</span><span class="p">,</span> <span class="n">solve_payload</span><span class="p">)</span>
+        <span class="n">job_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_job_uid</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_uid</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.monitor_execution_v2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.monitor_execution_v2">[docs]</a>    <span class="k">def</span> <span class="nf">monitor_execution_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_run_time_sec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Monitor the model execution by periodically calling the API to get the current execution status.</span>
+<span class="sd">        Result stored in self.execution_status_json and self.execution_status.</span>
+<span class="sd">        Time-out after max_run_time_sec. Job will be deleted if total monitor time exceeds this limit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            job_uid: str</span>
+<span class="sd">            max_run_time_sec: int - Number of seconds maximum processing time (queued + run time) before the job must complete</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            job_status: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="c1"># from time import sleep</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># in seconds</span>
+        <span class="c1"># your code</span>
+        <span class="n">elapsed_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">job_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_status_v2</span><span class="p">(</span><span class="n">job_uid</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">job_status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;completed&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="s1">&#39;canceled&#39;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">job_status</span><span class="si">}</span><span class="s2">.... run-time=</span><span class="si">{</span><span class="n">elapsed_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monitor_loop_delay_sec</span><span class="p">)</span>
+            <span class="n">job_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_job_status_v2</span><span class="p">(</span><span class="n">job_uid</span><span class="p">)</span>
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="k">if</span> <span class="n">max_run_time_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">max_run_time_sec</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">delete_job</span><span class="p">(</span><span class="n">job_uid</span><span class="p">,</span> <span class="n">hard_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job deleted due to run-time exceeding maximum limit of </span><span class="si">{</span><span class="n">max_run_time_sec</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">solve_status</span> <span class="o">=</span> <span class="s1">&#39;JOB DELETED&#39;</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Make sure to get the full job_details. In the above loop we only get the status</span>
+        <span class="c1"># job_details = self.client.deployments.get_job_details(job_uid)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="n">elapsed_time</span>
+        <span class="c1">#         print(job_status)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End monitor_execution_v1 with job_status = </span><span class="si">{</span><span class="n">job_status</span><span class="si">}</span><span class="s2">, run-time=</span><span class="si">{</span><span class="n">elapsed_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_status</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.extract_solution_v2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.extract_solution_v2">[docs]</a>    <span class="k">def</span> <span class="nf">extract_solution_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_job_details</span><span class="p">(</span><span class="n">job_uid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_details</span> <span class="o">=</span> <span class="n">job_details</span>
+        <span class="n">job_status</span> <span class="o">=</span> <span class="n">DeployedDOModel</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">job_status</span> <span class="o">==</span> <span class="s1">&#39;completed&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_status</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_details_objective</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_outputs</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_solve_details</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_log</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job_status not &#39;completed&#39;: cannot extract solution&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_details</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_job_status_v2"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status_v2">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_status_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves the job_status from a job.</span>
+
+<span class="sd">        :param job_uid:</span>
+<span class="sd">        :return:</span>
+<span class="sd">            job_status: str - The job_status. Either: queued, running, completed, failed, canceled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Just specifying include=&#39;status&#39; reduces the payload significantly. If not, it will inlcude all the input tables</span>
+        <span class="c1"># Q: Add &#39;, solve_state&#39; to include to get the log-tail? Answer: when running, the solve_state has no meaningful</span>
+        <span class="c1"># information and does not have the latest_engine_activity</span>
+        <span class="n">job_details</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_job_details</span><span class="p">(</span><span class="n">job_uid</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+        <span class="n">job_status</span> <span class="o">=</span> <span class="n">DeployedDOModel</span><span class="o">.</span><span class="n">get_job_status</span><span class="p">(</span><span class="n">job_details</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">job_status</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_job_status"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_job_status">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_job_status</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extract job_status from the job_details</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Job state can be : queued, running, completed, failed, canceled.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;state&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_outputs"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_outputs">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_outputs</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Outputs</span><span class="p">:</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">output_table</span> <span class="ow">in</span> <span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;output_data&#39;</span><span class="p">]:</span>
+            <span class="c1"># table_name = output_table[&#39;id&#39;][:-4]  # strips the &#39;.csv&#39;</span>
+            <span class="n">output_id</span> <span class="o">=</span> <span class="n">output_table</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">filename</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">output_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">file_extension</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">output_table</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">output_table</span><span class="p">[</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
+                <span class="n">outputs</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
+            <span class="c1"># if output_id == &#39;log.txt&#39;:</span>
+            <span class="c1">#     print(f&quot;Detected log.txt in job_details:&quot;) #: {output_table[&#39;content&#39;]}&quot;)</span>
+
+
+        <span class="k">return</span> <span class="n">outputs</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_log"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_log">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_log</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Extracts the log.txt from the job_details, if it exists.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            log_lines: List[str] - the lines of the log.txt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">output_table</span> <span class="ow">in</span> <span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;output_data&#39;</span><span class="p">]:</span>
+            <span class="n">output_id</span> <span class="o">=</span> <span class="n">output_table</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">output_id</span> <span class="o">==</span> <span class="s1">&#39;log.txt&#39;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected log.txt in job_details:&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">output_table</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])):</span>
+                    <span class="n">log_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_lines</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_status"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_status">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_solve_status</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retreives the solve_status from job_details. After job has completed&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;solve_state&#39;</span><span class="p">][</span><span class="s1">&#39;solve_status&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_details"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_solve_details</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;After job has completed&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;solve_state&#39;</span><span class="p">][</span><span class="s1">&#39;details&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_solve_details_objective"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_solve_details_objective">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_solve_details_objective</span><span class="p">(</span><span class="n">job_details</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;After job has completed.</span>
+<span class="sd">        Note: not sure where the objective is. Can be PROGRESS_CURRENT_OBJECTIVE or PROGRESS_BEST_OBJECTIVE&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">objective</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">job_details</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;decision_optimization&#39;</span><span class="p">][</span><span class="s1">&#39;solve_state&#39;</span><span class="p">][</span><span class="s1">&#39;details&#39;</span><span class="p">][</span><span class="s1">&#39;PROGRESS_CURRENT_OBJECTIVE&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot extract objective value&quot;</span><span class="p">)</span>
+            <span class="n">objective</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">objective</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_space_id"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_space_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_space_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">space_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Find space_id from space_name.&quot;&quot;&quot;</span>
+        <span class="n">space_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">get_details</span><span class="p">()[</span><span class="s1">&#39;resources&#39;</span><span class="p">]</span> <span class="k">if</span>
+                    <span class="n">x</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">space_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">space_id</span></div>
+
+<div class="viewcode-block" id="DeployedDOModel.get_deployment_id"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.deployeddomodel.DeployedDOModel.get_deployment_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_deployment_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Find deployment_id from model_name.&quot;&quot;&quot;</span>
+        <span class="n">deployment_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">deployments</span><span class="o">.</span><span class="n">get_details</span><span class="p">()[</span><span class="s1">&#39;resources&#39;</span><span class="p">]</span> <span class="k">if</span>
+                         <span class="n">x</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">model_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">deployment_id</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">dse_do_utils.deployeddomodel</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Victor Terpstra.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

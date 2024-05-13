@@ -2,7 +2,7 @@
 # IBM Confidential Source Code Materials
 # This Source Code is subject to the license and security terms contained in the License.txt file contained in this source code package.
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, TypeVar
 
 import docplex
 import pandas as pd
@@ -24,13 +24,29 @@ class LexGoalAgg():
         return self.mdl.sum(group.expr * group.weight)
 
 
-class Core02OptimizationEngine(Core01OptimizationEngine):
+DM = TypeVar('DM', bound='Core02DataManager')
+
+
+class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
     """Adds Lexicographical Optimization
+
+    How To enable Lexicographical Optimization:
+    1. Add tables `LexOptiLevel` and `LexOptiGoal` to the spreadsheet (if applicable, include in __index__!)
+    2. Subclass the optimization-engine, data-manager and scenario-db-manager from their Core2 classes
+    3. In OptimizationEngine, override the method `lex_get_goal_expr()`
+    4. In DataManager, override abstract methods `get_default_lex_opti_level_table` and `get_default_lex_opti_goal_table`
+    4. In ScenarioDBManager, add the
+        `('LexOptiLevel', Core02LexOptiLevelTable()),
+         ('LexOptiGoal', Core02LexOptiGoalTable()),`
+        to the input_db_tables
     """
 
     def __init__(self, data_manager: Core02DataManager, name: str = None, solve_kwargs: Dict = {"log_output": True},
-                 export_lp: bool = False, export_sav: bool = False, export_lp_path: str = ''):
-        super().__init__(data_manager, name=name, solve_kwargs=solve_kwargs, export_lp=export_lp, export_sav=export_sav, export_lp_path=export_lp_path)
+                 export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
+                 enable_refine_conflict: bool = False):
+        super().__init__(data_manager, name=name, solve_kwargs=solve_kwargs,
+                         export_lp=export_lp, export_sav=export_sav, export_lp_path=export_lp_path,
+                         enable_refine_conflict=enable_refine_conflict)
         # self.solver_metrics = None
         self.lex_opti_metrics_list: List[Dict] = []
 
@@ -105,6 +121,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine):
     #     self.solver_metrics['value'].append(self.mdl.parameters.timelimit.value)
 
     def solve_with_lex_goals(self, **kwargs) -> Optional[SolveSolution]:
+        msol = None
         self.dm.logger.debug("Enter")
         levels_df = self.get_lex_optimization_levels()
         self.lex_c = []
@@ -164,6 +181,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine):
         return msol
 
     def lex_get_goal_expr(self, goal_id):
+        """ABSTRACT method. TO BE OVERRIDDEN!"""
         # if goal_id == 'backlogCost':
         #     return self.backlog_cost
         # elif goal_id == 'unfulfilledDemandCost':
@@ -226,7 +244,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine):
             crefiner = ConflictRefiner()  # Create an instance of the ConflictRefiner
             conflicts = crefiner.refine_conflict(self.mdl, display=True)  # Run the conflict refiner
             # ConflictRefiner.display_conflicts(conflicts) #Display the results
-            conflict_reporting_limit = 10
+            conflict_reporting_limit = 100
             if len(conflicts) > conflict_reporting_limit:
                 self.dm.logger.warning(f"Number of conflicts {len(conflicts)} exceeds reporting limit ({conflict_reporting_limit})")
             i = 0

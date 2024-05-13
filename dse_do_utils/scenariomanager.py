@@ -14,10 +14,11 @@ import tempfile
 
 import docplex
 import pandas as pd
-from typing import Sequence, List, Dict, Tuple, Optional
+from typing import Sequence, List, Dict, Tuple, Optional, Union
 
 #  Typing aliases
 from dse_do_utils.utilities import convert_size
+from pathlib import Path
 
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
@@ -82,7 +83,7 @@ class ScenarioManager(object):
     """
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
-                 local_root: Optional[str] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
+                 local_root: Optional[Union[str, Path]] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
                  inputs: Inputs = None, outputs: Outputs = None,
                  local_relative_data_path: str = 'assets/data_asset', data_directory: str = None):
@@ -622,7 +623,7 @@ class ScenarioManager(object):
             writer_1 = pd.ExcelWriter(excel_file_path_1, engine='xlsxwriter')
 
         ScenarioManager.write_data_to_excel_s(writer_1, inputs=self.inputs, outputs=self.outputs)
-        writer_1.save()
+        writer_1.close()  # .save()
 
         self.add_file_as_data_asset(excel_file_path_1, excel_file_name)
 
