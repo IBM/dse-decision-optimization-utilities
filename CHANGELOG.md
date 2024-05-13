@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.5.2b7]
 
+## [0.5.6.0]- 2023-05-13
+### Changed
+- Bumping version to 0.5.6.0 given the amount of changes and additions
+
 ## [0.5.5.2b6] - 2024-05-12
 ### Added
 - DeployedDOModel.monitor_execution_v1 efficiency improvement: only polls for the 'status'
