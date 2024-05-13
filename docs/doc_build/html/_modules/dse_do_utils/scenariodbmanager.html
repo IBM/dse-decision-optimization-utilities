@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.5.2b1 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.6.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
@@ -1550,21 +1550,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_delete_scenario_from_db</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
 
     <span class="c1">##########################################################</span>
-<div class="viewcode-block" id="ScenarioDbManager.duplicate_scenario_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.duplicate_scenario_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ScenarioDbManager.duplicate_scenario_in_db"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.duplicate_scenario_in_db">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Duplicate a scenario. Uses a transaction (when enabled).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Duplicate scenario within a transaction&quot;</span><span class="p">)</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_duplicate_scenario_in_db</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">)</span>
+                <span class="n">new_scenario_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duplicate_scenario_in_db</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">)</span></div>
+            <span class="n">new_scenario_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_scenario_name</span></div>
 
-    <span class="k">def</span> <span class="nf">_duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_duplicate_scenario_in_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Is fully done in DB using SQL in one SQL execute statement</span>
 <span class="sd">        :param source_scenario_name:</span>
 <span class="sd">        :param target_scenario_name:</span>
 <span class="sd">        :param connection:</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: new_scenario_name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">target_scenario_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">new_scenario_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_free_duplicate_scenario_name</span><span class="p">(</span><span class="n">source_scenario_name</span><span class="p">)</span>
@@ -1577,6 +1578,7 @@
         <span class="c1"># self._replace_scenario_in_db_transaction(scenario_name=new_scenario_name, inputs=inputs, outputs=outputs,</span>
         <span class="c1">#                                          bulk=True, connection=connection)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_duplicate_scenario_in_db_sql</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">,</span> <span class="n">new_scenario_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_scenario_name</span>
 
     <span class="k">def</span> <span class="nf">_duplicate_scenario_in_db_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">source_scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_scenario_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2129,7 +2131,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.5.2b1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
