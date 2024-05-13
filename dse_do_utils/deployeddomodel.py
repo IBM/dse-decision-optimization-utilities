@@ -63,7 +63,8 @@ class DeployedDOModel(object):
                  space_name: Optional[str]= None, deployed_model_name: Optional[str]= None, deployment_id: Optional[str]=None,
                  default_max_oaas_time_limit_sec: Optional[int]= None, default_max_run_time_sec: Optional[int]= 600, monitor_loop_delay_sec: int = 5):
         """Initialize the interface object.
-        If the deployment_uuid is specified (WS Cloud), the space_name and model_name are optional.  TODO: test on IBM Cloud
+        If the deployment_uuid is specified (WS Cloud), the space_name and model_name are optional.
+        Note: on IBM Cloud, both the deployment_id and space_name are required.
         If no deployment_uuid (CPD), specify both the model and space name.
         Will find UUID based on space and deployed model id.
         In CPDv3.5, always define the space_name, in combination with either the model_name, or the deployment_id.
@@ -340,6 +341,8 @@ class DeployedDOModel(object):
             job_status: str - The job_status. Either: queued, running, completed, failed, canceled
         """
         # Just specifying include='status' reduces the payload significantly. If not, it will inlcude all the input tables
+        # Q: Add ', solve_state' to include to get the log-tail? Answer: when running, the solve_state has no meaningful
+        # information and does not have the latest_engine_activity
         job_details = self.client.deployments.get_job_details(job_uid, include="status")
         job_status = DeployedDOModel.get_job_status(job_details)
         return job_status
