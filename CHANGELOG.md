@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.7.0b0]
 ### Changed
+- Removed ScenarioDbManager from dse_do_utils.__init__.py. This avoids the dependency on sqlalchemy with use of dse_do_utils where the ScenarioDbManager is not used. 
+Introduces a slight backward incompatibility. Need to import as: 'from dse_do_utils.scenariodbmanager import ScenarioDbManager' 
 
 ## [0.5.6.0]- 2023-05-13
 ### Changed
