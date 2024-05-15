@@ -41,13 +41,14 @@ class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
         to the input_db_tables
     """
 
-    def __init__(self, data_manager: Core02DataManager, name: str = None, solve_kwargs: Dict = {"log_output": True},
+    def __init__(self, data_manager: DM, name: str = None, solve_kwargs=None,
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
                  enable_refine_conflict: bool = False):
+        if solve_kwargs is None:
+            solve_kwargs = {"log_output": True}
         super().__init__(data_manager, name=name, solve_kwargs=solve_kwargs,
                          export_lp=export_lp, export_sav=export_sav, export_lp_path=export_lp_path,
                          enable_refine_conflict=enable_refine_conflict)
-        # self.solver_metrics = None
         self.lex_opti_metrics_list: List[Dict] = []
 
     ####################################################################################

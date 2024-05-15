@@ -34,10 +34,13 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
 
         engine = FruitOptimizationEngine[FruitDataManager]
     """
-    def __init__(self, data_manager: DM, name: str = None, solve_kwargs: Dict = {"log_output": True},
+    def __init__(self, data_manager: DM, name: str = None, solve_kwargs=None,
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
                  enable_refine_conflict: bool = False):
         super().__init__(data_manager=data_manager, name=name)
+
+        if solve_kwargs is None:
+            solve_kwargs = {"log_output": True}
         self.solve_kwargs = solve_kwargs
         self.export_lp = export_lp
         self.export_sav = export_sav

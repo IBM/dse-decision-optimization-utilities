@@ -30,6 +30,7 @@ from collections import OrderedDict
 import re
 from sqlalchemy import exc, MetaData
 from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey, ForeignKeyConstraint
+import enum
 
 #  Typing aliases
 from dse_do_utils import ScenarioManager
@@ -37,7 +38,6 @@ from dse_do_utils import ScenarioManager
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
 
-import enum
 
 class DatabaseType(enum.Enum):
     """Used in ScenarioDbManager.__init__ to specify the type of DB it is connecting to."""
@@ -52,8 +52,8 @@ class ScenarioDbTable(ABC):
     """
 
     def __init__(self, db_table_name: str,
-                 columns_metadata: List[sqlalchemy.Column] = [],
-                 constraints_metadata: List[ForeignKeyConstraint] = []):
+                 columns_metadata=None,
+                 constraints_metadata=None):
         """
         Warning: Do not use mixed case names for the db_table_name.
         Supplying a mixed-case is not working well and is causing DB FK errors.
@@ -66,6 +66,10 @@ class ScenarioDbTable(ABC):
         :param columns_metadata:
         :param constraints_metadata:
         """
+        if constraints_metadata is None:
+            constraints_metadata = []
+        if columns_metadata is None:
+            columns_metadata = []
         self.db_table_name = db_table_name
         # ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
         self.columns_metadata = self.resolve_metadata_column_conflicts(columns_metadata)
@@ -488,10 +492,10 @@ class ScenarioDbManager():
     def __init__(self, input_db_tables: Dict[str, ScenarioDbTable], output_db_tables: Dict[str, ScenarioDbTable],
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
-                 enable_debug_print: bool = False, enable_scenario_seq: bool = False,
-                 db_type: DatabaseType = DatabaseType.DB2,
+                 enable_debug_print: bool = False, enable_scenario_seq: bool = True,
+                 db_type: DatabaseType = DatabaseType.PostgreSQL,
                  use_custom_naming_convention: bool = False,
-                 future: bool = False,
+                 future: bool = True,
                  ):
         """Create a ScenarioDbManager.
 

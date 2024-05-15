@@ -123,7 +123,7 @@ class OptimizationEngine(Generic[DM]):
         """Returns pd.Series[SemiIntegerVarType]."""
         return pd.Series(mdl.semiinteger_var_list(df.index, lb, **kargs), index=df.index, dtype='object')
 
-    def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
+    def solve(self, refine_conflict: Optional[bool] = False, **kwargs) -> docplex.mp.solution.SolveSolution:
         # TODO: enable export_as_lp_path()?
         # self.export_as_lp_path(lp_file_name=self.mdl.name)
         # TODO: use self.solve_kwargs if **kwargs is empty/None. Or merge them?

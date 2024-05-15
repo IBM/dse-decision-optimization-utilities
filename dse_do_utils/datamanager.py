@@ -22,7 +22,7 @@ class DataManager(object):
 
     It typically contains the input and output dictionaries with DataFrames that came from
     or will be inserted into a DO scenario.
-    In addition it will hold any intermediate data.
+    In addition, it will hold any intermediate data.
     It holds methods that operate on and convert the data.
     When used in combination with an optimization engine, it should not contain the
     docplex code that creates or interacts with the docplex Model. (That is the task of the OptimizationEngine.)
@@ -38,7 +38,10 @@ class DataManager(object):
     def __init__(self, inputs: Optional[Inputs] = None, outputs: Optional[Outputs] = None):
         self.inputs = inputs
         self.outputs = outputs
-        return
+
+        # Parameters:
+        self.params: Optional[pd.DataFrame] = None
+        self.param = types.SimpleNamespace()
 
     def prepare_data_frames(self):
         if (self.inputs is not None) and (len(self.inputs) > 0):
