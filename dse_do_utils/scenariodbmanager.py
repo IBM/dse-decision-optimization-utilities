@@ -72,7 +72,7 @@ class ScenarioDbTable(ABC):
             columns_metadata = []
         self.db_table_name = db_table_name
         # ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.
-        self.columns_metadata = self.resolve_metadata_column_conflicts(columns_metadata)
+        self.columns_metadata: List[sqlalchemy.Column] = self.resolve_metadata_column_conflicts(columns_metadata)
         self.constraints_metadata = constraints_metadata
         self.dtype = None
         if not db_table_name.islower() and not db_table_name.isupper(): ## I.e. is mixed_case
@@ -493,7 +493,7 @@ class ScenarioDbManager():
                  credentials=None, schema: str = None, echo: bool = False, multi_scenario: bool = True,
                  enable_transactions: bool = True, enable_sqlite_fk: bool = True, enable_astype: bool = True,
                  enable_debug_print: bool = False, enable_scenario_seq: bool = True,
-                 db_type: DatabaseType = DatabaseType.PostgreSQL,
+                 db_type: DatabaseType = DatabaseType.SQLite,
                  use_custom_naming_convention: bool = False,
                  future: bool = True,
                  ):
@@ -2007,6 +2007,178 @@ class ScenarioDbManager():
                 new_outputs[scenario_table_name] = df
         return new_inputs, new_outputs
 
+    #####################################################################################################
+    # Insert, Update, Delete row
+    #####################################################################################################
+    def insert_table_row(self, scenario_table_name: str, scenario_name: str, values):
+        if self.enable_transactions:
+            # print("Insert row scenario within a transaction")
+            with self.engine.begin() as connection:
+                self._insert_table_row(scenario_table_name, scenario_name, values, connection)
+        else:
+            self._insert_table_row(scenario_table_name, scenario_name, values, self.engine)
+
+    def _insert_table_row(self, scenario_table_name: str, scenario_name: str, values, connection=None):
+        """DRAFT. Insert one row of data.
+        TODO: handle update if it already exists: 'upsert'
+        Args:
+            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)
+            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples().
+            connection
+        """
+        # raise NotImplementedError
+
+        if scenario_table_name in self.db_tables:
+            db_table = self.db_tables[scenario_table_name]
+        else:
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot insert data into DB.")
+
+        # TODO: add scenario_seq to values
+        # TODO: if values is a sequence, we need to convert to a Dict so that we can add a value?
+        scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
+        if scenario_seq is not None:
+            values['scenario_seq'] = scenario_seq
+        else:
+            raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot insert row.")
+
+        stmt = (
+            sqlalchemy.insert(db_table.get_sa_table()).values(values)
+        )
+        try:
+            if connection is None:
+                self.engine.execute(stmt)
+            else:
+                connection.execute(stmt)
+
+        except exc.IntegrityError as e:
+            print("++++++++++++Integrity Error+++++++++++++")
+            print(e)
+        except exc.StatementError as e:
+            print("++++++++++++Statement Error+++++++++++++")
+            print(e)
+
+    def update_table_row(self, scenario_table_name: str, scenario_name: str, values):
+        if self.enable_transactions:
+            # print("Insert row scenario within a transaction")
+            with self.engine.begin() as connection:
+                self._update_table_row(scenario_table_name, scenario_name, values, connection)
+        else:
+            self._update_table_row(scenario_table_name, scenario_name, values, self.engine)
+
+    def _update_table_row(self, scenario_table_name: str, scenario_name: str, values, connection=None):
+        """DRAFT. Update one row of data.
+        Args:
+            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)
+            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples().
+            connection
+        """
+        if scenario_table_name in self.db_tables:
+            db_table = self.db_tables[scenario_table_name]
+        else:
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot insert data into DB.")
+
+        scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
+        if scenario_seq is not None:
+            values['scenario_seq'] = scenario_seq
+        else:
+            raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot insert row.")
+
+        # Split values in 2 parts:
+        # 1. The primary keys
+        # 2. The other columns
+        primary_keys = [c.name for c in db_table.columns_metadata if c.primary_key and c.name != 'scenario_seq'and c.name != 'scenario_name' ]
+        pk_values = {k: v for k,v in values.items() if k in primary_keys}
+        pk_conditions = [(db_table.get_sa_column(k) == v) for k, v in pk_values.items()]  # TODO:
+        column_values = {k: v for k,v in values.items() if k not in primary_keys and k not in['scenario_seq', 'scenario_name']}  # remove PK values
+        t: sqlalchemy.Table = db_table.get_sa_table()
+
+        if self.enable_scenario_seq:
+            if (scenario_seq := self._get_scenario_seq(scenario_name, connection)) is not None:
+                # print(f"ScenarioSeq = {scenario_seq}")
+                sql = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values(column_values)
+                # connection.execute(sql)  # VT20230204: Duplicate execute? Will be done anyway at the end of this method!
+            else:
+                raise ValueError(f"No scenario with name {scenario_name} exists")
+        else:
+            sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions)).values(column_values)
+
+        # TODO: this does NOT fail if the row doesn't exist. It simply doesn;t do anything !? How can we have this fail, so we can do an insert?
+        connection.execute(sql)
+
+
+    def upsert_table_row(self, scenario_table_name: str, scenario_name: str, values):
+        if self.enable_transactions:
+            # print("Insert row scenario within a transaction")
+            with self.engine.begin() as connection:
+                self._upsert_table_row(scenario_table_name, scenario_name, values, connection)
+        else:
+            self._upsert_table_row(scenario_table_name, scenario_name, values, self.engine)
+
+    def _upsert_table_row(self, scenario_table_name: str, scenario_name: str, values, connection=None):
+        """Updates or inserts a row in a DB table.
+        Assumes the values contain all primary key values.
+        Other columns are optional.
+        If row exists, will update the row. If row doesn't exist, will do an insert.
+        Update also supports partial updates of non-pk fields.
+        Beware that a None will result in a NULL.
+
+        Args:
+            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)
+            scenario_name (str): scenario_name
+            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples(). Must include values for all PK columns.
+            connection
+
+        Raises errors for:
+            Unknown scenario_name
+            Primary Key value not in values
+        """
+        if scenario_table_name in self.db_tables:
+            db_table = self.db_tables[scenario_table_name]
+        else:
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot upsert data into DB.")
+
+        # scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
+        # if scenario_seq is not None:
+        #     values['scenario_seq'] = scenario_seq
+        # else:
+        #     raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
+
+        # Split values in 2 parts:
+        # 1. The primary keys
+        # 2. The other columns
+        primary_keys = [c.name for c in db_table.columns_metadata if c.primary_key and c.name != 'scenario_seq'and c.name != 'scenario_name' ]
+        if not all(pk in values.keys() for pk in primary_keys):
+            raise ValueError(f"Not all required primary keys {primary_keys} specified in upsert request {values}")
+        # for pk in primary_keys:
+        #     if pk not in values.keys():
+        #         raise ValueError(f"Primary key {pk} value not specified in upsert request")
+        pk_values = {k: v for k,v in values.items() if k in primary_keys}
+        pk_conditions = [(db_table.get_sa_column(k) == v) for k, v in pk_values.items()]
+        column_values = {k: v for k,v in values.items() if k not in primary_keys and k not in['scenario_seq', 'scenario_name']}  # remove PK values
+        t: sqlalchemy.Table = db_table.get_sa_table()
+
+        if self.enable_scenario_seq:
+            if (scenario_seq := self._get_scenario_seq(scenario_name, connection)) is not None:
+                # print(f"ScenarioSeq = {scenario_seq}")
+                # sql_exists = sqlalchemy.exists().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions))
+                sql_select = t.select().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions))  #.exists()
+                res = connection.execute(sql_select)
+                count = res.rowcount
+                if count > 0:
+                    # Update existing record
+                    sql_update = t.update().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions)).values(column_values)
+                    connection.execute(sql_update)
+                else:
+                    # Insert new record
+                    sql_insert = t.insert().values(values)
+                    connection.execute(sql_insert)
+            else:
+                raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
+        else:
+            raise NotImplementedError(f"Upsert only supports enable_scenario_seq")
+            # TODO: implement. Easy to do.
+            # sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions)).values(column_values)
+            # connection.execute(sql)
 #######################################################################################################
 # Input Tables
 #######################################################################################################

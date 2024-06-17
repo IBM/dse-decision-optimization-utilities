@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.7.0b0]
 ### Changed
-- BACKWARD INCOMPATIBILITY - ScenarioDbManager.__init__: changed default values for enable_scenario_seq=True, db_type=DatabaseType.PostgreSQL, future=True. This reflects the current best practices.
+- BACKWARD INCOMPATIBILITY - ScenarioDbManager.__init__: changed default values for db_type=DatabaseType.SQLite. For other uses (DB2 or PostgreSQL, always specify the db_type.
+- BACKWARD INCOMPATIBILITY - ScenarioDbManager.__init__: changed default values for enable_scenario_seq=True, future=True. This reflects the current best practices.
 - BACKWARD INCOMPATIBILITY - Removed ScenarioDbManager from `dse_do_utils.__init__.py`. This avoids the dependency on sqlalchemy with use of dse_do_utils where the ScenarioDbManager is not used. 
 Introduces a slight backward incompatibility. Need to import as: `from dse_do_utils.scenariodbmanager import ScenarioDbManager` 
 - Removed (deprecated) `module_reload()` from `dse_do_utils.__init__.py`. In notebooks `autoreload` works well, 

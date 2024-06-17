@@ -11,7 +11,7 @@ from dse_do_utils.core.core01_data_manager import Core01DataManager
 
 from dse_do_utils import ScenarioManager, OptimizationEngine
 from dse_do_utils.datamanager import Inputs, Outputs, DataManager
-from dse_do_utils.scenariodbmanager import ScenarioDbManager
+from dse_do_utils.scenariodbmanager import ScenarioDbManager, DatabaseType
 from logging import Logger, getLogger
 from typing import Any, Dict, Optional, Tuple, NamedTuple, Type, List, Union, TypeVar, Generic
 
@@ -347,7 +347,7 @@ class ScenarioRunner:
         Set bulk to False to get more granular DB insert errors, i.e. per record.
         TODO: add a data_check() on the DataManager for additional checks."""
         self._logger.info('Checking input data via SQLite and DataManager')
-        self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class()
+        self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class(db_type=DatabaseType.SQLite)
         self.sqlite_scenario_db_manager.create_schema()
         self.sqlite_scenario_db_manager.replace_scenario_in_db(scenario_name, deepcopy(inputs), {}, bulk=bulk)
 
@@ -364,7 +364,7 @@ class ScenarioRunner:
         TODO: add a data_check() on the DataManager for additional checks."""
         self._logger.info('Checking output data via SQLite and DataManager')
         if self.sqlite_scenario_db_manager is None:
-            self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class()
+            self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class(db_type=DatabaseType.SQLite)
             self.sqlite_scenario_db_manager.create_schema()
             self.sqlite_scenario_db_manager.replace_scenario_in_db(scenario_name, deepcopy(inputs), deepcopy(outputs), bulk=bulk)
         else:
