@@ -14,6 +14,8 @@ Introduces a slight backward incompatibility. Need to import as: `from dse_do_ut
 - Generics in ScenarioRunner
 - Removed deprecated optional argument `dtypes` from `Core01DataManager.prepare_output_data_frames()`
 - Fixed mutable default arguments in scenariodbmanager module
+### Added
+- CplexDot in core01_optimization_engine: generic function class to use groupby aggregation and the mdl.dot() function.
 
 ## [0.5.6.0]- 2023-05-13
 ### Changed

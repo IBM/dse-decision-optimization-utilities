@@ -6,6 +6,7 @@ import pathlib
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
+import docplex.mp.model
 import pandas as pd
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.solution import SolveSolution
@@ -283,4 +284,24 @@ class CplexSum():
     def __call__(self, dvar_series):
         return self.mdl.sum(dvar_series)
 
+class CplexDot():
+    """Function class that adds a series of dvars into a cplex sum expression.
+    To be used as a custom aggregation in a groupby.
+    Usage:
+        df2 = df1.groupby(['a']).apply(CplexDot(engine.mdl, 'xDVar', 'volume')).to_frame(name='expr')
 
+    For each group, creates an expression df2['expr'] = mdl.dot(group.xDVar, group.volume)
+    In above usage, df2 is a DataFrame with the index based on the groupby keys and one column named 'expr'.
+    """
+    def __init__(self, mdl: docplex.mp.model.Model, column1: str, column2: str):
+        """
+        Args:
+            mdl: Cplex Model instance
+            column1 (str): Name of column_1 in DataFrame
+            column1 (str): Name of column_2 in DataFrame
+        """
+        self.mdl = mdl
+        self.column1 = column1
+        self.column2 = column2
+    def __call__(self, group):
+        return self.mdl.dot(group[self.column1], group[self.column2])
