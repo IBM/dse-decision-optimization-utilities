@@ -16,6 +16,8 @@ Introduces a slight backward incompatibility. Need to import as: `from dse_do_ut
 - Fixed mutable default arguments in scenariodbmanager module
 ### Added
 - CplexDot in core01_optimization_engine: generic function class to use groupby aggregation and the mdl.dot() function.
+- PlotlyManager - self.ref_dm, self.ms_inputs, self.ms_outputs property declarations and documentation
+- PlotlyManager.plotly_kpi_compare_bar_charts and .get_multi_scenario_table for scenario compare
 
 ## [0.5.6.0]- 2023-05-13
 ### Changed
