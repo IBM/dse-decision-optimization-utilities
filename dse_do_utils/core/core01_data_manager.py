@@ -87,6 +87,13 @@ class Core01DataManager(DataManager):
         self.param.threads = self.get_parameter_value(self.params, 'threads', param_type='int',
                                                       default_value=0)  # default 0 implies no limit
 
+        self.param.mip_gap = self.get_parameter_value(
+            self.params,
+            'mipGap',
+            param_type='float',
+            default_value=0
+        )
+
         self.param.enable_lp_names = self.get_parameter_value(
             self.params,
             param_name='enableLPNames',

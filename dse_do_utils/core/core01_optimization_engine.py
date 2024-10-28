@@ -90,6 +90,9 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         if int(self.dm.param.threads) > 0:
             self.mdl.parameters.threads = int(self.dm.param.threads)
 
+        if float(self.dm.param.mip_gap) > 0:
+            self.mdl.parameters.mip.tolerances.mipgap = float(self.dm.param.mip_gap)
+
         if self.dm.param.handle_unscaled_infeasibilities:
             self._set_cplex_parameters_unscaled_infeasibilities()
 
