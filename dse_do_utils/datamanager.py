@@ -361,7 +361,7 @@ class DataManager(object):
     def extract_solution(df: pd.DataFrame, extract_dvar_names: Optional[List[str] | Dict[str, str]] = None, drop_column_names: List[str] = None,
                          drop: bool = True, epsilon: float = None, round_decimals: int = None,
                          solution_column_name_post_fix: str = 'Sol',
-                         allow_mixed_columns: bool = False) -> pd.DataFrame:
+                         allow_mixed_type_columns: bool = False) -> pd.DataFrame:
         """Generalized routine to extract a solution value.
         Can remove the dvar column from the df to be able to have a clean df for export into scenario.
 
@@ -383,7 +383,7 @@ class DataManager(object):
             round_decimals (int): round the solution value by number of decimals. If None, no rounding.
             If 0, rounding to integer value.
             solution_column_name_post_fix (str): Postfix for the name of the solution column. Default = 'Sol'
-            allow_mixed_columns (bool): If True, will allow the column not to have the `solution_value` attribute, i.e. be a plain Python value, not a CPLEX dvar or expression
+            allow_mixed_type_columns (bool): If True, will allow the column not to have the `solution_value` attribute, i.e. be a plain Python value, not a CPLEX dvar or expression
         """
 
 
@@ -399,7 +399,7 @@ class DataManager(object):
                 if xDVarName in df.columns:
                     # solution_column_name = f'{xDVarName}Sol'
                     # df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]
-                    if allow_mixed_columns:
+                    if allow_mixed_type_columns:
                         df[solution_column_name] = [dvar.solution_value if hasattr(dvar, 'solution_value') else dvar for
                                                 dvar in df[xDVarName]]  # VT_20241029: allow expression to be a constant
                     else:
