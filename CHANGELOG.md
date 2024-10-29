@@ -19,7 +19,7 @@ Introduces a slight backward incompatibility. Need to import as: `from dse_do_ut
 - PlotlyManager - self.ref_dm, self.ms_inputs, self.ms_outputs property declarations and documentation
 - PlotlyManager.plotly_kpi_compare_bar_charts and .get_multi_scenario_table for scenario compare
 - Core01DataManager and Core01OptimizationEngine: added support for parameter `mipGap`. Sets the `mdl.parameters.mip.tolerances.mipgap` if value > 0
-- DataManager.extract_solution adds option `allow_mixed_columns`. If True allows dvar/expr in column to be a regular Python value and not have the `solution_value` attribute
+- DataManager.extract_solution adds option `allow_mixed_type_columns`. If True allows dvar/expr in column to be a regular Python value and not have the `solution_value` attribute
 
 ## [0.5.6.0]- 2023-05-13
 ### Changed
