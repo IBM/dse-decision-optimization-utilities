@@ -123,7 +123,7 @@ class OptimizationEngine(Generic[DM]):
         """Returns pd.Series[SemiIntegerVarType]."""
         return pd.Series(mdl.semiinteger_var_list(df.index, lb, **kargs), index=df.index, dtype='object')
 
-    def solve(self, refine_conflict: bool = False, **kwargs) -> docplex.mp.solution.SolveSolution:
+    def solve(self, refine_conflict: Optional[bool] = False, **kwargs) -> docplex.mp.solution.SolveSolution:
         # TODO: enable export_as_lp_path()?
         # self.export_as_lp_path(lp_file_name=self.mdl.name)
         # TODO: use self.solve_kwargs if **kwargs is empty/None. Or merge them?
@@ -336,9 +336,43 @@ class OptimizationEngine(Generic[DM]):
         integer_series = pd.Series(integer_list, index=df.index)
         return integer_series
 
+    @staticmethod
+    def cp_integer_var_series_s_v2(mdl: cp.CpoModel, df: pd.DataFrame, min=None, max=None, name=None,
+                                   domain=None) -> pd.Series:
+        """Returns pd.Series[docplex.cp.expression.CpoIntVar].
+        If name is not None, will generate unique names based on pattern: '{name}_{index of df}'
+        If multi-index df, keys are separated by '_', e.g. 'xDvar_1_2_3'
+        """
+
+        if name is None:
+            integer_list = mdl.integer_var_list(df.shape[0], min, max, name, domain)
+        else:
+            integer_list = []
+            for ix in df.index:
+                new_name = f"{name}_{OptimizationEngine._get_index_as_str(ix)}"
+                integer_list.append(mdl.integer_var(min, max, new_name, domain))
+        integer_series = pd.Series(integer_list, index=df.index)
+        return integer_series
+
+    @staticmethod
+    def _get_index_as_str(ix) -> str:
+        """Convert an index of a DF to a string. For naming dvars and constraints.
+        If df has a multi-index, the ix is a tuple."""
+        if type(ix) is tuple:  # If muli-index
+            name = '_'.join(map(str, ix))
+        else:
+            name = str(ix)
+        # elif isinstance(ix, str):
+        #     new_name = f"{name}_{ix}"
+        # elif isinstance(ix, int):
+        #     new_name = f"{name}_{ix}"
+        # else:
+        #     new_name = f"{name}_{str(ix)}"
+        return name
+
     def cp_integer_var_series(self, df, **kwargs) -> pd.Series:
         """Returns pd.Series[docplex.cp.expression.CpoIntVar]"""
-        return OptimizationEngine.cp_integer_var_series_s(self.mdl, df=df, **kwargs)
+        return OptimizationEngine.cp_integer_var_series_s_v2(self.mdl, df=df, **kwargs)
 
     @staticmethod
     def cp_binary_var_series_s(mdl: cp.CpoModel, df: pd.DataFrame, **kwargs) -> pd.Series:

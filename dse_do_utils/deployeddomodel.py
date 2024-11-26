@@ -241,7 +241,7 @@ class DeployedDOModel(object):
     #         self.outputs = self.get_outputs(job_details)
     #         self.solve_details = self.get_solve_details(job_details)
 
-    def solve_v2(self, inputs: Inputs, max_oaas_time_limit_sec: int = None, max_run_time_sec: int = None):
+    def solve_v2(self, inputs: Inputs, max_oaas_time_limit_sec: int = None, max_run_time_sec: int = None) -> dict:
         """Master routine. Initializes the job, starts the execution, monitors the results, post-processes the solution and cleans-up after.
 
         Args:

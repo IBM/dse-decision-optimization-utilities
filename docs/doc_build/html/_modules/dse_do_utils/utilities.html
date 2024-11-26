@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.utilities &#8212; DSE DO Utils 0.5.6.0 documentation</title>
+    <title>dse_do_utils.utilities &#8212; DSE DO Utils 0.5.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,9 +33,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.utilities</a></li> 
       </ul>
     </div>  
@@ -166,10 +165,40 @@
 
 <span class="sd">    Index columns are added at the tail of the tuple, so to be compatible with code that uses the position of the fields in the tuple.</span>
 <span class="sd">    Inspired by https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        * Does NOT work when df.Index has no names</span>
+<span class="sd">    TODO: does not work if only Index and no columns</span>
+<span class="sd">    TODO: test the combinations where row or Index are not tuples. Is row always a tuple?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Row</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="o">*</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-        <span class="k">yield</span> <span class="n">Row</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">Index</span><span class="p">))</span></div>
+        <span class="c1"># Option1 - Fails when Index is not a tuple</span>
+        <span class="c1"># yield Row(*(row + row.Index))</span>
+
+        <span class="c1"># Option 2 - In case the df has no columns?</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">Row</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">Index</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">Row</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">Index</span><span class="p">)</span></div>
+
+        <span class="c1"># Option 3 - not necessary?</span>
+        <span class="c1"># if isinstance(row, tuple):</span>
+        <span class="c1">#     if isinstance(row.Index, tuple):</span>
+        <span class="c1">#         yield Row(*(row + row.Index))</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         yield Row(*row,row.Index)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     if isinstance(row.Index, tuple):</span>
+        <span class="c1">#         yield Row(row, *row.Index)</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         yield Row(row,row.Index)</span>
+
+
+        <span class="c1"># if isinstance(row, tuple):</span>
+        <span class="c1"># #</span>
+        <span class="c1"># yield Row(*((row) + (row.Index)))</span>
+        <span class="c1"># if isinstance(row, tuple):</span>
 
 </pre></div>
 
@@ -202,9 +231,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.utilities</a></li> 
       </ul>
     </div>

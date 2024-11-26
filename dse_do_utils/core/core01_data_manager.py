@@ -50,13 +50,17 @@ class Core01DataManager(DataManager):
         # `self.__class__.__module__` returns `fruit.data_manager` (same as `self.__module__`)
 
         # VT20230607: changed to __name__ from self.__module__
+
         self.logger = logging.getLogger(__name__)  # `__name__` is Python best practice
 
-        # Parameters:
-        self.params = None
-        self.param = types.SimpleNamespace()
+        # # Parameters:
+        # self.params = None
+        # self.param = types.SimpleNamespace()
 
         self.dtypes: Dict = self.get_default_dtypes()
+
+        # Output data
+        self.kpis: Optional[pd.DataFrame] = None
 
     def prepare_input_data_frames(self):
         super().prepare_input_data_frames()
@@ -82,11 +86,13 @@ class Core01DataManager(DataManager):
 
         self.param.threads = self.get_parameter_value(self.params, 'threads', param_type='int',
                                                       default_value=0)  # default 0 implies no limit
-        # self.param.n_threads = self.get_parameter_value(
-        #     self.params,
-        #     param_name='numberThreads',
-        #     param_type='int',
-        #     default_value=0)
+
+        self.param.mip_gap = self.get_parameter_value(
+            self.params,
+            'mipGap',
+            param_type='float',
+            default_value=0
+        )
 
         self.param.enable_lp_names = self.get_parameter_value(
             self.params,
@@ -106,11 +112,8 @@ class Core01DataManager(DataManager):
             param_type='bool',
             default_value=False)
 
-    def prepare_output_data_frames(self, dtypes=None):
+    def prepare_output_data_frames(self):
         """
-        TODO: remove dtypes argument. Beware that this can break existing code
-        :param dtypes:
-        :return:
         """
         super().prepare_output_data_frames()
         self.logger.debug("Enter")
@@ -173,6 +176,7 @@ class Core01DataManager(DataManager):
             df: dataframe
             index_columns: index column names
             value_columns: value column names
+            optional_columns:
             dtypes: map of column data types. Adds and overrides values in self.dtypes
             data_specs_key: data specs key
             verify_integrity: flag to verify integrity when setting the index

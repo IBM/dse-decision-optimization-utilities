@@ -6,10 +6,12 @@ import pathlib
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
-import docplex.mp.model
 import pandas as pd
+from docplex import cp
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.solution import SolveSolution
+from docplex.cp.parameters import CpoParameters
+from docplex.cp.solution import CpoSolveResult, CpoRefineConflictResult
 
 from dse_do_utils import OptimizationEngine
 from dse_do_utils.core.core01_data_manager import Core01DataManager
@@ -19,8 +21,10 @@ from typing import TypeVar, Generic
 DM = TypeVar('DM', bound='Core01DataManager')
 
 
-class Core01OptimizationEngine(OptimizationEngine[DM]):
+class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
     """
+    DRAFT. Needs a lot of updates to match CP Optimizer specifics!
+
     This class supports Python generics to specify the class of the DataManager.
     This allows an IDE like PyCharm and VSCode to check for methods and attributes
     and allows more easy navigation (i.e. control-click on name)
@@ -38,7 +42,7 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
     def __init__(self, data_manager: DM, name: str = None, solve_kwargs=None,
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
                  enable_refine_conflict: bool = False):
-        super().__init__(data_manager=data_manager, name=name)
+        super().__init__(data_manager=data_manager, name=name, is_cpo_model=True)
 
         if solve_kwargs is None:
             solve_kwargs = {"log_output": True}
@@ -49,6 +53,8 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         self.enable_refine_conflict = enable_refine_conflict
         self.logger = data_manager.logger
 
+        self.cpo_params = CpoParameters()
+
     def run(self) -> Outputs:
         self.dm.prepare_data_frames()
         self.dm.pre_processing()
@@ -57,10 +63,11 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         self.create_objectives()
         self.set_objective()
         self.create_constraints()
-        self.set_cplex_parameters()
+        # self.set_cplex_parameters()
+        self.set_cpo_parameters()
         msol = self.solve()
-        if msol is not None:
-            self.extract_solution()
+        if msol.is_solution() is not None:
+            self.extract_solution(msol)
             self.post_processing()
             outputs = self.get_outputs()
         else:
@@ -90,9 +97,6 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         if int(self.dm.param.threads) > 0:
             self.mdl.parameters.threads = int(self.dm.param.threads)
 
-        if float(self.dm.param.mip_gap) > 0:
-            self.mdl.parameters.mip.tolerances.mipgap = float(self.dm.param.mip_gap)
-
         if self.dm.param.handle_unscaled_infeasibilities:
             self._set_cplex_parameters_unscaled_infeasibilities()
 
@@ -100,24 +104,38 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
             # Configure the mdl to generate quality metrics, will be available in mdl.solve_details.quality_metrics
             self.mdl.quality_metrics = True
 
-    def solve(self) -> Optional[SolveSolution]:
-        msol = self.mdl.solve(**self.solve_kwargs)
-        self.dm.logger.info(
-        f"Solve completed with status '{self.mdl.solve_details.status}' and time {self.mdl.solve_details.time:.2f} sec")
+    def set_cpo_parameters(self):
+        if self.cpo_params is None:
+            self.cpo_params = CpoParameters()
+
+        if int(self.dm.param.time_limit) > 0:
+            self.cpo_params.TimeLimit = int(self.dm.param.time_limit)
+
+        # self.cpo_params.KPIDisplay = 'MultipleLines'
+        # self.cpo_params.ConflictRefinerTimeLimit = 60
+        # self.cpo_params.LogPeriod = 10_000  # Number of branches, default 1000
+        # self.cpo_params.LogVerbosity = 'Normal'  #'Terse'
+
+    def solve(self) -> Optional[CpoSolveResult]:
+        """
+        TODO: In CPO, is msol None if no solution?
+        """
+        msol = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
-        if msol is not None:
-            # TODO: enable print report?
-            self.mdl.report()
+        if msol.is_solution():
+            pass
+            # TODO: CPO equivalent of CPLEX report?
+            # self.mdl.report()
         elif self.enable_refine_conflict:
             self.refine_conflict()
         return msol
 
     @abstractmethod
-    def extract_solution(self, drop: bool = True) -> None:
+    def extract_solution(self, msol: CpoSolveResult, drop: bool = True) -> None:
         self.dm.logger.debug("Enter")
 
         # KPIs
-        self.dm.kpis = self.get_kpi_output_table()
+        self.dm.kpis = self.get_kpi_output_table(msol)
 
     @abstractmethod
     def post_processing(self) -> None:
@@ -137,11 +155,13 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         :return:
         """
         self.logger.debug("Start ConflictRefiner")
-        crefiner = ConflictRefiner()  # Create an instance of the ConflictRefiner
-        conflicts = crefiner.refine_conflict(self.mdl)  # Run the conflict refiner
-        # ConflictRefiner.display_conflicts(conflicts) #Display the results
-        for c in conflicts:
-            print(c.element)  # Display conflict result in a little more compact format than ConflictRefiner.display_conflicts
+        conflicts: CpoRefineConflictResult = self.mdl.refine_conflict()  # TODO: Is this working?
+        conflicts.print_conflict()  # TODO: Deprecated
+        # crefiner = ConflictRefiner()  # Create an instance of the ConflictRefiner
+        # conflicts = crefiner.refine_conflict(self.mdl)  # Run the conflict refiner
+        # # ConflictRefiner.display_conflicts(conflicts) #Display the results
+        # for c in conflicts:
+        #     print(c.element)  # Display conflict result in a little more compact format than ConflictRefiner.display_conflicts
 
 
     @staticmethod
@@ -176,7 +196,7 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         if extract_dvar_names is not None:
             for xDVarName in extract_dvar_names:
                 if xDVarName in df.columns:
-                    df[f'{xDVarName}{column_name_post_fix}'] = [Core01OptimizationEngine.condition_values(dvar) for dvar in df[xDVarName]]
+                    df[f'{xDVarName}{column_name_post_fix}'] = [Core01CpoOptimizationEngine.condition_values(dvar) for dvar in df[xDVarName]]
                     if drop and len(column_name_post_fix) > 0:
                         # Only drop if we created a new column
                         df = df.drop([xDVarName], axis=1)
@@ -186,13 +206,15 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
                     df = df.drop([column], axis=1)
         return df
     
-    def get_kpi_output_table(self) -> pd.DataFrame:
+    def get_kpi_output_table(self, msol: CpoSolveResult) -> pd.DataFrame:
         """Overrides the default and uses the default `['NAME', 'VALUE']` columns."""
-        all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.iter_kpis()]
+        # print("   KPIs: {}".format(msol.get_kpis()))
+        # all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.get_kpis()]
+        all_kpis = msol.get_kpis()
         df_kpis = pd.DataFrame(all_kpis, columns=['NAME', 'VALUE']).set_index('NAME')
         return df_kpis
 
-    def export_as_lp_path(self, lp_file_name: str = 'my_lp_file') -> str:
+    def export_as_lp_path(self, lp_file_name: str = 'my_cpo_file') -> str:
         """
         Saves .lp file in self.export_lp_path
         Note: Does not conflict with `OptimizationEngine.export_as_lp()` which has a different signature.
@@ -200,11 +222,11 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         """
         filepath = None
         if self.export_lp:
-            if pathlib.Path(lp_file_name).suffix != '.lp':
-                lp_file_name = lp_file_name + '.lp'
+            if pathlib.Path(lp_file_name).suffix != '.cpo':
+                lp_file_name = lp_file_name + '.cpo'
             filepath = os.path.join(self.export_lp_path, lp_file_name)
-            self.logger.debug(f"Exporting .lp file: {filepath}")
-            self.mdl.export_as_lp(filepath)
+            self.logger.debug(f"Exporting .cpo file: {filepath}")
+            self.mdl.export_as_cpo(filepath)
         return filepath
 
     def export_as_sav_path(self, sav_file_name: str = 'my_sav_file') -> str:
@@ -252,27 +274,6 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         else:
             return pd.DataFrame(columns=['name', 'value']).set_index('name')
 
-    ##########################################
-    # Tuning (TODO)
-    ##########################################
-    def cplex_tune_model(self):
-        """DRAFT
-        Run the cplex parameter tuning
-        From https://stackoverflow.com/questions/53353970/where-can-i-find-the-documentation-of-docplex-automatic-tuning-tool
-        Works but beware of too short time-limit
-        Returns:
-
-        """
-        cpx = self.mdl.get_engine().get_cplex()
-        status = cpx.parameters.tune_problem()
-        if status == cpx.parameters.tuning_status.completed:
-            print("tuned parameters:")
-            for param, value in cpx.parameters.get_changed():
-                print("{0}: {1}".format(repr(param), value))
-        else:
-            print("tuning status was: {0}".format(
-                cpx.parameters.tuning_status[status]))
-
 ############################################################
 class CplexSum():
     """Function class that adds a series of dvars into a cplex sum expression.
@@ -287,24 +288,4 @@ class CplexSum():
     def __call__(self, dvar_series):
         return self.mdl.sum(dvar_series)
 
-class CplexDot():
-    """Function class that adds a series of dvars into a cplex sum expression.
-    To be used as a custom aggregation in a groupby.
-    Usage:
-        df2 = df1.groupby(['a']).apply(CplexDot(engine.mdl, 'xDVar', 'volume')).to_frame(name='expr')
 
-    For each group, creates an expression df2['expr'] = mdl.dot(group.xDVar, group.volume)
-    In above usage, df2 is a DataFrame with the index based on the groupby keys and one column named 'expr'.
-    """
-    def __init__(self, mdl: docplex.mp.model.Model, column1: str, column2: str):
-        """
-        Args:
-            mdl: Cplex Model instance
-            column1 (str): Name of column_1 in DataFrame
-            column1 (str): Name of column_2 in DataFrame
-        """
-        self.mdl = mdl
-        self.column1 = column1
-        self.column2 = column2
-    def __call__(self, group):
-        return self.mdl.dot(group[self.column1], group[self.column2])

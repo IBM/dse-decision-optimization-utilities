@@ -118,8 +118,38 @@ def df_itertuples_with_index_names(df: pd.DataFrame):
 
     Index columns are added at the tail of the tuple, so to be compatible with code that uses the position of the fields in the tuple.
     Inspired by https://stackoverflow.com/questions/46151666/iterate-over-pandas-dataframe-with-multiindex-by-index-names.
+
+    Notes:
+        * Does NOT work when df.Index has no names
+    TODO: does not work if only Index and no columns
+    TODO: test the combinations where row or Index are not tuples. Is row always a tuple?
     """
     Row = namedtuple("Row", ['Index', *df.columns, *df.index.names])
     for row in df.itertuples():
-        yield Row(*(row + row.Index))
+        # Option1 - Fails when Index is not a tuple
+        # yield Row(*(row + row.Index))
+
+        # Option 2 - In case the df has no columns?
+        if isinstance(row.Index, tuple):
+            yield Row(*(row + row.Index))
+        else:
+            yield Row(*row, row.Index)
+
+        # Option 3 - not necessary?
+        # if isinstance(row, tuple):
+        #     if isinstance(row.Index, tuple):
+        #         yield Row(*(row + row.Index))
+        #     else:
+        #         yield Row(*row,row.Index)
+        # else:
+        #     if isinstance(row.Index, tuple):
+        #         yield Row(row, *row.Index)
+        #     else:
+        #         yield Row(row,row.Index)
+
+
+        # if isinstance(row, tuple):
+        # #
+        # yield Row(*((row) + (row.Index)))
+        # if isinstance(row, tuple):
 

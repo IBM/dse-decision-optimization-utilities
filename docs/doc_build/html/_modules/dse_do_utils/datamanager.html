@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.6.0 documentation</title>
+    <title>dse_do_utils.datamanager &#8212; DSE DO Utils 0.5.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,9 +33,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
       </ul>
     </div>  
@@ -70,7 +69,7 @@
 
 <span class="sd">    It typically contains the input and output dictionaries with DataFrames that came from</span>
 <span class="sd">    or will be inserted into a DO scenario.</span>
-<span class="sd">    In addition it will hold any intermediate data.</span>
+<span class="sd">    In addition, it will hold any intermediate data.</span>
 <span class="sd">    It holds methods that operate on and convert the data.</span>
 <span class="sd">    When used in combination with an optimization engine, it should not contain the</span>
 <span class="sd">    docplex code that creates or interacts with the docplex Model. (That is the task of the OptimizationEngine.)</span>
@@ -86,7 +85,10 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Inputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Outputs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span>
-        <span class="k">return</span>
+
+        <span class="c1"># Parameters:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">SimpleNamespace</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DataManager.prepare_data_frames"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.prepare_data_frames">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_data_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
@@ -405,7 +407,8 @@
 <div class="viewcode-block" id="DataManager.extract_solution"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.datamanager.DataManager.extract_solution">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">extract_solution</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">extract_dvar_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">drop_column_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                          <span class="n">drop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">round_decimals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                         <span class="n">solution_column_name_post_fix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Sol&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+                         <span class="n">solution_column_name_post_fix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Sol&#39;</span><span class="p">,</span>
+                         <span class="n">allow_mixed_type_columns</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Generalized routine to extract a solution value.</span>
 <span class="sd">        Can remove the dvar column from the df to be able to have a clean df for export into scenario.</span>
 
@@ -427,7 +430,7 @@
 <span class="sd">            round_decimals (int): round the solution value by number of decimals. If None, no rounding.</span>
 <span class="sd">            If 0, rounding to integer value.</span>
 <span class="sd">            solution_column_name_post_fix (str): Postfix for the name of the solution column. Default = &#39;Sol&#39;</span>
-
+<span class="sd">            allow_mixed_type_columns (bool): If True, will allow the column not to have the `solution_value` attribute, i.e. be a plain Python value, not a CPLEX dvar or expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 
@@ -442,7 +445,12 @@
             <span class="k">for</span> <span class="n">xDVarName</span><span class="p">,</span> <span class="n">solution_column_name</span> <span class="ow">in</span> <span class="n">dvar_column_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">xDVarName</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="c1"># solution_column_name = f&#39;{xDVarName}Sol&#39;</span>
-                    <span class="n">df</span><span class="p">[</span><span class="n">solution_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dvar</span><span class="o">.</span><span class="n">solution_value</span> <span class="k">for</span> <span class="n">dvar</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">xDVarName</span><span class="p">]]</span>
+                    <span class="c1"># df[solution_column_name] = [dvar.solution_value for dvar in df[xDVarName]]</span>
+                    <span class="k">if</span> <span class="n">allow_mixed_type_columns</span><span class="p">:</span>
+                        <span class="n">df</span><span class="p">[</span><span class="n">solution_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dvar</span><span class="o">.</span><span class="n">solution_value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dvar</span><span class="p">,</span> <span class="s1">&#39;solution_value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">dvar</span> <span class="k">for</span>
+                                                <span class="n">dvar</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">xDVarName</span><span class="p">]]</span>  <span class="c1"># VT_20241029: allow expression to be a constant</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">df</span><span class="p">[</span><span class="n">solution_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dvar</span><span class="o">.</span><span class="n">solution_value</span> <span class="k">for</span> <span class="n">dvar</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">xDVarName</span><span class="p">]]</span>
                     <span class="k">if</span> <span class="n">drop</span><span class="p">:</span>
                         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">xDVarName</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">epsilon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -539,9 +547,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.datamanager</a></li> 
       </ul>
     </div>

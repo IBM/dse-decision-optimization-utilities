@@ -4,7 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.5.2b7]
+[Unreleased]## [0.5.7.1b0]
+
+## [0.5.7.0]- 2024-11-26
+### Changed
+- BACKWARD INCOMPATIBILITY - ScenarioDbManager.__init__: changed default values for db_type=DatabaseType.SQLite. For other uses (DB2 or PostgreSQL, always specify the db_type.
+- BACKWARD INCOMPATIBILITY - ScenarioDbManager.__init__: changed default values for enable_scenario_seq=True, future=True. This reflects the current best practices.
+- BACKWARD INCOMPATIBILITY - Removed ScenarioDbManager from `dse_do_utils.__init__.py`. This avoids the dependency on sqlalchemy with use of dse_do_utils where the ScenarioDbManager is not used. 
+Introduces a slight backward incompatibility. Need to import as: `from dse_do_utils.scenariodbmanager import ScenarioDbManager` 
+- Removed (deprecated) `module_reload()` from `dse_do_utils.__init__.py`. In notebooks `autoreload` works well, 
+- Generics in ScenarioRunner
+- Removed deprecated optional argument `dtypes` from `Core01DataManager.prepare_output_data_frames()`
+- Fixed mutable default arguments in scenariodbmanager module
+### Added
+- CplexDot in core01_optimization_engine: generic function class to use groupby aggregation and the mdl.dot() function.
+- PlotlyManager - self.ref_dm, self.ms_inputs, self.ms_outputs property declarations and documentation
+- PlotlyManager.plotly_kpi_compare_bar_charts and .get_multi_scenario_table for scenario compare
+- Core01DataManager and Core01OptimizationEngine: added support for parameter `mipGap`. Sets the `mdl.parameters.mip.tolerances.mipgap` if value > 0
+- DataManager.extract_solution adds option `allow_mixed_type_columns`. If True allows dvar/expr in column to be a regular Python value and not have the `solution_value` attribute
 
 ## [0.5.6.0]- 2023-05-13
 ### Changed

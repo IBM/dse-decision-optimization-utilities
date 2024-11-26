@@ -11,9 +11,9 @@ from dse_do_utils.core.core01_data_manager import Core01DataManager
 
 from dse_do_utils import ScenarioManager, OptimizationEngine
 from dse_do_utils.datamanager import Inputs, Outputs, DataManager
-from dse_do_utils.scenariodbmanager import ScenarioDbManager
+from dse_do_utils.scenariodbmanager import ScenarioDbManager, DatabaseType
 from logging import Logger, getLogger
-from typing import Any, Dict, Optional, Tuple, NamedTuple, Type, List, Union
+from typing import Any, Dict, Optional, Tuple, NamedTuple, Type, List, Union, TypeVar, Generic
 
 from dse_do_utils.scenariomanager import Platform
 
@@ -42,7 +42,10 @@ class RunConfig:
     template_scenario_name: Optional[str] = None  # 'TemplateScenario'
 
 
-class ScenarioGenerator():
+SC = TypeVar('SC', bound='ScenarioConfig')
+
+
+class ScenarioGenerator(Generic[SC]):
     """Generates a variation of a scenario, i.e. `inputs` dataset, driven by a ScenarioConfig.
     To be subclassed.
     This base class implements overrides of the Parameter table.
@@ -60,10 +63,10 @@ class ScenarioGenerator():
 
     def __init__(self,
                  inputs: Inputs,
-                 scenario_config: ScenarioConfig) -> None:
+                 scenario_config: SC) -> None:
         self._logger: Logger = getLogger(__name__)
         self.inputs: Inputs = inputs.copy()  # Only copy of dict
-        self.scenario_config: ScenarioConfig = scenario_config
+        self.scenario_config: SC = scenario_config
 
     def generate_scenario(self):
         """Generate a variation of the base_inputs. To be overridden.
@@ -344,7 +347,7 @@ class ScenarioRunner:
         Set bulk to False to get more granular DB insert errors, i.e. per record.
         TODO: add a data_check() on the DataManager for additional checks."""
         self._logger.info('Checking input data via SQLite and DataManager')
-        self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class()
+        self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class(db_type=DatabaseType.SQLite)
         self.sqlite_scenario_db_manager.create_schema()
         self.sqlite_scenario_db_manager.replace_scenario_in_db(scenario_name, deepcopy(inputs), {}, bulk=bulk)
 
@@ -361,7 +364,7 @@ class ScenarioRunner:
         TODO: add a data_check() on the DataManager for additional checks."""
         self._logger.info('Checking output data via SQLite and DataManager')
         if self.sqlite_scenario_db_manager is None:
-            self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class()
+            self.sqlite_scenario_db_manager: ScenarioDbManager = self.scenario_db_manager_class(db_type=DatabaseType.SQLite)
             self.sqlite_scenario_db_manager.create_schema()
             self.sqlite_scenario_db_manager.replace_scenario_in_db(scenario_name, deepcopy(inputs), deepcopy(outputs), bulk=bulk)
         else:

@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.6.0 documentation</title>
+    <title>dse_do_utils.scenariodbmanager &#8212; DSE DO Utils 0.5.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/bizstyle.css" />
     
@@ -33,9 +33,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" accesskey="U">dse_do_utils</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
       </ul>
     </div>  
@@ -78,6 +77,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">exc</span><span class="p">,</span> <span class="n">MetaData</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">ForeignKeyConstraint</span>
+<span class="kn">import</span> <span class="nn">enum</span>
 
 <span class="c1">#  Typing aliases</span>
 <span class="kn">from</span> <span class="nn">dse_do_utils</span> <span class="kn">import</span> <span class="n">ScenarioManager</span>
@@ -85,7 +85,6 @@
 <span class="n">Inputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 <span class="n">Outputs</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
 
-<span class="kn">import</span> <span class="nn">enum</span>
 
 <div class="viewcode-block" id="DatabaseType"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.DatabaseType">[docs]</a><span class="k">class</span> <span class="nc">DatabaseType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Used in ScenarioDbManager.__init__ to specify the type of DB it is connecting to.&quot;&quot;&quot;</span>
@@ -100,8 +99,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-                 <span class="n">constraints_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ForeignKeyConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
+                 <span class="n">columns_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">constraints_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Warning: Do not use mixed case names for the db_table_name.</span>
 <span class="sd">        Supplying a mixed-case is not working well and is causing DB FK errors.</span>
@@ -114,9 +113,13 @@
 <span class="sd">        :param columns_metadata:</span>
 <span class="sd">        :param constraints_metadata:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">constraints_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">constraints_metadata</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">columns_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">columns_metadata</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_table_name</span> <span class="o">=</span> <span class="n">db_table_name</span>
         <span class="c1"># ScenarioDbTable.camel_case_to_snake_case(db_table_name)  # To make sure it is a proper DB table name. Also allows us to use the scenario table name.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_metadata_column_conflicts</span><span class="p">(</span><span class="n">columns_metadata</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns_metadata</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Column</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_metadata_column_conflicts</span><span class="p">(</span><span class="n">columns_metadata</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_metadata</span> <span class="o">=</span> <span class="n">constraints_metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">islower</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_table_name</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span> <span class="c1">## I.e. is mixed_case</span>
@@ -536,10 +539,10 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span> <span class="n">output_db_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ScenarioDbTable</span><span class="p">],</span>
                  <span class="n">credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">echo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">multi_scenario</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="n">enable_transactions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_sqlite_fk</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">enable_astype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">enable_debug_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_scenario_seq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">db_type</span><span class="p">:</span> <span class="n">DatabaseType</span> <span class="o">=</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">DB2</span><span class="p">,</span>
+                 <span class="n">enable_debug_print</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">enable_scenario_seq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">db_type</span><span class="p">:</span> <span class="n">DatabaseType</span> <span class="o">=</span> <span class="n">DatabaseType</span><span class="o">.</span><span class="n">SQLite</span><span class="p">,</span>
                  <span class="n">use_custom_naming_convention</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">future</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">future</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                  <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a ScenarioDbManager.</span>
 
@@ -2049,8 +2052,180 @@
             <span class="k">if</span> <span class="s1">&#39;scenario_seq&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">])</span>
                 <span class="n">new_outputs</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span>
-        <span class="k">return</span> <span class="n">new_inputs</span><span class="p">,</span> <span class="n">new_outputs</span></div></div>
+        <span class="k">return</span> <span class="n">new_inputs</span><span class="p">,</span> <span class="n">new_outputs</span></div>
 
+    <span class="c1">#####################################################################################################</span>
+    <span class="c1"># Insert, Update, Delete row</span>
+    <span class="c1">#####################################################################################################</span>
+<div class="viewcode-block" id="ScenarioDbManager.insert_table_row"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.insert_table_row">[docs]</a>    <span class="k">def</span> <span class="nf">insert_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="c1"># print(&quot;Insert row scenario within a transaction&quot;)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_insert_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DRAFT. Insert one row of data.</span>
+<span class="sd">        TODO: handle update if it already exists: &#39;upsert&#39;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)</span>
+<span class="sd">            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples().</span>
+<span class="sd">            connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError</span>
+
+        <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">:</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario table name &#39;</span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&#39; unknown. Cannot insert data into DB.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO: add scenario_seq to values</span>
+        <span class="c1"># TODO: if values is a sequence, we need to convert to a Dict so that we can add a value?</span>
+        <span class="n">scenario_seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scenario_seq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario_seq</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario name &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39; is unknown. Cannot insert row.&quot;</span><span class="p">)</span>
+
+        <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_table</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Integrity Error+++++++++++++&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">exc</span><span class="o">.</span><span class="n">StatementError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;++++++++++++Statement Error+++++++++++++&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScenarioDbManager.update_table_row"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.update_table_row">[docs]</a>    <span class="k">def</span> <span class="nf">update_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="c1"># print(&quot;Insert row scenario within a transaction&quot;)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DRAFT. Update one row of data.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)</span>
+<span class="sd">            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples().</span>
+<span class="sd">            connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">:</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario table name &#39;</span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&#39; unknown. Cannot insert data into DB.&quot;</span><span class="p">)</span>
+
+        <span class="n">scenario_seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">scenario_name</span><span class="o">=</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scenario_seq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scenario_seq</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario name &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39; is unknown. Cannot insert row.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Split values in 2 parts:</span>
+        <span class="c1"># 1. The primary keys</span>
+        <span class="c1"># 2. The other columns</span>
+        <span class="n">primary_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">db_table</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">primary_key</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;scenario_seq&#39;</span><span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;scenario_name&#39;</span> <span class="p">]</span>
+        <span class="n">pk_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">primary_keys</span><span class="p">}</span>
+        <span class="n">pk_conditions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_column</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pk_values</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>  <span class="c1"># TODO:</span>
+        <span class="n">column_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">primary_keys</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span><span class="p">[</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">,</span> <span class="s1">&#39;scenario_name&#39;</span><span class="p">]}</span>  <span class="c1"># remove PK values</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Table</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_table</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_scenario_seq</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">scenario_seq</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># print(f&quot;ScenarioSeq = {scenario_seq}&quot;)</span>
+                <span class="n">sql</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">scenario_seq</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">column_values</span><span class="p">)</span>
+                <span class="c1"># connection.execute(sql)  # VT20230204: Duplicate execute? Will be done anyway at the end of this method!</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No scenario with name </span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2"> exists&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sql</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_name</span> <span class="o">==</span> <span class="n">scenario_name</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">column_values</span><span class="p">)</span>
+
+        <span class="c1"># TODO: this does NOT fail if the row doesn&#39;t exist. It simply doesn;t do anything !? How can we have this fail, so we can do an insert?</span>
+        <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ScenarioDbManager.upsert_table_row"><a class="viewcode-back" href="../../dse_do_utils.html#dse_do_utils.scenariodbmanager.ScenarioDbManager.upsert_table_row">[docs]</a>    <span class="k">def</span> <span class="nf">upsert_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_transactions</span><span class="p">:</span>
+            <span class="c1"># print(&quot;Insert row scenario within a transaction&quot;)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_upsert_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upsert_table_row</span><span class="p">(</span><span class="n">scenario_table_name</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_upsert_table_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenario_table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scenario_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">connection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates or inserts a row in a DB table.</span>
+<span class="sd">        Assumes the values contain all primary key values.</span>
+<span class="sd">        Other columns are optional.</span>
+<span class="sd">        If row exists, will update the row. If row doesn&#39;t exist, will do an insert.</span>
+<span class="sd">        Update also supports partial updates of non-pk fields.</span>
+<span class="sd">        Beware that a None will result in a NULL.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)</span>
+<span class="sd">            scenario_name (str): scenario_name</span>
+<span class="sd">            values (Dict): values of row to be inserted. Typically, a Dict or tuple (e.g. from df.itertuples(). Must include values for all PK columns.</span>
+<span class="sd">            connection</span>
+
+<span class="sd">        Raises errors for:</span>
+<span class="sd">            Unknown scenario_name</span>
+<span class="sd">            Primary Key value not in values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scenario_table_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">:</span>
+            <span class="n">db_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_tables</span><span class="p">[</span><span class="n">scenario_table_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario table name &#39;</span><span class="si">{</span><span class="n">scenario_table_name</span><span class="si">}</span><span class="s2">&#39; unknown. Cannot upsert data into DB.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)</span>
+        <span class="c1"># if scenario_seq is not None:</span>
+        <span class="c1">#     values[&#39;scenario_seq&#39;] = scenario_seq</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     raise ValueError(f&quot;Scenario name &#39;{scenario_name}&#39; is unknown. Cannot upsert row.&quot;)</span>
+
+        <span class="c1"># Split values in 2 parts:</span>
+        <span class="c1"># 1. The primary keys</span>
+        <span class="c1"># 2. The other columns</span>
+        <span class="n">primary_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">db_table</span><span class="o">.</span><span class="n">columns_metadata</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">primary_key</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;scenario_seq&#39;</span><span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;scenario_name&#39;</span> <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">pk</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">primary_keys</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not all required primary keys </span><span class="si">{</span><span class="n">primary_keys</span><span class="si">}</span><span class="s2"> specified in upsert request </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># for pk in primary_keys:</span>
+        <span class="c1">#     if pk not in values.keys():</span>
+        <span class="c1">#         raise ValueError(f&quot;Primary key {pk} value not specified in upsert request&quot;)</span>
+        <span class="n">pk_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">primary_keys</span><span class="p">}</span>
+        <span class="n">pk_conditions</span> <span class="o">=</span> <span class="p">[(</span><span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_column</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pk_values</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="n">column_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">primary_keys</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span><span class="p">[</span><span class="s1">&#39;scenario_seq&#39;</span><span class="p">,</span> <span class="s1">&#39;scenario_name&#39;</span><span class="p">]}</span>  <span class="c1"># remove PK values</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">Table</span> <span class="o">=</span> <span class="n">db_table</span><span class="o">.</span><span class="n">get_sa_table</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_scenario_seq</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">scenario_seq</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenario_seq</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">connection</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># print(f&quot;ScenarioSeq = {scenario_seq}&quot;)</span>
+                <span class="c1"># sql_exists = sqlalchemy.exists().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions))</span>
+                <span class="n">sql_select</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">scenario_seq</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span>  <span class="c1">#.exists()</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_select</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">rowcount</span>
+                <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Update existing record</span>
+                    <span class="n">sql_update</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">and_</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">scenario_seq</span> <span class="o">==</span> <span class="n">scenario_seq</span><span class="p">),</span> <span class="o">*</span><span class="n">pk_conditions</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">column_values</span><span class="p">)</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_update</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Insert new record</span>
+                    <span class="n">sql_insert</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_insert</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenario name &#39;</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2">&#39; is unknown. Cannot upsert row.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Upsert only supports enable_scenario_seq&quot;</span><span class="p">)</span></div>
+            <span class="c1"># TODO: implement. Easy to do.</span>
+            <span class="c1"># sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions)).values(column_values)</span>
+            <span class="c1"># connection.execute(sql)</span>
 <span class="c1">#######################################################################################################</span>
 <span class="c1"># Input Tables</span>
 <span class="c1">#######################################################################################################</span>
@@ -2131,9 +2306,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">DSE DO Utils 0.5.7.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../dse_do_utils.html" >dse_do_utils</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">dse_do_utils.scenariodbmanager</a></li> 
       </ul>
     </div>

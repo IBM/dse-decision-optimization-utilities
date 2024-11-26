@@ -205,3 +205,24 @@ class Core01EnvironmentManager():
                 while logger.hasHandlers():
                     logger.removeHandler(logger.handlers[0])
                 logger.addHandler(c_handler)
+
+    def set_root_logger(self, level: Optional[str] = None) -> None:
+        """Sets the properties of the root logger.
+        In subsequent code, use `logger = logging.getLogger()`.
+        Valid values for level = [CRITICAL, ERROR, WARNING, INFO, DEBUG]
+
+        Called from
+        """
+
+        logger = logging.getLogger()
+        logger.setLevel(level)
+        c_handler = logging.StreamHandler()
+        c_handler.setLevel(level)
+
+        # Create formatters and add it to handlers
+        c_format = logging.Formatter('%(asctime)s %(levelname)s: %(module)s.%(funcName)s - %(message)s',
+                                     '%Y-%m-%d %H:%M:%S')
+        c_handler.setFormatter(c_format)
+
+        # Add handlers to the logger
+        logger.addHandler(c_handler)
