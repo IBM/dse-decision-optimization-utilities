@@ -1732,7 +1732,7 @@ class ScenarioDbManager():
     ############################################################################################
     # Import from zip
     ############################################################################################
-    def insert_scenarios_from_zip(self, filepath: str):
+    def insert_scenarios_from_zip(self, filepath: str | pathlib.Path):
         """Insert (or replace) a set of scenarios from a .zip file into the DB.
         Zip is assumed to contain one or more .xlsx files. Others will be skipped.
         Name of .xlsx file will be used as the scenario name.

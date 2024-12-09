@@ -119,7 +119,7 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         # KPIs
         self.dm.kpis = self.get_kpi_output_table()
 
-    @abstractmethod
+    # @abstractmethod
     def post_processing(self) -> None:
         self.dm.post_processing()
 
