@@ -598,6 +598,8 @@ class ScenarioManager(object):
             excel_file_name (str): The file name for the Excel file.
             unique_file_name (bool): If True, generates a unique file name in case the existing file is opened(!) by Excel
             copy_to_csv (bool): If true, will create a copy of the file with the extension `.csv`. DEPRECATED, NON-FUNCTIONAL
+        Returns:
+            excel_file_path (str): fill path of the exported Excel file
         """
 
         if excel_file_name is None:
