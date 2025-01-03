@@ -52,6 +52,8 @@ class Core01DataManager(DataManager):
         # VT20230607: changed to __name__ from self.__module__
 
         self.logger = logging.getLogger(__name__)  # `__name__` is Python best practice
+        if log_level is not None:
+            self.logger.setLevel(log_level)
 
         # # Parameters:
         # self.params = None

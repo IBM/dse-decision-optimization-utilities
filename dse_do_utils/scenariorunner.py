@@ -190,6 +190,9 @@ class ScenarioRunner:
         #     raise ValueError(
         #         'Either base_inputs or excel_file_name should be provided.')
 
+        # Set log level for ScenarioRunner. Note that this is a different logger from the one in the OptimizationEngine/DataManager
+        self._logger.setLevel(run_config.log_level)
+
         # Generate scenario
         self._logger.debug(f'Generating scenario {scenario_name}')
         inputs = self.generate_scenario(base_inputs, scenario_config)

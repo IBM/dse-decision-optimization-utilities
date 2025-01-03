@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Core01OptimizationEngine.post_processing(). Removed `@abstractmethod`.
 - ScenarioDbManager.insert_scenarios_from_zip, added `pathlib.Path` as input type
+### Fixed
+- Core01DataManager.__init__(): setting logger.log_level
+- ScenarioRunner._run_once(): setting logger.log_level
 
 ## [0.5.7.0]- 2024-11-26
 ### Changed
