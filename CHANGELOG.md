@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Core01DataManager.__init__(): setting logger.log_level
 - ScenarioRunner._run_once(): setting logger.log_level
+- Core01CpoOptimizationEngine.get_kpi_output_table extraction of kpis in DataFrame
 
 ## [0.5.7.0]- 2024-11-26
 ### Changed

@@ -47,7 +47,7 @@ class MapManager(object):
         self.height = height
         self.layer_control_position = layer_control_position
 
-    def create_blank_map(self):
+    def create_blank_map(self) -> folium.Map:
         import folium
         m = folium.Map(location=self.location, zoom_start=self.zoom_start, tiles='cartodbpositron', width=self.width,
                        height=self.height)

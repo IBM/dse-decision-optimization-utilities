@@ -211,7 +211,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         # print("   KPIs: {}".format(msol.get_kpis()))
         # all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.get_kpis()]
         all_kpis = msol.get_kpis()
-        df_kpis = pd.DataFrame(all_kpis, columns=['NAME', 'VALUE']).set_index('NAME')
+        # df_kpis = pd.DataFrame(dict(all_kpis), columns=['NAME', 'VALUE']).set_index('NAME')
+        df_kpis = pd.DataFrame([{'NAME': key, 'VALUE': value} for key, value in all_kpis.items()])
         return df_kpis
 
     def export_as_lp_path(self, lp_file_name: str = 'my_cpo_file') -> str:
