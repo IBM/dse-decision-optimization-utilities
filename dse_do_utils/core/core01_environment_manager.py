@@ -179,7 +179,7 @@ class Core01EnvironmentManager():
         scope is a list of logger names for which we add handlers and the log-level
         An empty string is the root logger.
         Logger names use a hierarchical name space.
-        In the dse_do_utils, grabbing logging.getLogger(__name__) woyuld have a name like `dse_do_utils.xxxxx.yyyy`
+        In the dse_do_utils, grabbing logging.getLogger(__name__) would have a name like `dse_do_utils.xxxxx.yyyy`
         Messages are propagated up in the hierarchy, so we can set properties of the logger named `dse_do_utils`.
         If you use a custom package that has classes subclassing from dse_do_utils, use a list like
         ['fruit', 'ds_do_utils'] to receive all log messages.
