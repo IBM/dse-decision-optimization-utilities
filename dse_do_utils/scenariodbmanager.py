@@ -280,7 +280,9 @@ class ScenarioDbTable(ABC):
         TODO VT20230106: what other incarnations of 'NaN' do we need to convert?
         Potentially:  ['N/A', 'na', 'NaN', 'nan', '', 'None']?
         """
-        df = df.replace({float('NaN'): None, 'nan': None})
+        df = df.replace({float('NaN'): None, 'nan': None,
+                         'None': None,  # Added VT 20250117 Deals with SQLite returning NULL as the string 'None'
+                         })
         return df
 
     def _set_df_column_types(self, df: pd.DataFrame) -> pd.DataFrame:
