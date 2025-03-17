@@ -23,7 +23,7 @@ const initialiseBizStyle = () => {
 }
 
 window.addEventListener("resize",
-  () => (document.querySelector("li.nav-item-0 a").innerText = (window.innerWidth <= 776) ? "Top" : "DSE DO Utils 0.5.7.0 documentation")
+  () => (document.querySelector("li.nav-item-0 a").innerText = (window.innerWidth <= 776) ? "Top" : "DSE DO Utils 0.5.7.1 documentation")
 )
 
 if (document.readyState !== "loading") initialiseBizStyle()
