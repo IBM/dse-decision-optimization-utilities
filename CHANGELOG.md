@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ScenarioRunner._run_once(): setting logger.log_level
 - Core01CpoOptimizationEngine.get_kpi_output_table extraction of kpis in DataFrame
 - BACKWARD INCOMPATIBILITY - ScenarioDbManager.fixNanNoneNull now includes the string `None`. This resolves issues with SqLite returning NULL as the string 'None'.
+- Core01CpoOptimizationEngine.run(): fixed check for feasible solution
 ### Tests
 - Tested with SQLAlchemy 2.0
 

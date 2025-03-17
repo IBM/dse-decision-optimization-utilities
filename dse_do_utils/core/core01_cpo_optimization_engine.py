@@ -66,7 +66,7 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         # self.set_cplex_parameters()
         self.set_cpo_parameters()
         msol = self.solve()
-        if msol.is_solution() is not None:
+        if msol.is_solution():
             self.extract_solution(msol)
             self.post_processing()
             outputs = self.get_outputs()
@@ -118,7 +118,7 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
 
     def solve(self) -> Optional[CpoSolveResult]:
         """
-        TODO: In CPO, is msol None if no solution?
+        Solve the model
         """
         msol = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
