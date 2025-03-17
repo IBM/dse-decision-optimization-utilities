@@ -23,6 +23,7 @@ Note that if you added/removed modules, you first need to re-run the sphinx comm
 5. Upload to PyPI (from PyCharm terminal run):<br>
 `twine upload dist/*  --verbose`
 Enter username and password when prompted.
+NEW_2024-11-26: use API token. UN = `__token__`, PW: <the token>
 (For TestPyPI use: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose`)<br>
 Before the twine upload, you can check the distribution with:<br>
 `twine check dist/*`

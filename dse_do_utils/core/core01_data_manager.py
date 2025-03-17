@@ -6,7 +6,7 @@ import logging
 import types
 from abc import abstractmethod, ABC
 from dse_do_utils import DataManager
-from dse_do_utils.datamanager import Outputs
+from dse_do_utils.datamanager import Outputs, Inputs
 from typing import List, Dict, Optional, Type
 import pandas as pd
 
@@ -37,7 +37,7 @@ class Core01DataManager(DataManager):
     - prepare_df and dtypes
     """
 
-    def __init__(self, inputs=None, outputs=None, log_level=None):
+    def __init__(self, inputs: Optional[Inputs] = None, outputs: Optional[Outputs] = None, log_level: Optional[str] = None):
         super().__init__(inputs, outputs)
 
         # Create a custom logger
@@ -52,6 +52,8 @@ class Core01DataManager(DataManager):
         # VT20230607: changed to __name__ from self.__module__
 
         self.logger = logging.getLogger(__name__)  # `__name__` is Python best practice
+        if log_level is not None:
+            self.logger.setLevel(log_level)
 
         # # Parameters:
         # self.params = None

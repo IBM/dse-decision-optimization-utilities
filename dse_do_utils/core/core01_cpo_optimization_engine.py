@@ -66,7 +66,7 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         # self.set_cplex_parameters()
         self.set_cpo_parameters()
         msol = self.solve()
-        if msol.is_solution() is not None:
+        if msol.is_solution():
             self.extract_solution(msol)
             self.post_processing()
             outputs = self.get_outputs()
@@ -118,7 +118,7 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
 
     def solve(self) -> Optional[CpoSolveResult]:
         """
-        TODO: In CPO, is msol None if no solution?
+        Solve the model
         """
         msol = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
@@ -211,7 +211,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         # print("   KPIs: {}".format(msol.get_kpis()))
         # all_kpis = [(kp.name, kp.compute()) for kp in self.mdl.get_kpis()]
         all_kpis = msol.get_kpis()
-        df_kpis = pd.DataFrame(all_kpis, columns=['NAME', 'VALUE']).set_index('NAME')
+        # df_kpis = pd.DataFrame(dict(all_kpis), columns=['NAME', 'VALUE']).set_index('NAME')
+        df_kpis = pd.DataFrame([{'NAME': key, 'VALUE': value} for key, value in all_kpis.items()])
         return df_kpis
 
     def export_as_lp_path(self, lp_file_name: str = 'my_cpo_file') -> str:

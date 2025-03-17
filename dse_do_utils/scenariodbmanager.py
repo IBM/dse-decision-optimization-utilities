@@ -280,7 +280,9 @@ class ScenarioDbTable(ABC):
         TODO VT20230106: what other incarnations of 'NaN' do we need to convert?
         Potentially:  ['N/A', 'na', 'NaN', 'nan', '', 'None']?
         """
-        df = df.replace({float('NaN'): None, 'nan': None})
+        df = df.replace({float('NaN'): None, 'nan': None,
+                         'None': None,  # Added VT 20250117 Deals with SQLite returning NULL as the string 'None'
+                         })
         return df
 
     def _set_df_column_types(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -1732,7 +1734,7 @@ class ScenarioDbManager():
     ############################################################################################
     # Import from zip
     ############################################################################################
-    def insert_scenarios_from_zip(self, filepath: str):
+    def insert_scenarios_from_zip(self, filepath: str | pathlib.Path):
         """Insert (or replace) a set of scenarios from a .zip file into the DB.
         Zip is assumed to contain one or more .xlsx files. Others will be skipped.
         Name of .xlsx file will be used as the scenario name.
