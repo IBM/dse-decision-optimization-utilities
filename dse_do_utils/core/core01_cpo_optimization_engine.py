@@ -300,6 +300,15 @@ class CplexSum():
 
 #################################################################
 class CpoProgressTrackerCallback(CpoCallback):
+    """
+    Callback for CP Optimizer. Not registered by default.
+    Usage:
+        * In the `__init__` of your OptimizationEngine, add:
+        `self.mdl.add_solver_callback(CpoProgressTrackerCallback(self))`
+        * Callback calls self.record_optimization_progress(), which calls self.dm.add_optimization_progress()
+        * Results will be stored in `self.dm.optimization_progress_output`
+        * dse-do-dashboard has 2 visualization-pages
+    """
     def __init__(self, engine: Core01CpoOptimizationEngine[DM]):
         super().__init__()
         self.engine = engine
