@@ -64,11 +64,38 @@ class Core01DataManager(DataManager):
         # Output data
         self.kpis: Optional[pd.DataFrame] = None
 
+        # Optimization Progress Tracking
+        self.optimization_progress_output: Optional[pd.DataFrame] = None
+
     def prepare_input_data_frames(self):
         super().prepare_input_data_frames()
         # self.logger.debug("Enter")
 
         self.set_parameters()
+
+    def prepare_output_data_frames(self):
+        super().prepare_output_data_frames()
+        # self.logger.debug("Enter")
+
+        self.kpis = self.prepare_df(
+            self.outputs.get('kpis'),
+            index_columns=['NAME'],
+            value_columns=['VALUE'],
+            dtypes=None,
+        )
+
+        self.optimization_progress_output = self.prepare_output_df(
+            output_table_name='OptimizationProgress',
+            index_columns=['progress_seq', 'metric_type', 'metric_name'],
+            value_columns=['metric_value', 'metric_text_value'],
+            dtypes={
+                'progress_seq': int,
+                'metric_type': str,
+                'metric_name': str,
+                'metric_value': float,
+                'metric_text_value': str,
+            }
+        )
 
     def set_parameters(self):
         """Core01 parameters:
@@ -114,22 +141,8 @@ class Core01DataManager(DataManager):
             param_type='bool',
             default_value=False)
 
-    def prepare_output_data_frames(self):
-        """
-        """
-        super().prepare_output_data_frames()
-        self.logger.debug("Enter")
-
-        self.kpis = self.prepare_df(
-            self.outputs.get('kpis'),
-            index_columns=['NAME'],
-            value_columns=['VALUE'],
-            dtypes=None,
-        )
-
-    @abstractmethod
     def pre_processing(self) -> None:
-        pass
+        self.clear_optimization_progress()
 
     @abstractmethod
     def post_processing(self) -> None:
@@ -285,6 +298,67 @@ class Core01DataManager(DataManager):
                 f"{df[~mask].shape[0] / df.shape[0]:.1%} of original")
             df = df[~mask]
         return df
+
+    ########################################################################
+    # Optimization Progress Tracking
+    ########################################################################
+    def clear_optimization_progress(self):
+        """Clear rows in optimization_progress_output and initialize with column and index. Needs to be called as part of pre-processing
+        Returns:
+
+        """
+        """Clear rows in optimization_progress_output and initialize with column and index."""
+        self.optimization_progress_output = pd.DataFrame(columns=['run_id', 'progress_seq', 'metric_type', 'metric_name',
+                                                                  'metric_value', 'metric_text_value']).set_index(['run_id', 'progress_seq', 'metric_type', 'metric_name'])
+
+    def add_optimization_progress(self, data: List[Dict]):
+        """Add rows to optimization_progress_output. To be called from engine
+        """
+        new_progress_df = pd.DataFrame(data).set_index(['run_id', 'progress_seq', 'metric_type', 'metric_name'])
+        if self.optimization_progress_output.shape[0] > 0:
+            # Concatenating with an empty df will be deprecated in Pandas
+            self.optimization_progress_output = pd.concat([self.optimization_progress_output, new_progress_df])
+        else:
+            self.optimization_progress_output = new_progress_df
+
+    def get_optimization_progress_as_wide_df(self) -> (pd.DataFrame, List[str]):
+        """Get the Optimization Progress data in wide form, which makes it easier to visualize.
+        Includes both engine metrics and KPIs.
+        Returns:
+            df - index=['progress_seq'], columns=['solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']
+            kpis (List[str]): List of KPI names
+        """
+        # The challenge is that the pivot operations wil fail
+        if self.optimization_progress_output.shape[0] == 0:
+            df = pd.DataFrame(columns=['run_id', 'progress_seq', 'solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']).set_index(['progress_seq'])
+            kpis = []
+            return df, kpis
+
+        df1 = self.optimization_progress_output.query("metric_type == 'engine' & metric_value.notnull()").reset_index()
+            #  [['progress_seq', 'metric_name', 'metric_value']]
+
+        df_pivot_1 = df1.pivot(columns='metric_name', index='progress_seq', values='metric_value')[
+            ['solve_time', 'objective_value', 'objective_bound', 'objective_gap']]   # TODO: only extract these columns if they exist
+
+        df2 = self.optimization_progress_output.query("metric_type == 'engine' & metric_text_value.notnull() & metric_text_value != 'None'").reset_index()[
+            ['progress_seq', 'metric_name', 'metric_text_value']]
+        df_pivot_2 = df2.pivot(columns='metric_name', index='progress_seq', values='metric_text_value')
+            #  [['search_status', 'event_type', 'solve_status']]   # TODO: only extract these columns if they exist
+
+        df3 = self.optimization_progress_output.query("metric_type == 'kpi'").reset_index()[['run_id', 'progress_seq','metric_name','metric_value']]
+        df_pivot_3 = df3.pivot(columns='metric_name', index='progress_seq', values='metric_value')
+
+        df_pivot = df_pivot_1.join(df_pivot_2, rsuffix='_right').join(df_pivot_3, rsuffix='_right')  # rsuffix to make more robust against overlapping columns
+        df = df_pivot
+        df.columns = df.columns.values
+
+        # Fill NaN in KPIs with the previous row values
+        # This can happen due to an 'ObjBound' event that reduces the bound, but has no solution.
+        df = df.ffill()
+
+        kpis = df3.metric_name.unique().tolist()
+
+        return df, kpis
 
     ########################################################################
     # Logger (TODO: review)

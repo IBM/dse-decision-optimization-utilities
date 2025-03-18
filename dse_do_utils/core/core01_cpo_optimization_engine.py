@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 from docplex import cp
+from docplex.cp.solver.cpo_callback import CpoCallback
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.solution import SolveSolution
 from docplex.cp.parameters import CpoParameters
@@ -54,6 +55,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         self.logger = data_manager.logger
 
         self.cpo_params = CpoParameters()
+
+
 
     def run(self) -> Outputs:
         self.dm.prepare_data_frames()
@@ -275,6 +278,12 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         else:
             return pd.DataFrame(columns=['name', 'value']).set_index('name')
 
+    #########################
+    # Progress Tracking
+    #########################
+    def record_optimization_progress(self, data: List[Dict]):
+        self.dm.add_optimization_progress(data)
+
 ############################################################
 class CplexSum():
     """Function class that adds a series of dvars into a cplex sum expression.
@@ -288,5 +297,72 @@ class CplexSum():
         self.mdl = mdl
     def __call__(self, dvar_series):
         return self.mdl.sum(dvar_series)
+
+#################################################################
+class CpoProgressTrackerCallback(CpoCallback):
+    def __init__(self, engine: Core01CpoOptimizationEngine[DM]):
+        super().__init__()
+        self.engine = engine
+        self.progress_seq = 0
+
+    def invoke(self, solver: cp.solver.solver.CpoSolver, event: str, sres: cp.solution.CpoSolveResult):
+        # print(f"Callback event={event}")
+        if event in ("Solution", "ObjBound"):
+            obj_val = sres.get_objective_values()  # TODO: handle multiple return values
+            obj_bnds = sres.get_objective_bounds()  # TODO: same
+            obj_gaps = sres.get_objective_gaps()
+            solvests = sres.get_solve_status()  # E.g. 'Feasible'
+            srchsts = sres.get_search_status()  # E.g. 'SearchOngoing'
+            solve_time = sres.get_info('SolveTime')
+            print(f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
+
+            # data = {
+            #     'solve_time': sres.get_info('SolveTime'),
+            #     'objective_value': sres.get_objective_values(),  #TODO: handle multiple return values
+            #     'objective_bound': sres.get_objective_bounds(),
+            #     'objective_gap': sres.get_objective_gaps(),
+            # }
+            solve_time = sres.get_info('SolveTime')
+            if type(solve_time) is tuple:
+                solve_time = solve_time[0]
+            objective_value = sres.get_objective_values()  # TODO: handle multiple return values
+            if type(objective_value) is tuple:
+                objective_value = objective_value[0]
+            objective_bound = sres.get_objective_bounds()  # TODO: same
+            if type(objective_bound) is tuple:
+                objective_bound = objective_bound[0]
+            objective_gap = sres.get_objective_gaps()
+            if type(objective_gap) is tuple:
+                objective_gap = objective_gap[0]
+            solve_status = sres.get_solve_status()  # E.g. 'Feasible'
+            search_status = sres.get_search_status()  # E.g. 'SearchOngoing'
+            kpis = sres.get_kpis()
+
+            run_id: str = 'run_0'  # TODO
+
+            if objective_value is not None and objective_bound is not None:
+                seq = self.progress_seq
+                data = []
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_time',
+                             'metric_value': solve_time, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_value',
+                             'metric_value': objective_value, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_bound',
+                             'metric_value': objective_bound, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_gap',
+                             'metric_value': objective_gap, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_status',
+                             'metric_value': None, 'metric_text_value': solve_status})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'search_status',
+                             'metric_value': None, 'metric_text_value': search_status})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'event_type',
+                             'metric_value': None, 'metric_text_value': event})
+                if isinstance(kpis, Dict):
+                    for kpi_name, kpi_value in kpis.items():
+                        data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'kpi', 'metric_name': kpi_name,
+                                     'metric_value': kpi_value, 'metric_text_value': None})
+
+                self.engine.record_optimization_progress(data)
+                self.progress_seq = self.progress_seq + 1
 
 
