@@ -316,31 +316,26 @@ class CpoProgressTrackerCallback(CpoCallback):
         super().__init__()
         self.engine = engine
         self.progress_seq = 0
+        self.num_solutions = 0
 
     def invoke(self, solver: cp.solver.solver.CpoSolver, event: str, sres: cp.solution.CpoSolveResult):
         # print(f"Callback event={event}")
         if event in ("Solution", "ObjBound"):
-            obj_val = sres.get_objective_values()  # TODO: handle multiple return values
-            obj_bnds = sres.get_objective_bounds()  # TODO: same
+            obj_val = sres.get_objective_values()
+            obj_bnds = sres.get_objective_bounds()
             obj_gaps = sres.get_objective_gaps()
             solvests = sres.get_solve_status()  # E.g. 'Feasible'
             srchsts = sres.get_search_status()  # E.g. 'SearchOngoing'
             solve_time = sres.get_info('SolveTime')
             print(f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
 
-            # data = {
-            #     'solve_time': sres.get_info('SolveTime'),
-            #     'objective_value': sres.get_objective_values(),  #TODO: handle multiple return values
-            #     'objective_bound': sres.get_objective_bounds(),
-            #     'objective_gap': sres.get_objective_gaps(),
-            # }
             solve_time = sres.get_info('SolveTime')
             if type(solve_time) is tuple:
                 solve_time = solve_time[0]
-            objective_value = sres.get_objective_values()  # TODO: handle multiple return values
+            objective_value = sres.get_objective_values()
             if type(objective_value) is tuple:
                 objective_value = objective_value[0]
-            objective_bound = sres.get_objective_bounds()  # TODO: same
+            objective_bound = sres.get_objective_bounds()
             if type(objective_bound) is tuple:
                 objective_bound = objective_bound[0]
             objective_gap = sres.get_objective_gaps()
@@ -353,6 +348,8 @@ class CpoProgressTrackerCallback(CpoCallback):
             run_id: str = 'run_0'  # TODO
 
             if objective_value is not None and objective_bound is not None:
+                if sres.is_new_solution():
+                    self.num_solutions += 1
                 seq = self.progress_seq
                 data = []
                 data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_time',
@@ -363,6 +360,8 @@ class CpoProgressTrackerCallback(CpoCallback):
                              'metric_value': objective_bound, 'metric_text_value': None})
                 data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_gap',
                              'metric_value': objective_gap, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'num_solutions',
+                             'metric_value': self.num_solutions, 'metric_text_value': None})
                 data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_status',
                              'metric_value': None, 'metric_text_value': solve_status})
                 data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'search_status',
