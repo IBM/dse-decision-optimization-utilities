@@ -114,6 +114,9 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         if int(self.dm.param.time_limit) > 0:
             self.cpo_params.TimeLimit = int(self.dm.param.time_limit)
 
+        if int(self.dm.param.threads) > 0:
+            self.cpo_params.Workers = int(self.dm.param.threads)
+
         # self.cpo_params.KPIDisplay = 'MultipleLines'
         # self.cpo_params.ConflictRefinerTimeLimit = 60
         # self.cpo_params.LogPeriod = 10_000  # Number of branches, default 1000
