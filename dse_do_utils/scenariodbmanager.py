@@ -34,6 +34,7 @@ import enum
 
 #  Typing aliases
 from dse_do_utils import ScenarioManager
+import io
 
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
@@ -1748,7 +1749,7 @@ class ScenarioDbManager():
                 file_extension = pathlib.Path(info.filename).suffix
                 if file_extension == '.xlsx':
                     # print(f"file in zip : {info.filename}")
-                    xl = pd.ExcelFile(zip_file.read(info))
+                    xl = pd.ExcelFile(io.BytesIO(zip_file.read(info)))  # VT_20250411: Fixed FutureWarning by wrapping in io.BytesIO around the read file
                     inputs, outputs = ScenarioManager.load_data_from_excel_s(xl)
                     print("Input tables: {}".format(", ".join(inputs.keys())))
                     print("Output tables: {}".format(", ".join(outputs.keys())))
