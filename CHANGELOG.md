@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - core01_db_manager.Core01OptimizationProgressTable
 - Core01CpoOptimizationEngine.set_cpo_parameters now supports CPO `Workers` parameter based on `threads` parameter
 ### Fixed
+- Tested with Python 3.11 and CPLEX 22.1.2
 - ScenarioDbManager.insert_scenarios_from_zip fixed FutureWarning reading zipped Excel file.
 
 ## [0.5.7.1]- 2025-03-17
