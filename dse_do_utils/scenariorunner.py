@@ -96,11 +96,16 @@ class ScenarioGenerator(Generic[SC]):
                 df = pd.DataFrame(columns=['param', 'value']).set_index('param')
         else:
             if 'Parameter' in self.inputs.keys():
-                df = self.inputs['Parameter'].copy().set_index(['param'])
+                df = self.inputs['Parameter'].copy()  #.set_index(['param'])
             elif 'Parameters' in self.inputs.keys():
-                df = self.inputs['Parameters'].copy().set_index(['param'])
+                df = self.inputs['Parameters'].copy()  #.set_index(['param'])
             else:
-                df = pd.DataFrame(columns=['param', 'value']).set_index('param')
+                df = pd.DataFrame(columns=['param', 'value'])  #.set_index('param')
+
+            # Need to set the dtype of `value` to object to allow for mixed types
+            df = df.astype({'param': object, 'value': object})  # Fix VT_20250429: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas
+            df = df.set_index('param')
+
             for param, value in self.scenario_config.parameters.items():
                 df.at[param, 'value'] = value
         return df
