@@ -1595,7 +1595,7 @@ class ScenarioDbManager():
                 # VT20230206: Below avoids the SQLAlchemy future warning about cartesian product. Simpler.
                 # See https://stackoverflow.com/questions/27239647/what-is-the-way-to-select-a-hard-coded-value-in-a-query
                 select_columns = [sqlalchemy.literal(new_scenario_seq).label('scenario_seq') if c.name == 'scenario_seq' else c for c in t.columns]
-                select_sql = (sqlalchemy.select(select_columns)
+                select_sql = (sqlalchemy.select(*select_columns)  # VT_20250504; fixed error: need to unpack the select_columns list in individual arguments
                               .where(t.c.scenario_seq == source_scenario_seq))
 
             else:

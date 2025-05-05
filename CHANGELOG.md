@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tested with Python 3.11 and CPLEX 22.1.2
 - ScenarioDbManager.insert_scenarios_from_zip fixed FutureWarning reading zipped Excel file.
 - ScenarioGenerator.get_parameters: FutureWarning fix allowing mixed dypes
+- ScenarioDbManager._duplicate_scenario_in_db_sql: fixed error unpacking column list
 
 ## [0.5.7.1]- 2025-03-17
 ### Changed
