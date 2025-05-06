@@ -63,6 +63,7 @@ class Core01DataManager(DataManager):
 
         # Output data
         self.kpis: Optional[pd.DataFrame] = None
+        self.business_kpis: Optional[pd.DataFrame] = None
 
         # Optimization Progress Tracking
         self.optimization_progress_output: Optional[pd.DataFrame] = None
@@ -81,6 +82,13 @@ class Core01DataManager(DataManager):
             self.outputs.get('kpis'),
             index_columns=['NAME'],
             value_columns=['VALUE'],
+            dtypes=None,
+        )
+
+        self.business_kpis = self.prepare_output_df(
+            output_table_name='BusinessKpi',
+            index_columns=['kpi'],
+            value_columns=['value'],
             dtypes=None,
         )
 
@@ -359,6 +367,31 @@ class Core01DataManager(DataManager):
         kpis = df3.metric_name.unique().tolist()
 
         return df, kpis
+
+    def get_kpi_value(self, kpi_name: str):
+        """
+        For use in dashboard (and other reporting) to get the value of a KPI in the kpis DataFrame.
+        """
+        try:
+            kpi_value = self.kpis.at[kpi_name, 'VALUE']
+        except KeyError:
+            self.logger.warning(f"KeyError: KPI '{kpi_name}' not found in kpis DataFrame.")
+            kpi_value = 0
+        return kpi_value
+
+    def get_business_kpi_value(self, kpi_name: str):
+        """
+        For use in dashboard (and other reporting) to get the value of a Business KPI in the kpis DataFrame.
+        """
+        try:
+            kpi_value = self.business_kpis.at[kpi_name, 'value']  # TODO: incorporate the business_kpis DataFrame in the Core01DataManager
+        except AttributeError:
+            self.logger.warning(f"AttributeError: business_kpis DataFrame not found.")
+            kpi_value = 0
+        except KeyError:
+            self.logger.warning(f"KeyError: KPI '{kpi_name}' not found in business_kpis DataFrame.")
+            kpi_value = 0
+        return kpi_value
 
     ########################################################################
     # Logger (TODO: review)
