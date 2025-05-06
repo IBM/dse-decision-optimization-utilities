@@ -160,6 +160,7 @@ class Core01DataManager(DataManager):
     def get_outputs(self) -> Outputs:
         outputs = dict()
         outputs['kpis'] = self.kpis.reset_index()
+        outputs['BusinessKpi'] = self.business_kpis.reset_index()
         return outputs
 
     ########################################################################
