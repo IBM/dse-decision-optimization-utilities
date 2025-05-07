@@ -39,6 +39,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
     Usage 2 - When creating an instance::
 
         engine = FruitOptimizationEngine[FruitDataManager]
+
+    Inlcudes callback with solver progress tracking. See `CpoProgressTrackerCallback` for details.
     """
     def __init__(self, data_manager: DM, name: str = None, solve_kwargs=None,
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
@@ -126,6 +128,9 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         """
         Solve the model
         """
+        if self.dm.param.enable_optimization_progress_tracking:
+            self.mdl.add_solver_callback(self.get_solver_callback())
+
         msol = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
         if msol.is_solution():
@@ -135,6 +140,12 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         elif self.enable_refine_conflict:
             self.refine_conflict()
         return msol
+
+    def get_solver_callback(self) -> CpoCallback:
+        """Gets called when parameter enable_optimization_progress_tracking is set to True.
+        Methid is designed to be overridden in the child class for cases where we want to customize the callback.
+        The deault implementation is to use the CpoProgressTrackerCallback."""
+        return CpoProgressTrackerCallback(self)
 
     @abstractmethod
     def extract_solution(self, msol: CpoSolveResult, drop: bool = True) -> None:
@@ -304,13 +315,16 @@ class CplexSum():
 #################################################################
 class CpoProgressTrackerCallback(CpoCallback):
     """
-    Callback for CP Optimizer. Not registered by default.
+    Callback for CP Optimizer. Not enabled by default.
     Usage:
-        * In the `__init__` of your OptimizationEngine, add:
-        `self.mdl.add_solver_callback(CpoProgressTrackerCallback(self))`
+        * Enable the parameter `enable_optimization_progress_tracking`.
+        * This will call `self.get_solver_callback()` in the `solve()` method.
+        * The default implementation is to use the CpoProgressTrackerCallback. Can be overridden in the child class.
         * Callback calls self.record_optimization_progress(), which calls self.dm.add_optimization_progress()
         * Results will be stored in `self.dm.optimization_progress_output`
-        * dse-do-dashboard has 2 visualization-pages
+        * Add OptimizationProgressOutput to the ScenarioDbManager: `('OptimizationProgress', Core01OptimizationProgressTable()),`
+        * Make the PlotlyManager for your application subclass from DashPlotlyManager
+        * In the DashApp for your application, add the visualization pages `OptimizationProgressPage` and `OptimizationProgressGridPage`
     """
     def __init__(self, engine: Core01CpoOptimizationEngine[DM]):
         super().__init__()

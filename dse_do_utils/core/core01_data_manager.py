@@ -63,10 +63,11 @@ class Core01DataManager(DataManager):
 
         # Output data
         self.kpis: Optional[pd.DataFrame] = None
-        self.business_kpis: Optional[pd.DataFrame] = None
+        self.business_kpis: Optional[pd.DataFrame] = pd.DataFrame(columns=['kpi', 'value']).set_index('kpi')
 
         # Optimization Progress Tracking
-        self.optimization_progress_output: Optional[pd.DataFrame] = None
+        self.optimization_progress_output: Optional[pd.DataFrame] = pd.DataFrame(columns=['run_id', 'progress_seq', 'metric_type', 'metric_name',
+                                                                  'metric_value', 'metric_text_value']).set_index(['run_id', 'progress_seq', 'metric_type', 'metric_name'])
 
     def prepare_input_data_frames(self):
         super().prepare_input_data_frames()
@@ -149,6 +150,12 @@ class Core01DataManager(DataManager):
             param_type='bool',
             default_value=False)
 
+        self.param.enable_optimization_progress_tracking = self.get_parameter_value(
+            self.params,
+            param_name='enable_optimization_progress_tracking',
+            param_type='bool',
+            default_value=False)
+
     def pre_processing(self) -> None:
         self.clear_optimization_progress()
 
@@ -161,6 +168,7 @@ class Core01DataManager(DataManager):
         outputs = dict()
         outputs['kpis'] = self.kpis.reset_index()
         outputs['BusinessKpi'] = self.business_kpis.reset_index()
+        outputs['OptimizationProgress'] = self.optimization_progress_output.reset_index()
         return outputs
 
     ########################################################################
@@ -324,7 +332,7 @@ class Core01DataManager(DataManager):
         """Add rows to optimization_progress_output. To be called from engine
         """
         new_progress_df = pd.DataFrame(data).set_index(['run_id', 'progress_seq', 'metric_type', 'metric_name'])
-        if self.optimization_progress_output.shape[0] > 0:
+        if self.optimization_progress_output is not None and self.optimization_progress_output.shape[0] > 0:
             # Concatenating with an empty df will be deprecated in Pandas
             self.optimization_progress_output = pd.concat([self.optimization_progress_output, new_progress_df])
         else:

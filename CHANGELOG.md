@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.7.2b0]
 ### Added
-- Optimization Progress Tracking. CPO callback to record progress of search. Supports reporting and visualization.
+- Optimization Progress Tracking in CPO. CPO callback to record progress of search. Supports reporting and visualization.
 - core01_cpo_optimization_engine.CpoProgressTrackerCallback
 - Core01CpoOptimizationEngine.record_optimization_progress()
+- Core01OptimizationEngine optimization progress tracking, using same format as CPO.
 - Core01DataManager APIs clear_optimization_progress/add_optimization_progress/get_optimization_progress_as_wide_df
 - core01_db_manager.Core01OptimizationProgressTable
 - Core01CpoOptimizationEngine.set_cpo_parameters now supports CPO `Workers` parameter based on `threads` parameter

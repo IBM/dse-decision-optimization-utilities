@@ -5,6 +5,8 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 import pandas as pd
+
+from dse_do_utils.core.core01_cpo_optimization_engine import Core01CpoOptimizationEngine
 from dse_do_utils.core.core01_optimization_engine import Core01OptimizationEngine
 
 from dse_do_utils.core.core01_data_manager import Core01DataManager
@@ -117,7 +119,7 @@ class ScenarioRunner:
     """
     def __init__(self,
                  scenario_db_manager: ScenarioDbManager,
-                 optimization_engine_class: Type[Core01OptimizationEngine],
+                 optimization_engine_class:Union[Type[Core01OptimizationEngine], Type[Core01CpoOptimizationEngine]],
                  data_manager_class: Type[Core01DataManager],
                  scenario_db_manager_class: Type[ScenarioDbManager],  # For the SQLite data check
                  scenario_generator_class: Optional[Type[ScenarioGenerator]] = None,
