@@ -95,9 +95,10 @@ class Core01DataManager(DataManager):
 
         self.optimization_progress_output = self.prepare_output_df(
             output_table_name='OptimizationProgress',
-            index_columns=['progress_seq', 'metric_type', 'metric_name'],
+            index_columns=['run_id', 'progress_seq', 'metric_type', 'metric_name'],
             value_columns=['metric_value', 'metric_text_value'],
             dtypes={
+                'run_id': str,
                 'progress_seq': int,
                 'metric_type': str,
                 'metric_name': str,
