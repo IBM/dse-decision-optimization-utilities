@@ -407,7 +407,7 @@ class ScenarioRunner:
     #     return inputs_v2
 
 
-    def run_model(self, inputs: Inputs, run_config: RunConfig):
+    def run_model(self, inputs: Inputs, run_config: RunConfig) -> Outputs:
         '''
         Main method to run the optimization model.
         '''

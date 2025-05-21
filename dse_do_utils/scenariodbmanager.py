@@ -978,7 +978,7 @@ class ScenarioDbManager():
     ############################################################################################
     # Insert/replace scenario
     ############################################################################################
-    def replace_scenario_in_db(self, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {}, bulk=True):
+    def replace_scenario_in_db(self, scenario_name: str, inputs:Optional[Inputs]=None, outputs:Optional[Outputs]=None, bulk=True):
         """Insert or replace a scenario. Main API to insert/update a scenario.
         If the scenario exists, will delete rows first.
         Inserts scenario data in all tables.
@@ -990,6 +990,10 @@ class ScenarioDbManager():
         :param bulk:
         :return:
         """
+        if outputs is None:
+            outputs = {}
+        if inputs is None:
+            inputs = {}
         if self.enable_transactions:
             print("Replacing scenario within transaction")
             with self.engine.begin() as connection:
@@ -997,7 +1001,7 @@ class ScenarioDbManager():
         else:
             self._replace_scenario_in_db_transaction(self.engine, scenario_name=scenario_name, inputs=inputs, outputs=outputs, bulk=bulk)
 
-    def _replace_scenario_in_db_transaction(self, connection, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {},
+    def _replace_scenario_in_db_transaction(self, connection, scenario_name: str, inputs:Optional[Inputs]=None, outputs:Optional[Outputs]=None,
                                             bulk: bool = True):
         """Replace a single full scenario in the DB. If doesn't exist, will insert.
         Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).
@@ -1009,6 +1013,10 @@ class ScenarioDbManager():
         TODO: break-out in a delete and an insert. Then we can re-use the insert for the duplicate API
         """
         # Step 1: delete scenario if exists
+        if outputs is None:
+            outputs = {}
+        if inputs is None:
+            inputs = {}
         self._delete_scenario_from_db(scenario_name, connection=connection)
 
         if self.enable_scenario_seq:

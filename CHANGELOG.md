@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.7.2b1]
+### Fixed
+- ScenarioDbManager.replace_scenario_in_db: fixed mutable default arguments
+- ScenarioDbManager._replace_scenario_in_db_transaction: fixed mutable default arguments
 
 ## [0.5.7.2b0]
 ### Added
