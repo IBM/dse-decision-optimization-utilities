@@ -13,7 +13,7 @@ import tempfile
 
 
 class DOModelDeployer(object):
-    """Deploys a DO Model in WML. For use in CPD 4.0. Retrieves the model from the DO Model Builder.
+    """Deploys a DO Model in WML. For use in CPD 4.0. Retreives the model from the DO Model Builder (optional).
 
     Usage::
 
@@ -32,11 +32,13 @@ class DOModelDeployer(object):
 
     """
 
-    def __init__(self, wml_credentials: Dict, model_name: str, scenario_name: str, space_name: str,
-                 package_paths: List[str]=[],
-                 file_paths: List[str]=[],
-                 deployment_name: str = 'xxx', deployment_description: str = 'xxx', project=None,
-                 tmp_dir: str = None):
+    def __init__(self, wml_credentials: Dict,
+                 model_name: str, scenario_name: str, space_name: str,
+                 package_paths: Optional[List[str]]=None,
+                 file_paths: Optional[List[str]]=None,
+                 do_main_model_file_path: Optional[str] = None,
+                 deployment_name: Optional[str] = 'xxx', deployment_description: Optional[str] = 'xxx', project=None,
+                 tmp_dir: Optional[str] = None):
         """
         Support for custom packages:
         1. For packages in conda/PyPI: through the yaml.
@@ -49,16 +51,22 @@ class DOModelDeployer(object):
         :param scenario_name (str): name of scenario with the Python model
         :param space_name (str): name of deployment space
         :param package_paths (List[str]): list paths to zip/gz packages that will be included.
-        :param file_paths (List[str]): list paths to files that will be included along side the model. Components can be imported using `from my_file import MyClass`
+        :param file_paths (List[str]): list paths to files that will be included alongside the model. Components can be imported using `from my_file import MyClass`
+        :param do_main_model_file_path (str): path to the DO model file. If None, will use the model from the scenario in the DO Experiment.
         :param space_name (str): name of deployment space
         :param project (project_lib.Project): for WS Cloud, not required for CP4D on-prem. See ScenarioManager(). Used to connect to DO Experiment.
         :param tmp_dir (str): path to directory where the intermediate files will be written. Make sure this exists. Can be used for debugging to inspect the files. If None, will use `tempfile` to generate a temporary folder that will be cleaned up automatically.
         """
+        if file_paths is None:
+            file_paths = []
+        if package_paths is None:
+            package_paths = []
         self.wml_credentials = wml_credentials
         self.project = project
         self.model_name = model_name
         self.scenario_name = scenario_name
         #         self.space_name = space_name
+        self.do_main_model_file_path = do_main_model_file_path
         self.deployment_name = deployment_name
         self.deployment_description = deployment_description
 
@@ -193,17 +201,50 @@ dependencies:
         os.makedirs(path)
         return path
 
+    # def write_main_file(self, file_path: str):
+    #     """Write the code for the main.py file.
+    #     Adds the code template header and footer.
+    #     """
+    #     scenario = self.get_scenario()
+    #     with open(file_path, "w") as f:
+    #         f.write(self.main_header_py)
+    #         f.write('\n')
+    #         f.write(scenario.get_asset_data('model.py').decode('ascii'))
+    #         f.write('\n')
+    #         f.write(self.main_footer_py)
+
     def write_main_file(self, file_path: str):
         """Write the code for the main.py file.
         Adds the code template header and footer.
         """
-        scenario = self.get_scenario()
         with open(file_path, "w") as f:
             f.write(self.main_header_py)
             f.write('\n')
-            f.write(scenario.get_asset_data('model.py').decode('ascii'))
+            f.write(self.get_do_main_model())
             f.write('\n')
             f.write(self.main_footer_py)
+
+    def get_do_main_model(self):
+        """Get the model code from the scenario.
+        TODO: select to either get from DO Experiment, or from a plain `do_main_model.py` file.
+        """
+        if self.do_main_model_file_path is not None:
+            return self.get_do_main_model_from_file()
+        elif self.model_name is not None and self.scenario_name is not None:
+            return self.get_do_main_model_from_do_experiment()
+        else:
+            raise ValueError("Either model_name and scenario_name or do_main_model_file_path must be provided.")
+
+    def get_do_main_model_from_do_experiment(self) -> str:
+        """Get the model code from the scenario."""
+        scenario = self.get_scenario()
+        return scenario.get_asset_data('model.py').decode('ascii')
+
+    def get_do_main_model_from_file(self) -> str:
+        """Get the model code from a file at self.do_main_model_file_path."""
+        with open(self.do_main_model_file_path, 'r') as file:
+            model_txt = file.read()
+        return model_txt
 
     def write_yaml_file(self, file_path: str = './main.yml'):
         """Write the code for the main.py file.
