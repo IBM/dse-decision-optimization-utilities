@@ -430,6 +430,7 @@ class ScenarioRunner:
         if run_config.insert_outputs_in_db:
             self.scenario_db_manager.update_scenario_output_tables_in_db(scenario_name, outputs)
         else:
+            # VT_20250611 Note: we never get here because the insert_outputs_in_db flag was already checked before getting to this method
             self.scenario_db_manager.replace_scenario_in_db(scenario_name, inputs, outputs)
 
     def insert_in_do(self, inputs, outputs, scenario_config: ScenarioConfig,
