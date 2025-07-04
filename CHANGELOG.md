@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.7.2b1]
 ### Added
 - DOModelDeployer: option to deploy from a local do_main_model.py (instead of extracting the model from a DO Experiment)
+- DOModelDeployer added `model_meta_props_type` and `base_sw_name` constructor arguments to handle different cplex releases.
 ### Fixed
 - ScenarioDbManager.replace_scenario_in_db: fixed mutable default arguments
 - ScenarioDbManager._replace_scenario_in_db_transaction: fixed mutable default arguments
 - DOModelDeployer fixed mutable default arguments
+- DOModelDeployer and DeployedDOModel switching from ibm_watson_machine_learning to ibm_watsonx_ai
+- DOModelDeployer and DeployedDOModel switching from `get_uid()` to `get_id()` at various places using the `APIClient`
 
-## [0.5.7.2b0]
+
+## [0.5.7.2b0] - 2025-05-08
 ### Added
 - Optimization Progress Tracking in CPO. CPO callback to record progress of search. Supports reporting and visualization.
 - core01_cpo_optimization_engine.CpoProgressTrackerCallback

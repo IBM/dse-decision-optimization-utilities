@@ -61,14 +61,18 @@ class DeployedDOModel(object):
 
     def __init__(self, wml_credentials,
                  space_name: Optional[str]= None, deployed_model_name: Optional[str]= None, deployment_id: Optional[str]=None,
-                 default_max_oaas_time_limit_sec: Optional[int]= None, default_max_run_time_sec: Optional[int]= 600, monitor_loop_delay_sec: int = 5):
+                 default_max_oaas_time_limit_sec: Optional[int]= None, default_max_run_time_sec: Optional[int]= 600, monitor_loop_delay_sec: int = 5,
+                 space_id: Optional[str] = None):
         """Initialize the interface object.
-        If the deployment_uuid is specified (WS Cloud), the space_name and model_name are optional.
-        Note: on IBM Cloud, both the deployment_id and space_name are required.
-        If no deployment_uuid (CPD), specify both the model and space name.
-        Will find UUID based on space and deployed model id.
-        In CPDv3.5, always define the space_name, in combination with either the model_name, or the deployment_id.
-        Providing the deployment_id is more efficient. If proving the name, the DeployedDOModel will look for the DeploymentID based on the model name.
+        For IBM Cloud/watsonx.ai, we'll need:
+        1. Deployment Space name - the name of the deployment space, or
+        2. Deployment Space GUID - the GUID of the Deployment Space (see Deployment spaces -> <space> -> 'Manage' tab)
+
+        Then, we need either:
+        1. Deployment model name - the name of the deployed model in the deployment space, or
+        2. Deployment model id - the Deployment ID of deployed model in the deployment space
+
+        Note: providing the ids is slightly more efficient. If proving the name, the DeployedDOModel will look for the Deployment Space GUID and/or the DeploymentID based on their names.
 
         Time limits:
         - Both are optional: if no value, no time-limit is imposed
@@ -81,11 +85,13 @@ class DeployedDOModel(object):
             default_max_oaas_time_limit_sec (int): default oaas.timeLimit in seconds.
             default_max_run_time_sec (int): default maximum run time in seconds. Includes the queueing time.
             monitor_loop_delay_sec (int): delay in seconds in monitoring/polling loop
+            space_id (str): space_id / space GUID. If not specified will be derived from the space_name.
         """
 
         # Inputs
         self.wml_credentials = wml_credentials
         self.space_name = space_name
+        self.space_id = space_id
         self.model_name = deployed_model_name
         self.deployment_id = deployment_id
         self.default_max_oaas_time_limit_sec = default_max_oaas_time_limit_sec  # In seconds! None implies no time timit. Note the original oaas.timeLimit is in milli-seconds!
@@ -107,13 +113,15 @@ class DeployedDOModel(object):
         self.log_lines: List[str] = None
 
         # Setup and connection to deployed model
-        from ibm_watson_machine_learning import APIClient
+        # from ibm_watson_machine_learning import APIClient
+        from ibm_watsonx_ai import APIClient
         self.client = APIClient(wml_credentials)
 
         # space_id = [x['metadata']['id'] for x in self.client.spaces.get_details()['resources'] if
         #             x['entity']['name'] == space_name][0]
-        space_id = self.get_space_id(space_name)
-        self.client.set.default_space(space_id)  # Also required when using deployment_id
+        if self.space_id is None:
+            self.space_id = self.get_space_id(space_name)
+        self.client.set.default_space(self.space_id)  # Also required when using deployment_id
 
         if self.deployment_id is None:
             self.deployment_id = self.get_deployment_id(deployed_model_name)
