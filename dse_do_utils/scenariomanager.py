@@ -867,6 +867,7 @@ class ScenarioManager(object):
                 sheet_name = ScenarioManager._create_unique_abbreviated_name(table_name, 31,
                                                                              sheet_names)
                 sheet_names.add(sheet_name)
+                df = ScenarioManager.remove_timezone_from_datetime_columns(df)  # Remove timezone from datetime columns
                 df.to_excel(writer, sheet_name, index=False)
                 # Store row in table_index
                 table_index.append({'table_name': table_name, 'sheet_name': sheet_name, 'category': 'input'})
@@ -876,6 +877,7 @@ class ScenarioManager(object):
                 sheet_name = ScenarioManager._create_unique_abbreviated_name(table_name, 31,
                                                                              sheet_names)
                 sheet_names.add(sheet_name)
+                df = ScenarioManager.remove_timezone_from_datetime_columns(df)  # Remove timezone from datetime columns
                 df.to_excel(writer, sheet_name, index=False)
                 # Store row in table_index
                 table_index.append({'table_name': table_name, 'sheet_name': sheet_name, 'category': 'output'})
@@ -885,6 +887,20 @@ class ScenarioManager(object):
             index_df = pd.DataFrame(table_index)
             index_df.to_excel(writer, table_index_sheet, index=False)
 
+    @staticmethod
+    def remove_timezone_from_datetime_columns(df: pd.DataFrame) -> pd.DataFrame:
+        """Remove timezone from all datetime columns in a DataFrame.
+        This is necessary for the Excel writer, which does not support timezone-aware datetime columns.
+
+        Args:
+            df (pd.DataFrame): DataFrame with datetime columns
+
+        Returns:
+            pd.DataFrame: DataFrame with timezone removed from datetime columns
+        """
+        for col in df.select_dtypes(include=['datetime64[ns, UTC]']).columns:
+            df[col] = df[col].dt.tz_localize(None)
+        return df
     # -----------------------------------------------------------------
     # Load data from csv
     # -----------------------------------------------------------------

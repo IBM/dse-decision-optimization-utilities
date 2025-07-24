@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - DOModelDeployer: option to deploy from a local do_main_model.py (instead of extracting the model from a DO Experiment)
 - DOModelDeployer added `model_meta_props_type` and `base_sw_name` constructor arguments to handle different cplex releases.
+- ScenarioManager: remove timezone from datetime values in DataFrame. This avoids issues with exporting using the ExcelWriter, which does not support datetime with timezone.
 ### Fixed
 - ScenarioDbManager.replace_scenario_in_db: fixed mutable default arguments
 - ScenarioDbManager._replace_scenario_in_db_transaction: fixed mutable default arguments
