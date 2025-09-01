@@ -86,7 +86,7 @@ class ScenarioManager(object):
                  local_root: Optional[Union[str, Path]] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
                  inputs: Inputs = None, outputs: Outputs = None,
-                 local_relative_data_path: str = 'assets/data_asset', data_directory: str = None):
+                 local_relative_data_path: str = 'assets/data_asset', data_directory: Optional[Union[str, Path]] = None):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.

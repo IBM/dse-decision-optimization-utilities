@@ -329,11 +329,15 @@ class CpoProgressTrackerCallback(CpoCallback):
     def __init__(self, engine: Core01CpoOptimizationEngine[DM]):
         super().__init__()
         self.engine = engine
-        self.progress_seq = 0
-        self.num_solutions = 0
+        self.progress_seq: int = 0
+        self.num_solutions: int = 0
 
     def invoke(self, solver: cp.solver.solver.CpoSolver, event: str, sres: cp.solution.CpoSolveResult):
-        # print(f"Callback event={event}")
+        """Callback method that gets called by CP Optimizer.
+
+        TODO: Handle 'EndSolve' event to log final status. Challenge is that EndSolve does not have objective, just the solve_time
+        """
+        print(f"Callback event={event}")
         if event in ("Solution", "ObjBound"):
             obj_val = sres.get_objective_values()
             obj_bnds = sres.get_objective_bounds()
@@ -343,7 +347,7 @@ class CpoProgressTrackerCallback(CpoCallback):
             solve_time = sres.get_info('SolveTime')
             print(f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
 
-            solve_time = sres.get_info('SolveTime')
+            # solve_time = sres.get_info('SolveTime')
             if type(solve_time) is tuple:
                 solve_time = solve_time[0]
             objective_value = sres.get_objective_values()
@@ -389,5 +393,15 @@ class CpoProgressTrackerCallback(CpoCallback):
 
                 self.engine.record_optimization_progress(data)
                 self.progress_seq = self.progress_seq + 1
+
+        # elif event == "EndSolve": # Or "EndSearch"?
+        #     obj_val = sres.get_objective_values()
+        #     obj_bnds = sres.get_objective_bounds()
+        #     obj_gaps = sres.get_objective_gaps()
+        #     solvests = sres.get_solve_status()  # E.g. 'Feasible'
+        #     srchsts = sres.get_search_status()  # E.g. 'SearchOngoing'
+        #     solve_time = sres.get_info('SolveTime')
+        #     print(
+        #         f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
 
 
