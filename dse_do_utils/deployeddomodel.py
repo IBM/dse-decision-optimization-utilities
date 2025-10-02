@@ -150,7 +150,7 @@ class DeployedDOModel(object):
     def get_solve_payload(self, inputs: Inputs, max_oaas_time_limit_sec: Optional[int] = None):
         input_data = [{"id": f"{table_name}.csv", "values": df} for table_name, df in inputs.items()]
         output_data = [
-            {"id": ".*\.csv"},
+            {"id": r".*\.csv"},  # VT_202501001: added the 'r' to avoid the warning in Python 3.12 'SyntaxWarning: invalid escape sequence '\.''
             {"id": "log.txt"},  # Ensures the log.txt is added to the job_details output_data
                        ]
         solve_parameters = {"oaas.logTailEnabled": "true",
