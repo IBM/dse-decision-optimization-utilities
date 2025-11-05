@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.7.2b2]
 ### Fixed
 - DeployedDOModel - avoid warning in Python 3.12 'SyntaxWarning'
+- Core02OptimizationEngine.get_lex_optimization_levels groupby aggregation `include_groups=False` deprecation fix
 
 ## [0.5.7.2b1] - 2025-07-03
 ### Added
