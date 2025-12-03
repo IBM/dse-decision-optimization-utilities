@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - DeployedDOModel - avoid warning in Python 3.12 'SyntaxWarning'
 - Core02OptimizationEngine.get_lex_optimization_levels groupby aggregation `include_groups=False` deprecation fix
+- DataManager.prepare_data_frames() call prepare_df for all dataframes, even if zero-length. Avoid having input/output DataFrames with None value.
 
 ## [0.5.7.2b1] - 2025-07-03
 ### Added
