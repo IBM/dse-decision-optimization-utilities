@@ -2181,7 +2181,10 @@ class ScenarioDbManager():
                     connection.execute(sql_update)
                 else:
                     # Insert new record
-                    sql_insert = t.insert().values(values)
+                    # Ensure scenario_seq is included for insert
+                    values_with_seq = dict(values)
+                    values_with_seq['scenario_seq'] = scenario_seq
+                    sql_insert = t.insert().values(values_with_seq)
                     connection.execute(sql_insert)
             else:
                 raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
