@@ -2148,12 +2148,6 @@ class ScenarioDbManager():
         else:
             raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot upsert data into DB.")
 
-        # scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
-        # if scenario_seq is not None:
-        #     values['scenario_seq'] = scenario_seq
-        # else:
-        #     raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
-
         # Split values in 2 parts:
         # 1. The primary keys
         # 2. The other columns
@@ -2193,6 +2187,55 @@ class ScenarioDbManager():
             # TODO: implement. Easy to do.
             # sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions)).values(column_values)
             # connection.execute(sql)
+
+    def delete_table_row(self, scenario_table_name: str, scenario_name: str, pk_values):
+        """Deletes one row of data identified by primary key values."""
+        if self.enable_transactions:
+            with self.engine.begin() as connection:
+                self._delete_table_row(scenario_table_name, scenario_name, pk_values, connection)
+        else:
+            self._delete_table_row(scenario_table_name, scenario_name, pk_values, self.engine)
+
+    def _delete_table_row(self, scenario_table_name: str, scenario_name: str, pk_values, connection=None):
+        """Delete one row of data.
+        Args:
+            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)
+            pk_values (Dict): primary key values identifying the row to be deleted.
+            connection
+        """
+        if scenario_table_name in self.db_tables:
+            db_table = self.db_tables[scenario_table_name]
+        else:
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot delete data from DB.")
+
+        # Check that all primary keys are specified
+        primary_keys = [c.name for c in db_table.columns_metadata if
+                        c.primary_key and c.name != 'scenario_seq' and c.name != 'scenario_name']
+        if not all(pk in pk_values.keys() for pk in primary_keys):
+            raise ValueError(f"Not all required primary keys {primary_keys} specified in upsert request {pk_values}")
+
+        # scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
+        # if scenario_seq is not None:
+        #     pk_values['scenario_seq'] = scenario_seq
+        # else:
+        #     raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot delete row.")
+
+        pk_conditions = [(db_table.get_sa_column(k) == v) for k, v in pk_values.items()]
+        t: sqlalchemy.Table = db_table.get_sa_table()
+
+        if self.enable_scenario_seq:
+            if (scenario_seq := self._get_scenario_seq(scenario_name, connection)) is not None:
+                # print(f"ScenarioSeq = {scenario_seq}")
+                sql = t.delete().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions))
+                connection.execute(sql)
+            else:
+                raise ValueError(f"No scenario with name {scenario_name} exists")
+        else:
+            raise NotImplementedError(f"Delete only supports enable_scenario_seq")
+            # sql = t.delete().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions))
+            # connection.execute(sql)
+
+
 #######################################################################################################
 # Input Tables
 #######################################################################################################

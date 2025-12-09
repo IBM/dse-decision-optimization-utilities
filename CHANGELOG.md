@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.7.2b2]
+### Added
+- ScenarioDbManager.delete_table_row() deletes one row from a table based on primary keys
 ### Fixed
 - DeployedDOModel - avoid warning in Python 3.12 'SyntaxWarning'
 - Core02OptimizationEngine.get_lex_optimization_levels groupby aggregation `include_groups=False` deprecation fix
