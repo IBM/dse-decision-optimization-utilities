@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.7.2b2]
+[Unreleased]## [0.5.7.2]
+
+## [0.5.7.2]- 2026-01-13
+- Released version 0.5.7.2b2 as 0.5.7.2
+- Note: Spinx documentation failed to build.
+
+## [0.5.7.2b2]- 2026-01-12
 ### Added
 - ScenarioDbManager.delete_table_row() deletes one row from a table based on primary keys
 ### Fixed
