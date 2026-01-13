@@ -214,25 +214,25 @@ class ScenarioManager(object):
             raise ValueError("Root directory `{}` does not exist.".format(root_dir))
         return root_dir
 
-    def add_data_file_using_project_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
-        """Add a data file to the Watson Studio project.
-        Applies to CP4Dv2.5 and WS Cloud/CP4DaaS
-        Needs to be called after the file has been saved regularly in the file system in
-        `/project_data/data_asset/` (for CPD2.5) or `/home/wsuser/work/` in CPDaaS.
-        Ensures the file is visible in the Data Assets of the Watson Studio UI.
-
-        Args:
-            file_path (str): full file path, including the file name and extension
-            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
-        """
-        # Add to Project
-        if self.project is None:
-            from project_lib import Project
-            self.project = Project.access()
-        if file_name is None:
-            file_name = os.path.basename(file_path)
-        with open(file_path, 'rb') as f:
-            self.project.save_data(file_name=file_name, data=f, overwrite=True)
+    # def add_data_file_using_project_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
+    #     #     """Add a data file to the Watson Studio project.
+    #     #     Applies to CP4Dv2.5 and WS Cloud/CP4DaaS
+    #     #     Needs to be called after the file has been saved regularly in the file system in
+    #     #     `/project_data/data_asset/` (for CPD2.5) or `/home/wsuser/work/` in CPDaaS.
+    #     #     Ensures the file is visible in the Data Assets of the Watson Studio UI.
+    #     #
+    #     #     Args:
+    #     #         file_path (str): full file path, including the file name and extension
+    #     #         file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+    #     #     """
+    #     #     # Add to Project
+    #     #     if self.project is None:
+    #     #         from project_lib import Project
+    #     #         self.project = Project.access()
+    #     #     if file_name is None:
+    #     #         file_name = os.path.basename(file_path)
+    #     #     with open(file_path, 'rb') as f:
+    #     #         self.project.save_data(file_name=file_name, data=f, overwrite=True)
 
     def add_data_file_using_ws_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
@@ -1214,22 +1214,38 @@ class ScenarioManager(object):
         # return 'PWD' in os.environ and os.environ['PWD'] == '/home/wsuser/work'
         return 'RUNTIME_ENV_APSX_URL' in os.environ and os.environ['RUNTIME_ENV_APSX_URL'] == 'https://api.dataplatform.cloud.ibm.com'
 
+    # def get_dd_client(self):
+    #     """Return the Client managing the DO scenario.
+    #     Returns: new decision_optimization_client.Client
+    #     """
+    #     from decision_optimization_client import Client
+    #     if self.project is not None:
+    #         pc = self.project.project_context
+    #         return Client(pc=pc)
+    #     elif (self.project_id is not None) and (self.project_access_token is not None):
+    #         # When in WS Cloud:
+    #         from project_lib import Project
+    #         # The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.
+    #         project = Project(project_id=self.project_id,
+    #                           project_access_token=self.project_access_token)
+    #         pc = project.project_context
+    #         return Client(pc=pc)
+    #     else:
+    #         #  In WSL/CPD:
+    #         return Client()
+
     def get_dd_client(self):
         """Return the Client managing the DO scenario.
         Returns: new decision_optimization_client.Client
         """
         from decision_optimization_client import Client
-        if self.project is not None:
-            pc = self.project.project_context
-            return Client(pc=pc)
-        elif (self.project_id is not None) and (self.project_access_token is not None):
+        if self.wslib is not None:
+            return Client(wslib=self.wslib)
+        elif self.project_token is not None:
             # When in WS Cloud:
-            from project_lib import Project
-            # The do_optimization project token is an authorization token used to access project resources like data sources, connections, and used by platform APIs.
-            project = Project(project_id=self.project_id,
-                              project_access_token=self.project_access_token)
-            pc = project.project_context
-            return Client(pc=pc)
+            from ibm_watson_studio_lib import access_project_or_space
+            wslib = access_project_or_space({'token':self.project_token})
+            return Client(wslib=wslib)
         else:
             #  In WSL/CPD:
             return Client()
