@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.8.0b0]
 ### Fixed
-- ScenarioManager migrate project_lib to ibm-watson-studio-lib for CP4D-SaaS compatibility
+- ScenarioManager migrate project_lib to ibm-watson-studio-lib for CPD-SaaS compatibility
+- Removed deprecated ScenarioManager.add_data_file_to_project_s()
+- Deprecated and removed support for CPD25 in ScenarioManager
+- ScenarioManager.load_data_from_excel in CPDaaS loads Excel file using ibm-watson-studio-lib
+- ScenarioManager.write_data_to_excel in CPDaaS saves Excel file using ibm-watson-studio-lib (using add_file_as_data_asset)
 
 ## [0.5.7.2]- 2026-01-13
 - Released version 0.5.7.2b2 as 0.5.7.2

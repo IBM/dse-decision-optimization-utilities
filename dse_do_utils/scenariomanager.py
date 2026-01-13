@@ -32,7 +32,7 @@ import enum
 class Platform(enum.Enum):
     CPDaaS = 1  # As of Nov 2021, CPDaaS uses project_lib
     CPD40 = 2  # CPD 4.0 uses ibm_watson_studio_lib
-    CPD25 = 3  # CPD 2.5-3.5 uses project_lib (but differently from CPDaaS)
+    CPD25 = 3  # CPD 2.5-3.5 uses project_lib (but differently from CPDaaS)  Support has been deprecated since v0.5.8
     Local = 4
 
 
@@ -83,10 +83,13 @@ class ScenarioManager(object):
     """
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
-                 local_root: Optional[Union[str, Path]] = None, project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
+                 local_root: Optional[Union[str, Path]] = None,
+                 # project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
+                 project_token: Optional[str] = None, wslib=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
                  inputs: Inputs = None, outputs: Outputs = None,
-                 local_relative_data_path: str = 'assets/data_asset', data_directory: Optional[Union[str, Path]] = None):
+                 local_relative_data_path: str = 'assets/data_asset', data_directory: Optional[Union[str, Path]] = None,
+                 ):
         """Create a ScenarioManager.
 
         Template_scenario_name: name of a scenario with an (empty but) valid model that has been successfully run at least once.
@@ -97,15 +100,16 @@ class ScenarioManager(object):
         The ScenarioManager will try and detect the platform to choose the appropriate method.
         However, these checks are sensitive and not supported by the platform.
         Therefore, the ScenarioManager allows explicit control via the argument `platform`.
-        Valid choices are: `CPDaaS`, `CPD40`, `CPD25`, and `Local`
+        Valid choices are: `CPDaaS`, `CPD40`, `CPD25` (deprecated), and `Local`
+
+        To specify project_token or wslib: only one of the two is needed. See https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ws-lib-python.html?context=cpdaas
 
         Args:
             model_name (str):
             scenario_name (str):
             local_root (str): Path of root when running on a local computer
-            project_id (str): Project-id, when running in WS Cloud, also requires a project_access_token
-            project_access_token (str): When running in WS Cloud, also requires a project_id
-            project (project_lib.Project): alternative for project_id and project_access_token for WS Cloud
+            project_token (str): When running in WS Cloud/CPDaaS, the project token to get wslib.
+            wslib: alternative for project_token for WS Cloud
             template_scenario_name (str): If scenario doesn't exist: create new one. If template_scenario_name is specified, use that as template.
             platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.
             local_relative_data_path (str): relative directory from the local_root. Used as default data_directory
@@ -114,9 +118,11 @@ class ScenarioManager(object):
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.local_root = local_root
-        self.project_id = project_id
-        self.project_access_token = project_access_token
-        self.project = project
+        # self.project_id = project_id
+        # self.project_access_token = project_access_token
+        # self.project = project
+        self.project_token = project_token
+        self.wslib = wslib
         self.inputs = inputs
         self.outputs = outputs
         self.template_scenario_name = template_scenario_name
@@ -230,7 +236,7 @@ class ScenarioManager(object):
 
     def add_data_file_using_ws_lib(self, file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
-        Applies to CP4Dv4.0
+        Applies to CP4Dv4.0 and CP4DSaaS
         TODO: where should the file be written?
         Needs to be called after the file has been saved regularly in the file system in
         `/project_data/data_asset/` (for CPD2.5) or `/home/wsuser/work/` in WS Cloud.
@@ -245,8 +251,9 @@ class ScenarioManager(object):
             file_name = os.path.basename(file_path)
 
         with open(file_path, 'rb') as f:
-            from ibm_watson_studio_lib import access_project_or_space
-            wslib = access_project_or_space()
+            # from ibm_watson_studio_lib import access_project_or_space
+            # wslib = access_project_or_space()
+            wslib = self.get_wslib()
             wslib.save_data(asset_name_or_item=file_name, data=f.read(), overwrite=True)
 
         # Notes:
@@ -254,11 +261,30 @@ class ScenarioManager(object):
         # * Unlike with project_lib, we need to do a f.read()
         # * ibm_watson_studio_lib is not (yet?) available in CPDaaS, but if so similar to project_lib it may need a handle to the self.project. Thus this non-static method.
 
+    def get_wslib(self):
+        """Returns the wslib object for the project.
+
+        If already set in the constructor, returns that.
+        Otherwise, creates it using the project_token or wslib.
+
+        Returns:
+            wslib object
+        """
+        if self.wslib is not None:
+            return self.wslib
+        else:
+            from ibm_watson_studio_lib import access_project_or_space
+            if self.project_token is not None:
+                wslib = access_project_or_space({'token': self.project_token})
+            else:
+                wslib = access_project_or_space()
+            return wslib
+
     @staticmethod
     def add_data_file_using_ws_lib_s(file_path: str, file_name: Optional[str] = None) -> None:
         """Add a data file to the Watson Studio project using the ibm_watson_studio_lib .
-        Applies to CP4Dv4.0
-        TODO: where should the file be written?
+        Applies to CP4Dv4.0 only
+        TODO: can probably be replaced by more generic, non-static, add_data_file_using_ws_lib().
         Needs to be called after the file has been saved regularly in the file system in
         `/project_data/data_asset/` (for CPD2.5) or `/home/dsxuser/work/` in WS Cloud.
         Ensures the file is visible in the Data Assets of the Watson Studio UI.
@@ -280,26 +306,26 @@ class ScenarioManager(object):
         # Unlike with project_lib, we need to do a f.read()
 
 
-    @staticmethod
-    def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
-        """DEPRECATED: will never work on CP4DaaS since it requires the project_lib.Project
-        Add a data file to the Watson Studio project.
-        Applies to CP4Dv2.5.
-        Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
-        Ensures the file is visible in the Data Assets of the Watson Studio UI.
-
-        Args:
-            file_path (str): full file path, including the file name and extension
-            file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
-        """
-        # Add to Project
-        if file_name is None:
-            file_name = os.path.basename(file_path)
-
-        with open(file_path, 'rb') as f:
-            from project_lib import Project
-            project = Project.access()
-            project.save_data(file_name=file_name, data=f, overwrite=True)
+    # @staticmethod
+    # def add_data_file_to_project_s(file_path: str, file_name: Optional[str] = None) -> None:
+    #     """DEPRECATED: will never work on CP4DaaS since it requires the project_lib.Project
+    #     Add a data file to the Watson Studio project.
+    #     Applies to CP4Dv2.5.
+    #     Needs to be called after the file has been saved regularly in the file system in `/project_data/data_asset/`.
+    #     Ensures the file is visible in the Data Assets of the Watson Studio UI.
+    #
+    #     Args:
+    #         file_path (str): full file path, including the file name and extension
+    #         file_name (str): name of data asset. Default is None. If None, the file-name will be extracted from the file_path.
+    #     """
+    #     # Add to Project
+    #     if file_name is None:
+    #         file_name = os.path.basename(file_path)
+    #
+    #     with open(file_path, 'rb') as f:
+    #         from project_lib import Project
+    #         project = Project.access()
+    #         project.save_data(file_name=file_name, data=f, overwrite=True)
 
     # -----------------------------------------------------------------
     # Read and write from/to DO scenario - value-added
@@ -558,10 +584,10 @@ class ScenarioManager(object):
             file_name = excel_file_name + '.xlsx'
 
         if self.platform == Platform.CPDaaS:
-            # For CPDaaS only: file doesn't exist in /home/wsuser/work/. We have to get it.
-            file = self.project.get_file(file_name)
-            file.seek(0)
-            xl = pd.ExcelFile(file)
+            # VT_20260113: since v0.5.8, use wslib to load the data asset in CPDaaS (instead of project_lib)
+            wslib = self.get_wslib()
+            buffer = wslib.load_data(excel_file_name)
+            xl = pd.ExcelFile(buffer)
         else:
             datasets_dir = self.get_data_directory()
             excel_file_path = os.path.join(datasets_dir, file_name)
@@ -666,10 +692,14 @@ class ScenarioManager(object):
         if asset_name is None:
             asset_name = os.path.basename(file_path)
 
+        if self.platform in [Platform.CPDaaS]:
+            self.add_data_file_using_ws_lib(file_path, asset_name)
         if self.platform in [Platform.CPD40]:
+            # VT_20260113: for now keep this as is, but could be replaced by non-static add_data_file_using_ws_lib() to make it the same as CPDaaS.
             self.add_data_file_using_ws_lib_s(file_path, asset_name)
-        elif self.platform in [Platform.CPD25, Platform.CPDaaS]:
-            self.add_data_file_using_project_lib(file_path, asset_name)
+        elif self.platform in [Platform.CPD25]:
+            raise NotImplementedError("The method add_file_as_data_asset is not implemented for CPD25. Support for CPD25 has been deprecated and has been removed.")
+            # self.add_data_file_using_project_lib(file_path, asset_name)
         else:  # i.e Local: do not register as data asset
             pass
 
@@ -1142,8 +1172,8 @@ class ScenarioManager(object):
             platform = Platform.CPDaaS
         elif ScenarioManager.env_is_cpd40():
             platform = Platform.CPD40
-        elif ScenarioManager.env_is_cpd25():
-            platform = Platform.CPD25
+        # elif ScenarioManager.env_is_cpd25():
+        #     platform = Platform.CPD25
         else:
             platform = Platform.Local
         return platform
