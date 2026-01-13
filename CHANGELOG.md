@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.8.0b]
+### Fixed
+- ScenarioManager migrate project_lib to ibm-watson-studio-lib for CP4D-SaaS compatibility
 
 ## [0.5.7.2]- 2026-01-13
 - Released version 0.5.7.2b2 as 0.5.7.2
