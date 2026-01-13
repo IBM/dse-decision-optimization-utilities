@@ -84,7 +84,6 @@ class ScenarioManager(object):
 
     def __init__(self, model_name: Optional[str] = None, scenario_name: Optional[str] = None,
                  local_root: Optional[Union[str, Path]] = None,
-                 # project_id: Optional[str] = None, project_access_token: Optional[str] = None, project=None,
                  project_token: Optional[str] = None, wslib=None,
                  template_scenario_name: Optional[str] = None, platform: Optional[Platform] = None,
                  inputs: Inputs = None, outputs: Outputs = None,
@@ -100,7 +99,7 @@ class ScenarioManager(object):
         The ScenarioManager will try and detect the platform to choose the appropriate method.
         However, these checks are sensitive and not supported by the platform.
         Therefore, the ScenarioManager allows explicit control via the argument `platform`.
-        Valid choices are: `CPDaaS`, `CPD40`, `CPD25` (deprecated), and `Local`
+        Valid choices are: `CPDaaS`, `CPD40`,  and `Local` (`CPD25` is deprecated)
 
         To specify project_token or wslib: only one of the two is needed. See https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/ws-lib-python.html?context=cpdaas
 
@@ -111,7 +110,7 @@ class ScenarioManager(object):
             project_token (str): When running in WS Cloud/CPDaaS, the project token to get wslib.
             wslib: alternative for project_token for WS Cloud
             template_scenario_name (str): If scenario doesn't exist: create new one. If template_scenario_name is specified, use that as template.
-            platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, `CPD25`, and `Local`). If None, will try to detect automatically.
+            platform (Platform): Optionally control the platform (`CPDaaS`, `CPD40`, and `Local`). If None, will try to detect automatically.
             local_relative_data_path (str): relative directory from the local_root. Used as default data_directory
             data_directory (str): Full path of data directory. Will override the platform dependent process.
         """
@@ -1239,16 +1238,9 @@ class ScenarioManager(object):
         Returns: new decision_optimization_client.Client
         """
         from decision_optimization_client import Client
-        if self.wslib is not None:
-            return Client(wslib=self.wslib)
-        elif self.project_token is not None:
-            # When in WS Cloud:
-            from ibm_watson_studio_lib import access_project_or_space
-            wslib = access_project_or_space({'token':self.project_token})
-            return Client(wslib=wslib)
-        else:
-            #  In WSL/CPD:
-            return Client()
+        # VT_20260113: the samples for CP4D on-prem show to also pass the wslib to the Client, but without the token
+        wslib = self.get_wslib()
+        return Client(wslib=wslib)
 
     def print_table_names(self) -> None:
         """Print the names of the input and output tables. For development and debugging."""
