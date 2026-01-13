@@ -68,7 +68,7 @@ class Core02DataManager(Core01DataManager, ABC):
     ####################################################################################
 
     @property
-    def lex_opti_levels(self):
+    def lex_opti_levels(self) -> pd.DataFrame:
         """
         Get the
 
@@ -80,7 +80,7 @@ class Core02DataManager(Core01DataManager, ABC):
             self._lex_opti_levels = self.prep_lex_opti_levels()
         return self._lex_opti_levels
 
-    def prep_lex_opti_levels(self):
+    def prep_lex_opti_levels(self) -> pd.DataFrame:
         """
         Prepare lex_opti_levels
 

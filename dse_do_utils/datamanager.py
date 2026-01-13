@@ -44,9 +44,14 @@ class DataManager(object):
         self.param = types.SimpleNamespace()
 
     def prepare_data_frames(self):
-        if (self.inputs is not None) and (len(self.inputs) > 0):
+        # if (self.inputs is not None) and (len(self.inputs) > 0):
+        #     self.prepare_input_data_frames()
+        # if (self.outputs is not None) and (len(self.outputs) > 0):
+        #     self.prepare_output_data_frames()
+        # VT_20251203: make sure to always run the prepare methods even if no inputs/outputs are provided: code will create zero-lenght DataFrames with the right columns.
+        if (self.inputs is not None):
             self.prepare_input_data_frames()
-        if (self.outputs is not None) and (len(self.outputs) > 0):
+        if (self.outputs is not None):
             self.prepare_output_data_frames()
 
     def prepare_input_data_frames(self):

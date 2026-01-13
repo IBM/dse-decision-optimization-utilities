@@ -34,6 +34,7 @@ import enum
 
 #  Typing aliases
 from dse_do_utils import ScenarioManager
+import io
 
 Inputs = Dict[str, pd.DataFrame]
 Outputs = Dict[str, pd.DataFrame]
@@ -977,7 +978,7 @@ class ScenarioDbManager():
     ############################################################################################
     # Insert/replace scenario
     ############################################################################################
-    def replace_scenario_in_db(self, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {}, bulk=True):
+    def replace_scenario_in_db(self, scenario_name: str, inputs:Optional[Inputs]=None, outputs:Optional[Outputs]=None, bulk=True):
         """Insert or replace a scenario. Main API to insert/update a scenario.
         If the scenario exists, will delete rows first.
         Inserts scenario data in all tables.
@@ -989,6 +990,10 @@ class ScenarioDbManager():
         :param bulk:
         :return:
         """
+        if outputs is None:
+            outputs = {}
+        if inputs is None:
+            inputs = {}
         if self.enable_transactions:
             print("Replacing scenario within transaction")
             with self.engine.begin() as connection:
@@ -996,7 +1001,7 @@ class ScenarioDbManager():
         else:
             self._replace_scenario_in_db_transaction(self.engine, scenario_name=scenario_name, inputs=inputs, outputs=outputs, bulk=bulk)
 
-    def _replace_scenario_in_db_transaction(self, connection, scenario_name: str, inputs: Inputs = {}, outputs: Outputs = {},
+    def _replace_scenario_in_db_transaction(self, connection, scenario_name: str, inputs:Optional[Inputs]=None, outputs:Optional[Outputs]=None,
                                             bulk: bool = True):
         """Replace a single full scenario in the DB. If doesn't exist, will insert.
         Only inserts tables with an entry defined in self.db_tables (i.e. no `auto_insert`).
@@ -1008,6 +1013,10 @@ class ScenarioDbManager():
         TODO: break-out in a delete and an insert. Then we can re-use the insert for the duplicate API
         """
         # Step 1: delete scenario if exists
+        if outputs is None:
+            outputs = {}
+        if inputs is None:
+            inputs = {}
         self._delete_scenario_from_db(scenario_name, connection=connection)
 
         if self.enable_scenario_seq:
@@ -1594,7 +1603,7 @@ class ScenarioDbManager():
                 # VT20230206: Below avoids the SQLAlchemy future warning about cartesian product. Simpler.
                 # See https://stackoverflow.com/questions/27239647/what-is-the-way-to-select-a-hard-coded-value-in-a-query
                 select_columns = [sqlalchemy.literal(new_scenario_seq).label('scenario_seq') if c.name == 'scenario_seq' else c for c in t.columns]
-                select_sql = (sqlalchemy.select(select_columns)
+                select_sql = (sqlalchemy.select(*select_columns)  # VT_20250504; fixed error: need to unpack the select_columns list in individual arguments
                               .where(t.c.scenario_seq == source_scenario_seq))
 
             else:
@@ -1748,7 +1757,7 @@ class ScenarioDbManager():
                 file_extension = pathlib.Path(info.filename).suffix
                 if file_extension == '.xlsx':
                     # print(f"file in zip : {info.filename}")
-                    xl = pd.ExcelFile(zip_file.read(info))
+                    xl = pd.ExcelFile(io.BytesIO(zip_file.read(info)))  # VT_20250411: Fixed FutureWarning by wrapping in io.BytesIO around the read file
                     inputs, outputs = ScenarioManager.load_data_from_excel_s(xl)
                     print("Input tables: {}".format(", ".join(inputs.keys())))
                     print("Output tables: {}".format(", ".join(outputs.keys())))
@@ -2139,12 +2148,6 @@ class ScenarioDbManager():
         else:
             raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot upsert data into DB.")
 
-        # scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
-        # if scenario_seq is not None:
-        #     values['scenario_seq'] = scenario_seq
-        # else:
-        #     raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
-
         # Split values in 2 parts:
         # 1. The primary keys
         # 2. The other columns
@@ -2172,7 +2175,10 @@ class ScenarioDbManager():
                     connection.execute(sql_update)
                 else:
                     # Insert new record
-                    sql_insert = t.insert().values(values)
+                    # Ensure scenario_seq is included for insert
+                    values_with_seq = dict(values)
+                    values_with_seq['scenario_seq'] = scenario_seq
+                    sql_insert = t.insert().values(values_with_seq)
                     connection.execute(sql_insert)
             else:
                 raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot upsert row.")
@@ -2181,6 +2187,55 @@ class ScenarioDbManager():
             # TODO: implement. Easy to do.
             # sql = t.update().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions)).values(column_values)
             # connection.execute(sql)
+
+    def delete_table_row(self, scenario_table_name: str, scenario_name: str, pk_values):
+        """Deletes one row of data identified by primary key values."""
+        if self.enable_transactions:
+            with self.engine.begin() as connection:
+                self._delete_table_row(scenario_table_name, scenario_name, pk_values, connection)
+        else:
+            self._delete_table_row(scenario_table_name, scenario_name, pk_values, self.engine)
+
+    def _delete_table_row(self, scenario_table_name: str, scenario_name: str, pk_values, connection=None):
+        """Delete one row of data.
+        Args:
+            scenario_table_name (str): Name of scenario table (as used in Inputs/Outputs, not the name in the DB)
+            pk_values (Dict): primary key values identifying the row to be deleted.
+            connection
+        """
+        if scenario_table_name in self.db_tables:
+            db_table = self.db_tables[scenario_table_name]
+        else:
+            raise ValueError(f"Scenario table name '{scenario_table_name}' unknown. Cannot delete data from DB.")
+
+        # Check that all primary keys are specified
+        primary_keys = [c.name for c in db_table.columns_metadata if
+                        c.primary_key and c.name != 'scenario_seq' and c.name != 'scenario_name']
+        if not all(pk in pk_values.keys() for pk in primary_keys):
+            raise ValueError(f"Not all required primary keys {primary_keys} specified in upsert request {pk_values}")
+
+        # scenario_seq = self._get_scenario_seq(scenario_name=scenario_name, connection=connection)
+        # if scenario_seq is not None:
+        #     pk_values['scenario_seq'] = scenario_seq
+        # else:
+        #     raise ValueError(f"Scenario name '{scenario_name}' is unknown. Cannot delete row.")
+
+        pk_conditions = [(db_table.get_sa_column(k) == v) for k, v in pk_values.items()]
+        t: sqlalchemy.Table = db_table.get_sa_table()
+
+        if self.enable_scenario_seq:
+            if (scenario_seq := self._get_scenario_seq(scenario_name, connection)) is not None:
+                # print(f"ScenarioSeq = {scenario_seq}")
+                sql = t.delete().where(sqlalchemy.and_((t.c.scenario_seq == scenario_seq), *pk_conditions))
+                connection.execute(sql)
+            else:
+                raise ValueError(f"No scenario with name {scenario_name} exists")
+        else:
+            raise NotImplementedError(f"Delete only supports enable_scenario_seq")
+            # sql = t.delete().where(sqlalchemy.and_((t.c.scenario_name == scenario_name), *pk_conditions))
+            # connection.execute(sql)
+
+
 #######################################################################################################
 # Input Tables
 #######################################################################################################

@@ -5,6 +5,8 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 import pandas as pd
+
+from dse_do_utils.core.core01_cpo_optimization_engine import Core01CpoOptimizationEngine
 from dse_do_utils.core.core01_optimization_engine import Core01OptimizationEngine
 
 from dse_do_utils.core.core01_data_manager import Core01DataManager
@@ -96,11 +98,16 @@ class ScenarioGenerator(Generic[SC]):
                 df = pd.DataFrame(columns=['param', 'value']).set_index('param')
         else:
             if 'Parameter' in self.inputs.keys():
-                df = self.inputs['Parameter'].copy().set_index(['param'])
+                df = self.inputs['Parameter'].copy()  #.set_index(['param'])
             elif 'Parameters' in self.inputs.keys():
-                df = self.inputs['Parameters'].copy().set_index(['param'])
+                df = self.inputs['Parameters'].copy()  #.set_index(['param'])
             else:
-                df = pd.DataFrame(columns=['param', 'value']).set_index('param')
+                df = pd.DataFrame(columns=['param', 'value'])  #.set_index('param')
+
+            # Need to set the dtype of `value` to object to allow for mixed types
+            df = df.astype({'param': object, 'value': object})  # Fix VT_20250429: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas
+            df = df.set_index('param')
+
             for param, value in self.scenario_config.parameters.items():
                 df.at[param, 'value'] = value
         return df
@@ -112,7 +119,7 @@ class ScenarioRunner:
     """
     def __init__(self,
                  scenario_db_manager: ScenarioDbManager,
-                 optimization_engine_class: Type[Core01OptimizationEngine],
+                 optimization_engine_class:Union[Type[Core01OptimizationEngine], Type[Core01CpoOptimizationEngine]],
                  data_manager_class: Type[Core01DataManager],
                  scenario_db_manager_class: Type[ScenarioDbManager],  # For the SQLite data check
                  scenario_generator_class: Optional[Type[ScenarioGenerator]] = None,
@@ -400,7 +407,7 @@ class ScenarioRunner:
     #     return inputs_v2
 
 
-    def run_model(self, inputs: Inputs, run_config: RunConfig):
+    def run_model(self, inputs: Inputs, run_config: RunConfig) -> Outputs:
         '''
         Main method to run the optimization model.
         '''
@@ -423,6 +430,7 @@ class ScenarioRunner:
         if run_config.insert_outputs_in_db:
             self.scenario_db_manager.update_scenario_output_tables_in_db(scenario_name, outputs)
         else:
+            # VT_20250611 Note: we never get here because the insert_outputs_in_db flag was already checked before getting to this method
             self.scenario_db_manager.replace_scenario_in_db(scenario_name, inputs, outputs)
 
     def insert_in_do(self, inputs, outputs, scenario_config: ScenarioConfig,

@@ -4,7 +4,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.7.1b0]
+[Unreleased]## [0.5.7.2]
+
+## [0.5.7.2]- 2026-01-13
+- Released version 0.5.7.2b2 as 0.5.7.2
+- Note: Spinx documentation failed to build.
+
+## [0.5.7.2b2]- 2026-01-12
+### Added
+- ScenarioDbManager.delete_table_row() deletes one row from a table based on primary keys
+### Fixed
+- DeployedDOModel - avoid warning in Python 3.12 'SyntaxWarning'
+- Core02OptimizationEngine.get_lex_optimization_levels groupby aggregation `include_groups=False` deprecation fix
+- DataManager.prepare_data_frames() call prepare_df for all dataframes, even if zero-length. Avoid having input/output DataFrames with None value.
+- ScenarioDbManager._upsert_table_row fixed missing scenario_seq for new rows.
+
+## [0.5.7.2b1] - 2025-07-03
+### Added
+- DOModelDeployer: option to deploy from a local do_main_model.py (instead of extracting the model from a DO Experiment)
+- DOModelDeployer added `model_meta_props_type` and `base_sw_name` constructor arguments to handle different cplex releases.
+- ScenarioManager: remove timezone from datetime values in DataFrame. This avoids issues with exporting using the ExcelWriter, which does not support datetime with timezone.
+### Fixed
+- ScenarioDbManager.replace_scenario_in_db: fixed mutable default arguments
+- ScenarioDbManager._replace_scenario_in_db_transaction: fixed mutable default arguments
+- DOModelDeployer fixed mutable default arguments
+- DOModelDeployer and DeployedDOModel switching from ibm_watson_machine_learning to ibm_watsonx_ai
+- DOModelDeployer and DeployedDOModel switching from `get_uid()` to `get_id()` at various places using the `APIClient`
+
+
+## [0.5.7.2b0] - 2025-05-08
+### Added
+- Optimization Progress Tracking in CPO. CPO callback to record progress of search. Supports reporting and visualization.
+- core01_cpo_optimization_engine.CpoProgressTrackerCallback
+- Core01CpoOptimizationEngine.record_optimization_progress()
+- Core01OptimizationEngine optimization progress tracking, using same format as CPO.
+- Core01DataManager APIs clear_optimization_progress/add_optimization_progress/get_optimization_progress_as_wide_df
+- core01_db_manager.Core01OptimizationProgressTable
+- Core01CpoOptimizationEngine.set_cpo_parameters now supports CPO `Workers` parameter based on `threads` parameter
+- Core01DataManager.get_kpi_value and .get_business_kpi_value for use in dashboard
+- Core01DataManager.business_kpis output dataframe added (similar to .kpis)
+### Fixed
+- Tested with Python 3.11 and CPLEX 22.1.2
+- ScenarioDbManager.insert_scenarios_from_zip fixed FutureWarning reading zipped Excel file.
+- ScenarioGenerator.get_parameters: FutureWarning fix allowing mixed dypes
+- ScenarioDbManager._duplicate_scenario_in_db_sql: fixed error unpacking column list
 
 ## [0.5.7.1]- 2025-03-17
 ### Changed

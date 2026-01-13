@@ -216,7 +216,7 @@ class Core02OptimizationEngine(Core01OptimizationEngine[DM]):
         goals_df['expr'] = goals_df.apply(lambda row: self.lex_get_goal_expr(row.lexOptiGoalId), axis=1)
 
         level_expr_df = ((goals_df[['lexOptiLevelId', 'expr', 'weight']]
-                          .groupby(['lexOptiLevelId'])).apply(LexGoalAgg(self.mdl))
+                          .groupby(['lexOptiLevelId'])).apply(LexGoalAgg(self.mdl), include_groups=False)
                          .to_frame(name='objectiveExpr')
                          )
         levels_df = (self.dm.lex_opti_levels

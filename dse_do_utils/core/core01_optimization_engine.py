@@ -15,6 +15,7 @@ from dse_do_utils import OptimizationEngine
 from dse_do_utils.core.core01_data_manager import Core01DataManager
 from dse_do_utils.datamanager import Outputs
 from typing import TypeVar, Generic
+from docplex.mp.progress import ProgressData, KpiListener
 
 DM = TypeVar('DM', bound='Core01DataManager')
 
@@ -48,6 +49,13 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         self.export_lp_path = export_lp_path
         self.enable_refine_conflict = enable_refine_conflict
         self.logger = data_manager.logger
+
+    # def pre_processing(self) -> None:
+    #     super().pre_processing()
+    #     self.dm.clear_optimization_progress()
+
+    def record_optimization_progress(self, data: List[Dict]):
+        self.dm.add_optimization_progress(data)
 
     def run(self) -> Outputs:
         self.dm.prepare_data_frames()
@@ -101,6 +109,9 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
             self.mdl.quality_metrics = True
 
     def solve(self) -> Optional[SolveSolution]:
+        if self.dm.param.enable_optimization_progress_tracking:
+            self.mdl.add_progress_listener(self.get_progress_listener())
+
         msol = self.mdl.solve(**self.solve_kwargs)
         self.dm.logger.info(
         f"Solve completed with status '{self.mdl.solve_details.status}' and time {self.mdl.solve_details.time:.2f} sec")
@@ -111,6 +122,12 @@ class Core01OptimizationEngine(OptimizationEngine[DM]):
         elif self.enable_refine_conflict:
             self.refine_conflict()
         return msol
+
+    def get_progress_listener(self) -> KpiListener:
+        """Gets called when parameter enable_optimization_progress_tracking is set to True.
+        Methid is designed to be overridden in the child class for cases where we want to customize the callback.
+        The deault implementation is to use the CpoProgressTrackerCallback."""
+        return Core01CplexKpiListener(self)
 
     @abstractmethod
     def extract_solution(self, drop: bool = True) -> None:
@@ -308,3 +325,58 @@ class CplexDot():
         self.column2 = column2
     def __call__(self, group):
         return self.mdl.dot(group[self.column1], group[self.column2])
+
+
+####################################################
+#
+####################################################
+class Core01CplexKpiListener(KpiListener):
+    """Listener for Optimization Progress Tracking.
+    Calls `record_optimization_progress` on the Core01OptimizationEngine everytime a new solution or bound is found"""
+
+    def __init__(self, engine: Core01OptimizationEngine[DM], **kwargs):
+        super().__init__(model=engine.mdl, **kwargs)
+        self.engine = engine
+        self.progress_seq = 0
+
+    def publish(self, kpi_dict, run_id: str = 'run_0'):
+        progress_data: ProgressData = self.current_progress_data
+
+        # print(
+        #     f"KPI PUBLISH: Obj={progress_data.current_objective}, bound={progress_data.best_bound}, gap={progress_data.mip_gap}")
+
+        solve_time = progress_data.time
+        objective_value = progress_data.current_objective
+        objective_bound = progress_data.best_bound
+        objective_gap = progress_data.mip_gap
+        kpis = kpi_dict
+        kpis.pop('_current_objective', None)
+        kpis.pop('_current_time', None)
+
+        # Related to CPOptimizer (?)
+        solve_status: str = 'NA'  # Not applicable for CPLEX
+        search_status: str = 'NA'  # Not applicable for CPLEX
+        event_type: str = 'Solution'  # Not applicable for CPLEX
+
+        seq = self.progress_seq
+        data = [{'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_time',
+                 'metric_value': solve_time, 'metric_text_value': None},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_value',
+                 'metric_value': objective_value, 'metric_text_value': None},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_bound',
+                 'metric_value': objective_bound, 'metric_text_value': None},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_gap',
+                 'metric_value': objective_gap, 'metric_text_value': None},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_status',
+                 'metric_value': None, 'metric_text_value': solve_status},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'search_status',
+                 'metric_value': None, 'metric_text_value': search_status},
+                {'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'event_type',
+                 'metric_value': None, 'metric_text_value': event_type}]
+        if isinstance(kpis, Dict):
+            for kpi_name, kpi_value in kpis.items():
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'kpi', 'metric_name': kpi_name,
+                             'metric_value': kpi_value, 'metric_text_value': None})
+
+        self.engine.record_optimization_progress(data)
+        self.progress_seq = self.progress_seq + 1

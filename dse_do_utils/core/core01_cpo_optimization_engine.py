@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 from docplex import cp
+from docplex.cp.solver.cpo_callback import CpoCallback
 from docplex.mp.conflict_refiner import ConflictRefiner
 from docplex.mp.solution import SolveSolution
 from docplex.cp.parameters import CpoParameters
@@ -38,6 +39,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
     Usage 2 - When creating an instance::
 
         engine = FruitOptimizationEngine[FruitDataManager]
+
+    Inlcudes callback with solver progress tracking. See `CpoProgressTrackerCallback` for details.
     """
     def __init__(self, data_manager: DM, name: str = None, solve_kwargs=None,
                  export_lp: bool = False, export_sav: bool = False, export_lp_path: str = '',
@@ -54,6 +57,8 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         self.logger = data_manager.logger
 
         self.cpo_params = CpoParameters()
+
+
 
     def run(self) -> Outputs:
         self.dm.prepare_data_frames()
@@ -111,6 +116,9 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         if int(self.dm.param.time_limit) > 0:
             self.cpo_params.TimeLimit = int(self.dm.param.time_limit)
 
+        if int(self.dm.param.threads) > 0:
+            self.cpo_params.Workers = int(self.dm.param.threads)
+
         # self.cpo_params.KPIDisplay = 'MultipleLines'
         # self.cpo_params.ConflictRefinerTimeLimit = 60
         # self.cpo_params.LogPeriod = 10_000  # Number of branches, default 1000
@@ -120,6 +128,9 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         """
         Solve the model
         """
+        if self.dm.param.enable_optimization_progress_tracking:
+            self.mdl.add_solver_callback(self.get_solver_callback())
+
         msol = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
         self.export_as_lp_path(lp_file_name=self.mdl.name)
         if msol.is_solution():
@@ -129,6 +140,12 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         elif self.enable_refine_conflict:
             self.refine_conflict()
         return msol
+
+    def get_solver_callback(self) -> CpoCallback:
+        """Gets called when parameter enable_optimization_progress_tracking is set to True.
+        Methid is designed to be overridden in the child class for cases where we want to customize the callback.
+        The deault implementation is to use the CpoProgressTrackerCallback."""
+        return CpoProgressTrackerCallback(self)
 
     @abstractmethod
     def extract_solution(self, msol: CpoSolveResult, drop: bool = True) -> None:
@@ -275,6 +292,12 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         else:
             return pd.DataFrame(columns=['name', 'value']).set_index('name')
 
+    #########################
+    # Progress Tracking
+    #########################
+    def record_optimization_progress(self, data: List[Dict]):
+        self.dm.add_optimization_progress(data)
+
 ############################################################
 class CplexSum():
     """Function class that adds a series of dvars into a cplex sum expression.
@@ -288,5 +311,97 @@ class CplexSum():
         self.mdl = mdl
     def __call__(self, dvar_series):
         return self.mdl.sum(dvar_series)
+
+#################################################################
+class CpoProgressTrackerCallback(CpoCallback):
+    """
+    Callback for CP Optimizer. Not enabled by default.
+    Usage:
+        * Enable the parameter `enable_optimization_progress_tracking`.
+        * This will call `self.get_solver_callback()` in the `solve()` method.
+        * The default implementation is to use the CpoProgressTrackerCallback. Can be overridden in the child class.
+        * Callback calls self.record_optimization_progress(), which calls self.dm.add_optimization_progress()
+        * Results will be stored in `self.dm.optimization_progress_output`
+        * Add OptimizationProgressOutput to the ScenarioDbManager: `('OptimizationProgress', Core01OptimizationProgressTable()),`
+        * Make the PlotlyManager for your application subclass from DashPlotlyManager
+        * In the DashApp for your application, add the visualization pages `OptimizationProgressPage` and `OptimizationProgressGridPage`
+    """
+    def __init__(self, engine: Core01CpoOptimizationEngine[DM]):
+        super().__init__()
+        self.engine = engine
+        self.progress_seq: int = 0
+        self.num_solutions: int = 0
+
+    def invoke(self, solver: cp.solver.solver.CpoSolver, event: str, sres: cp.solution.CpoSolveResult):
+        """Callback method that gets called by CP Optimizer.
+
+        TODO: Handle 'EndSolve' event to log final status. Challenge is that EndSolve does not have objective, just the solve_time
+        """
+        print(f"Callback event={event}")
+        if event in ("Solution", "ObjBound"):
+            obj_val = sres.get_objective_values()
+            obj_bnds = sres.get_objective_bounds()
+            obj_gaps = sres.get_objective_gaps()
+            solvests = sres.get_solve_status()  # E.g. 'Feasible'
+            srchsts = sres.get_search_status()  # E.g. 'SearchOngoing'
+            solve_time = sres.get_info('SolveTime')
+            print(f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
+
+            # solve_time = sres.get_info('SolveTime')
+            if type(solve_time) is tuple:
+                solve_time = solve_time[0]
+            objective_value = sres.get_objective_values()
+            if type(objective_value) is tuple:
+                objective_value = objective_value[0]
+            objective_bound = sres.get_objective_bounds()
+            if type(objective_bound) is tuple:
+                objective_bound = objective_bound[0]
+            objective_gap = sres.get_objective_gaps()
+            if type(objective_gap) is tuple:
+                objective_gap = objective_gap[0]
+            solve_status = sres.get_solve_status()  # E.g. 'Feasible'
+            search_status = sres.get_search_status()  # E.g. 'SearchOngoing'
+            kpis = sres.get_kpis()
+
+            run_id: str = 'run_0'  # TODO
+
+            if objective_value is not None and objective_bound is not None:
+                if sres.is_new_solution():
+                    self.num_solutions += 1
+                seq = self.progress_seq
+                data = []
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_time',
+                             'metric_value': solve_time, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_value',
+                             'metric_value': objective_value, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_bound',
+                             'metric_value': objective_bound, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'objective_gap',
+                             'metric_value': objective_gap, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'num_solutions',
+                             'metric_value': self.num_solutions, 'metric_text_value': None})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'solve_status',
+                             'metric_value': None, 'metric_text_value': solve_status})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'search_status',
+                             'metric_value': None, 'metric_text_value': search_status})
+                data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'engine', 'metric_name': 'event_type',
+                             'metric_value': None, 'metric_text_value': event})
+                if isinstance(kpis, Dict):
+                    for kpi_name, kpi_value in kpis.items():
+                        data.append({'run_id': run_id, 'progress_seq': seq, 'metric_type': 'kpi', 'metric_name': kpi_name,
+                                     'metric_value': kpi_value, 'metric_text_value': None})
+
+                self.engine.record_optimization_progress(data)
+                self.progress_seq = self.progress_seq + 1
+
+        # elif event == "EndSolve": # Or "EndSearch"?
+        #     obj_val = sres.get_objective_values()
+        #     obj_bnds = sres.get_objective_bounds()
+        #     obj_gaps = sres.get_objective_gaps()
+        #     solvests = sres.get_solve_status()  # E.g. 'Feasible'
+        #     srchsts = sres.get_search_status()  # E.g. 'SearchOngoing'
+        #     solve_time = sres.get_info('SolveTime')
+        #     print(
+        #         f"CALLBACK: {event}: {solvests}, {srchsts}, objective: {obj_val} bounds: {obj_bnds}, gaps: {obj_gaps}, time: {solve_time}")
 
 
