@@ -1,4 +1,4 @@
-pandas #~=1.3.5
+pandas<2.0 # Due to docplex?
 decision-optimization-client #~=1.2.2
 docplex #~=2.24.232
 
