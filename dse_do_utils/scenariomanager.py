@@ -30,7 +30,7 @@ InputsOutputs = Tuple[Inputs, Outputs]
 # Therefore, to allow better control and avoid dependency on underlying conditions, user can explicitly set the platform
 import enum
 class Platform(enum.Enum):
-    CPDaaS = 1  # As of Nov 2021, CPDaaS uses project_lib
+    CPDaaS = 1  # As of Jan 2026, CPDaaS uses ibm_watson_studio_lib
     CPD40 = 2  # CPD 4.0 uses ibm_watson_studio_lib
     CPD25 = 3  # CPD 2.5-3.5 uses project_lib (but differently from CPDaaS)  Support has been deprecated since v0.5.8
     Local = 4
@@ -255,11 +255,6 @@ class ScenarioManager(object):
             wslib = self.get_wslib()
             wslib.save_data(asset_name_or_item=file_name, data=f.read(), overwrite=True)
 
-        # Notes:
-        # * wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True) CANNOT(!) overwrite an existing asset
-        # * Unlike with project_lib, we need to do a f.read()
-        # * ibm_watson_studio_lib is not (yet?) available in CPDaaS, but if so similar to project_lib it may need a handle to the self.project. Thus this non-static method.
-
     def get_wslib(self):
         """Returns the wslib object for the project.
 
@@ -302,7 +297,6 @@ class ScenarioManager(object):
             wslib.save_data(asset_name_or_item=file_name, data=f.read(), overwrite=True)
 
         # Note that wslib.upload_file(file_path=file_path, file_name=file_name, overwrite=True) CANNOT(!) overwrite an existing asset
-        # Unlike with project_lib, we need to do a f.read()
 
 
     # @staticmethod
@@ -583,7 +577,7 @@ class ScenarioManager(object):
             file_name = excel_file_name + '.xlsx'
 
         if self.platform == Platform.CPDaaS:
-            # VT_20260113: since v0.5.8, use wslib to load the data asset in CPDaaS (instead of project_lib)
+            # VT_20260113: since v0.5.8, use ibm_watson_studio_lib to load the data asset in CPDaaS (instead of project_lib)
             wslib = self.get_wslib()
             buffer = wslib.load_data(excel_file_name)
             xl = pd.ExcelFile(buffer)
@@ -654,20 +648,6 @@ class ScenarioManager(object):
 
         self.add_file_as_data_asset(excel_file_path_1, excel_file_name)
 
-        # if self.platform == Platform.CPDaaS:
-        #     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        # elif self.platform == Platform.CPD40:
-        #     self.add_data_file_using_ws_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        # elif self.platform == Platform.CPD25:
-        #     self.add_data_file_using_project_lib(excel_file_path_1, excel_file_name + '.xlsx')
-        # # Save the csv copy (no longer supported in CPD25 because not necessary)
-        # elif copy_to_csv:
-        #     excel_file_path_2 = os.path.join(data_dir, excel_file_name + 'to_csv.xlsx')
-        #     csv_excel_file_path_2 = os.path.join(data_dir, excel_file_name + '_xlsx.csv')
-        #     writer_2 = pd.ExcelWriter(excel_file_path_2, engine='xlsxwriter')
-        #     ScenarioManager.write_data_to_excel_s(writer_2, inputs=self.inputs, outputs=self.outputs)
-        #     writer_2.save()
-        #     os.rename(excel_file_path_2, csv_excel_file_path_2)
         return excel_file_path_1
 
     @staticmethod
@@ -716,22 +696,24 @@ class ScenarioManager(object):
     @staticmethod
     def add_file_as_data_asset_s(file_path: str, asset_name: str = None, platform: Platform = None):
         """Register an existing file as a data asset in CPD.
-        VT 2022-01-21: this method is incorrect for CPDaaS. Should use project_lib.
+        Uses ibm_watson_studio_lib for both CP4D on-prem and CP4DaaS.
+        Does nothing when running locally.
 
         :param file_path: full path of the file
         :param asset_name: name of asset. If None, will get the name from the file
-        :param platform: CPD40, CPD25, CPSaaS, or Local. If None, will autodetect.
+        :param platform: CPD40, CPSaaS, or Local. If None, will autodetect.
         :return:
         """
-        if asset_name is None:
-            asset_name = os.path.basename(file_path)
+        # if asset_name is None:
+        #     asset_name = os.path.basename(file_path)
         if platform is None:
             platform = ScenarioManager.detect_platform()
 
         if platform in [Platform.CPD40, Platform.CPDaaS]:
-            ScenarioManager.add_data_file_using_ws_lib_s(file_path)
+            ScenarioManager.add_data_file_using_ws_lib_s(file_path, asset_name)
         elif platform == Platform.CPD25:
-            ScenarioManager.add_data_file_to_project_s(file_path, asset_name)
+            raise NotImplementedError("The method add_file_as_data_asset_s is not implemented for CPD25. Support for CPD25 has been deprecated and has been removed.")
+            # ScenarioManager.add_data_file_to_project_s(file_path, asset_name)
         else:  # i.e Local: do not register as data asset
             pass
 
@@ -1270,12 +1252,7 @@ class ScenarioManager(object):
         mdl.export_as_lp(lp_file_path)  # Writes the .lp file
 
         self.add_file_as_data_asset(lp_file_path, lp_file_name)
-        # if self.platform == Platform.CPDaaS:
-        #     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
-        # elif self.platform == Platform.CPD40:
-        #     self.add_data_file_using_ws_lib(lp_file_path)
-        # elif self.platform == Platform.CPD25:
-        #     self.add_data_file_using_project_lib(lp_file_path, lp_file_name)
+
         return lp_file_path
 
     def insert_scenarios_from_zip(self, filepath: str):
