@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.8.0b0]
+[Unreleased]## [0.5.8.0b1]
+
+## [0.5.8.0b0]- 2026-01-16
 ### Fixed
 - ScenarioManager migrate project_lib to ibm-watson-studio-lib for CPD-SaaS compatibility
 - Removed deprecated ScenarioManager.add_data_file_to_project_s()
