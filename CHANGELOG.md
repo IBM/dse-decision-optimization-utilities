@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.8.0b1]
+### Fixed
+- Sphinx HTML documentation (due to incompatibilities between pandas and numpy versions)Spi
 
 ## [0.5.8.0b0]- 2026-01-16
 ### Fixed

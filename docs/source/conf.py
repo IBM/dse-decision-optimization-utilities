@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DSE DO Utils'
-copyright = u'2019, Victor Terpstra'
+copyright = u'2026, Victor Terpstra'
 author = u'Victor Terpstra'
 
 # The version info for the project you're documenting, acts as replacement for
