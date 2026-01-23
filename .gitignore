@@ -108,3 +108,4 @@ venv.bak/
 mydjangosite/.idea/
 /get-pip.py
 /.pypirc
+/venv311/
