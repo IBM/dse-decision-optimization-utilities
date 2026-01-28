@@ -1,6 +1,6 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
+import datetime
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 # ScenarioDbManager
@@ -299,6 +299,40 @@ class ScenarioDbTable(ABC):
                     df[df_column_name] = pd.to_datetime(df[df_column_name])
                 except ValueError as e:
                     print(f"Failed to convert column {df_column_name} to datetime")
+            if issubclass(type(sa_column.type), sqlalchemy.Time):
+                # Time doesn't convert in Pandas in the same way as other types
+                # Need to handle as a special case
+                try:
+                    # Check if column already contains datetime.time objects
+                    import datetime
+                    first_valid = df[df_column_name].dropna().iloc[0] if len(df[df_column_name].dropna()) > 0 else None
+                    if isinstance(first_valid, datetime.time):
+                        # Already time objects, no conversion needed
+                        pass
+                    else:
+                        # Convert string or other format to time
+                        # Add today's date to make it parseable, then extract time
+                        df[df_column_name] = pd.to_datetime('1900-01-01 ' + df[df_column_name].astype(str), format='%Y-%m-%d %H:%M:%S').dt.time
+                except (ValueError, TypeError) as e:
+                    print(f"Failed to convert column {df_column_name} to time: {e}")
+            # Note: SQLite doesn't support Interval type. So do not include type matching for it here.
+            # elif issubclass(type(sa_column.type), sqlalchemy.Interval):
+            #     # Interval type corresponds to datetime.timedelta in Python
+            #     # Need to handle as a special case
+            #     try:
+            #         import datetime
+            #         first_valid = df[df_column_name].dropna().iloc[0] if len(df[df_column_name].dropna()) > 0 else None
+            #         if isinstance(first_valid, datetime.timedelta):
+            #             # Already timedelta objects, no conversion needed
+            #             pass
+            #         elif isinstance(first_valid, (int, float)):
+            #             # Assume numeric values are in seconds, convert to timedelta
+            #             df[df_column_name] = pd.to_timedelta(df[df_column_name], unit='s')
+            #         else:
+            #             # Try to parse as timedelta string
+            #             df[df_column_name] = pd.to_timedelta(df[df_column_name])
+            #     except (ValueError, TypeError) as e:
+            #         print(f"Failed to convert column {df_column_name} to interval/timedelta: {e}")
             else:
                 df_type = sa_column.type.python_type
                 if type is not None and df_column_name in df.columns:

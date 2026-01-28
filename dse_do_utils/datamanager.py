@@ -8,6 +8,7 @@ from __future__ import annotations
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 import types
+from datetime import time
 
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
@@ -194,6 +195,13 @@ class DataManager(object):
                 else:
                     raw_param = raw_param.strip('"')
                     param = datetime.strptime(raw_param, value_format)
+            elif param_type == 'time':
+                if isinstance(raw_param, time):
+                    param = raw_param
+                else:
+                    raw_param = raw_param.strip('"')
+                    # time_value_format = "%H:%M:%S"
+                    param = datetime.strptime(raw_param, value_format).time()
             else:
                 param = raw_param
         else:
