@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * ScenarioDbTable._set_df_column_types added support for Time type for time-of-day columns
 * DataManager.get_parameter_value added support for Time type for time-of-day parameters
 ### Fixed
+* Pandas to_excel FutureWarning fix
 
 ## [0.5.8.0]- 2026-01-23
 ### Fixed
