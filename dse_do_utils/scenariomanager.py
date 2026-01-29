@@ -879,7 +879,7 @@ class ScenarioManager(object):
                                                                              sheet_names)
                 sheet_names.add(sheet_name)
                 df = ScenarioManager.remove_timezone_from_datetime_columns(df)  # Remove timezone from datetime columns
-                df.to_excel(writer, sheet_name, index=False)
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
                 # Store row in table_index
                 table_index.append({'table_name': table_name, 'sheet_name': sheet_name, 'category': 'input'})
         if (outputs is not None) and (type(outputs) is dict):
@@ -889,14 +889,14 @@ class ScenarioManager(object):
                                                                              sheet_names)
                 sheet_names.add(sheet_name)
                 df = ScenarioManager.remove_timezone_from_datetime_columns(df)  # Remove timezone from datetime columns
-                df.to_excel(writer, sheet_name, index=False)
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
                 # Store row in table_index
                 table_index.append({'table_name': table_name, 'sheet_name': sheet_name, 'category': 'output'})
 
         # Add table_index sheet if applicable:
         if (len(table_index) > 0) & (table_index_sheet is not None):
             index_df = pd.DataFrame(table_index)
-            index_df.to_excel(writer, table_index_sheet, index=False)
+            index_df.to_excel(writer, sheet_name=table_index_sheet, index=False)
 
     @staticmethod
     def remove_timezone_from_datetime_columns(df: pd.DataFrame) -> pd.DataFrame:
