@@ -299,7 +299,7 @@ class ScenarioDbTable(ABC):
                     df[df_column_name] = pd.to_datetime(df[df_column_name])
                 except ValueError as e:
                     print(f"Failed to convert column {df_column_name} to datetime")
-            if issubclass(type(sa_column.type), sqlalchemy.Time):
+            elif issubclass(type(sa_column.type), sqlalchemy.Time):
                 # Time doesn't convert in Pandas in the same way as other types
                 # Need to handle as a special case
                 try:
