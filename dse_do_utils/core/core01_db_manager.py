@@ -12,6 +12,7 @@ class Core01OptimizationProgressTable(ScenarioDbTable):
     def __init__(self, db_table_name: str = 'opti_progress', columns_ext=(), constraints_ext=()):
         columns = [
             Column('run_id', String(256), primary_key=True),
+            Column('lex_opti_level_id', String(256), primary_key=True),
             Column('progress_seq', Integer(), primary_key=True),
             Column('metric_type', String(32), primary_key=True),  # 'solver', 'kpi'
             Column('metric_name', String(256), primary_key=True),

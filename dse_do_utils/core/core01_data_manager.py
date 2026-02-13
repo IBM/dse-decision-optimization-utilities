@@ -95,7 +95,7 @@ class Core01DataManager(DataManager):
 
         self.optimization_progress_output = self.prepare_output_df(
             output_table_name='OptimizationProgress',
-            index_columns=['run_id', 'progress_seq', 'metric_type', 'metric_name'],
+            index_columns=['run_id', 'lex_opti_level_id', 'progress_seq', 'metric_type', 'metric_name'],
             value_columns=['metric_value', 'metric_text_value'],
             dtypes={
                 'run_id': str,
@@ -343,28 +343,30 @@ class Core01DataManager(DataManager):
         """Get the Optimization Progress data in wide form, which makes it easier to visualize.
         Includes both engine metrics and KPIs.
         Returns:
-            df - index=['progress_seq'], columns=['solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']
+            df - index=['run_id', 'lex_opti_level_id', 'progress_seq'], columns=['solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']
             kpis (List[str]): List of KPI names
         """
         # The challenge is that the pivot operations wil fail
         if self.optimization_progress_output.shape[0] == 0:
-            df = pd.DataFrame(columns=['run_id', 'progress_seq', 'solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']).set_index(['progress_seq'])
+            df = pd.DataFrame(columns=['run_id', 'lex_opti_level_id', 'progress_seq', 'solve_time', 'objective_value', 'objective_bound', 'objective_gap', 'search_status', 'event_type', 'solve_status']).set_index(['progress_seq'])
             kpis = []
             return df, kpis
 
         df1 = self.optimization_progress_output.query("metric_type == 'engine' & metric_value.notnull()").reset_index()
             #  [['progress_seq', 'metric_name', 'metric_value']]
 
-        df_pivot_1 = df1.pivot(columns='metric_name', index='progress_seq', values='metric_value')[
+        df_pivot_1 = df1.pivot(columns='metric_name', index=['run_id', 'lex_opti_level_id', 'progress_seq'], values='metric_value')[
             ['solve_time', 'objective_value', 'objective_bound', 'objective_gap']]   # TODO: only extract these columns if they exist
 
+
+
         df2 = self.optimization_progress_output.query("metric_type == 'engine' & metric_text_value.notnull() & metric_text_value != 'None'").reset_index()[
-            ['progress_seq', 'metric_name', 'metric_text_value']]
-        df_pivot_2 = df2.pivot(columns='metric_name', index='progress_seq', values='metric_text_value')
+            ['run_id', 'lex_opti_level_id', 'progress_seq', 'metric_name', 'metric_text_value']]
+        df_pivot_2 = df2.pivot(columns='metric_name', index=['run_id', 'lex_opti_level_id', 'progress_seq'], values='metric_text_value')
             #  [['search_status', 'event_type', 'solve_status']]   # TODO: only extract these columns if they exist
 
-        df3 = self.optimization_progress_output.query("metric_type == 'kpi'").reset_index()[['run_id', 'progress_seq','metric_name','metric_value']]
-        df_pivot_3 = df3.pivot(columns='metric_name', index='progress_seq', values='metric_value')
+        df3 = self.optimization_progress_output.query("metric_type == 'kpi'").reset_index()[['run_id', 'lex_opti_level_id', 'progress_seq','metric_name','metric_value']]
+        df_pivot_3 = df3.pivot(columns='metric_name', index=['run_id', 'lex_opti_level_id', 'progress_seq'], values='metric_value')
 
         df_pivot = df_pivot_1.join(df_pivot_2, rsuffix='_right').join(df_pivot_3, rsuffix='_right')  # rsuffix to make more robust against overlapping columns
         df = df_pivot
