@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.8.1b1]
 
-## [0.5.8.0b0]- 2026-02-16
+## [0.5.8.1b0]- 2026-02-16
 ### Added
 * ScenarioDbTable._set_df_column_types added support for Time type for time-of-day columns
 * DataManager.get_parameter_value added support for Time type for time-of-day parameters
