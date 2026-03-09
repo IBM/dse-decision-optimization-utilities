@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.8.1b1]
 ### Added
 ### Fixed
+* DoModelDeployer: migration to support of wslib (from project)
 
 ## [0.5.8.1b0]- 2026-02-16
 ### Added
