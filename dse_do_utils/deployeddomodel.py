@@ -275,7 +275,13 @@ class DeployedDOModel(object):
         job_uid = self.execute_model_v2(inputs, max_oaas_time_limit_sec)
         sleep(0.5)  # Give a little time for the job to start
         job_status = self.monitor_execution_v2(job_uid, max_run_time_sec)
-        job_details = self.extract_solution_v2(job_uid)
+        # TODO: check if job_status is 'deleted' or somethung. Calling extract_solution if the job was deleted will cause an exception
+        if job_status == 'deleted':
+            print("Job was deleted due to exceeding maximum run time. No solution to extract.")
+            # job_details = job_details['entity']['decision_optimization']['status']['state'] = 'deleted'
+            job_details = {'entity': {'decision_optimization': {'status': {'state': 'deleted'}}}}  # Minimal job_details to indicate deletion
+        else:
+            job_details = self.extract_solution_v2(job_uid)
         return job_details
 
     def execute_model_v2(self, inputs: Inputs, max_oaas_time_limit_sec: Optional[int]) -> str:
@@ -318,6 +324,8 @@ class DeployedDOModel(object):
                 self.client.deployments.delete_job(job_uid, hard_delete=True)
                 print(f"Job deleted due to run-time exceeding maximum limit of {max_run_time_sec} seconds")
                 self.solve_status = 'JOB DELETED'
+                # Set the job_status to reflect the deletion
+                job_status = 'deleted'
                 break
 
         # Make sure to get the full job_details. In the above loop we only get the status
@@ -328,7 +336,7 @@ class DeployedDOModel(object):
         return job_status
 
     def extract_solution_v2(self, job_uid: str) -> dict:
-        job_details: dict = self.client.deployments.get_job_details(job_uid)
+        job_details: dict = self.client.deployments.get_job_details(job_uid)  # fails if the job was deleted.
         self.job_details = job_details
         job_status = DeployedDOModel.get_job_status(job_details)
         if job_status == 'completed':

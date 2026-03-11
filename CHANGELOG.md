@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]## [0.5.8.1b2]
 ### Added
 ### Fixed
+* DeployedDOModel fix getting job_details when timeout is deleting the job
 
 ## [0.5.8.1b1]- 2026-03-09
 ### Fixed
