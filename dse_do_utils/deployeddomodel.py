@@ -275,7 +275,7 @@ class DeployedDOModel(object):
         job_uid = self.execute_model_v2(inputs, max_oaas_time_limit_sec)
         sleep(0.5)  # Give a little time for the job to start
         job_status = self.monitor_execution_v2(job_uid, max_run_time_sec)
-        # TODO: check if job_status is 'deleted' or somethung. Calling extract_solution if the job was deleted will cause an exception
+        # Check if job_status is 'deleted'. Calling extract_solution if the job was deleted will cause an exception
         if job_status == 'deleted':
             print("Job was deleted due to exceeding maximum run time. No solution to extract.")
             # job_details = job_details['entity']['decision_optimization']['status']['state'] = 'deleted'
