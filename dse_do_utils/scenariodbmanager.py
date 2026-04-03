@@ -309,6 +309,8 @@ class ScenarioDbTable(ABC):
                     if isinstance(first_valid, datetime.time):
                         # Already time objects, no conversion needed
                         pass
+                    elif first_valid is None:
+                        pass  # Cannot convert, None is OK
                     else:
                         # Convert string or other format to time
                         # Add today's date to make it parseable, then extract time
@@ -1090,6 +1092,7 @@ class ScenarioDbManager():
                     df = dfs[scenario_table_name]
                     print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
                     #                 display(df.head(3))
+
                     if bulk:
                         db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
                     else:  # Row by row for data checking
@@ -1098,7 +1101,7 @@ class ScenarioDbManager():
                     print(f"No table named {scenario_table_name} in inputs or outputs")
         return num_caught_exceptions
 
-    def _insert_table_in_db_by_row(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None) -> int:
+    def _insert_table_in_db_by_row(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None, enable_astype: bool = True) -> int:
         """Inserts a table in the DB row-by-row.
         For debugging FK/PK data issues.
         Uses a single SQL insert statement for each row in the DataFrame so that if there is a FK/PK issue,
@@ -1112,6 +1115,10 @@ class ScenarioDbManager():
         # Replace NaN with None to avoid FK problems:
         # df = df.replace({float('NaN'): None})
         df = ScenarioDbTable.fixNanNoneNull(df)
+
+        # Force the data type of a column in the df to match the expectation in the DB
+        if enable_astype:
+            df = db_table._set_df_column_types(df)
 
         num_exceptions = 0
         max_num_exceptions = 10
