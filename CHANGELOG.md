@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]## [0.5.8.1b2]
 ### Added
+### Changed
+* Core02DataManager.prepare_output_data_frames, dtypes argument is DEPRECATED. Run-time warning added.
 ### Fixed
 * DeployedDOModel fix getting job_details when timeout is deleting the job
+* ScenarioDbTable._set_df_column_types: handle None values in sqlalchemy.Time columns when inserting into DB.
+* ScenarioDbTable._insert_table_in_db_by_row: also uses set_df_column_types() (similar to insert_table_in_db_bulk)
 
 ## [0.5.8.1b1]- 2026-03-09
 ### Fixed
