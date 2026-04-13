@@ -130,12 +130,13 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         """
         Solve the model
         """
-        if self.dm.param.enable_optimization_progress_tracking:
-            # self.optimization_progress_tracking_callback = self.mdl.add_solver_callback(self.get_solver_callback())
-            if self.optimization_progress_tracking_callback is not None:
-                self.mdl.remove_solver_callback(self.optimization_progress_tracking_callback)
-            self.optimization_progress_tracking_callback = self.get_solver_callback()
-            self.mdl.add_solver_callback(self.optimization_progress_tracking_callback)
+        # if self.dm.param.enable_optimization_progress_tracking:
+        #     # self.optimization_progress_tracking_callback = self.mdl.add_solver_callback(self.get_solver_callback())
+        #     if self.optimization_progress_tracking_callback is not None:
+        #         self.mdl.remove_solver_callback(self.optimization_progress_tracking_callback)
+        #     self.optimization_progress_tracking_callback = self.get_solver_callback()
+        #     self.mdl.add_solver_callback(self.optimization_progress_tracking_callback)
+        self.set_optimization_progress_tracking_callback()
 
 
         msol: CpoSolveResult = self.mdl.solve(params=self.cpo_params, **self.solve_kwargs)
@@ -147,6 +148,15 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         elif self.enable_refine_conflict:
             self.refine_conflict()
         return msol
+
+    def set_optimization_progress_tracking_callback(self, run_id: str = 'run_0', lex_opti_level_id: str = 'level_0'):
+        """Adds the CpoProgressTrackerCallback, depending on the enable_optimization_progress_tracking parameter."""
+        if self.dm.param.enable_optimization_progress_tracking:
+            # self.optimization_progress_tracking_callback = self.mdl.add_solver_callback(self.get_solver_callback())
+            if self.optimization_progress_tracking_callback is not None:
+                self.mdl.remove_solver_callback(self.optimization_progress_tracking_callback)
+            self.optimization_progress_tracking_callback = self.get_solver_callback(run_id=run_id, lex_opti_level_id=lex_opti_level_id)
+            self.mdl.add_solver_callback(self.optimization_progress_tracking_callback)
 
     def get_solver_callback(self, run_id: str = 'run_0', lex_opti_level_id: str = 'level_0') -> CpoCallback:
         """Gets called when parameter enable_optimization_progress_tracking is set to True.
