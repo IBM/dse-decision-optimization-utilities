@@ -73,7 +73,7 @@ class Core01CpoOptimizationEngine(OptimizationEngine[DM]):
         # self.set_cplex_parameters()
         self.set_cpo_parameters()
         msol = self.solve()
-        if msol.is_solution():
+        if msol is not None and msol.is_solution():
             self.extract_solution(msol)
             self.post_processing()
             outputs = self.get_outputs()

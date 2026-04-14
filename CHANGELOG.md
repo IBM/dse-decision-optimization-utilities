@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Core01CpoOptimizationEngine.set_optimization_progress_tracking_callback for easier re-use
 * uv support
+* Allow Core01CpoOptimizationEngine.run() msol to be None
 ### Changed
 * Core02DataManager.prepare_output_data_frames, dtypes argument is DEPRECATED. Run-time warning added.
 ### Fixed
