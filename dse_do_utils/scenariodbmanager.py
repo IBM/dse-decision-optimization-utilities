@@ -23,6 +23,7 @@ import zipfile
 from abc import ABC
 from multiprocessing.pool import ThreadPool
 
+import numpy as np
 import sqlalchemy
 import pandas as pd
 from typing import Dict, List, NamedTuple, Any, Optional
@@ -283,6 +284,9 @@ class ScenarioDbTable(ABC):
         """
         df = df.replace({float('NaN'): None, 'nan': None,
                          'None': None,  # Added VT 20250117 Deals with SQLite returning NULL as the string 'None'
+                         pd.NaT: None,  # Added VT 20260405
+                         # pd.Timestamp('NaT'): None,
+                         # np.datetime64('nat'): None,
                          })
         return df
 
@@ -1112,13 +1116,15 @@ class ScenarioDbManager():
         After the limit, the insert will be terminated. And the next table will be inserted.
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
         """
-        # Replace NaN with None to avoid FK problems:
-        # df = df.replace({float('NaN'): None})
-        df = ScenarioDbTable.fixNanNoneNull(df)
 
         # Force the data type of a column in the df to match the expectation in the DB
         if enable_astype:
             df = db_table._set_df_column_types(df)
+
+        # Replace NaN with None to avoid FK problems:
+        # VT_20260504: We have to do this after the _set_df_column_types, because the Datetime conversion will make a None a NaT
+        # This is the same order as used in the bulk option
+        df = ScenarioDbTable.fixNanNoneNull(df)
 
         num_exceptions = 0
         max_num_exceptions = 10
@@ -1138,10 +1144,12 @@ class ScenarioDbManager():
             except exc.IntegrityError as e:
                 print("++++++++++++Integrity Error+++++++++++++")
                 print(e)
+                print(row)
                 num_exceptions = num_exceptions + 1
             except exc.StatementError as e:
                 print("++++++++++++Statement Error+++++++++++++")
                 print(e)
+                print(row)
                 num_exceptions = num_exceptions + 1
             finally:
                 if num_exceptions > max_num_exceptions:
