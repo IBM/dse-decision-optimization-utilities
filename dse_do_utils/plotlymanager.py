@@ -59,7 +59,7 @@ class PlotlyManager(Generic[DM]):
     ###################################################################
     #  For scenario-compare in dse-do-dashboard
     ###################################################################
-    def plotly_kpi_compare_bar_charts(self, figs_per_row: int = 3, orientation: str = 'v') -> [[go.Figure]]:
+    def plotly_kpi_compare_bar_charts(self, figs_per_row: int = 3, orientation: str = 'v') -> list[list[go.Figure]]:
         """
         Generalized compare of KPIs between scenarios. Creates a list-of-list of go.Figure, i.e. rows of figures,
         for the PlotlyRowsVisualizationPage.

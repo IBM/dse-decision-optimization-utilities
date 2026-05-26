@@ -6,7 +6,7 @@
 # MapManager
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from folium import folium, Marker
 from folium.plugins import BeautifyIcon
@@ -282,7 +282,7 @@ class MapManager(object):
 
 
     def add_bar_chart_in_map(self, m, coord,
-                             quantities=None, tooltips=None,
+                             quantities: Optional[list[float|int]]=None, tooltips=None,
                              bar_width=20, bar_height_per_unit=1,
                              border_colors: List = None, background_colors: List = None
                              ):
