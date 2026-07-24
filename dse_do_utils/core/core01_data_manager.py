@@ -117,6 +117,7 @@ class Core01DataManager(DataManager):
         super().set_parameters()
 
         self.param.time_limit = self.get_parameter_value(self.params, 'solveTimeLimit', param_type='int', default_value=600)
+
         self.param.remove_zero_quantity_output_records = self.get_parameter_value(
             self.params,
             param_name='removeZeroQuantityOutputRecords',

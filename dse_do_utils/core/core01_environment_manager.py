@@ -202,8 +202,10 @@ class Core01EnvironmentManager():
                 logger.setLevel(level)
 
                 # Remove all existing handlers (See https://stackoverflow.com/questions/7484454/removing-handlers-from-pythons-logging-loggers)
-                while logger.hasHandlers():
-                    logger.removeHandler(logger.handlers[0])
+                # VT 20260724: hasHandlers() can be true even if list is empty
+                # while logger.hasHandlers():
+                #     logger.removeHandler(logger.handlers[0])
+                logger.handlers.clear()
                 logger.addHandler(c_handler)
 
     def set_root_logger(self, level: Optional[str] = None) -> None:
