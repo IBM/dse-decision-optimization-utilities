@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [Unreleased]## [0.5.8.1b3]
+### Changed
+* MapManager now uses OpenStreetMap tiles instead of 'cartodbpositron' tiles. This avoids the need for a Mapbox access token that is required since 2024-06-01. The default tiles are now OpenStreetMap tiles, which do not require an access token.
 
 ## [0.5.8.1b2]- 2026-07-24
 ### Added

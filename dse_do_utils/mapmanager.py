@@ -49,8 +49,10 @@ class MapManager(object):
 
     def create_blank_map(self) -> folium.Map:
         import folium
-        m = folium.Map(location=self.location, zoom_start=self.zoom_start, tiles='cartodbpositron', width=self.width,
-                       height=self.height)
+        m = folium.Map(location=self.location, zoom_start=self.zoom_start,
+                       # tiles='cartodbpositron',
+                       tiles='OpenStreetMap',
+                       width=self.width, height=self.height)
         return m
 
     def add_layer_control(self, m):
