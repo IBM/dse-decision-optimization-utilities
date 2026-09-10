@@ -23,6 +23,13 @@ class Core01EnvironmentManager():
                  project_root: Optional[str] = None, data_directory: Optional[str] = None,
                  log_level: Optional[str] = None,
                  log_scope: Optional[tuple[str]] = None):
+        """
+        Notes on log_scope:
+        * The default value `None` implies the root logger, which will log all messages from all loggers. If you want to limit the logging to specific modules, you can provide a tuple of module names.
+        * The challenge could be that there is some external module that is also using the logger and you want to filter-out these messages.
+        * In that case, specify a list of Python modules in the log_scope. For instance `['my_module', 'dse_do_utils', 'dse_do_dashboard', 'dash']`
+        * Note that `dash` is creating a INFO message with the http address of the dashboard.
+        """
         if log_scope is None:
             log_scope = ['']  # Implies the root logger. If you don't want logger, specify log_scope as an empty list
         self.db_connection = db_connection
