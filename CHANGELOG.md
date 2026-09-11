@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * MapManager now uses OpenStreetMap tiles instead of 'cartodbpositron' tiles. This avoids the need for a Mapbox access token that is required since 2024-06-01. The default tiles are now OpenStreetMap tiles, which do not require an access token.
 * Core01EnvironmentManager. Comment clarification on logging scope.
+### Fixed
+* ScenarioDbManager._get_db2_connection_string: Removed clear text logging of DB connection string.
+* ScenarioDbManager._get_pg_connection_string: Removed clear text logging of DB connection string.
 
 ## [0.5.8.1b2]- 2026-07-24
 ### Added

@@ -785,7 +785,7 @@ class ScenarioDbManager():
             )
         # SAVE FOR FUTURE LOGGER MESSAGES...
         if self.enable_debug_print:
-            print("DB2 Connection String : " + connection_string)
+            print(f"DB2 Connection: host={credentials['host']}, port ={credentials['port']}, database={credentials['database']}, schema={credentials['schema']}")
         return connection_string
 
     def _create_db2_engine(self, credentials, schema: str, echo: bool = False):
@@ -818,7 +818,8 @@ class ScenarioDbManager():
         )
         # SAVE FOR FUTURE LOGGER MESSAGES...
         if self.enable_debug_print:
-            print(f"PostgreSQL Connection String : {connection_string}")
+            print(
+                f"PostgreSQL Connection: host={credentials['host']}, port ={credentials['port']}, database={credentials['database']}, schema={credentials['schema']}")
         return connection_string
 
     def _create_pg_engine(self, credentials, schema: str, echo: bool = False):
