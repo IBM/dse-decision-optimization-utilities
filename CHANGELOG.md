@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.8.1b3]
+[Unreleased]## [0.5.8.1b4]
+
+## [0.5.8.1b3]- 2026-09-11
 ### Changed
 * MapManager now uses OpenStreetMap tiles instead of 'cartodbpositron' tiles. This avoids the need for a Mapbox access token that is required since 2024-06-01. The default tiles are now OpenStreetMap tiles, which do not require an access token.
 * Core01EnvironmentManager. Comment clarification on logging scope.
