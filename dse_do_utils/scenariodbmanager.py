@@ -1,6 +1,6 @@
 # Copyright IBM All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
+import datetime
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 # ScenarioDbManager
@@ -23,6 +23,7 @@ import zipfile
 from abc import ABC
 from multiprocessing.pool import ThreadPool
 
+import numpy as np
 import sqlalchemy
 import pandas as pd
 from typing import Dict, List, NamedTuple, Any, Optional
@@ -283,6 +284,9 @@ class ScenarioDbTable(ABC):
         """
         df = df.replace({float('NaN'): None, 'nan': None,
                          'None': None,  # Added VT 20250117 Deals with SQLite returning NULL as the string 'None'
+                         pd.NaT: None,  # Added VT 20260405
+                         # pd.Timestamp('NaT'): None,
+                         # np.datetime64('nat'): None,
                          })
         return df
 
@@ -299,6 +303,42 @@ class ScenarioDbTable(ABC):
                     df[df_column_name] = pd.to_datetime(df[df_column_name])
                 except ValueError as e:
                     print(f"Failed to convert column {df_column_name} to datetime")
+            elif issubclass(type(sa_column.type), sqlalchemy.Time):
+                # Time doesn't convert in Pandas in the same way as other types
+                # Need to handle as a special case
+                try:
+                    # Check if column already contains datetime.time objects
+                    import datetime
+                    first_valid = df[df_column_name].dropna().iloc[0] if len(df[df_column_name].dropna()) > 0 else None
+                    if isinstance(first_valid, datetime.time):
+                        # Already time objects, no conversion needed
+                        pass
+                    elif first_valid is None:
+                        pass  # Cannot convert, None is OK
+                    else:
+                        # Convert string or other format to time
+                        # Add today's date to make it parseable, then extract time
+                        df[df_column_name] = pd.to_datetime('1900-01-01 ' + df[df_column_name].astype(str), format='%Y-%m-%d %H:%M:%S').dt.time
+                except (ValueError, TypeError) as e:
+                    print(f"Failed to convert column {df_column_name} to time: {e}")
+            # Note: SQLite doesn't support Interval type. So do not include type matching for it here.
+            # elif issubclass(type(sa_column.type), sqlalchemy.Interval):
+            #     # Interval type corresponds to datetime.timedelta in Python
+            #     # Need to handle as a special case
+            #     try:
+            #         import datetime
+            #         first_valid = df[df_column_name].dropna().iloc[0] if len(df[df_column_name].dropna()) > 0 else None
+            #         if isinstance(first_valid, datetime.timedelta):
+            #             # Already timedelta objects, no conversion needed
+            #             pass
+            #         elif isinstance(first_valid, (int, float)):
+            #             # Assume numeric values are in seconds, convert to timedelta
+            #             df[df_column_name] = pd.to_timedelta(df[df_column_name], unit='s')
+            #         else:
+            #             # Try to parse as timedelta string
+            #             df[df_column_name] = pd.to_timedelta(df[df_column_name])
+            #     except (ValueError, TypeError) as e:
+            #         print(f"Failed to convert column {df_column_name} to interval/timedelta: {e}")
             else:
                 df_type = sa_column.type.python_type
                 if type is not None and df_column_name in df.columns:
@@ -745,7 +785,7 @@ class ScenarioDbManager():
             )
         # SAVE FOR FUTURE LOGGER MESSAGES...
         if self.enable_debug_print:
-            print("DB2 Connection String : " + connection_string)
+            print(f"DB2 Connection: host={credentials['host']}, port ={credentials['port']}, database={credentials['database']}, schema={credentials['schema']}")
         return connection_string
 
     def _create_db2_engine(self, credentials, schema: str, echo: bool = False):
@@ -778,7 +818,8 @@ class ScenarioDbManager():
         )
         # SAVE FOR FUTURE LOGGER MESSAGES...
         if self.enable_debug_print:
-            print(f"PostgreSQL Connection String : {connection_string}")
+            print(
+                f"PostgreSQL Connection: host={credentials['host']}, port ={credentials['port']}, database={credentials['database']}, schema={credentials['schema']}")
         return connection_string
 
     def _create_pg_engine(self, credentials, schema: str, echo: bool = False):
@@ -1056,6 +1097,7 @@ class ScenarioDbManager():
                     df = dfs[scenario_table_name]
                     print(f"Inserting {df.shape[0]} rows and {df.shape[1]} columns in {scenario_table_name}")
                     #                 display(df.head(3))
+
                     if bulk:
                         db_table.insert_table_in_db_bulk(df=df, mgr=self, connection=connection)
                     else:  # Row by row for data checking
@@ -1064,7 +1106,7 @@ class ScenarioDbManager():
                     print(f"No table named {scenario_table_name} in inputs or outputs")
         return num_caught_exceptions
 
-    def _insert_table_in_db_by_row(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None) -> int:
+    def _insert_table_in_db_by_row(self, db_table: ScenarioDbTable, df: pd.DataFrame, connection=None, enable_astype: bool = True) -> int:
         """Inserts a table in the DB row-by-row.
         For debugging FK/PK data issues.
         Uses a single SQL insert statement for each row in the DataFrame so that if there is a FK/PK issue,
@@ -1075,8 +1117,14 @@ class ScenarioDbManager():
         After the limit, the insert will be terminated. And the next table will be inserted.
         Note that as a result of terminating a table insert, it is very likely it will cause FK issues in subsequent tables.
         """
+
+        # Force the data type of a column in the df to match the expectation in the DB
+        if enable_astype:
+            df = db_table._set_df_column_types(df)
+
         # Replace NaN with None to avoid FK problems:
-        # df = df.replace({float('NaN'): None})
+        # VT_20260504: We have to do this after the _set_df_column_types, because the Datetime conversion will make a None a NaT
+        # This is the same order as used in the bulk option
         df = ScenarioDbTable.fixNanNoneNull(df)
 
         num_exceptions = 0
@@ -1097,10 +1145,12 @@ class ScenarioDbManager():
             except exc.IntegrityError as e:
                 print("++++++++++++Integrity Error+++++++++++++")
                 print(e)
+                print(row)
                 num_exceptions = num_exceptions + 1
             except exc.StatementError as e:
                 print("++++++++++++Statement Error+++++++++++++")
                 print(e)
+                print(row)
                 num_exceptions = num_exceptions + 1
             finally:
                 if num_exceptions > max_num_exceptions:

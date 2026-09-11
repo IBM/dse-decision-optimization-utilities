@@ -4,7 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]## [0.5.8.1b0]
+[Unreleased]## [0.5.8.2b0]
+
+## [0.5.8.1]- 2026-09-11
+* Releasing to PyPI as version 0.5.8.1
+
+## [0.5.8.1b3]- 2026-09-11
+### Changed
+* MapManager now uses OpenStreetMap tiles instead of 'cartodbpositron' tiles. This avoids the need for a Mapbox access token that is required since 2024-06-01. The default tiles are now OpenStreetMap tiles, which do not require an access token.
+* Core01EnvironmentManager. Comment clarification on logging scope.
+### Fixed
+* ScenarioDbManager._get_db2_connection_string: Removed clear text logging of DB connection string.
+* ScenarioDbManager._get_pg_connection_string: Removed clear text logging of DB connection string.
+
+## [0.5.8.1b2]- 2026-07-24
+### Added
+* Core01CpoOptimizationEngine.set_optimization_progress_tracking_callback for easier re-use
+* uv support
+* Allow Core01CpoOptimizationEngine.run() msol to be None
+### Changed
+* Core02DataManager.prepare_output_data_frames, dtypes argument is DEPRECATED. Run-time warning added.
+### Fixed
+* DeployedDOModel fix getting job_details when timeout is deleting the job
+* ScenarioDbTable._set_df_column_types: handle None values in sqlalchemy.Time columns when inserting into DB.
+* ScenarioDbTable._insert_table_in_db_by_row: also uses set_df_column_types() (similar to insert_table_in_db_bulk)
+* Core01EnvironmentManager.set_loggers: fixed bug clearing loggers when setting new loggers. 
+
+## [0.5.8.1b1]- 2026-03-09
+### Fixed
+* DoModelDeployer: migration to support of wslib (from project)
+
+## [0.5.8.1b0]- 2026-02-16
+### Added
+* ScenarioDbTable._set_df_column_types added support for Time type for time-of-day columns
+* DataManager.get_parameter_value added support for Time type for time-of-day parameters
+* Optimization progress tracking for lexicographical optimization in Core01CpoOptimizationEngine and Core02CpoOptimizationEngine
+### Fixed
+* Pandas to_excel FutureWarning fix
+* Bugfix in ScenarioDbTable.set_df_column_types() on Time conversion
 
 ## [0.5.8.0]- 2026-01-23
 ### Fixed

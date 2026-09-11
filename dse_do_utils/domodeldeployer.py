@@ -37,7 +37,8 @@ class DOModelDeployer(object):
                  package_paths: Optional[List[str]]=None,
                  file_paths: Optional[List[str]]=None,
                  do_main_model_file_path: Optional[str] = None,
-                 deployment_name: Optional[str] = 'xxx', deployment_description: Optional[str] = 'xxx', project=None,
+                 deployment_name: Optional[str] = 'xxx', deployment_description: Optional[str] = 'xxx',
+                 wslib = None, #project=None,
                  tmp_dir: Optional[str] = None,
                  model_meta_props_type: Optional[str] = 'do-docplex_22.1',
                  base_sw_name: Optional[str] = 'do_22.1',
@@ -67,7 +68,8 @@ class DOModelDeployer(object):
         if package_paths is None:
             package_paths = []
         self.wml_credentials = wml_credentials
-        self.project = project
+        # self.project = project
+        self.wslib = wslib
         self.model_name = model_name
         self.scenario_name = scenario_name
         self.space_name = space_name
@@ -91,7 +93,7 @@ class DOModelDeployer(object):
             self.space_id = self.guid_from_space_name(space_name)  # TODO: catch error if space_name cannot be found?
         result = self.client.set.default_space(self.space_id)
         #         print(f"client space_id = {space_id}, result={result}")
-        self.scenario_manager = ScenarioManager(model_name=model_name, scenario_name=scenario_name, project=project)
+        self.scenario_manager = ScenarioManager(model_name=model_name, scenario_name=scenario_name, wslib=wslib)
 
         # State
         self.model_uid = None

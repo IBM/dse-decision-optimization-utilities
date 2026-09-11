@@ -3,6 +3,7 @@
 # This Source Code is subject to the license and security terms contained in the License.txt file contained in this source code package.
 
 import types
+import warnings
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -42,14 +43,26 @@ class Core02DataManager(Core01DataManager, ABC):
         self.logger.debug("Exit")
 
     def prepare_output_data_frames(self, dtypes=None):
+        """
+
+        :param dtypes: DEPRECATED
+        :return:
+        """
         super().prepare_output_data_frames()
+
+        if dtypes is not None:
+            warnings.warn(
+                "The 'dtypes' argument is deprecated and will be removed in a future version. ",
+                category=DeprecationWarning,
+                stacklevel=2
+            )
 
         self.lex_opti_metrics_output = self.prepare_df(
             self.outputs.get('LexOptiMetrics'),
             index_columns=['lexOptiLevelId', 'metricType', 'metricName'],
             value_columns=['metricValue', 'metricTextValue'],
             dtypes={
-                **self.dtypes,  # later entries will override any entries in in self.dtypes
+                # **self.dtypes,  # later entries will override any entries in in self.dtypes
                 'metricValue': float,
                 'metricTextValue': str,
             },

@@ -40,6 +40,7 @@ DM = TypeVar('DM', bound='DataManager')
 class OptimizationEngine(Generic[DM]):
     def __init__(self, data_manager: Optional[DM] = None, name: str = "MyOptimizationEngine",
                  solve_kwargs = None, export_lp: bool = False, export_sav: bool = False, export_lp_path: str = None, is_cpo_model: bool = False):
+        self.name = name
         self.is_cpo_model = is_cpo_model
         # self.mdl: Model = Model(name=name)
         self.mdl: Union[Model, cp.CpoModel] = self.create_do_model(name=name, is_cpo_model=is_cpo_model)

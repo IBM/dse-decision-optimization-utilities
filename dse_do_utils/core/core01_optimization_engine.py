@@ -340,6 +340,7 @@ class Core01CplexKpiListener(KpiListener):
         self.progress_seq = 0
 
     def publish(self, kpi_dict, run_id: str = 'run_0'):
+        lex_opti_level_id: str = 'level_0'
         progress_data: ProgressData = self.current_progress_data
 
         # print(
